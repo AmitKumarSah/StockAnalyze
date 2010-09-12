@@ -14,13 +14,16 @@ public final class R {
         public static final int icon=0x7f020000;
     }
     public static final class id {
-        public static final int SearchEditText=0x7f050001;
-        public static final int TextView01=0x7f050000;
+        public static final int DetailLinear=0x7f050000;
+        public static final int SearchEditText=0x7f050003;
+        public static final int TextView01=0x7f050001;
+        public static final int txtHeader=0x7f050002;
     }
     public static final class layout {
         public static final int main=0x7f030000;
-        public static final int stock_list=0x7f030001;
-        public static final int stock_search=0x7f030002;
+        public static final int stock_detail=0x7f030001;
+        public static final int stock_list=0x7f030002;
+        public static final int stock_search=0x7f030003;
     }
     public static final class string {
         public static final int SearchTextView=0x7f040002;

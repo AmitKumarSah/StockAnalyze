@@ -7,6 +7,7 @@ import cz.tomas.StockAnalyze.Data.DataManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
+import android.app.TabActivity;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,9 +16,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.webkit.WebIconDatabase.IconListener;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.Toast;
+import android.widget.AdapterView.OnItemClickListener;
 
 /**
  * @author tomas
@@ -44,17 +47,19 @@ public class StockListActivity extends ListActivity {
 		
 		this.getListView().setTextFilterEnabled(true);
 		
-		
-//		this.getListView().setOnClickListener(new OnClickListener() {
-//			
-//			@Override
-//			public void onClick(View arg0) {
-//
-//				DataManager dataManager = new DataManager();
-//				dataManager.getLastValue("BAACEZ");
-//				
-//			}
-//		});
+		this.getListView().setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long rowId) {
+				if (StockListActivity.this.getParent() instanceof TabActivity) {
+					// set currently selected ticker
+					Object obj = StockListActivity.this.getListView().getItemAtPosition(position);
+					
+					TabActivity act = (TabActivity) StockListActivity.this.getParent();
+					act.getIntent().putExtra("ticker", obj.toString());
+					act.getTabHost().setCurrentTabByTag("StockDetail");
+				}
+			}
+		});
 
 		StockListUpdateThread thread = new StockListUpdateThread(this.updateHandler, this.dataManager);
 		thread.setName("StockUpdate");
@@ -78,7 +83,7 @@ public class StockListActivity extends ListActivity {
 		switch (id)
 		{
 		case UPDATE_DLG_SUCCES:
-			builder.setMessage("cc");
+			builder.setMessage("The data has been successfuly updated!");
 			dlg = builder.create();
 			break;
 		case UPDATE_DLG_FAIL:
