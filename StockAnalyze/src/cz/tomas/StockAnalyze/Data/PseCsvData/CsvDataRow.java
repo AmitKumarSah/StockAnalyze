@@ -1,0 +1,81 @@
+/**
+ * 
+ */
+package cz.tomas.StockAnalyze.Data.PseCsvData;
+
+/**
+ * @author tomas
+ *
+ */
+public class CsvDataRow {
+
+	String code;
+	String name;
+	String ticker;
+	String date;
+	String closePrice;
+	String openPrice;
+	String dayVolume;
+	String change;
+	String tradedPieces;
+	String market;
+	
+	public CsvDataRow(String row) {
+		this.parseRow(row);
+	}
+	
+	private void parseRow(String row) {
+		row = row.replaceAll("\"", "");
+		row = row.replaceAll("\t", "");
+		row = row.replaceAll(" ", "");
+		String[] cells = row.split(",");
+		this.code = cells[0];
+		this.name = cells[1];
+		this.ticker = cells[2];
+		this.date = cells[3];
+		this.closePrice = cells[4];
+	}
+	
+	
+	public String getCode() {
+		return code;
+	}
+	public String getName() {
+		return name;
+	}
+	public String getTicker() {
+		return ticker;
+	}
+	public String getDate() {
+		return date;
+	}
+	public String getClosePrice() {
+		return closePrice;
+	}
+	public String getOpenPrice() {
+		return openPrice;
+	}
+	public String getDayVolume() {
+		return dayVolume;
+	}
+	public String getChange() {
+		return change;
+	}
+	public String getTradedPieces() {
+		return tradedPieces;
+	}
+	public String getMarket() {
+		return market;
+	}
+
+	@Override
+	public String toString() {
+		return "CsvDataRow [change=" + change + ", closePrice=" + closePrice
+				+ ", code=" + code + ", date=" + date + ", dayVolume="
+				+ dayVolume + ", market=" + market + ", name=" + name
+				+ ", openPrice=" + openPrice + ", ticker=" + ticker
+				+ ", tradedPieces=" + tradedPieces + "]";
+	}
+	
+	
+}

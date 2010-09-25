@@ -6,6 +6,8 @@ package cz.tomas.StockAnalyze.Data;
 import java.io.IOException;
 import java.util.Date;
 
+import cz.tomas.StockAnalyze.Data.PseCsvData.PseCsvDataProvider;
+
 import android.content.Context;
 
 /**

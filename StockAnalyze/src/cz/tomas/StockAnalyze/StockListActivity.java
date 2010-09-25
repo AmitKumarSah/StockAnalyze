@@ -9,9 +9,11 @@ import android.app.Dialog;
 import android.app.ListActivity;
 import android.app.TabActivity;
 import android.content.DialogInterface;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
@@ -44,9 +46,8 @@ public class StockListActivity extends ListActivity {
 		
 		String[] test = new String[] { "BAACEZ", "BAATELEC", "BAACETV" };
 		this.setListAdapter(new ArrayAdapter<String>(this, R.layout.stock_list, test));
-		
 		this.getListView().setTextFilterEnabled(true);
-		
+
 		this.getListView().setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long rowId) {
@@ -61,8 +62,14 @@ public class StockListActivity extends ListActivity {
 			}
 		});
 
-		StockListUpdateThread thread = new StockListUpdateThread(this.updateHandler, this.dataManager);
-		thread.setName("StockUpdate");
+		String[] tickers = new String[this.getListAdapter().getCount()];
+		
+		for (int i = 0; i < tickers.length; i++) {
+			tickers[i] = this.getListAdapter().getItem(i).toString();
+		}
+
+		StockListUpdateThread thread = new StockListUpdateThread(this.updateHandler, this.dataManager, tickers);
+		thread.setName("StockListUpdate");
 		thread.start();
 	}
 	
@@ -83,11 +90,11 @@ public class StockListActivity extends ListActivity {
 		switch (id)
 		{
 		case UPDATE_DLG_SUCCES:
-			builder.setMessage("The data has been successfuly updated!");
+			builder.setMessage(R.string.update_succes);
 			dlg = builder.create();
 			break;
 		case UPDATE_DLG_FAIL:
-			builder.setMessage("An error occured while updating the data!");
+			builder.setMessage(R.string.update_fail);
 			dlg = builder.create();
 			break;
 		}
@@ -99,12 +106,14 @@ public class StockListActivity extends ListActivity {
     final Handler updateHandler = new Handler() {
         public void handleMessage(Message msg) {
         	boolean result = msg.getData().getBoolean(StockListActivity.MSG_UPDATE_RESULT);
-            
+        	ArrayAdapter adapter =  (ArrayAdapter) StockListActivity.this.getListAdapter();
+        	
+        	for (int i = 0; i < adapter.getCount(); i++) {
+			}
+        	
         	if (result) {
-            	//StockListActivity.this.showDialog(StockListActivity.UPDATE_DLG_SUCCES);
         		Toast.makeText(StockListActivity.this, "The data was succesfully updated!", Toast.LENGTH_LONG).show();
         	}
-
             else {
             	StockListActivity.this.showDialog(StockListActivity.UPDATE_DLG_FAIL);
             }
@@ -115,10 +124,12 @@ public class StockListActivity extends ListActivity {
 	private class StockListUpdateThread extends Thread {
 		Handler handler;
 		DataManager dataManager;
+		String[] tickers;
 		
-		public StockListUpdateThread(Handler handler, DataManager dataManager) {
+		public StockListUpdateThread(Handler handler, DataManager dataManager, String[] tickers) {
 			this.handler = handler;
 			this.dataManager = dataManager;
+			this.tickers = tickers;
 		}
 		
 		@Override
@@ -128,7 +139,12 @@ public class StockListActivity extends ListActivity {
 			Bundle bundle = new Bundle();
 			
 			try {
-				dataManager.getLastValue("BAACEZ");
+				for (int i = 0; i < this.tickers.length; i++) {
+					float value = dataManager.getLastValue(this.tickers[i]);
+					bundle.putFloat(this.tickers[i], value);
+					
+					Log.d("StockList", this.tickers[i] + " updated to " + value);
+				}
 				bundle.putBoolean(MSG_UPDATE_RESULT, true);
 			} catch (Exception e) {
 				e.printStackTrace();
