@@ -34,6 +34,12 @@ public class CsvDataRow {
 		this.ticker = cells[2];
 		this.date = cells[3];
 		this.closePrice = cells[4];
+		this.change = cells[5];
+		if (this.change.startsWith("."))
+			this.change = "0" + this.change;
+		this.openPrice = cells[6];
+		this.tradedPieces = cells[9];
+		this.dayVolume = cells[10];
 	}
 	
 	

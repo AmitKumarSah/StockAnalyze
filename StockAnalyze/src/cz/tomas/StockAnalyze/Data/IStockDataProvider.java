@@ -12,6 +12,7 @@ import java.util.List;
  *
  */
 public interface IStockDataProvider {
-	float getDayData(String ticker, Date date) throws IOException;
+	DayData getLastData(String ticker) throws IOException;
+	DayData getDayData(String ticker, Date date) throws IOException;
 	List<String> getAvailableStockList();
 }

@@ -6,8 +6,10 @@ package cz.tomas.StockAnalyze;
 import java.io.IOException;
 
 import cz.tomas.StockAnalyze.Data.DataManager;
+import cz.tomas.StockAnalyze.Data.DayData;
 import android.app.Activity;
 import android.app.TabActivity;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -56,6 +58,7 @@ public class StockDetailActivity extends Activity {
 		
 		TextView txtPrice = (TextView) this.findViewById(R.id.txtClosingPrice);
 		txtPrice.setText(R.string.loading);
+		txtPrice.setTextColor(Color.WHITE);
 		
 		StockDetailUpdateThread thread = new StockDetailUpdateThread(this.updateHandler, manager, ticker);
 		thread.setName("StockDetailUpdate");
@@ -69,13 +72,26 @@ public class StockDetailActivity extends Activity {
         	
         	
         	if (result) {
-            	TextView txt = (TextView) StockDetailActivity.this.findViewById(R.id.txtClosingPrice);
+            	TextView txtPrice = (TextView) StockDetailActivity.this.findViewById(R.id.txtClosingPrice);
+            	TextView txtDate = (TextView) StockDetailActivity.this.findViewById(R.id.txtDetailDate);
             	String price = msg.getData().getString("price");
-            	txt.setText(price);
+            	String date = msg.getData().getString("date");
+            	float change = msg.getData().getFloat("change");
+            	Boolean positiveChange = change > 0;
+            	txtPrice.setText(price + "  (" + change + "%)");
+            	txtDate.setText(date);
+            	
+            	if (positiveChange)
+            		txtPrice.setTextColor(Color.GREEN);
+            	else
+            		txtPrice.setTextColor(Color.RED);
         	}
 
             else {
-        		Toast.makeText(StockDetailActivity.this, R.string.failed_price_update, Toast.LENGTH_LONG).show();
+            	String failMessage = StockDetailActivity.this.getString(R.string.failed_price_update);
+            	if (msg.getData().containsKey("message"))
+            		failMessage += "\n" + msg.getData().getString("message");
+        		Toast.makeText(StockDetailActivity.this, failMessage, Toast.LENGTH_LONG).show();
             }
             
         }
@@ -99,11 +115,18 @@ public class StockDetailActivity extends Activity {
 			Bundle bundle = new Bundle();
 			
 			try {
-				float value = this.dataManager.getLastValue(this.ticker);
+				DayData data = this.dataManager.getLastValue(this.ticker);
+				float value = data.getPrice();
+				String date = data.getDate().toString();
+				
 				bundle.putString("price", String.valueOf(value));
+				bundle.putBoolean("positiveChange", data.getChange() > 0);
+				bundle.putFloat("change", data.getChange());
+				bundle.putString("date", date);
 				bundle.putBoolean("result", true);
 			} catch (Exception e) {
 				bundle.putBoolean("result", false);
+				bundle.putString("message", e.getMessage());
 			}
 			
 			msg.setData(bundle);

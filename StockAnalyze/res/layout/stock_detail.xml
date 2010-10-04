@@ -2,5 +2,7 @@
 
 <LinearLayout android:id="@+id/DetailLinear" android:layout_width="fill_parent" android:layout_height="fill_parent" xmlns:android="http://schemas.android.com/apk/res/android" android:orientation="vertical">
 	<TextView android:text="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/txtHeader"></TextView>
-	<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/txtClosingPrice" android:lines="1" android:text="@string/failed_price_update"></TextView>
+
+	<TextView android:id="@+id/txtDetailDate" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+	<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/txtClosingPrice" android:lines="2" android:text="@string/failed_price_update"></TextView>
 </LinearLayout>

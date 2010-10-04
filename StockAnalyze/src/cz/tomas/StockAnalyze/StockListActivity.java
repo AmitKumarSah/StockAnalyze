@@ -4,6 +4,7 @@
 package cz.tomas.StockAnalyze;
 
 import cz.tomas.StockAnalyze.Data.DataManager;
+import cz.tomas.StockAnalyze.Data.DayData;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
@@ -44,7 +45,7 @@ public class StockListActivity extends ListActivity {
 		
 		this.dataManager = new DataManager(this);
 		
-		String[] test = new String[] { "BAACEZ", "BAATELEC", "BAACETV" };
+		String[] test = new String[] { "BAACEZ", "BAATELEC", "BAACETV", "BAAKITDG"};
 		this.setListAdapter(new ArrayAdapter<String>(this, R.layout.stock_list, test));
 		this.getListView().setTextFilterEnabled(true);
 
@@ -140,8 +141,11 @@ public class StockListActivity extends ListActivity {
 			
 			try {
 				for (int i = 0; i < this.tickers.length; i++) {
-					float value = dataManager.getLastValue(this.tickers[i]);
+					DayData data = dataManager.getLastValue(this.tickers[i]);
+					float value = data.getPrice();
+					String date = data.getDate().toString();
 					bundle.putFloat(this.tickers[i], value);
+					bundle.putString(this.tickers[i] + "date", date);
 					
 					Log.d("StockList", this.tickers[i] + " updated to " + value);
 				}

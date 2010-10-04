@@ -3,12 +3,16 @@
  */
 package cz.tomas.StockAnalyze.Data;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Date;
 
 import cz.tomas.StockAnalyze.Data.PseCsvData.PseCsvDataProvider;
 
 import android.content.Context;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 /**
  * @author tomas
@@ -16,20 +20,52 @@ import android.content.Context;
  */
 public class DataManager {
 	
+	private final String DATABASE_NAME = "cz.tomas.StockAnalyze.Data";
+	private final int DATABASE_VERSION_NUMBER = 1;
+	private final String DATABASE_FILE_NAME = "cz.tomas.StockAnalyze.Data.db";
+	
+	StockDataSqlStore sqlStore;
+	
 	Context context;
 	public DataManager(Context context) {
 		this.context = context;
+		
+		this.sqlStore = new StockDataSqlStore(context, DATABASE_FILE_NAME, null, DATABASE_VERSION_NUMBER);
 	}
 
-	public float getLastValue(String ticker) throws IOException, NullPointerException {
+	public DayData getLastValue(String ticker) throws IOException, NullPointerException {
 		float val = -1;
+		DayData data = null;
 		try {
-			val = this.getDataProvider(ticker).getDayData(ticker, new Date());
+			IStockDataProvider provider = this.getDataProvider(ticker);
+			if (provider != null) {
+				data = provider.getLastData(ticker);
+				val = data.getPrice();
+			}
+			else
+				throw new NullPointerException("Can't find appropriate data provider for " + ticker);
 		} catch (NullPointerException e) {
 			e.printStackTrace();
 			throw e;
 		}
-		return val;
+		catch (FileNotFoundException e) {
+			e.printStackTrace();
+			throw e;
+		}
+		
+		if (val > 0) {
+			try {
+				SQLiteDatabase db = this.sqlStore.getWritableDatabase();
+				db.execSQL("INSERT INTO " + StockDataSqlStore.TABLE_NAME + " values('"+ ticker + "', date('now'), " + val + ");");
+			} catch (SQLException e) {
+				Log.d("StockDataSqlStore", "failed to insert data." + e.getMessage());
+				e.printStackTrace();
+			} finally {
+				if (this.sqlStore != null)
+					this.sqlStore.close();
+			}
+		}
+		return data;
 	}	
 	
 	private IStockDataProvider getDataProvider(String ticker) {

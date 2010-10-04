@@ -15,9 +15,10 @@ public final class R {
     }
     public static final class id {
         public static final int DetailLinear=0x7f050000;
-        public static final int SearchEditText=0x7f050004;
+        public static final int SearchEditText=0x7f050005;
         public static final int TextView01=0x7f050001;
-        public static final int txtClosingPrice=0x7f050003;
+        public static final int txtClosingPrice=0x7f050004;
+        public static final int txtDetailDate=0x7f050003;
         public static final int txtHeader=0x7f050002;
     }
     public static final class layout {

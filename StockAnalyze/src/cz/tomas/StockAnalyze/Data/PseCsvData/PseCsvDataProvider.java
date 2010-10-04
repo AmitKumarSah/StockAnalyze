@@ -10,6 +10,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
+import cz.tomas.StockAnalyze.Data.DayData;
 import cz.tomas.StockAnalyze.Data.DownloadService;
 import cz.tomas.StockAnalyze.Data.IStockDataProvider;
 
@@ -33,10 +34,37 @@ public class PseCsvDataProvider implements IStockDataProvider {
 		this.parser = new PseCsvParser();
 	}
 
-	public float getDayData(String ticker, Date date) throws IOException {
-		String remoteFileName = this.buildRemoteFileName(date);
-		String localFileName = "/sdcard/downloads/" + remoteFileName;
+	@Override
+	public DayData getLastData(String ticker) throws IOException {
+		String remoteFileName = "ak.csv";
 		
+		Map<String, CsvDataRow> rows = getDataFromRemoteFile(ticker, remoteFileName);
+		CsvDataRow row = null;
+		if (rows.containsKey(ticker))
+			row = rows.get(ticker);
+		
+		DayData data = new DayData(row);
+		return data;
+	}
+	
+	public DayData getDayData(String ticker, Date date) throws IOException {
+		String remoteFileName = this.buildRemoteFileName(date);
+		
+		Map<String, CsvDataRow> rows = getDataFromRemoteFile(ticker, remoteFileName);
+		CsvDataRow row = null;
+		if (rows.containsKey(ticker))
+			row = rows.get(ticker);
+		return new DayData(row);
+	}
+
+	/**
+	 * @param ticker stock ticker
+	 * @param remoteFileName remote csv file to download
+	 * @return parsed price
+	 * @throws IOException
+	 */
+	private Map<String, CsvDataRow> getDataFromRemoteFile(String ticker, String remoteFileName)
+			throws IOException {
 		byte[] byteArray = DownloadService.GetInstance().DownloadFromUrl(
 				PSE_DATA_ROOT_URL + remoteFileName);
 		String data = new String(byteArray);
@@ -45,20 +73,7 @@ public class PseCsvDataProvider implements IStockDataProvider {
 		Map<String, CsvDataRow> rows = this.parser.parse(data);
 		CsvDataRow rowData = null;
 		
-		if (rows.containsKey(ticker))
-			rowData = rows.get(ticker);
-		
-		float price = 0.0f;
-		if (rowData != null && rowData.closePrice != null)
-			try {
-				price = Float.parseFloat(rowData.closePrice);
-			} catch (NumberFormatException e) {
-				Log.d("PseCsvDataProvider", "failed to parse closing price for ticker " + ticker);
-				e.printStackTrace();
-			}
-		else
-			Log.d("PseCsvDataProvider", "can't get closing price for ticker " + ticker);
-		return price;
+		return rows;
 	}
 
 	private String buildRemoteFileName(Date date) {
