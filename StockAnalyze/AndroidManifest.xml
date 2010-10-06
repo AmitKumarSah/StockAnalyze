@@ -13,7 +13,8 @@
 
 		<activity android:name="StockListActivity"></activity>
 		<activity android:name="StockSearchActivity"></activity>
-	<activity android:name="StockDetailActivity"></activity>
+		<activity android:name="StockDetailActivity"></activity>
+		<activity android:name="NewsActivity"></activity>
 </application>
 	<uses-sdk android:minSdkVersion="7" />
 

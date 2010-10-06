@@ -110,6 +110,7 @@ public class StockListActivity extends ListActivity {
         	ArrayAdapter adapter =  (ArrayAdapter) StockListActivity.this.getListAdapter();
         	
         	for (int i = 0; i < adapter.getCount(); i++) {
+        		
 			}
         	
         	if (result) {
