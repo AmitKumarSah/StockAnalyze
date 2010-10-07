@@ -14,7 +14,6 @@ public class PseCsvParser {
 
 	public Map<String, CsvDataRow> parse(String data) {
 		String[] rows = data.split("\n");
-		//List<CsvDataRow> dataRowList = new ArrayList<CsvDataRow>(rows.length);
 		Map<String, CsvDataRow> dataRowList = new HashMap<String, CsvDataRow>();
 		
 		for (String row : rows) {

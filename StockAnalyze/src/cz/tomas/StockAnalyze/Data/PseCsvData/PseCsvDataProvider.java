@@ -3,12 +3,13 @@ package cz.tomas.StockAnalyze.Data.PseCsvData;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.TimeZone;
 
 import cz.tomas.StockAnalyze.Data.DayData;
 import cz.tomas.StockAnalyze.Data.DownloadService;
@@ -29,22 +30,70 @@ public class PseCsvDataProvider implements IStockDataProvider {
 	private final String PSE_DATA_ROOT_URL = "http://ftp.pse.cz/Results.ak/";
 	
 	PseCsvParser parser;
+	
+	/*
+	 * first key is a date as "yyyy.MM.dd"
+	 * under this key is a map of CsvRows for that day
+	 * */
+	private static Map<String, Map<String, CsvDataRow>> dataCache = new HashMap<String, Map<String,CsvDataRow>>();
+	
 
 	public PseCsvDataProvider() {
 		this.parser = new PseCsvParser();
+		//this.dataCache = new HashMap<String, Map<String,CsvDataRow>>();
 	}
 
 	@Override
 	public DayData getLastData(String ticker) throws IOException {
+
+		Calendar now = Calendar.getInstance();
+		CsvDataRow row = checkInCache(ticker, now);
+		
 		String remoteFileName = "ak.csv";
 		
-		Map<String, CsvDataRow> rows = getDataFromRemoteFile(ticker, remoteFileName);
-		CsvDataRow row = null;
-		if (rows.containsKey(ticker))
-			row = rows.get(ticker);
+		// we didn't find in cache
+		if (row == null) {
+			Map<String, CsvDataRow> rows = getDataFromRemoteFile(ticker,
+					remoteFileName);
+			
+			assert !dataCache.containsKey(buildCacheKey(now));
+			dataCache.put(this.buildCacheKey(now), rows);
+			if (rows.containsKey(ticker))
+				row = rows.get(ticker);
+		}
 		
 		DayData data = new DayData(row);
 		return data;
+	}
+
+	/**
+	 * try to look in cache for ticker data in selected date
+	 * @param cal date to search for
+	 * @param ticker ticker name
+	 * @return
+	 */
+	private CsvDataRow checkInCache(String ticker, Calendar cal) {
+		CsvDataRow row = null;
+		String key = buildCacheKey(cal);
+		
+		if (dataCache.containsKey(key)) {
+			Log.d("PseCsvDataProvider", "reading data for " + ticker + " from cache");
+			Map<String, CsvDataRow> desiredMap = dataCache.get(key);
+			if (desiredMap.containsKey(ticker));
+				row = desiredMap.get(ticker);
+		}
+		return row;
+	}
+
+	/**
+	 * @param cal
+	 * @return
+	 */
+	private String buildCacheKey(Calendar cal) {
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd", Locale.US);
+		
+		String key = dateFormat.format(cal.getTime());
+		return key;
 	}
 	
 	public DayData getDayData(String ticker, Date date) throws IOException {
