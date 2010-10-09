@@ -8,9 +8,12 @@ import java.util.List;
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import android.app.Activity;
+import android.app.Dialog;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -22,6 +25,7 @@ import android.widget.TextView;
 public class StockSearchActivity extends Activity {
 
 	DataManager dataManger;
+	static final int DIALOG_ADD = 0;
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -36,16 +40,24 @@ public class StockSearchActivity extends Activity {
 			
 			@Override
 			public void onTextChanged(CharSequence s, int start, int count, int after) {
-				if (s.length() > 2) {
+				if (s.length() > 1) {
 					List<StockItem> stocks = StockSearchActivity.this.dataManger.search(s.toString());
 					String[] displayResults = new String[stocks.size()];
 					
 					for (int i = 0; i < displayResults.length; i++) {
-						displayResults[i] = stocks.get(i).toString();
+						String line = String.format("%s\t\t%s", stocks.get(i).getTicker(), stocks.get(i).getName());
+						displayResults[i] = line;
 					}
 					if (stocks != null) {
 						try {
 							list.setAdapter(new ArrayAdapter<String>(StockSearchActivity.this, R.layout.stock_list, displayResults));
+							list.setOnClickListener( new OnClickListener() {
+								
+								@Override
+								public void onClick(View arg0) {
+									
+								}
+							});
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
@@ -65,5 +77,17 @@ public class StockSearchActivity extends Activity {
 				
 			}
 		});
+	}
+	
+	protected Dialog onCreateDialog(int id) {
+	    Dialog dialog;
+	    switch(id) {
+	    case DIALOG_ADD:
+	        // do the work to define the pause Dialog
+	        break;
+	    default:
+	        dialog = null;
+	    }
+	    return dialog;
 	}
 }

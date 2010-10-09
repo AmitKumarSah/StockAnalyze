@@ -74,8 +74,8 @@ public class StockDetailActivity extends Activity {
         	boolean result = msg.getData().getBoolean(StockListActivity.MSG_UPDATE_RESULT);
         	
         	if (result) {
-            	TextView txtPrice = (TextView) StockDetailActivity.this.findViewById(R.id.txtClosingPrice);
-            	TextView txtDate = (TextView) StockDetailActivity.this.findViewById(R.id.txtDetailDate);
+            	final TextView txtPrice = (TextView) StockDetailActivity.this.findViewById(R.id.txtClosingPrice);
+            	final TextView txtDate = (TextView) StockDetailActivity.this.findViewById(R.id.txtDetailDate);
             	
             	String price = msg.getData().getString("price");
             	String date = msg.getData().getString("date");
@@ -121,7 +121,7 @@ public class StockDetailActivity extends Activity {
 			try {
 				DayData data = this.dataManager.getLastValue(this.ticker);
 				float value = data.getPrice();
-				DateFormat dateFormat = DateFormat.getInstance();
+				DateFormat dateFormat = DateFormat.getDateInstance();
 				String date = dateFormat.format(data.getDate());
 				
 				bundle.putString("price", String.valueOf(value));

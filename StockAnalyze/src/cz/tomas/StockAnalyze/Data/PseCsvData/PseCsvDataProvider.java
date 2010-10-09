@@ -73,7 +73,7 @@ public class PseCsvDataProvider implements IStockDataProvider {
 			throws IOException {
 		byte[] byteArray = DownloadService.GetInstance().DownloadFromUrl(
 				PSE_DATA_ROOT_URL + remoteFileName);
-		String data = new String(byteArray);
+		String data = new String(byteArray, "CP-1250");
 		//Log.d("PseCsvDataProvider", data);
 		
 		Map<String, CsvDataRow> rows = this.parser.parse(data);

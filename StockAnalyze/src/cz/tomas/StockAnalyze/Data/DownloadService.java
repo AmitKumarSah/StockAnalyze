@@ -25,6 +25,9 @@ public class DownloadService {
 		return instance;
 	}
 
+	/*
+	 * Download file from URL and store content to file
+	 * */
 	public void DownloadFromUrl(String downloadUrl, String fileName) throws IOException {
 		try {
 			URL url = new URL(downloadUrl);
