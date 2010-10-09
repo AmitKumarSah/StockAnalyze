@@ -4,7 +4,7 @@
 package cz.tomas.StockAnalyze;
 
 import cz.tomas.StockAnalyze.Data.DataManager;
-import cz.tomas.StockAnalyze.Data.DayData;
+import cz.tomas.StockAnalyze.Data.Model.DayData;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;

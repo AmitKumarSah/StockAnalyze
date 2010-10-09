@@ -3,5 +3,5 @@
   xmlns:android="http://schemas.android.com/apk/res/android"
   android:layout_height="fill_parent" android:layout_width="fill_parent" android:orientation="vertical">
 <TextView android:id="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="2px" android:layout_gravity="top|left" android:text="@string/SearchTextView"></TextView><EditText android:id="@+id/SearchEditText" android:layout_height="wrap_content" android:layout_width="fill_parent" android:layout_gravity="top|center" android:paddingTop="10px" android:paddingRight="10px" android:paddingLeft="10px" android:paddingBottom="10px" android:layout_margin="10px"></EditText>
-
+<ListView android:id="@+id/listFoundItems" android:layout_width="fill_parent" android:layout_height="fill_parent"></ListView>
 </LinearLayout>

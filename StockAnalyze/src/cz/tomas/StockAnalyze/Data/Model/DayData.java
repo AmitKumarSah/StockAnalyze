@@ -1,7 +1,7 @@
 /**
  * 
  */
-package cz.tomas.StockAnalyze.Data;
+package cz.tomas.StockAnalyze.Data.Model;
 
 import java.util.Calendar;
 import java.util.Date;

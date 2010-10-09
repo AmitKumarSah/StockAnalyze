@@ -7,6 +7,9 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
+import cz.tomas.StockAnalyze.Data.Model.DayData;
+import cz.tomas.StockAnalyze.Data.Model.StockItem;
+
 /**
  * @author tomas
  *
@@ -14,5 +17,8 @@ import java.util.List;
 public interface IStockDataProvider {
 	DayData getLastData(String ticker) throws IOException;
 	DayData getDayData(String ticker, Date date) throws IOException;
-	List<String> getAvailableStockList();
+	DayData[] getIntraDayData(String ticker, Date date, int minuteInterval);
+	List<StockItem> getAvailableStockList();
+	String getId();
+	String getDescriptiveName();
 }

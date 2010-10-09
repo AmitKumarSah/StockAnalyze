@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -11,9 +12,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import cz.tomas.StockAnalyze.Data.DayData;
 import cz.tomas.StockAnalyze.Data.DownloadService;
 import cz.tomas.StockAnalyze.Data.IStockDataProvider;
+import cz.tomas.StockAnalyze.Data.Model.DayData;
+import cz.tomas.StockAnalyze.Data.Model.StockItem;
 
 import android.util.Log;
 
@@ -40,30 +42,6 @@ public class PseCsvDataProvider implements IStockDataProvider {
 
 	public PseCsvDataProvider() {
 		this.parser = new PseCsvParser();
-		//this.dataCache = new HashMap<String, Map<String,CsvDataRow>>();
-	}
-
-	@Override
-	public DayData getLastData(String ticker) throws IOException {
-
-		Calendar now = Calendar.getInstance();
-		CsvDataRow row = checkInCache(ticker, now);
-		
-		String remoteFileName = "ak.csv";
-		
-		// we didn't find in cache
-		if (row == null) {
-			Map<String, CsvDataRow> rows = getDataFromRemoteFile(ticker,
-					remoteFileName);
-			
-			assert !dataCache.containsKey(buildCacheKey(now));
-			dataCache.put(this.buildCacheKey(now), rows);
-			if (rows.containsKey(ticker))
-				row = rows.get(ticker);
-		}
-		
-		DayData data = new DayData(row);
-		return data;
 	}
 
 	/**
@@ -86,33 +64,12 @@ public class PseCsvDataProvider implements IStockDataProvider {
 	}
 
 	/**
-	 * @param cal
-	 * @return
-	 */
-	private String buildCacheKey(Calendar cal) {
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd", Locale.US);
-		
-		String key = dateFormat.format(cal.getTime());
-		return key;
-	}
-	
-	public DayData getDayData(String ticker, Date date) throws IOException {
-		String remoteFileName = this.buildRemoteFileName(date);
-		
-		Map<String, CsvDataRow> rows = getDataFromRemoteFile(ticker, remoteFileName);
-		CsvDataRow row = null;
-		if (rows.containsKey(ticker))
-			row = rows.get(ticker);
-		return new DayData(row);
-	}
-
-	/**
 	 * @param ticker stock ticker
 	 * @param remoteFileName remote csv file to download
 	 * @return parsed price
 	 * @throws IOException
 	 */
-	private Map<String, CsvDataRow> getDataFromRemoteFile(String ticker, String remoteFileName)
+	private Map<String, CsvDataRow> getDataFromRemoteFile(String remoteFileName)
 			throws IOException {
 		byte[] byteArray = DownloadService.GetInstance().DownloadFromUrl(
 				PSE_DATA_ROOT_URL + remoteFileName);
@@ -149,9 +106,87 @@ public class PseCsvDataProvider implements IStockDataProvider {
 
 		return name;
 	}
+	
+	/**
+	 * @param cal
+	 * @return
+	 */
+	private String buildCacheKey(Calendar cal) {
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd", Locale.US);
+		
+		String key = dateFormat.format(cal.getTime());
+		return key;
+	}
 
-	public List<String> getAvailableStockList() {
-		// TODO Auto-generated method stub
+	@Override
+	public DayData getLastData(String ticker) throws IOException {
+
+		Calendar now = Calendar.getInstance();
+		CsvDataRow row = checkInCache(ticker, now);
+		
+		String remoteFileName = "ak.csv";
+		
+		// we didn't find in cache
+		if (row == null) {
+			Map<String, CsvDataRow> rows = getDataFromRemoteFile(remoteFileName);
+			
+			assert !dataCache.containsKey(buildCacheKey(now));
+			dataCache.put(this.buildCacheKey(now), rows);
+			if (rows.containsKey(ticker))
+				row = rows.get(ticker);
+		}
+		
+		DayData data = new DayData(row);
+		return data;
+	}
+	
+	@Override
+	public DayData getDayData(String ticker, Date date) throws IOException {
+		String remoteFileName = this.buildRemoteFileName(date);
+		
+		Map<String, CsvDataRow> rows = getDataFromRemoteFile(remoteFileName);
+		CsvDataRow row = null;
+		if (rows.containsKey(ticker))
+			row = rows.get(ticker);
+		return new DayData(row);
+	}
+
+	@Override
+	public List<StockItem> getAvailableStockList() {
+		if (PseCsvDataProvider.dataCache.size() == 0) {
+			// if there is nothing in cache, download last data
+			String remoteFileName = "ak.csv";
+			try {
+				Map<String, CsvDataRow> rows = getDataFromRemoteFile(remoteFileName);
+				PseCsvDataProvider.dataCache.put(this.buildCacheKey(Calendar.getInstance()), rows);
+			} catch (IOException e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
+		List<StockItem> stocks = new ArrayList<StockItem>();
+		// we can take any item from cache
+		Map <String, CsvDataRow> rows = PseCsvDataProvider.dataCache.values().iterator().next();
+		for (CsvDataRow row : rows.values()) {
+			StockItem stockItem = new StockItem(row.ticker, row.code, row.name, row.market);
+			stocks.add(stockItem);
+		}
+			
+		return stocks;
+	}
+
+	@Override
+	public String getId() {
+		return "PSE";
+	}
+
+	@Override
+	public DayData[] getIntraDayData(String ticker, Date date, int minuteInterval) {
 		return null;
+	}
+
+	@Override
+	public String getDescriptiveName() {
+		return "Prague Stock Exchange";
 	}
 }

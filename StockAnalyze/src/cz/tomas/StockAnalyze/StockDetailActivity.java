@@ -4,9 +4,12 @@
 package cz.tomas.StockAnalyze;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 import cz.tomas.StockAnalyze.Data.DataManager;
-import cz.tomas.StockAnalyze.Data.DayData;
+import cz.tomas.StockAnalyze.Data.Model.DayData;
 import android.app.Activity;
 import android.app.TabActivity;
 import android.graphics.Color;
@@ -70,14 +73,15 @@ public class StockDetailActivity extends Activity {
         public void handleMessage(Message msg) {
         	boolean result = msg.getData().getBoolean(StockListActivity.MSG_UPDATE_RESULT);
         	
-        	
         	if (result) {
             	TextView txtPrice = (TextView) StockDetailActivity.this.findViewById(R.id.txtClosingPrice);
             	TextView txtDate = (TextView) StockDetailActivity.this.findViewById(R.id.txtDetailDate);
+            	
             	String price = msg.getData().getString("price");
             	String date = msg.getData().getString("date");
             	float change = msg.getData().getFloat("change");
             	Boolean positiveChange = change > 0;
+            	
             	txtPrice.setText(price + "  (" + change + "%)");
             	txtDate.setText(date);
             	
@@ -117,7 +121,8 @@ public class StockDetailActivity extends Activity {
 			try {
 				DayData data = this.dataManager.getLastValue(this.ticker);
 				float value = data.getPrice();
-				String date = data.getDate().toString();
+				DateFormat dateFormat = DateFormat.getInstance();
+				String date = dateFormat.format(data.getDate());
 				
 				bundle.putString("price", String.valueOf(value));
 				bundle.putBoolean("positiveChange", data.getChange() > 0);

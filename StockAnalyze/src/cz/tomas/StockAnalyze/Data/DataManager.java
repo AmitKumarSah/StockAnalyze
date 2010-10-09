@@ -5,8 +5,12 @@ package cz.tomas.StockAnalyze.Data;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import cz.tomas.StockAnalyze.Data.Model.DayData;
+import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.Data.PseCsvData.PseCsvDataProvider;
 
 import android.content.Context;
@@ -33,6 +37,18 @@ public class DataManager {
 		this.sqlStore = new StockDataSqlStore(context, DATABASE_FILE_NAME, null, DATABASE_VERSION_NUMBER);
 	}
 
+	public List<StockItem> search(String pattern) {
+		IStockDataProvider provider = new PseCsvDataProvider();
+		List<StockItem> stocks = provider.getAvailableStockList();
+		List<StockItem> results = new ArrayList<StockItem>();
+		
+		for (StockItem stock : stocks) {
+			if (stock.getTicker().contains(pattern.toUpperCase()))
+				results.add(stock);
+		}
+		return results;
+	}
+	
 	public DayData getLastValue(String ticker) throws IOException, NullPointerException {
 		float val = -1;
 		DayData data = null;
