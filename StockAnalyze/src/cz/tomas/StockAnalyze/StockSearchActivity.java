@@ -8,15 +8,18 @@ import java.util.List;
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
-import android.view.View.OnClickListener;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.AdapterView.OnItemClickListener;
 
 /**
  * @author tomas
@@ -24,6 +27,7 @@ import android.widget.TextView;
  */
 public class StockSearchActivity extends Activity {
 
+	private static final String SELECTED_STOCK = "selected_stock";
 	DataManager dataManger;
 	static final int DIALOG_ADD = 0;
 	
@@ -51,11 +55,13 @@ public class StockSearchActivity extends Activity {
 					if (stocks != null) {
 						try {
 							list.setAdapter(new ArrayAdapter<String>(StockSearchActivity.this, R.layout.stock_list, displayResults));
-							list.setOnClickListener( new OnClickListener() {
-								
+							list.setOnItemClickListener(new OnItemClickListener() {
+
 								@Override
-								public void onClick(View arg0) {
-									
+								public void onItemClick(AdapterView<?> arg0,
+										View view, int position, long id) {
+									StockSearchActivity.this.setIntent(StockSearchActivity.this.getIntent().putExtra(SELECTED_STOCK, position));
+									StockSearchActivity.this.showDialog(StockSearchActivity.DIALOG_ADD);
 								}
 							});
 						} catch (Exception e) {
@@ -79,15 +85,48 @@ public class StockSearchActivity extends Activity {
 		});
 	}
 	
+	protected void onPrepareDialog(int id, Dialog dlg)
+	{
+		ListView list = (ListView) StockSearchActivity.this.findViewById(R.id.listFoundItems);
+		String item = "";
+		if (this.getIntent().getExtras().containsKey(SELECTED_STOCK)) {
+			int position = this.getIntent().getExtras().getInt(SELECTED_STOCK);
+			item = list.getItemAtPosition(position).toString();
+		}
+		
+		dlg.setTitle("Add Stock " + item);
+	}
+	
 	protected Dialog onCreateDialog(int id) {
-	    Dialog dialog;
+	    Dialog dialog = null;
 	    switch(id) {
 	    case DIALOG_ADD:
-	        // do the work to define the pause Dialog
+	        dialog = this.buildAddStockDialog();
 	        break;
 	    default:
 	        dialog = null;
 	    }
 	    return dialog;
+	}
+
+	private Dialog buildAddStockDialog() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		
+		builder.setMessage("Do you want to add this stock?")
+		       .setCancelable(false)
+		       .setTitle("Add Stock")
+		       .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+		           public void onClick(DialogInterface dialog, int id) {
+		        	   // TODO add
+		        	   dialog.dismiss();
+		           }
+		       })
+		       .setNegativeButton("No", new DialogInterface.OnClickListener() {
+		           public void onClick(DialogInterface dialog, int id) {
+		                dialog.cancel();
+		           }
+		       });
+		AlertDialog alert = builder.create();
+		return alert;
 	}
 }

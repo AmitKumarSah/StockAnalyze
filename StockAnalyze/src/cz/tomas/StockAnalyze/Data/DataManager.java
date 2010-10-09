@@ -43,7 +43,8 @@ public class DataManager {
 		List<StockItem> results = new ArrayList<StockItem>();
 		
 		for (StockItem stock : stocks) {
-			if (stock.getTicker().contains(pattern.toUpperCase()))
+			if (stock.getTicker().contains(pattern.toUpperCase()) ||
+					stock.getName().contains(pattern.toUpperCase()))
 				results.add(stock);
 		}
 		return results;
