@@ -72,10 +72,11 @@ public class StockDetailActivity extends Activity {
     final Handler updateHandler = new Handler() {
         public void handleMessage(Message msg) {
         	boolean result = msg.getData().getBoolean(StockListActivity.MSG_UPDATE_RESULT);
+
+        	final TextView txtPrice = (TextView) StockDetailActivity.this.findViewById(R.id.txtClosingPrice);
+        	final TextView txtDate = (TextView) StockDetailActivity.this.findViewById(R.id.txtDetailDate);
         	
         	if (result) {
-            	final TextView txtPrice = (TextView) StockDetailActivity.this.findViewById(R.id.txtClosingPrice);
-            	final TextView txtDate = (TextView) StockDetailActivity.this.findViewById(R.id.txtDetailDate);
             	
             	String price = msg.getData().getString("price");
             	String date = msg.getData().getString("date");
@@ -93,8 +94,10 @@ public class StockDetailActivity extends Activity {
 
             else {
             	String failMessage = StockDetailActivity.this.getString(R.string.failed_price_update);
-            	if (msg.getData().containsKey("message"))
+            	if (msg.getData().containsKey("message")) {
             		failMessage += "\n" + msg.getData().getString("message");
+            		txtPrice.setText(failMessage);
+            	}
         		Toast.makeText(StockDetailActivity.this, failMessage, Toast.LENGTH_LONG).show();
             }
             

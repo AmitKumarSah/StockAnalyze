@@ -3,27 +3,23 @@
  */
 package cz.tomas.StockAnalyze;
 
-import cz.tomas.StockAnalyze.Data.DataManager;
-import cz.tomas.StockAnalyze.Data.Model.DayData;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
 import android.app.TabActivity;
 import android.content.DialogInterface;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.View.OnClickListener;
-import android.webkit.WebIconDatabase.IconListener;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
-import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
+import android.widget.Toast;
+import cz.tomas.StockAnalyze.Data.DataManager;
+import cz.tomas.StockAnalyze.Data.Model.DayData;
+import cz.tomas.StockAnalyze.Data.Model.StockItem;
 
 /**
  * @author tomas
@@ -45,8 +41,8 @@ public class StockListActivity extends ListActivity {
 		
 		this.dataManager = new DataManager(this);
 		
-		String[] test = new String[] { "BAACEZ", "BAATELEC", "BAACETV", "BAAKITDG"};
-		this.setListAdapter(new ArrayAdapter<String>(this, R.layout.stock_list, test));
+		StockListAdapter adapter = new StockListAdapter(this, R.id.toptext, this.dataManager, "baa");	//TODO replace string with filter
+		this.setListAdapter(adapter);
 		this.getListView().setTextFilterEnabled(true);
 
 		this.getListView().setOnItemClickListener(new OnItemClickListener() {
@@ -54,22 +50,22 @@ public class StockListActivity extends ListActivity {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long rowId) {
 				if (StockListActivity.this.getParent() instanceof TabActivity) {
 					// set currently selected ticker
-					Object obj = StockListActivity.this.getListView().getItemAtPosition(position);
+					StockItem stock = (StockItem) StockListActivity.this.getListView().getItemAtPosition(position);
 					
 					TabActivity act = (TabActivity) StockListActivity.this.getParent();
-					act.getIntent().putExtra("ticker", obj.toString());
+					act.getIntent().putExtra("ticker", stock.getTicker());
 					act.getTabHost().setCurrentTabByTag("StockDetail");
 				}
 			}
 		});
 
-		String[] tickers = new String[this.getListAdapter().getCount()];
+		StockItem[] items = new StockItem[this.getListAdapter().getCount()];
 		
-		for (int i = 0; i < tickers.length; i++) {
-			tickers[i] = this.getListAdapter().getItem(i).toString();
+		for (int i = 0; i < items.length; i++) {
+			items[i] = (StockItem) this.getListAdapter().getItem(i);
 		}
 
-		StockListUpdateThread thread = new StockListUpdateThread(this.updateHandler, this.dataManager, tickers);
+		StockListUpdateThread thread = new StockListUpdateThread(this.updateHandler, this.dataManager, items);
 		thread.setName("StockListUpdate");
 		thread.start();
 	}
@@ -126,9 +122,9 @@ public class StockListActivity extends ListActivity {
 	private class StockListUpdateThread extends Thread {
 		Handler handler;
 		DataManager dataManager;
-		String[] tickers;
+		StockItem[] tickers;
 		
-		public StockListUpdateThread(Handler handler, DataManager dataManager, String[] tickers) {
+		public StockListUpdateThread(Handler handler, DataManager dataManager, StockItem[] tickers) {
 			this.handler = handler;
 			this.dataManager = dataManager;
 			this.tickers = tickers;
@@ -142,13 +138,14 @@ public class StockListActivity extends ListActivity {
 			
 			try {
 				for (int i = 0; i < this.tickers.length; i++) {
-					DayData data = dataManager.getLastValue(this.tickers[i]);
+					String ticker = this.tickers[i].getTicker();
+					DayData data = dataManager.getLastValue(ticker);
 					float value = data.getPrice();
 					String date = data.getDate().toString();
-					bundle.putFloat(this.tickers[i], value);
-					bundle.putString(this.tickers[i] + "date", date);
+					bundle.putFloat(ticker, value);
+					bundle.putString(ticker + "date", date);
 					
-					Log.d("StockList", this.tickers[i] + " updated to " + value);
+					Log.d("StockList", ticker + " updated to " + value);
 				}
 				bundle.putBoolean(MSG_UPDATE_RESULT, true);
 			} catch (Exception e) {

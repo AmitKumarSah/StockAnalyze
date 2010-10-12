@@ -15,9 +15,13 @@ public final class R {
     }
     public static final class id {
         public static final int DetailLinear=0x7f050000;
-        public static final int SearchEditText=0x7f050005;
+        public static final int SearchEditText=0x7f050009;
         public static final int TextView01=0x7f050001;
-        public static final int listFoundItems=0x7f050006;
+        public static final int bottomtext=0x7f050007;
+        public static final int icon=0x7f050005;
+        public static final int listFoundItems=0x7f05000a;
+        public static final int righttext=0x7f050008;
+        public static final int toptext=0x7f050006;
         public static final int txtClosingPrice=0x7f050004;
         public static final int txtDetailDate=0x7f050003;
         public static final int txtHeader=0x7f050002;
@@ -27,7 +31,8 @@ public final class R {
         public static final int news_layout=0x7f030001;
         public static final int stock_detail=0x7f030002;
         public static final int stock_list=0x7f030003;
-        public static final int stock_search=0x7f030004;
+        public static final int stock_list_item=0x7f030004;
+        public static final int stock_search=0x7f030005;
     }
     public static final class string {
         public static final int SearchTextView=0x7f040002;
