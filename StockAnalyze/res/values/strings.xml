@@ -10,4 +10,7 @@
 	</string>
 	<string name="failed_price_update">Failed to update the price!</string>
 	<string name="loading">Loading...</string>
+	<string name="LabelDetailMin">Minimum</string>
+	<string name="LabelDetailMax">Maximum</string>
+	<string name="LabelDetailVolume">Volume</string>
 </resources>

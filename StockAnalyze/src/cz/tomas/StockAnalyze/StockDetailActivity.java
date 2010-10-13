@@ -10,6 +10,7 @@ import java.util.Locale;
 
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
+import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import android.app.Activity;
 import android.app.TabActivity;
 import android.graphics.Color;
@@ -40,8 +41,9 @@ public class StockDetailActivity extends Activity {
 				public void onTabChanged(String tabId) {
 					try {
 						if (tabId.equals("StockDetail")) {
-							String ticker = StockDetailActivity.this.getParent().getIntent().getStringExtra("ticker");
-							updateCurrentStock(ticker);
+							//String ticker = StockDetailActivity.this.getParent().getIntent().getStringExtra("ticker");
+							String id = StockDetailActivity.this.getParent().getIntent().getStringExtra("stock_id");
+							updateCurrentStock(id);
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -52,95 +54,45 @@ public class StockDetailActivity extends Activity {
 		}
 	}
 
-	private void updateCurrentStock(String ticker) throws NullPointerException, IOException {
+	private void updateCurrentStock(final String stockId) throws NullPointerException, IOException {
 		
-		TextView txtView = (TextView) this.findViewById(R.id.txtHeader);
-		txtView.setText(ticker);
+		TextView txtHeader = (TextView) this.findViewById(R.id.txtDetailHeader);
+		TextView txtName = (TextView) this.findViewById(R.id.txtDetailName);
+		TextView txtPrice = (TextView) this.findViewById(R.id.txtDetailClosingPrice);
+		TextView txtVolume = (TextView) this.findViewById(R.id.txtDetailVolume);
+		TextView txtMax = (TextView) this.findViewById(R.id.txtDetailMax);
+		TextView txtMin = (TextView) this.findViewById(R.id.txtDetailMin);
 		
-		DataManager manager = new DataManager(this);
+		final DataManager manager = new DataManager(this);
 		
-		TextView txtPrice = (TextView) this.findViewById(R.id.txtClosingPrice);
-		txtPrice.setText(R.string.loading);
-		txtPrice.setTextColor(Color.WHITE);
-		
-		StockDetailUpdateThread thread = new StockDetailUpdateThread(this.updateHandler, manager, ticker);
-		thread.setName("StockDetailUpdate");
-		thread.start();
-	}
-	
-	// Define the Handler that receives messages from the thread
-    final Handler updateHandler = new Handler() {
-        public void handleMessage(Message msg) {
-        	boolean result = msg.getData().getBoolean(StockListActivity.MSG_UPDATE_RESULT);
-
-        	final TextView txtPrice = (TextView) StockDetailActivity.this.findViewById(R.id.txtClosingPrice);
-        	final TextView txtDate = (TextView) StockDetailActivity.this.findViewById(R.id.txtDetailDate);
-        	
-        	if (result) {
-            	
-            	String price = msg.getData().getString("price");
-            	String date = msg.getData().getString("date");
-            	float change = msg.getData().getFloat("change");
-            	Boolean positiveChange = change > 0;
-            	
-            	txtPrice.setText(price + "  (" + change + "%)");
-            	txtDate.setText(date);
-            	
-            	if (positiveChange)
-            		txtPrice.setTextColor(Color.GREEN);
-            	else
-            		txtPrice.setTextColor(Color.RED);
-        	}
-
-            else {
-            	String failMessage = StockDetailActivity.this.getString(R.string.failed_price_update);
-            	if (msg.getData().containsKey("message")) {
-            		failMessage += "\n" + msg.getData().getString("message");
-            		txtPrice.setText(failMessage);
-            	}
-        		Toast.makeText(StockDetailActivity.this, failMessage, Toast.LENGTH_LONG).show();
-            }
-            
-        }
-    };
-	
-	private class StockDetailUpdateThread extends Thread {
-		Handler handler;
-		DataManager dataManager;
-		String ticker;
-		
-		public StockDetailUpdateThread(Handler handler, DataManager dataManager, String ticker) {
-			this.handler = handler;
-			this.dataManager = dataManager;
-			this.ticker = ticker;
+		if (txtPrice != null) {
+			txtPrice.setText(R.string.loading);
+			txtPrice.setTextColor(Color.WHITE);
 		}
+		final StockItem stockItem = manager.getStockItem(stockId);
+		final DayData data = manager.getLastValue(stockItem.getTicker());
 		
-		@Override
-		public void run()
-		{			
-			Message msg = new Message();
-			Bundle bundle = new Bundle();
-			
-			try {
-				DayData data = this.dataManager.getLastValue(this.ticker);
-				float value = data.getPrice();
-				DateFormat dateFormat = DateFormat.getDateInstance();
-				String date = dateFormat.format(data.getDate());
-				
-				bundle.putString("price", String.valueOf(value));
-				bundle.putBoolean("positiveChange", data.getChange() > 0);
-				bundle.putFloat("change", data.getChange());
-				bundle.putString("date", date);
-				bundle.putBoolean("result", true);
-			} catch (Exception e) {
-				bundle.putBoolean("result", false);
-				bundle.putString("message", e.getMessage());
-			}
-			
-			msg.setData(bundle);
-			if (this.handler != null) {
-				handler.sendMessage(msg);
-			}
+		if (data == null)
+			throw new NullPointerException("Day data is null!");
+		if (stockItem == null)
+			throw new NullPointerException("No such stock has been found!");
+		
+		if (txtHeader != null)
+			txtHeader.setText(stockItem.getTicker() + " - " + stockId);
+		if (txtVolume != null)
+			txtVolume.setText(String.valueOf(data.getVolume()));
+		if (txtMax != null)
+			txtMax.setText("unkown");
+		if (txtMin != null)
+			txtMin.setText("unkown");
+		if (txtName != null)
+			txtName.setText(stockItem.getName());
+		if (txtPrice != null) {
+			txtPrice.setText(String.valueOf(data.getPrice()));
+			if (data.getChange() > 0)
+        		txtPrice.setTextColor(Color.GREEN);
+        	else
+        		txtPrice.setTextColor(Color.RED);
 		}
 	}
 }

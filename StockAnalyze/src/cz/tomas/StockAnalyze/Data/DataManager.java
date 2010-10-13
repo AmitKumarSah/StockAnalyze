@@ -52,6 +52,18 @@ public class DataManager {
 		return results;
 	}
 	
+	public StockItem getStockItem(String id) {
+		IStockDataProvider provider = new PseCsvDataProvider();
+		List<StockItem> stocks = provider.getAvailableStockList();
+		
+		// TODO find in db
+		for (int i = 0; i < stocks.size(); i++) {
+			if (stocks.get(i).getId().equals(id))
+				return stocks.get(i);
+		}
+		return null; 
+	}
+	
 	public DayData getLastValue(String ticker) throws IOException, NullPointerException {
 		float val = -1;
 		DayData data = null;

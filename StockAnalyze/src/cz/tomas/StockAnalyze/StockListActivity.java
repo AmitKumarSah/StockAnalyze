@@ -53,7 +53,7 @@ public class StockListActivity extends ListActivity {
 					StockItem stock = (StockItem) StockListActivity.this.getListView().getItemAtPosition(position);
 					
 					TabActivity act = (TabActivity) StockListActivity.this.getParent();
-					act.getIntent().putExtra("ticker", stock.getTicker());
+					act.getIntent().putExtra("stock_id", stock.getId());
 					act.getTabHost().setCurrentTabByTag("StockDetail");
 				}
 			}
@@ -64,10 +64,6 @@ public class StockListActivity extends ListActivity {
 		for (int i = 0; i < items.length; i++) {
 			items[i] = (StockItem) this.getListAdapter().getItem(i);
 		}
-
-		StockListUpdateThread thread = new StockListUpdateThread(this.updateHandler, this.dataManager, items);
-		thread.setName("StockListUpdate");
-		thread.start();
 	}
 	
 	@Override
@@ -97,68 +93,6 @@ public class StockListActivity extends ListActivity {
 		}
 		
 		return dlg;
-	}
-	
-    // Define the Handler that receives messages from the thread
-    final Handler updateHandler = new Handler() {
-        public void handleMessage(Message msg) {
-        	boolean result = msg.getData().getBoolean(StockListActivity.MSG_UPDATE_RESULT);
-        	ArrayAdapter adapter =  (ArrayAdapter) StockListActivity.this.getListAdapter();
-        	
-        	for (int i = 0; i < adapter.getCount(); i++) {
-        		
-			}
-        	
-        	if (result) {
-        		Toast.makeText(StockListActivity.this, "The data was succesfully updated!", Toast.LENGTH_LONG).show();
-        	}
-            else {
-            	StockListActivity.this.showDialog(StockListActivity.UPDATE_DLG_FAIL);
-            }
-            
-        }
-    };
-
-	private class StockListUpdateThread extends Thread {
-		Handler handler;
-		DataManager dataManager;
-		StockItem[] tickers;
-		
-		public StockListUpdateThread(Handler handler, DataManager dataManager, StockItem[] tickers) {
-			this.handler = handler;
-			this.dataManager = dataManager;
-			this.tickers = tickers;
-		}
-		
-		@Override
-		public void run()
-		{			
-			Message msg = new Message();
-			Bundle bundle = new Bundle();
-			
-			try {
-				for (int i = 0; i < this.tickers.length; i++) {
-					String ticker = this.tickers[i].getTicker();
-					DayData data = dataManager.getLastValue(ticker);
-					float value = data.getPrice();
-					String date = data.getDate().toString();
-					bundle.putFloat(ticker, value);
-					bundle.putString(ticker + "date", date);
-					
-					Log.d("StockList", ticker + " updated to " + value);
-				}
-				bundle.putBoolean(MSG_UPDATE_RESULT, true);
-			} catch (Exception e) {
-				e.printStackTrace();
-				bundle.putBoolean(MSG_UPDATE_RESULT, false);
-				bundle.putString(MSG_UPDATE_DETAIL, e.getMessage());
-			}
-			
-			msg.setData(bundle);
-			if (this.handler != null) {
-				handler.sendMessage(msg);
-			}
-		}
 	}
 }
 
