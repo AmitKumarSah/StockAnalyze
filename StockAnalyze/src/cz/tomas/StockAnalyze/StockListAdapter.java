@@ -58,7 +58,14 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 		Runnable getStockList = new Runnable(){
             @Override
             public void run() {
-            	List<StockItem> items = StockListAdapter.this.dataManager.search(filter);
+            	List<StockItem> items = null;
+            	try {
+					items = StockListAdapter.this.dataManager.search(filter);
+				} catch (NullPointerException e) {
+					e.printStackTrace();
+					Log.d("StockListAdapter", e.getMessage());
+					return;
+				}
             	
             	for (int i = 0; i < items.size(); i++) {
             		tempItems.add(items.get(i));
@@ -85,12 +92,13 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
         TextView txtTicker = (TextView) v.findViewById(R.id.toptext);
         TextView txtName = (TextView) v.findViewById(R.id.bottomtext);
         TextView txtPrice = (TextView) v.findViewById(R.id.righttext);
+        TextView txtChange = (TextView) v.findViewById(R.id.righttext2);
         
         if (txtName != null) 
               txtName.setText(stock.getName());
         if(txtTicker != null)
               txtTicker.setText(stock.getTicker());
-        if(txtPrice != null) {
+        if(txtPrice != null && txtChange != null) {
         	DayData data = null;
 			try {
 				data = this.dataManager.getLastValue(stock.getTicker());
@@ -100,12 +108,19 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 			}
         	if (data != null) {
 				txtPrice.setText(String.valueOf(data.getPrice()));
-				if (data.getChange() > 0)
+				txtChange.setText(data.getChange() + "%");
+				if (data.getChange() > 0) {
 					txtPrice.setTextColor(Color.GREEN);
-				else if (data.getChange() < 0)
+					txtChange.setTextColor(Color.GREEN);
+				}
+				else if (data.getChange() < 0) {
 					txtPrice.setTextColor(Color.RED);
-				else
+					txtChange.setTextColor(Color.RED);
+					}
+				else {
 					txtPrice.setTextColor(Color.WHITE);
+					txtChange.setTextColor(Color.WHITE);
+				}
 			}
         }
 		

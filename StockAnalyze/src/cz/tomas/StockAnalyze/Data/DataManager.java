@@ -40,6 +40,8 @@ public class DataManager {
 	public List<StockItem> search(String pattern) {
 		IStockDataProvider provider = new PseCsvDataProvider();
 		List<StockItem> stocks = provider.getAvailableStockList();
+		if (stocks == null)
+			throw new NullPointerException("can't get list of available stock items");
 		List<StockItem> results = new ArrayList<StockItem>();
 		
 		for (StockItem stock : stocks) {
