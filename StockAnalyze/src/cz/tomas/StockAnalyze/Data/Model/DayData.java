@@ -17,6 +17,10 @@ public class DayData {
 	float change;
 	Date date;
 	float volume;
+	int tradedPieaces;
+	
+	float yearMaximum;
+	float yearMinimum;
 	
 	public DayData(CsvDataRow dataRow) {
 		if (dataRow == null) {
@@ -46,6 +50,24 @@ public class DayData {
 			this.volume = -1;
 			e.printStackTrace();
 		}
+		try {
+			this.yearMaximum = Float.parseFloat(dataRow.getYearMax());
+		} catch (NumberFormatException e) {
+			this.yearMaximum = -1;
+			e.printStackTrace();
+		}
+		try {
+			this.yearMinimum = Float.parseFloat(dataRow.getYearMin());
+		} catch (NumberFormatException e) {
+			this.yearMinimum = -1;
+			e.printStackTrace();
+		}
+		try {
+			this.tradedPieaces = Integer.parseInt(dataRow.getTradedPieces());
+		} catch (NumberFormatException e) {
+			this.tradedPieaces = -1;
+			e.printStackTrace();
+		}
 	}
 	
 	public DayData(float price, float change, Date date, float volume) {
@@ -63,7 +85,34 @@ public class DayData {
 	public Date getDate() {
 		return date;
 	}
+	/*
+	 * Day volume in stock's currency
+	 * */
 	public float getVolume() {
 		return volume;
+	}
+
+	/**
+	 * get year maximum price valid for this particular day
+	 * @return the yearMaximum
+	 */
+	public float getYearMaximum() {
+		return yearMaximum;
+	}
+
+	/**
+	 * get year minimum price valid for this particular day
+	 * @return the yearMinimum
+	 */
+	public float getYearMinimum() {
+		return yearMinimum;
+	}
+
+	/**
+	 * count of traded pieces
+	 * @return the tradedPieaces
+	 */
+	public int getTradedPieaces() {
+		return tradedPieaces;
 	}
 }

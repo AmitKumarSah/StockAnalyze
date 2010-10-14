@@ -6,6 +6,7 @@ package cz.tomas.StockAnalyze;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Formatter;
 import java.util.Locale;
 
 import cz.tomas.StockAnalyze.Data.DataManager;
@@ -15,8 +16,6 @@ import android.app.Activity;
 import android.app.TabActivity;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -80,11 +79,11 @@ public class StockDetailActivity extends Activity {
 		if (txtHeader != null)
 			txtHeader.setText(stockItem.getTicker() + " - " + stockId);
 		if (txtVolume != null)
-			txtVolume.setText(String.valueOf(data.getVolume()));
+			txtVolume.setText(String.format("%s", data.getVolume()));
 		if (txtMax != null)
-			txtMax.setText("unkown");
+			txtMax.setText(String.valueOf(data.getYearMaximum()));
 		if (txtMin != null)
-			txtMin.setText("unkown");
+			txtMin.setText(String.valueOf(data.getYearMinimum()));
 		if (txtName != null)
 			txtName.setText(stockItem.getName());
 		if (txtPrice != null) {

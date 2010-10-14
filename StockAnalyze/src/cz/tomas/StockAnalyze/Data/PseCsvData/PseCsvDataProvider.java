@@ -108,8 +108,9 @@ public class PseCsvDataProvider implements IStockDataProvider {
 	}
 	
 	/**
-	 * @param cal
-	 * @return
+	 * Build the key to map, that represents the data cache
+	 * @param cal Calendar object with date we want to look for
+	 * @return built key
 	 */
 	private String buildCacheKey(Calendar cal) {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd", Locale.US);

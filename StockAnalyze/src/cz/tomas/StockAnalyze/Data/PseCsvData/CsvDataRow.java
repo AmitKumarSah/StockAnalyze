@@ -19,6 +19,8 @@ public class CsvDataRow {
 	String change;
 	String tradedPieces;
 	String market;
+	String yearMax;
+	String yearMin;
 	
 	public CsvDataRow(String row) {
 		this.parseRow(row);
@@ -38,6 +40,8 @@ public class CsvDataRow {
 		if (this.change.startsWith("."))
 			this.change = "0" + this.change;
 		this.openPrice = cells[6];
+		this.yearMin = cells[7];
+		this.yearMax = cells[8];
 		this.tradedPieces = cells[9];
 		this.dayVolume = cells[10];
 	}
@@ -72,6 +76,12 @@ public class CsvDataRow {
 	}
 	public String getMarket() {
 		return market;
+	}
+	public String getYearMax() {
+		return yearMax;
+	}
+	public String getYearMin() {
+		return yearMin;
 	}
 
 	@Override
