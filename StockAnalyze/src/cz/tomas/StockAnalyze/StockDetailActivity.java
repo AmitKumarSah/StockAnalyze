@@ -46,7 +46,8 @@ public class StockDetailActivity extends Activity {
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
-						Log.d("StockDetailActivity", e.getMessage());
+						if (e.getMessage() != null)
+							Log.d("StockDetailActivity", e.getMessage());
 					}
 				}
 			});
@@ -56,6 +57,7 @@ public class StockDetailActivity extends Activity {
 	private void updateCurrentStock(final String stockId) throws NullPointerException, IOException {
 		
 		TextView txtHeader = (TextView) this.findViewById(R.id.txtDetailHeader);
+		TextView txtDate = (TextView) this.findViewById(R.id.txtDetailDate);
 		TextView txtName = (TextView) this.findViewById(R.id.txtDetailName);
 		TextView txtPrice = (TextView) this.findViewById(R.id.txtDetailClosingPrice);
 		TextView txtVolume = (TextView) this.findViewById(R.id.txtDetailVolume);
@@ -78,8 +80,10 @@ public class StockDetailActivity extends Activity {
 		
 		if (txtHeader != null)
 			txtHeader.setText(stockItem.getTicker() + " - " + stockId);
+		if (txtDate != null)
+			txtDate.setText(data.getDate().toLocaleString());
 		if (txtVolume != null)
-			txtVolume.setText(String.format("%s", data.getVolume()));
+			txtVolume.setText(String.format("%.1f", data.getVolume()));
 		if (txtMax != null)
 			txtMax.setText(String.valueOf(data.getYearMaximum()));
 		if (txtMin != null)
@@ -87,7 +91,7 @@ public class StockDetailActivity extends Activity {
 		if (txtName != null)
 			txtName.setText(stockItem.getName());
 		if (txtPrice != null) {
-			txtPrice.setText(String.format("%s (%s)", String.valueOf(data.getPrice()), String.valueOf(data.getChange())));
+			txtPrice.setText(String.format("%s (%s%%)", String.valueOf(data.getPrice()), String.valueOf(data.getChange())));
 			if (data.getChange() > 0f)
         		txtPrice.setTextColor(Color.GREEN);
 			else if (data.getChange() < 0f)

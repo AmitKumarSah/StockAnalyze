@@ -30,11 +30,11 @@ public final class R {
         public static final int tableDetailRow03=0x7f05000c;
         public static final int toptext=0x7f050010;
         public static final int txtDetailClosingPrice=0x7f050005;
-        public static final int txtDetailDate=0x7f050004;
+        public static final int txtDetailDate=0x7f050003;
         public static final int txtDetailHeader=0x7f050002;
         public static final int txtDetailMax=0x7f05000b;
         public static final int txtDetailMin=0x7f050008;
-        public static final int txtDetailName=0x7f050003;
+        public static final int txtDetailName=0x7f050004;
         public static final int txtDetailVolume=0x7f05000e;
     }
     public static final class layout {

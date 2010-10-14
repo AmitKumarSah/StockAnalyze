@@ -31,6 +31,8 @@ public class PseCsvDataProvider implements IStockDataProvider {
 	private final String PSE_DATA_ROOT_FTP_URL = "ftp://ftp.pse.cz/Results.ak/";
 	private final String PSE_DATA_ROOT_URL = "http://ftp.pse.cz/Results.ak/";
 	
+	private final String REMOTE_LAST_DATA_NAME = "ak.csv";
+	
 	PseCsvParser parser;
 	
 	/*
@@ -82,8 +84,11 @@ public class PseCsvDataProvider implements IStockDataProvider {
 		return rows;
 	}
 
-	private String buildRemoteFileName(Date date) {
-		Calendar calendar = Calendar.getInstance(new Locale("cs"));
+	/*
+	 * build a file name according to desired date, this file can be downloaded
+	 * */
+	private String buildRemoteFileName(Calendar calendar) {
+		//Calendar calendar = Calendar.getInstance(new Locale("cs"));
 		
 		String name = null;
 		NumberFormat format = DecimalFormat.getInstance();
@@ -124,12 +129,16 @@ public class PseCsvDataProvider implements IStockDataProvider {
 
 		Calendar now = Calendar.getInstance();
 		CsvDataRow row = checkInCache(ticker, now);
-		
-		String remoteFileName = "ak.csv";
-		
+				
 		// we didn't find in cache
 		if (row == null) {
-			Map<String, CsvDataRow> rows = getDataFromRemoteFile(remoteFileName);
+			Map<String, CsvDataRow> rows;
+			try {
+				rows = getDataFromRemoteFile(this.REMOTE_LAST_DATA_NAME);
+			} catch (IOException e) {
+				// if failed to download last data, try yesterday's data
+				rows = getYesterdayRemoteData();
+			}
 			
 			assert !dataCache.containsKey(buildCacheKey(now));
 			dataCache.put(this.buildCacheKey(now), rows);
@@ -140,9 +149,22 @@ public class PseCsvDataProvider implements IStockDataProvider {
 		DayData data = new DayData(row);
 		return data;
 	}
+
+	/**
+	 * Download yesterday data, uses buildRemoteFileName with yesterday's date 
+	 * @return
+	 * @throws IOException
+	 */
+	private Map<String, CsvDataRow> getYesterdayRemoteData() throws IOException {
+		Map<String, CsvDataRow> rows;
+		Calendar yesterday = Calendar.getInstance();
+		yesterday.add(Calendar.DAY_OF_YEAR, -1);
+		rows = getDataFromRemoteFile(this.buildRemoteFileName(yesterday));
+		return rows;
+	}
 	
 	@Override
-	public DayData getDayData(String ticker, Date date) throws IOException {
+	public DayData getDayData(String ticker, Calendar date) throws IOException {
 		String remoteFileName = this.buildRemoteFileName(date);
 		
 		Map<String, CsvDataRow> rows = getDataFromRemoteFile(remoteFileName);
@@ -156,14 +178,21 @@ public class PseCsvDataProvider implements IStockDataProvider {
 	public List<StockItem> getAvailableStockList() {
 		if (PseCsvDataProvider.dataCache.size() == 0) {
 			// if there is nothing in cache, download last data
-			String remoteFileName = "ak.csv";
+			Map<String, CsvDataRow> rows = null;
+			Calendar cal = Calendar.getInstance();	// will serve as a key to cache
 			try {
-				Map<String, CsvDataRow> rows = getDataFromRemoteFile(remoteFileName);
-				PseCsvDataProvider.dataCache.put(this.buildCacheKey(Calendar.getInstance()), rows);
+				rows = getDataFromRemoteFile(this.REMOTE_LAST_DATA_NAME);
 			} catch (IOException e) {
-				e.printStackTrace();
-				return null;
+				// if failed to download last data, try yesterday's data
+				try {
+					rows = this.getYesterdayRemoteData();
+					cal.add(Calendar.DAY_OF_YEAR, -1);
+				} catch (IOException e1) {
+					e1.printStackTrace();
+					return null;
+				}
 			}
+			PseCsvDataProvider.dataCache.put(this.buildCacheKey(cal), rows);
 		}
 		List<StockItem> stocks = new ArrayList<StockItem>();
 		// we can take any item from cache

@@ -42,6 +42,8 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 		
 		final List<StockItem> tempItems = new ArrayList<StockItem>();
 		
+		// firstly, "getStockList" is runned to get data, then in ui thread "updateUi" is invoked
+		
 		final Runnable updateUi = new Runnable() {
 			
 			@Override
@@ -64,6 +66,7 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 				} catch (NullPointerException e) {
 					e.printStackTrace();
 					Log.d("StockListAdapter", e.getMessage());
+			    	progressDialog.dismiss();
 					return;
 				}
             	
@@ -95,9 +98,9 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
         TextView txtChange = (TextView) v.findViewById(R.id.righttext2);
         
         if (txtName != null) 
-              txtName.setText(stock.getName());
+        	txtName.setText(stock.getName());
         if(txtTicker != null)
-              txtTicker.setText(stock.getTicker());
+        	txtTicker.setText(stock.getTicker());
         if(txtPrice != null && txtChange != null) {
         	DayData data = null;
 			try {
