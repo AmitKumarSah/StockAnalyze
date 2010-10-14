@@ -88,11 +88,13 @@ public class StockDetailActivity extends Activity {
 		if (txtName != null)
 			txtName.setText(stockItem.getName());
 		if (txtPrice != null) {
-			txtPrice.setText(String.valueOf(data.getPrice()));
-			if (data.getChange() > 0)
+			txtPrice.setText(String.format("%s (%s)", String.valueOf(data.getPrice()), String.valueOf(data.getChange())));
+			if (data.getChange() > 0f)
         		txtPrice.setTextColor(Color.GREEN);
+			else if (data.getChange() < 0f)
+            	txtPrice.setTextColor(Color.RED);
         	else
-        		txtPrice.setTextColor(Color.RED);
+        		txtPrice.setTextColor(Color.WHITE);
 		}
 	}
 }

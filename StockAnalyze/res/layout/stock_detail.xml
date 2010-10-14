@@ -3,7 +3,8 @@
 <LinearLayout android:id="@+id/DetailLinear" android:layout_width="fill_parent" android:layout_height="fill_parent" xmlns:android="http://schemas.android.com/apk/res/android" android:orientation="vertical">
 	<TextView android:text="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/txtDetailHeader"></TextView>
 
-	<TextView android:text="@+id/TextView01" android:layout_height="wrap_content" android:layout_width="fill_parent" android:id="@+id/txtDetailName" android:textStyle="bold"></TextView><TextView android:id="@+id/txtDetailDate" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+	<TextView android:text="@+id/TextView01" android:layout_height="wrap_content" android:layout_width="fill_parent" android:id="@+id/txtDetailName" android:textStyle="bold" android:textSize="18dip"></TextView>
+	<TextView android:id="@+id/txtDetailDate" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
 	<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:lines="2" android:text="@string/failed_price_update" android:ellipsize="marquee" android:fadeScrollbars="true" android:textStyle="bold" android:id="@+id/txtDetailClosingPrice" android:textSize="24dip"></TextView>
 <TableLayout android:scrollbarStyle="outsideInset" android:id="@+id/tableDetailData" android:layout_height="fill_parent" android:layout_width="fill_parent" android:layout_margin="5dip">
 	<TableRow android:id="@+id/TableDetailRow01" android:layout_width="fill_parent" android:layout_height="fill_parent"><TextView android:layout_height="fill_parent" android:layout_width="fill_parent" android:layout_gravity="left" android:id="@+id/lblDetailMin" android:text="@string/LabelDetailMin" android:layout_marginRight="5dip"></TextView>
