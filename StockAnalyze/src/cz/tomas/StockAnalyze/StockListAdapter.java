@@ -85,6 +85,11 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 	}
 	
 	@Override
+	public int getCount() {
+		return super.getCount();
+	}
+	
+	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
         View v = convertView;
         if (v == null) {

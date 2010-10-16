@@ -18,6 +18,7 @@ import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 
 import android.util.Log;
+import android.widget.Toast;
 
 /**
  * Data provider for Prague Stock Exchange
@@ -76,7 +77,6 @@ public class PseCsvDataProvider implements IStockDataProvider {
 		byte[] byteArray = DownloadService.GetInstance().DownloadFromUrl(
 				PSE_DATA_ROOT_URL + remoteFileName);
 		String data = new String(byteArray, "CP-1250");
-		//Log.d("PseCsvDataProvider", data);
 		
 		Map<String, CsvDataRow> rows = this.parser.parse(data);
 		CsvDataRow rowData = null;

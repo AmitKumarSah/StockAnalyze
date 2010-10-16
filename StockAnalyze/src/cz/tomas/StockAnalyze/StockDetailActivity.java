@@ -40,9 +40,14 @@ public class StockDetailActivity extends Activity {
 				public void onTabChanged(String tabId) {
 					try {
 						if (tabId.equals("StockDetail")) {
-							//String ticker = StockDetailActivity.this.getParent().getIntent().getStringExtra("ticker");
-							String id = StockDetailActivity.this.getParent().getIntent().getStringExtra("stock_id");
-							updateCurrentStock(id);
+							if (StockDetailActivity.this.getParent().getIntent().hasExtra("stock_id")) {
+								String id = StockDetailActivity.this
+										.getParent().getIntent()
+										.getStringExtra("stock_id");
+								updateCurrentStock(id);
+							}
+							else
+								showWarning();
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -99,5 +104,12 @@ public class StockDetailActivity extends Activity {
         	else
         		txtPrice.setTextColor(Color.WHITE);
 		}
+	}
+
+	private void showWarning() {
+		TextView txtName = (TextView) this.findViewById(R.id.txtDetailName);
+		
+		if (txtName != null)
+			txtName.setText(R.string.NoStockSelected);
 	}
 }

@@ -13,4 +13,5 @@
 	<string name="LabelDetailMin">Minimum</string>
 	<string name="LabelDetailMax">Maximum</string>
 	<string name="LabelDetailVolume">Volume</string>
+	<string name="NoStockSelected">There is no stock selected. Please select one or add new one.</string>
 </resources>

@@ -49,6 +49,7 @@ public final class R {
         public static final int LabelDetailMax=0x7f040008;
         public static final int LabelDetailMin=0x7f040007;
         public static final int LabelDetailVolume=0x7f040009;
+        public static final int NoStockSelected=0x7f04000a;
         public static final int SearchTextView=0x7f040002;
         public static final int app_name=0x7f040001;
         public static final int failed_price_update=0x7f040005;
