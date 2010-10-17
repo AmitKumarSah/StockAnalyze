@@ -30,6 +30,7 @@ public class StockListActivity extends ListActivity {
 
 	static final int UPDATE_DLG_SUCCES = 0;
 	static final int UPDATE_DLG_FAIL = 1;
+	static final int NO_INTERNET = 2;
 	
 	DataManager dataManager;
 	
@@ -58,16 +59,14 @@ public class StockListActivity extends ListActivity {
 			}
 		});
 		
-//		StockItem[] items = new StockItem[this.getListAdapter().getCount()];
-//		
-//		for (int i = 0; i < items.length; i++) {
-//			items[i] = (StockItem) this.getListAdapter().getItem(i);
-//		}
 	}
 	
 	@Override
 	public void onResume() {
 		super.onResume();
+
+		if (!this.dataManager.isOnline(this))
+			this.showDialog(NO_INTERNET);
 	}
 	
 	@Override
@@ -92,6 +91,10 @@ public class StockListActivity extends ListActivity {
 			break;
 		case UPDATE_DLG_FAIL:
 			builder.setMessage(R.string.update_fail);
+			dlg = builder.create();
+			break;
+		case NO_INTERNET:
+			builder.setMessage(R.string.NoInternet);
 			dlg = builder.create();
 			break;
 		}

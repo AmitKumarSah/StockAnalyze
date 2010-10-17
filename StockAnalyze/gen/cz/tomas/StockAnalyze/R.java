@@ -10,32 +10,36 @@ package cz.tomas.StockAnalyze;
 public final class R {
     public static final class attr {
     }
+    public static final class color {
+        public static final int font_color=0x7f040001;
+        public static final int list_item_background=0x7f040000;
+    }
     public static final class drawable {
         public static final int icon=0x7f020000;
     }
     public static final class id {
-        public static final int DetailLinear=0x7f050000;
-        public static final int SearchEditText=0x7f050014;
-        public static final int TableDetailRow01=0x7f050006;
-        public static final int TextView01=0x7f050001;
-        public static final int bottomtext=0x7f050011;
-        public static final int icon=0x7f05000f;
-        public static final int lblDetailMax=0x7f05000a;
-        public static final int lblDetailMin=0x7f050007;
-        public static final int lblDetailVolume=0x7f05000d;
-        public static final int listFoundItems=0x7f050015;
-        public static final int righttext=0x7f050012;
-        public static final int righttext2=0x7f050013;
-        public static final int tableDetailRow02=0x7f050009;
-        public static final int tableDetailRow03=0x7f05000c;
-        public static final int toptext=0x7f050010;
-        public static final int txtDetailClosingPrice=0x7f050005;
-        public static final int txtDetailDate=0x7f050003;
-        public static final int txtDetailHeader=0x7f050002;
-        public static final int txtDetailMax=0x7f05000b;
-        public static final int txtDetailMin=0x7f050008;
-        public static final int txtDetailName=0x7f050004;
-        public static final int txtDetailVolume=0x7f05000e;
+        public static final int DetailLinear=0x7f060000;
+        public static final int SearchEditText=0x7f060014;
+        public static final int TableDetailRow01=0x7f060006;
+        public static final int TextView01=0x7f060001;
+        public static final int bottomtext=0x7f060011;
+        public static final int icon=0x7f06000f;
+        public static final int lblDetailMax=0x7f06000a;
+        public static final int lblDetailMin=0x7f060007;
+        public static final int lblDetailVolume=0x7f06000d;
+        public static final int listFoundItems=0x7f060015;
+        public static final int righttext=0x7f060012;
+        public static final int righttext2=0x7f060013;
+        public static final int tableDetailRow02=0x7f060009;
+        public static final int tableDetailRow03=0x7f06000c;
+        public static final int toptext=0x7f060010;
+        public static final int txtDetailClosingPrice=0x7f060005;
+        public static final int txtDetailDate=0x7f060003;
+        public static final int txtDetailHeader=0x7f060002;
+        public static final int txtDetailMax=0x7f06000b;
+        public static final int txtDetailMin=0x7f060008;
+        public static final int txtDetailName=0x7f060004;
+        public static final int txtDetailVolume=0x7f06000e;
     }
     public static final class layout {
         public static final int main=0x7f030000;
@@ -46,16 +50,17 @@ public final class R {
         public static final int stock_search=0x7f030005;
     }
     public static final class string {
-        public static final int LabelDetailMax=0x7f040008;
-        public static final int LabelDetailMin=0x7f040007;
-        public static final int LabelDetailVolume=0x7f040009;
-        public static final int NoStockSelected=0x7f04000a;
-        public static final int SearchTextView=0x7f040002;
-        public static final int app_name=0x7f040001;
-        public static final int failed_price_update=0x7f040005;
-        public static final int hello=0x7f040000;
-        public static final int loading=0x7f040006;
-        public static final int update_fail=0x7f040004;
-        public static final int update_succes=0x7f040003;
+        public static final int LabelDetailMax=0x7f050009;
+        public static final int LabelDetailMin=0x7f050008;
+        public static final int LabelDetailVolume=0x7f05000a;
+        public static final int NoInternet=0x7f050007;
+        public static final int NoStockSelected=0x7f05000b;
+        public static final int SearchTextView=0x7f050002;
+        public static final int app_name=0x7f050001;
+        public static final int failed_price_update=0x7f050005;
+        public static final int hello=0x7f050000;
+        public static final int loading=0x7f050006;
+        public static final int update_fail=0x7f050004;
+        public static final int update_succes=0x7f050003;
     }
 }

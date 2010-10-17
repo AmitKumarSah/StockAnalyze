@@ -16,6 +16,8 @@ import cz.tomas.StockAnalyze.Data.PseCsvData.PseCsvDataProvider;
 import android.content.Context;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Log;
 
 /**
@@ -106,5 +108,11 @@ public class DataManager {
 		}
 		
 		return dataProvider;
+	}
+
+	public boolean isOnline(Context context) {
+		ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo info = cm.getActiveNetworkInfo();
+		return info != null && info.isConnectedOrConnecting();
 	}
 }

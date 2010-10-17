@@ -18,7 +18,6 @@ import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 
 import android.util.Log;
-import android.widget.Toast;
 
 /**
  * Data provider for Prague Stock Exchange

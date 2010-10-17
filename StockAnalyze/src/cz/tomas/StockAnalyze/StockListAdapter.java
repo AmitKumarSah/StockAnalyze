@@ -126,8 +126,8 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 					txtChange.setTextColor(Color.RED);
 					}
 				else {
-					txtPrice.setTextColor(Color.WHITE);
-					txtChange.setTextColor(Color.WHITE);
+//					txtPrice.setTextColor(Color.BLACK);
+//					txtChange.setTextColor(Color.BLACK);
 				}
 			}
         }
