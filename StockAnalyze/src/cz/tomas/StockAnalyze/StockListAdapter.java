@@ -5,19 +5,20 @@ package cz.tomas.StockAnalyze;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
+import cz.tomas.StockAnalyze.StockList.StockCompareTypes;
+import cz.tomas.StockAnalyze.StockList.StockComparator;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Color;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,7 +37,7 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 	ProgressDialog progressDialog = null;
 	protected DataManager dataManager;
 	
-	public StockListAdapter(final Context context, int textViewResourceId, DataManager dataManager, final String filter) {
+	public StockListAdapter(final Context context, int textViewResourceId, final DataManager dataManager, final String filter) {
 		super(context, textViewResourceId);
 		this.dataManager = dataManager;
 		
@@ -63,12 +64,14 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
             	List<StockItem> items = null;
             	try {
 					items = StockListAdapter.this.dataManager.search(filter);
-				} catch (NullPointerException e) {
+				} catch (Exception e) {
 					e.printStackTrace();
 					Log.d("StockListAdapter", e.getMessage());
 			    	progressDialog.dismiss();
+			    	Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG);
 					return;
 				}
+            	Collections.sort(items, new StockComparator(StockCompareTypes.Volume, dataManager));
             	
             	for (int i = 0; i < items.size(); i++) {
             		tempItems.add(items.get(i));
@@ -124,10 +127,10 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 				else if (data.getChange() < 0) {
 					txtPrice.setTextColor(Color.RED);
 					txtChange.setTextColor(Color.RED);
-					}
+				}
 				else {
-//					txtPrice.setTextColor(Color.BLACK);
-//					txtChange.setTextColor(Color.BLACK);
+					txtPrice.setTextColor(Color.BLACK);
+					txtChange.setTextColor(Color.BLACK);
 				}
 			}
         }

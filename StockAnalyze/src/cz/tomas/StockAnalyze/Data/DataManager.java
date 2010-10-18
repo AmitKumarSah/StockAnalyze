@@ -86,18 +86,18 @@ public class DataManager {
 			throw e;
 		}
 		
-		if (val > 0) {
-			try {
-				SQLiteDatabase db = this.sqlStore.getWritableDatabase();
-				db.execSQL("INSERT INTO " + StockDataSqlStore.TABLE_NAME + " values('"+ ticker + "', date('now'), " + val + ");");
-			} catch (SQLException e) {
-				Log.d("StockDataSqlStore", "failed to insert data." + e.getMessage());
-				e.printStackTrace();
-			} finally {
-				if (this.sqlStore != null)
-					this.sqlStore.close();
-			}
-		}
+//		if (val > 0) {
+//			try {
+//				SQLiteDatabase db = this.sqlStore.getWritableDatabase();
+//				db.execSQL("INSERT INTO " + StockDataSqlStore.TABLE_NAME + " values('"+ ticker + "', date('now'), " + val + ");");
+//			} catch (SQLException e) {
+//				Log.d("StockDataSqlStore", "failed to insert data." + e.getMessage());
+//				e.printStackTrace();
+//			} finally {
+//				if (this.sqlStore != null)
+//					this.sqlStore.close();
+//			}
+//		}
 		return data;
 	}	
 	

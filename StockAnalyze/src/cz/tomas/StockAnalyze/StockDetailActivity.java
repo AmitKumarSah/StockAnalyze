@@ -85,8 +85,10 @@ public class StockDetailActivity extends Activity {
 		
 		if (txtHeader != null)
 			txtHeader.setText(stockItem.getTicker() + " - " + stockId);
-		if (txtDate != null)
-			txtDate.setText(data.getDate().toLocaleString());
+		if (txtDate != null) {
+			DateFormat formatter = DateFormat.getDateInstance(DateFormat.MEDIUM);
+			txtDate.setText(formatter.format(data.getDate()));
+		}
 		if (txtVolume != null)
 			txtVolume.setText(String.format("%.1f", data.getVolume()));
 		if (txtMax != null)
