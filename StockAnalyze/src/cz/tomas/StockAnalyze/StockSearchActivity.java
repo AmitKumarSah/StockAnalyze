@@ -10,6 +10,7 @@ import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.TabActivity;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Editable;
@@ -54,7 +55,10 @@ public class StockSearchActivity extends Activity {
 					}
 					if (stocks != null) {
 						try {
-							list.setAdapter(new ArrayAdapter<String>(StockSearchActivity.this, R.layout.stock_list, displayResults));
+							//list.setAdapter(new ArrayAdapter<String>(StockSearchActivity.this, R.layout.stock_list, displayResults));
+							StockListAdapter adapter = new StockListAdapter(StockSearchActivity.this, R.id.toptext, dataManger, txtSearch.getText().toString());
+							adapter.showIcons(false);
+							list.setAdapter(adapter);
 							list.setOnItemClickListener(new OnItemClickListener() {
 
 								@Override
@@ -111,16 +115,28 @@ public class StockSearchActivity extends Activity {
 
 	private Dialog buildAddStockDialog() {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		
+
 		builder.setMessage("Do you want to add this stock?")
-		       .setCancelable(false)
-		       .setTitle("Add Stock")
-		       .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-		           public void onClick(DialogInterface dialog, int id) {
-		        	   // TODO add
-		        	   dialog.dismiss();
-		           }
-		       })
+				.setCancelable(false)
+				.setTitle("Add Stock")
+				.setPositiveButton("Yes",
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int id) {
+								try {
+									final ListView list = (ListView) findViewById(R.id.listFoundItems);
+									int position = StockSearchActivity.this.getIntent().getIntExtra(SELECTED_STOCK, -1);
+									StockItem stock = (StockItem) list.getItemAtPosition(position);
+									
+									TabActivity act = (TabActivity) StockSearchActivity.this.getParent();
+									act.getIntent().putExtra("stock_id", stock.getId());
+									act.getTabHost().setCurrentTabByTag("StockDetail");
+								} catch (Exception e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+								dialog.dismiss();
+							}
+						})
 		       .setNegativeButton("No", new DialogInterface.OnClickListener() {
 		           public void onClick(DialogInterface dialog, int id) {
 		                dialog.cancel();

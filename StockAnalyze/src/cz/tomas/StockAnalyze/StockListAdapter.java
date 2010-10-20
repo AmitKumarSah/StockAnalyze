@@ -6,7 +6,6 @@ package cz.tomas.StockAnalyze;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import cz.tomas.StockAnalyze.Data.DataManager;
@@ -19,11 +18,13 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Color;
+import android.opengl.Visibility;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,13 +38,15 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 	ProgressDialog progressDialog = null;
 	protected DataManager dataManager;
 	
+	Boolean showIcons = true;
+	
 	public StockListAdapter(final Context context, int textViewResourceId, final DataManager dataManager, final String filter) {
 		super(context, textViewResourceId);
 		this.dataManager = dataManager;
 		
 		final List<StockItem> tempItems = new ArrayList<StockItem>();
 		
-		// firstly, "getStockList" is runned to get data, then in ui thread "updateUi" is invoked
+		// firstly, "getStockList" is run to get data, then in ui thread "updateUi" is invoked
 		
 		final Runnable updateUi = new Runnable() {
 			
@@ -58,7 +61,7 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 			}
 		};
 		
-		Runnable getStockList = new Runnable(){
+		Runnable getStockList = new Runnable() {
             @Override
             public void run() {
             	List<StockItem> items = null;
@@ -99,8 +102,25 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
             LayoutInflater vi = (LayoutInflater)this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             v = vi.inflate(R.layout.stock_list_item, null);
         }
+        if (! this.showIcons) {
+        	View iconView = v.findViewById(R.id.iconStockItem);
+        	 if (iconView != null)
+        		 iconView.setVisibility(View.GONE);
+        }
+        
         StockItem stock = this.getItem(position);
-        TextView txtTicker = (TextView) v.findViewById(R.id.toptext);
+        fillView(v, stock);
+		
+        return v;
+	}
+
+	/**
+	 * Get data for stock item and write them to the view
+	 * @param v View to fill
+	 * @param stock stock to access data to write to view
+	 */
+	private void fillView(View v, StockItem stock) {
+		TextView txtTicker = (TextView) v.findViewById(R.id.toptext);
         TextView txtName = (TextView) v.findViewById(R.id.bottomtext);
         TextView txtPrice = (TextView) v.findViewById(R.id.righttext);
         TextView txtChange = (TextView) v.findViewById(R.id.righttext2);
@@ -134,7 +154,9 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 				}
 			}
         }
-		
-        return v;
+	}
+	
+	public void showIcons(Boolean show) {
+		this.showIcons = show;
 	}
 }

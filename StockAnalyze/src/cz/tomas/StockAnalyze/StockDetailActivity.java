@@ -5,7 +5,10 @@ package cz.tomas.StockAnalyze;
 
 import java.io.IOException;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.Currency;
 import java.util.Formatter;
 import java.util.Locale;
 
@@ -78,19 +81,28 @@ public class StockDetailActivity extends Activity {
 		final StockItem stockItem = manager.getStockItem(stockId);
 		final DayData data = manager.getLastValue(stockItem.getTicker());
 		
-		if (data == null)
-			throw new NullPointerException("Day data is null!");
+		NumberFormat priceFormat = DecimalFormat.getCurrencyInstance();
+		// TODO set currency according to stock item
+		priceFormat.setCurrency(Currency.getInstance("CZK"));
+		NumberFormat percentFormat = DecimalFormat.getNumberInstance();
+		NumberFormat volumeFormat = DecimalFormat.getNumberInstance();
+		volumeFormat.setGroupingUsed(true);
+
 		if (stockItem == null)
 			throw new NullPointerException("No such stock has been found!");
+		if (data == null)
+			throw new NullPointerException("Day data is null!");
 		
 		if (txtHeader != null)
 			txtHeader.setText(stockItem.getTicker() + " - " + stockId);
 		if (txtDate != null) {
-			DateFormat formatter = DateFormat.getDateInstance(DateFormat.MEDIUM);
+			DateFormat formatter = DateFormat.getDateInstance(DateFormat.LONG);
 			txtDate.setText(formatter.format(data.getDate()));
 		}
-		if (txtVolume != null)
-			txtVolume.setText(String.format("%.1f", data.getVolume()));
+		if (txtVolume != null) {
+			String strVolume = priceFormat.format(data.getVolume());
+			txtVolume.setText(strVolume);
+		}
 		if (txtMax != null)
 			txtMax.setText(String.valueOf(data.getYearMaximum()));
 		if (txtMin != null)
@@ -98,7 +110,10 @@ public class StockDetailActivity extends Activity {
 		if (txtName != null)
 			txtName.setText(stockItem.getName());
 		if (txtPrice != null) {
-			txtPrice.setText(String.format("%s (%s%%)", String.valueOf(data.getPrice()), String.valueOf(data.getChange())));
+			String strPrice = priceFormat.format(data.getPrice());
+			String strChange = percentFormat.format(data.getChange());
+			
+			txtPrice.setText(String.format("%s (%s%%)", strPrice, strChange));
 			if (data.getChange() > 0f)
         		txtPrice.setTextColor(Color.GREEN);
 			else if (data.getChange() < 0f)

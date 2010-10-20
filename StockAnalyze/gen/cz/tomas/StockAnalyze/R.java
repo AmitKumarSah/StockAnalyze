@@ -23,7 +23,7 @@ public final class R {
         public static final int TableDetailRow01=0x7f060006;
         public static final int TextView01=0x7f060001;
         public static final int bottomtext=0x7f060011;
-        public static final int icon=0x7f06000f;
+        public static final int iconStockItem=0x7f06000f;
         public static final int lblDetailMax=0x7f06000a;
         public static final int lblDetailMin=0x7f060007;
         public static final int lblDetailVolume=0x7f06000d;
