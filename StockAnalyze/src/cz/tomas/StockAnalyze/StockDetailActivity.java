@@ -76,7 +76,6 @@ public class StockDetailActivity extends Activity {
 		
 		if (txtPrice != null) {
 			txtPrice.setText(R.string.loading);
-			txtPrice.setTextColor(Color.WHITE);
 		}
 		final StockItem stockItem = manager.getStockItem(stockId);
 		final DayData data = manager.getLastValue(stockItem.getTicker());
@@ -118,8 +117,6 @@ public class StockDetailActivity extends Activity {
         		txtPrice.setTextColor(Color.GREEN);
 			else if (data.getChange() < 0f)
             	txtPrice.setTextColor(Color.RED);
-        	else
-        		txtPrice.setTextColor(Color.WHITE);
 		}
 	}
 

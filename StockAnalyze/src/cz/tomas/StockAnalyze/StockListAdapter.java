@@ -37,15 +37,18 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 	 
 	ProgressDialog progressDialog = null;
 	protected DataManager dataManager;
+	LayoutInflater vi; 
 	
 	Boolean showIcons = true;
 	
 	public StockListAdapter(final Context context, int textViewResourceId, final DataManager dataManager, final String filter) {
 		super(context, textViewResourceId);
 		this.dataManager = dataManager;
+
+        this.vi = (LayoutInflater)this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		
 		final List<StockItem> tempItems = new ArrayList<StockItem>();
-		
+		//tempItems.add(new StockItem("-", "-", "-", "-"));
 		// firstly, "getStockList" is run to get data, then in ui thread "updateUi" is invoked
 		
 		final Runnable updateUi = new Runnable() {
@@ -98,12 +101,18 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
         View v = convertView;
+     // Handle dividers
+        if(this.isDivider(position)){
+            View divider = this.vi.inflate(R.layout.stock_list_divider, null);
+            TextView txt = (TextView) divider.findViewById(R.id.txtStockListDivider);
+            txt.setText("Prague Stock Exchange");
+            return divider;
+        }
         if (v == null) {
-            LayoutInflater vi = (LayoutInflater)this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             v = vi.inflate(R.layout.stock_list_item, null);
         }
+        View iconView = v.findViewById(R.id.iconStockItem);
         if (! this.showIcons) {
-        	View iconView = v.findViewById(R.id.iconStockItem);
         	 if (iconView != null)
         		 iconView.setVisibility(View.GONE);
         }
@@ -155,6 +164,25 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 			}
         }
 	}
+	
+    @Override
+    public boolean areAllItemsEnabled() {
+        return false;
+    }
+
+    @Override
+    public boolean isEnabled(int position) {
+        boolean enabled = false;
+        if(position < this.getCount()){
+        	enabled = ! this.isDivider(position);
+        }
+        
+        return enabled;
+    }
+    
+    private Boolean isDivider(int position) {
+    	return this.getItem(position).getName().startsWith("-");
+    }
 	
 	public void showIcons(Boolean show) {
 		this.showIcons = show;

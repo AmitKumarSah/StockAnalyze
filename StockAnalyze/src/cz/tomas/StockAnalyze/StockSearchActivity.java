@@ -21,6 +21,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Toast;
 
 /**
  * @author tomas
@@ -131,7 +132,7 @@ public class StockSearchActivity extends Activity {
 									act.getIntent().putExtra("stock_id", stock.getId());
 									act.getTabHost().setCurrentTabByTag("StockDetail");
 								} catch (Exception e) {
-									// TODO Auto-generated catch block
+									Toast.makeText(StockSearchActivity.this, e.getMessage(), Toast.LENGTH_LONG);
 									e.printStackTrace();
 								}
 								dialog.dismiss();
