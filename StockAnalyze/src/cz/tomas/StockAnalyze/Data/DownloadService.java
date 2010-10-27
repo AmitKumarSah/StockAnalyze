@@ -6,6 +6,7 @@ package cz.tomas.StockAnalyze.Data;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.UnknownHostException;
 
 import org.apache.http.util.ByteArrayBuffer;
 

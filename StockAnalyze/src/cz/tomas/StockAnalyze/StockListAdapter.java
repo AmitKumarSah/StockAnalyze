@@ -19,6 +19,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.opengl.Visibility;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -74,7 +75,10 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 					e.printStackTrace();
 					Log.d("StockListAdapter", e.getMessage());
 			    	progressDialog.dismiss();
+			    	Looper.prepare();
+			    	Looper.loop();
 			    	Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG);
+			    	Looper.myLooper().quit();
 					return;
 				}
             	Collections.sort(items, new StockComparator(StockCompareTypes.Volume, dataManager));

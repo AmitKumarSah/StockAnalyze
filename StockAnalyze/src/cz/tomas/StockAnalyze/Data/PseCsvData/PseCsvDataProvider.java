@@ -57,7 +57,7 @@ public class PseCsvDataProvider implements IStockDataProvider {
 		String key = buildCacheKey(cal);
 		
 		if (dataCache.containsKey(key)) {
-			Log.d("PseCsvDataProvider", "reading data for " + ticker + " from cache");
+//			Log.d("PseCsvDataProvider", "reading data for " + ticker + " from cache");
 			Map<String, CsvDataRow> desiredMap = dataCache.get(key);
 			if (desiredMap.containsKey(ticker));
 				row = desiredMap.get(ticker);

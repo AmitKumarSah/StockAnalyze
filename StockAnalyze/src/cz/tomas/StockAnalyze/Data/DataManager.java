@@ -25,18 +25,14 @@ import android.util.Log;
  *
  */
 public class DataManager {
-	
-	private final String DATABASE_NAME = "cz.tomas.StockAnalyze.Data";
-	private final int DATABASE_VERSION_NUMBER = 1;
-	private final String DATABASE_FILE_NAME = "cz.tomas.StockAnalyze.Data.db";
-	
+		
 	StockDataSqlStore sqlStore;
 	
 	Context context;
 	public DataManager(Context context) {
 		this.context = context;
 		
-		this.sqlStore = new StockDataSqlStore(context, DATABASE_FILE_NAME, null, DATABASE_VERSION_NUMBER);
+		this.sqlStore = new StockDataSqlStore(context);
 	}
 
 	public List<StockItem> search(String pattern) {
