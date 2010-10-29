@@ -24,9 +24,14 @@ public class NewsSqlHelper extends StockDataSqlStore {
 
 		// insert default data
 		try {
-			this.insertFeed(SOURCE_CYRRUS_NAME, new URL(SOURCE_CYRRUS), SOURCE_CYRRUS_COUNTRY);
+			if (this.getFeeds().size() == 0) {
+				Log.d("cz.tomas.StockAnalyze.News.NewsSqlHelper", "Inserting default rss feed source...");
+				this.insertFeed(SOURCE_CYRRUS_NAME, new URL(SOURCE_CYRRUS), SOURCE_CYRRUS_COUNTRY);
+			}
 		} catch (MalformedURLException e) {
-			Log.d("NewsSqlHelper", "Failed to insert default news data: " + e.getMessage());
+			Log.d("cz.tomas.StockAnalyze.News.NewsSqlHelper", "Failed to insert default news data, check the address: " + e.getMessage());
+		} catch (SQLException e) {
+			Log.d("cz.tomas.StockAnalyze.News.NewsSqlHelper", "Failed to insert default news data: " + e.getMessage());
 		}
 	}
 

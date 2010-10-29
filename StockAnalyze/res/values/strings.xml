@@ -15,4 +15,5 @@
 	<string name="LabelDetailMax">52 week Maximum</string>
 	<string name="LabelDetailVolume">Volume</string>
 	<string name="NoStockSelected">There is no stock selected. Please select one or add new one.</string>
+	<string name="FailedGetNews">"Failed to get news."</string>
 </resources>

@@ -8,7 +8,14 @@ public class Article extends Object {
     private String title;
     private URL url;
     private String description;
+    private long date;
     
+	public long getDate() {
+		return date;
+	}
+	public void setDate(long date) {
+		this.date = date;
+	}
 	/**
 	 * @return the articleId
 	 */

@@ -53,6 +53,7 @@ public final class R {
         public static final int stock_search=0x7f030006;
     }
     public static final class string {
+        public static final int FailedGetNews=0x7f05000c;
         public static final int LabelDetailMax=0x7f050009;
         public static final int LabelDetailMin=0x7f050008;
         public static final int LabelDetailVolume=0x7f05000a;

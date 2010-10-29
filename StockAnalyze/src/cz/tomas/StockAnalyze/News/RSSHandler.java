@@ -29,6 +29,7 @@ public class RSSHandler extends DefaultHandler {
 	private boolean inItem = false;
 	private boolean inTitle = false;
 	private boolean inLink = false;
+	private boolean inDescription = false;
 
 	// Feed and Article objects to use for temporary storage
 	private Article currentArticle = new Article();
@@ -57,6 +58,8 @@ public class RSSHandler extends DefaultHandler {
 			inItem = true;
 		else if (name.trim().equals("link"))
 			inLink = true;
+		else if (name.trim().equals("description"))
+			inDescription = true;
 	}
 
 	public void endElement(String uri, String name, String qName)
@@ -67,6 +70,8 @@ public class RSSHandler extends DefaultHandler {
 			inItem = false;
 		else if (name.trim().equals("link"))
 			inLink = false;
+		else if (name.trim().equals("description"))
+			inDescription = false;
 
 		// Check if looking for feed, and if feed is complete
 		if (targetFlag == TARGET_FEED && currentFeed.getUrl() != null
@@ -74,8 +79,9 @@ public class RSSHandler extends DefaultHandler {
 
 			// We know everything we need to know, so insert feed and exit
 			// TODO country code
-			dbHelper.insertFeed(currentFeed.getTitle(), currentFeed.getUrl(), "cz");
-			throw new SAXException();
+			Boolean result = dbHelper.insertFeed(currentFeed.getTitle(), currentFeed.getUrl(), "cz");
+			if (! result)
+				throw new SAXException();
 		}
 
 		// Check if looking for article, and if article is complete
@@ -108,9 +114,11 @@ public class RSSHandler extends DefaultHandler {
 					currentArticle.setUrl(new URL(chars));
 				if (inTitle)
 					currentArticle.setTitle(chars);
+				if (inDescription)
+					currentArticle.setDescription(chars);
 			}
 		} catch (MalformedURLException e) {
-			Log.e("NewsDroid", e.toString());
+			Log.e("cz.tomas.StockAnalyze.News.RssHandler", e.getMessage());
 		}
 
 	}
@@ -128,11 +136,11 @@ public class RSSHandler extends DefaultHandler {
 			xr.parse(new InputSource(url.openStream()));
 
 		} catch (IOException e) {
-			Log.e("NewsDroid", e.toString());
+			Log.e("cz.tomas.StockAnalyze.News.RssHandler", e.toString());
 		} catch (SAXException e) {
-			Log.e("NewsDroid", e.toString());
+			Log.e("cz.tomas.StockAnalyze.News.RssHandler", e.toString());
 		} catch (ParserConfigurationException e) {
-			Log.e("NewsDroid", e.toString());
+			Log.e("cz.tomas.StockAnalyze.News.RssHandler", e.toString());
 		}
 	}
 
@@ -149,16 +157,17 @@ public class RSSHandler extends DefaultHandler {
 			xr.parse(new InputSource(currentFeed.getUrl().openStream()));
 
 		} catch (IOException e) {
-			Log.e("NewsDroid", e.toString());
+			Log.e("cz.tomas.StockAnalyze.News.RssHandler", e.toString());
 		} catch (SAXException e) {
-			Log.e("NewsDroid", e.toString());
+			Log.e("cz.tomas.StockAnalyze.News.RssHandler", e.toString());
 		} catch (ParserConfigurationException e) {
-			Log.e("NewsDroid", e.toString());
+			Log.e("cz.tomas.StockAnalyze.News.RssHandler", e.toString());
 		}
 	}
 
 	public void done() {
-		this.dbHelper.close();
+		if (this.dbHelper != null)
+			this.dbHelper.close();
 	}
 
 }
