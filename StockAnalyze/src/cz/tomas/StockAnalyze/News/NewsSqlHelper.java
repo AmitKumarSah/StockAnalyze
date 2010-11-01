@@ -10,10 +10,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteFullException;
 import android.util.Log;
 import cz.tomas.StockAnalyze.Data.StockDataSqlStore;
 
-public class NewsSqlHelper extends StockDataSqlStore {
+public final class NewsSqlHelper extends StockDataSqlStore {
 
 	private static final String SOURCE_CYRRUS = "http://www.cyrrus.cz/rss/cs";
 	private static final String SOURCE_CYRRUS_NAME = "Cyrrus";
@@ -26,7 +27,8 @@ public class NewsSqlHelper extends StockDataSqlStore {
 		try {
 			if (this.getFeeds().size() == 0) {
 				Log.d("cz.tomas.StockAnalyze.News.NewsSqlHelper", "Inserting default rss feed source...");
-				this.insertFeed(SOURCE_CYRRUS_NAME, new URL(SOURCE_CYRRUS), SOURCE_CYRRUS_COUNTRY);
+				if (! this.insertFeed(SOURCE_CYRRUS_NAME, new URL(SOURCE_CYRRUS), SOURCE_CYRRUS_COUNTRY))
+					throw new SQLException("The feed record wasn't inserted.");
 			}
 		} catch (MalformedURLException e) {
 			Log.d("cz.tomas.StockAnalyze.News.NewsSqlHelper", "Failed to insert default news data, check the address: " + e.getMessage());
@@ -63,7 +65,13 @@ public class NewsSqlHelper extends StockDataSqlStore {
 		values.put("description", description);
 		values.put("url", url.toString());
 		
-		return (this.getWritableDatabase().insert(ARTICLES_TABLE, null, values) > 0);
+		SQLiteDatabase db = this.getWritableDatabase();
+		db.beginTransaction();
+		Boolean result = (db.insert(ARTICLES_TABLE, null, values) > 0);
+		if (result)
+			db.setTransactionSuccessful();
+		db.endTransaction();
+		return result;
 	}
 
 	public boolean deleteAricles(Long feedId) {

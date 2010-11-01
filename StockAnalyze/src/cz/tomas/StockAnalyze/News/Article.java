@@ -76,4 +76,10 @@ public class Article extends Object {
 	public void setDescription(String description) {
 		this.description = description;
 	}
+	@Override
+	public String toString() {
+		return "Article [articleId=" + articleId + ", feedId=" + feedId
+				+ ", title=" + title + "]";
+	}
+	
 }

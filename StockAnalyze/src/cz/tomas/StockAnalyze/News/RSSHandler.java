@@ -6,6 +6,9 @@ package cz.tomas.StockAnalyze.News;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.ParseException;
+import java.util.Calendar;
+import java.util.Date;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -15,6 +18,7 @@ import org.xml.sax.*;
 import org.xml.sax.helpers.DefaultHandler;
 
 import android.content.Context;
+import android.text.format.DateFormat;
 import android.util.Log;
 
 import cz.tomas.StockAnalyze.Data.StockDataSqlStore;
@@ -30,6 +34,7 @@ public class RSSHandler extends DefaultHandler {
 	private boolean inTitle = false;
 	private boolean inLink = false;
 	private boolean inDescription = false;
+	private boolean inPubDate = false;
 
 	// Feed and Article objects to use for temporary storage
 	private Article currentArticle = new Article();
@@ -39,7 +44,7 @@ public class RSSHandler extends DefaultHandler {
 	private int articlesAdded = 0;
 
 	// Number of articles to download
-	private static final int ARTICLES_LIMIT = 15;
+	private static final int ARTICLES_LIMIT = 25;
 
 	// The possible values for targetFlag
 	private static final int TARGET_FEED = 0;
@@ -60,6 +65,8 @@ public class RSSHandler extends DefaultHandler {
 			inLink = true;
 		else if (name.trim().equals("description"))
 			inDescription = true;
+		else if (name.trim().equals("pubDate"))
+			inPubDate = true;
 	}
 
 	public void endElement(String uri, String name, String qName)
@@ -72,6 +79,8 @@ public class RSSHandler extends DefaultHandler {
 			inLink = false;
 		else if (name.trim().equals("description"))
 			inDescription = false;
+		else if (name.trim().equals("pubDate"))
+			inPubDate = false;
 
 		// Check if looking for feed, and if feed is complete
 		if (targetFlag == TARGET_FEED && currentFeed.getUrl() != null
@@ -116,6 +125,17 @@ public class RSSHandler extends DefaultHandler {
 					currentArticle.setTitle(chars);
 				if (inDescription)
 					currentArticle.setDescription(chars);
+				if (inPubDate) {
+					Calendar date = Calendar.getInstance();
+					java.text.DateFormat frm = java.text.DateFormat.getDateTimeInstance();
+					try {
+						Date d = frm.parse(ch.toString());
+						date.setTimeInMillis(d.getTime());
+					} catch (ParseException e) {
+						Log.d("cz.tomas.StockAnalyze.RSSHandler", "Failed to parse news item date! " + e.getMessage());
+					}
+					currentArticle.setDate(date.getTimeInMillis());
+				}
 			}
 		} catch (MalformedURLException e) {
 			Log.e("cz.tomas.StockAnalyze.News.RssHandler", e.getMessage());
