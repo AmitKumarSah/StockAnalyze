@@ -8,12 +8,15 @@ import java.util.List;
 
 import cz.tomas.StockAnalyze.News.Article;
 import cz.tomas.StockAnalyze.News.Feed;
+import cz.tomas.StockAnalyze.News.NewsListAdapter;
 import cz.tomas.StockAnalyze.News.NewsSqlHelper;
 import cz.tomas.StockAnalyze.News.RSSHandler;
+import android.app.Activity;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
@@ -29,11 +32,13 @@ public class NewsActivity extends ListActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		
-		progressDialog = ProgressDialog.show(this, "Please wait...", "Retrieving data ...", true);
-		
-		fill();
+
+		//progressDialog = ProgressDialog.show(this, "Please wait...", "Retrieving data ...", true);
+		ArrayAdapter<Article> adapter = new NewsListAdapter(this, R.layout.news_layout);
+		this.setListAdapter(adapter);
+		this.getListView().setTextFilterEnabled(true);
+		this.setContentView(R.layout.news_layout);
+		//fill();
 	}
 
 	private void fill() {

@@ -41,9 +41,10 @@ public class StockListActivity extends ListActivity {
 		
 		this.dataManager = new DataManager(this);
 		
-		StockListAdapter adapter = new StockListAdapter(this, R.id.toptext, this.dataManager, "baa");	//TODO replace string with filter
+		StockListAdapter adapter = new StockListAdapter(this, R.layout.stock_list, this.dataManager, "baa");	//TODO replace string with filter
 		this.setListAdapter(adapter);
 		this.getListView().setTextFilterEnabled(true);
+		this.setContentView(R.layout.stock_list);
 
 		this.getListView().setOnItemClickListener(new OnItemClickListener() {
 			@Override

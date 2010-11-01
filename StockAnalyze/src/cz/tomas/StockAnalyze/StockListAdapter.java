@@ -46,7 +46,7 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 		super(context, textViewResourceId);
 		this.dataManager = dataManager;
 
-        this.vi = (LayoutInflater)this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        this.vi = (LayoutInflater)	this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		
 		final List<StockItem> tempItems = new ArrayList<StockItem>();
 		//tempItems.add(new StockItem("-", "-", "-", "-"));
@@ -56,12 +56,20 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 			
 			@Override
 			public void run() {
-            	for (int i = 0; i < tempItems.size(); i++) {
-            		add(tempItems.get(i));
-				}
+				if (tempItems.size() == 0)
+					Toast.makeText(context, "Failure", Toast.LENGTH_LONG);
+				else
+		        	for (int i = 0; i < tempItems.size(); i++) {
+		        		add(tempItems.get(i));
+					}
             	
 		    	notifyDataSetChanged();
-		    	progressDialog.dismiss();
+		    	try {
+					((Activity) getContext()).findViewById(R.id.progressStockList).setVisibility(View.GONE);
+				} catch (Exception e) {
+					Log.d("cz.tomas.StockAnalyze.News.NewsListAdapter", "failed to dissmis progess bar! " + e.getMessage());
+				}
+		    	//progressDialog.dismiss();
 			}
 		};
 		
@@ -71,30 +79,26 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
             	List<StockItem> items = null;
             	try {
 					items = StockListAdapter.this.dataManager.search(filter);
+
+	            	Collections.sort(items, new StockComparator(StockCompareTypes.Volume, dataManager));
+	            	
+	            	for (int i = 0; i < items.size(); i++) {
+	            		tempItems.add(items.get(i));
+					}
 				} catch (Exception e) {
-					e.printStackTrace();
 					Log.d("StockListAdapter", e.getMessage());
-			    	progressDialog.dismiss();
-			    	Looper.prepare();
-			    	Looper.loop();
-			    	Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG);
-			    	Looper.myLooper().quit();
-					return;
 				}
-            	Collections.sort(items, new StockComparator(StockCompareTypes.Volume, dataManager));
-            	
-            	for (int i = 0; i < items.size(); i++) {
-            		tempItems.add(items.get(i));
+				finally {
+	            	((Activity) context).runOnUiThread(updateUi);	
 				}
             	
-            	((Activity) context).runOnUiThread(updateUi);
             }
         };
     	
 		Thread thread =  new Thread(null, getStockList, "StockListBackground");
         thread.start();
-        progressDialog = ProgressDialog.show(getContext(),    
-                "Please wait...", "Retrieving data ...", true);
+//        progressDialog = ProgressDialog.show(getContext(),    
+//                "Please wait...", "Retrieving data ...", true);
 	}
 	
 	@Override
