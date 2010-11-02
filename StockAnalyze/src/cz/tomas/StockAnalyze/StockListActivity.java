@@ -3,6 +3,7 @@
  */
 package cz.tomas.StockAnalyze;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
@@ -13,6 +14,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -41,8 +45,7 @@ public class StockListActivity extends ListActivity {
 		
 		this.dataManager = new DataManager(this);
 		
-		StockListAdapter adapter = new StockListAdapter(this, R.layout.stock_list, this.dataManager, "baa");	//TODO replace string with filter
-		this.setListAdapter(adapter);
+		fill();
 		this.getListView().setTextFilterEnabled(true);
 		this.setContentView(R.layout.stock_list);
 
@@ -54,12 +57,21 @@ public class StockListActivity extends ListActivity {
 					StockItem stock = (StockItem) StockListActivity.this.getListView().getItemAtPosition(position);
 					
 					TabActivity act = (TabActivity) StockListActivity.this.getParent();
-					act.getIntent().putExtra("stock_id", stock.getId());
-					act.getTabHost().setCurrentTabByTag("StockDetail");
+					if (act != null) {
+						act.getIntent().putExtra("stock_id", stock.getId());
+						act.getTabHost().setCurrentTabByTag("StockDetail");
+					}
+					else
+						Log.d("cz.tomas.StockAnalyze.StockListActivity", "Failed to get TabActivity");
 				}
 			}
 		});
 		
+	}
+
+	private void fill() {
+		StockListAdapter adapter = new StockListAdapter(this, R.layout.stock_list, this.dataManager, "baa");	//TODO replace string with filter
+		this.setListAdapter(adapter);
 	}
 	
 	@Override
@@ -68,6 +80,30 @@ public class StockListActivity extends ListActivity {
 
 		if (!this.dataManager.isOnline(this))
 			this.showDialog(NO_INTERNET);
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.stock_list_menu, menu);
+	    return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    // Handle item selection
+	    switch (item.getItemId()) {
+	    case R.id.menu_stock_list_refresh:
+	    	this.setListAdapter(null);
+	    	this.findViewById(R.id.progressStockList).setVisibility(View.VISIBLE);
+	    	this.dataManager.refresh();
+	    	this.fill();
+	        return true;
+	    case R.id.menu_stock_list_settings:
+	        return true;
+	    default:
+	        return super.onOptionsItemSelected(item);
+	    }
 	}
 	
 	@Override
