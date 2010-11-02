@@ -34,6 +34,7 @@ public class PseCsvDataProvider implements IStockDataProvider {
 	private final String REMOTE_LAST_DATA_NAME = "ak.csv";
 	
 	PseCsvParser parser;
+	Map<String, Long> updateTimes;
 	
 	/*
 	 * first key is a date as "yyyy.MM.dd"
@@ -44,6 +45,8 @@ public class PseCsvDataProvider implements IStockDataProvider {
 
 	public PseCsvDataProvider() {
 		this.parser = new PseCsvParser();
+		
+		this.updateTimes = new HashMap<String, Long>();
 	}
 
 	/**
@@ -78,7 +81,10 @@ public class PseCsvDataProvider implements IStockDataProvider {
 		String data = new String(byteArray, "CP-1250");
 		
 		Map<String, CsvDataRow> rows = this.parser.parse(data);
-		CsvDataRow rowData = null;
+		
+		if (this.updateTimes.containsKey(remoteFileName))
+			this.updateTimes.remove(remoteFileName);
+		this.updateTimes.put(remoteFileName, Calendar.getInstance().getTimeInMillis());
 		
 		return rows;
 	}
@@ -217,5 +223,27 @@ public class PseCsvDataProvider implements IStockDataProvider {
 	@Override
 	public String getDescriptiveName() {
 		return "Prague Stock Exchange";
+	}
+
+	@Override
+	public void refresh() {
+		Calendar now = Calendar.getInstance();
+//		String updateKey = this.buildRemoteFileName(now);
+		String cacheKey = buildCacheKey(now);
+		
+		if (this.updateTimes.containsKey(REMOTE_LAST_DATA_NAME)&&
+				PseCsvDataProvider.dataCache.containsKey(cacheKey)) {
+			long time = this.updateTimes.get(REMOTE_LAST_DATA_NAME);
+			long diff = now.getTimeInMillis() - time;
+			long diffHours = diff / (60 * 60 * 1000);
+			Calendar cal = Calendar.getInstance();
+			cal.setTimeInMillis(time);
+
+			// TODO limit diff time should be taken from settings
+			if (diffHours >= 1 ) {
+				Log.d("cz.tomas.StockAnalyze.Data.PseCsvData.PseCsvDataProvider", "Clearing data cache for " + cacheKey);
+				PseCsvDataProvider.dataCache.remove(cacheKey);			
+			}
+		}
 	}
 }

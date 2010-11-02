@@ -7,7 +7,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
@@ -27,16 +29,21 @@ import android.util.Log;
 public class DataManager {
 		
 	StockDataSqlStore sqlStore;
+	Map<String, IStockDataProvider> providers;
 	
 	Context context;
 	public DataManager(Context context) {
 		this.context = context;
 		
 		this.sqlStore = new StockDataSqlStore(context);
+		this.providers = new HashMap<String, IStockDataProvider>();
+		
+		IStockDataProvider pse = new PseCsvDataProvider();
+		this.providers.put(pse.getId(), pse);
 	}
 
 	public List<StockItem> search(String pattern) {
-		IStockDataProvider provider = new PseCsvDataProvider();
+		IStockDataProvider provider = this.providers.get("PSE");
 		List<StockItem> stocks = provider.getAvailableStockList();
 		if (stocks == null)
 			throw new NullPointerException("can't get list of available stock items");
@@ -51,7 +58,7 @@ public class DataManager {
 	}
 	
 	public StockItem getStockItem(String id) {
-		IStockDataProvider provider = new PseCsvDataProvider();
+		IStockDataProvider provider = this.providers.get("PSE");
 		List<StockItem> stocks = provider.getAvailableStockList();
 		
 		// TODO find in db
@@ -69,7 +76,7 @@ public class DataManager {
 			IStockDataProvider provider = this.getDataProvider(ticker);
 			if (provider != null) {
 				data = provider.getLastData(ticker);
-				val = data.getPrice();
+				//val = data.getPrice();
 			}
 			else
 				throw new NullPointerException("Can't find appropriate data provider for " + ticker);
@@ -99,8 +106,8 @@ public class DataManager {
 	
 	private IStockDataProvider getDataProvider(String ticker) {
 		IStockDataProvider dataProvider = null;
-		if (ticker.startsWith("BAA")) {
-			dataProvider = new PseCsvDataProvider();
+		if (ticker.startsWith("BAA") && this.providers.containsKey("PSE")) {
+			dataProvider = this.providers.get("PSE");
 		}
 		
 		return dataProvider;
@@ -110,5 +117,15 @@ public class DataManager {
 		ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo info = cm.getActiveNetworkInfo();
 		return info != null && info.isConnectedOrConnecting();
+	}
+
+	public void refresh() {
+		try {
+			for(IStockDataProvider p : this.providers.values()) {
+				p.refresh();
+			}
+		} catch (Exception e) {
+			Log.d("DataManager", "Failed to refresh data! " + e.getMessage());
+		}
 	}
 }

@@ -22,4 +22,5 @@ public interface IStockDataProvider {
 	List<StockItem> getAvailableStockList();
 	String getId();
 	String getDescriptiveName();
+	void refresh();
 }
