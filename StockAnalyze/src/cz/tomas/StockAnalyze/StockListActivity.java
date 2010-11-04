@@ -69,7 +69,7 @@ public class StockListActivity extends ListActivity {
 		
 	}
 
-	private void fill() {
+	private synchronized void fill() {
 		StockListAdapter adapter = new StockListAdapter(this, R.layout.stock_list, this.dataManager, "baa");	//TODO replace string with filter
 		this.setListAdapter(adapter);
 	}
@@ -94,10 +94,18 @@ public class StockListActivity extends ListActivity {
 	    // Handle item selection
 	    switch (item.getItemId()) {
 	    case R.id.menu_stock_list_refresh:
-	    	this.setListAdapter(null);
-	    	this.findViewById(R.id.progressStockList).setVisibility(View.VISIBLE);
-	    	this.dataManager.refresh();
-	    	this.fill();
+	    	try {
+				if (this.dataManager.refresh()){
+			    	this.setListAdapter(null);
+			    	this.findViewById(R.id.progressStockList).setVisibility(View.VISIBLE);
+			    	this.fill();
+			    	Toast.makeText(this.getParent(), R.string.update_succes, Toast.LENGTH_LONG).show();
+				}
+				else
+					Toast.makeText(this.getParent(), R.string.NoRefresh, Toast.LENGTH_LONG).show();
+			} catch (Exception e) {
+				Toast.makeText(this.getParent(), R.string.update_fail, Toast.LENGTH_LONG).show();
+			}
 	        return true;
 	    case R.id.menu_stock_list_settings:
 	        return true;

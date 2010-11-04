@@ -57,7 +57,7 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 			@Override
 			public void run() {
 				if (tempItems.size() == 0)
-					Toast.makeText(context, "Failure", Toast.LENGTH_LONG);
+					Toast.makeText(context, "Failed!", Toast.LENGTH_LONG).show();
 				else
 		        	for (int i = 0; i < tempItems.size(); i++) {
 		        		add(tempItems.get(i));

@@ -10,6 +10,7 @@
 	An error occurred while updating the data!
 	Check your internet connectivity.
 	</string>
+	<string name="NoRefresh">"No data was refreshed."</string>
 	<string name="failed_price_update">Failed to update the price!</string>
 	<string name="loading">Loading...</string>
 	<string name="NoInternet">You need internet connection do get latest data!</string>

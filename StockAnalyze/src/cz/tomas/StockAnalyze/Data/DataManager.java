@@ -119,13 +119,16 @@ public class DataManager {
 		return info != null && info.isConnectedOrConnecting();
 	}
 
-	public void refresh() {
+	public boolean refresh() throws Exception {
+		boolean result = true;
 		try {
 			for(IStockDataProvider p : this.providers.values()) {
-				p.refresh();
+				result &= p.refresh();
 			}
 		} catch (Exception e) {
 			Log.d("DataManager", "Failed to refresh data! " + e.getMessage());
+			throw e;
 		}
+		return result;
 	}
 }
