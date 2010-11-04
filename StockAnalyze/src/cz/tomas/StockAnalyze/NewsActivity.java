@@ -3,9 +3,11 @@
  */
 package cz.tomas.StockAnalyze;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.News.Article;
 import cz.tomas.StockAnalyze.News.Feed;
 import cz.tomas.StockAnalyze.News.NewsListAdapter;
@@ -14,6 +16,9 @@ import cz.tomas.StockAnalyze.News.RSSHandler;
 import android.app.Activity;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
+import android.app.TabActivity;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -21,8 +26,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
+import android.widget.AdapterView.OnItemClickListener;
 
 /**
  * @author tomas
@@ -37,11 +44,21 @@ public class NewsActivity extends ListActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		//progressDialog = ProgressDialog.show(this, "Please wait...", "Retrieving data ...", true);
 		fill();
-		this.getListView().setTextFilterEnabled(true);
 		this.setContentView(R.layout.news_layout);
-		//fill();
+		this.getListView().setTextFilterEnabled(true);
+		this.getListView().setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long rowId) {
+				Article article = (Article) getListView().getItemAtPosition(position);
+				
+				if (article != null) {
+					Uri uri = Uri.parse(article.getUrl().toString());
+					Intent browserIntent = new Intent("android.intent.action.VIEW", uri);
+					startActivity(browserIntent);
+				}
+			}
+		});
 	}
 
 	private void fill() {

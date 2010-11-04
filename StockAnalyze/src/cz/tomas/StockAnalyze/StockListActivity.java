@@ -47,8 +47,8 @@ public class StockListActivity extends ListActivity {
 		this.dataManager = new DataManager(this);
 		
 		fill();
-		this.getListView().setTextFilterEnabled(true);
 		this.setContentView(R.layout.stock_list);
+		this.getListView().setTextFilterEnabled(true);
 
 		this.getListView().setOnItemClickListener(new OnItemClickListener() {
 			@Override

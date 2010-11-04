@@ -34,6 +34,8 @@ public final class NewsSqlHelper extends StockDataSqlStore {
 			Log.d("cz.tomas.StockAnalyze.News.NewsSqlHelper", "Failed to insert default news data, check the address: " + e.getMessage());
 		} catch (SQLException e) {
 			Log.d("cz.tomas.StockAnalyze.News.NewsSqlHelper", "Failed to insert default news data: " + e.getMessage());
+		} finally {
+			this.close();
 		}
 	}
 
@@ -43,7 +45,7 @@ public final class NewsSqlHelper extends StockDataSqlStore {
 		
 	}
 	
-	public boolean insertFeed(String title, URL url, String countryCode) {
+	public boolean insertFeed(String title, URL url, String countryCode) throws SQLException {
 		ContentValues values = new ContentValues();
 		values.put("title", title);
 		values.put("url", url.toString());
@@ -52,18 +54,19 @@ public final class NewsSqlHelper extends StockDataSqlStore {
 		return (super.getWritableDatabase().insert(FEEDS_TABLE, null, values) > 0);
 	}
 
-	public boolean deleteFeed(Long feedId) {
+	public boolean deleteFeed(Long feedId) throws SQLException {
 		return (super.getWritableDatabase().delete(FEEDS_TABLE,
 				"feed_id=" + feedId.toString(), null) > 0);
 	}
 
 	public boolean insertArticle(Long feedId, String title, URL url,
-			String description) {
+			String description, long date) throws SQLException {
 		ContentValues values = new ContentValues();
 		values.put("feed_id", feedId);
 		values.put("title", title);
 		values.put("description", description);
 		values.put("url", url.toString());
+		values.put("date", date);
 		
 		SQLiteDatabase db = this.getWritableDatabase();
 		db.beginTransaction();
@@ -74,15 +77,16 @@ public final class NewsSqlHelper extends StockDataSqlStore {
 		return result;
 	}
 
-	public boolean deleteAricles(Long feedId) {
+	public boolean deleteAricles(Long feedId) throws SQLException {
 		return (this.getWritableDatabase().delete(ARTICLES_TABLE,
 				"feed_id=" + feedId.toString(), null) > 0);
 	}
 
 	public List<Feed> getFeeds() {
 		ArrayList<Feed> feeds = new ArrayList<Feed>();
+		Cursor c = null;
 		try {
-			Cursor c = super.getWritableDatabase().query(FEEDS_TABLE, new String[] {
+			c = super.getReadableDatabase().query(FEEDS_TABLE, new String[] {
 					"feed_id", "title", "url", "country" }, null, null, null, null, null);
 
 			c.moveToFirst();
@@ -98,15 +102,19 @@ public final class NewsSqlHelper extends StockDataSqlStore {
 			Log.e("NewsSqlHelper", e.toString());
 		} catch (MalformedURLException e) {
 			Log.e("NewsSqlHelper", e.toString());
+		} finally {
+			if (c != null)
+				c.close();
 		}
 		return feeds;
 	}
 
 	public List<Article> getArticles(Long feedId) {
 		ArrayList<Article> articles = new ArrayList<Article>();
+		Cursor c = null;
 		try {
-			Cursor c = super.getWritableDatabase().query(ARTICLES_TABLE, new String[] {
-					"article_id", "feed_id", "title", "description", "url" }, "feed_id="
+			c = super.getWritableDatabase().query(ARTICLES_TABLE, new String[] {
+					"article_id", "feed_id", "title", "description", "url", "date" }, "feed_id="
 					+ feedId.toString(), null, null, null, null);
 
 			c.moveToFirst();
@@ -117,12 +125,16 @@ public final class NewsSqlHelper extends StockDataSqlStore {
 				article.setTitle(c.getString(2));
 				article.setDescription(c.getString(3));
 				article.setUrl(new URL(c.getString(4)));
+				article.setDate(Long.parseLong(c.getString(5)));
 				articles.add(article);
 			}
 		} catch (SQLException e) {
 			Log.e("NewsSqlHelper", e.toString());
 		} catch (MalformedURLException e) {
 			Log.e("NewsSqlHelper", e.toString());
+		} finally {
+			if (c != null)
+				c.close();
 		}
 		return articles;
 	}

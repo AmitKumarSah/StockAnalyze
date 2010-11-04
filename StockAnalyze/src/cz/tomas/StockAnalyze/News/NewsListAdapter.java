@@ -70,8 +70,8 @@ public class NewsListAdapter extends ArrayAdapter<Article> {
 					txtTitle.setText(article.getTitle());
 				else
 					Log.d("cz.tomas.StockAnalyze.News.NewsListAdapter", "can't set title text - TextView is null");	
-				if (txtPreview != null)
-					txtPreview.setText(article.getDescription());
+//				if (txtPreview != null)
+//					txtPreview.setText(article.getUrl().toString());
 				if (txtInfo != null) {
 					Calendar cal = Calendar.getInstance();
 					long date = article.getDate();
@@ -118,7 +118,11 @@ public class NewsListAdapter extends ArrayAdapter<Article> {
 					}
 				}
 			} catch (Exception e) {
-				Log.d("cz.tomas.StockAnalyze.News.NewsListAdapter", e.getMessage());
+				String message = e.getMessage();
+				if (message == null)
+					message = "Failed to get news articles!";
+				Log.d("cz.tomas.StockAnalyze.News.NewsListAdapter", message);
+				e.printStackTrace();
 			} finally {
 				rss.done();
 				//news.close();

@@ -6,9 +6,12 @@ package cz.tomas.StockAnalyze.News;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -18,7 +21,6 @@ import org.xml.sax.*;
 import org.xml.sax.helpers.DefaultHandler;
 
 import android.content.Context;
-import android.text.format.DateFormat;
 import android.util.Log;
 
 import cz.tomas.StockAnalyze.Data.StockDataSqlStore;
@@ -54,6 +56,9 @@ public class RSSHandler extends DefaultHandler {
 	private int targetFlag;
 
 	private NewsSqlHelper dbHelper = null;
+
+	// e.g. "Thu, 4 Nov 2010 16:00:13 +0100"
+	DateFormat frm = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH);
 
 	public void startElement(String uri, String name, String qName,
 			Attributes atts) {
@@ -97,9 +102,10 @@ public class RSSHandler extends DefaultHandler {
 		if (targetFlag == TARGET_ARTICLES && currentArticle.getUrl() != null
 				&& currentArticle.getTitle() != null) {
 			dbHelper.insertArticle(currentFeed.getFeedId(),
-					currentArticle.getTitle(), currentArticle.getUrl(), null);
+					currentArticle.getTitle(), currentArticle.getUrl(), currentArticle.getDescription(), currentArticle.getDate());
 			currentArticle.setTitle(null);
 			currentArticle.setUrl(null);
+			currentArticle.setDescription(null);
 
 			// Lets check if we've hit our limit on number of articles
 			articlesAdded++;
@@ -127,9 +133,9 @@ public class RSSHandler extends DefaultHandler {
 					currentArticle.setDescription(chars);
 				if (inPubDate) {
 					Calendar date = Calendar.getInstance();
-					java.text.DateFormat frm = java.text.DateFormat.getDateTimeInstance();
 					try {
-						Date d = frm.parse(ch.toString());
+						String strDate = String.valueOf(ch);
+						Date d = this.frm.parse(strDate);
 						date.setTimeInMillis(d.getTime());
 					} catch (ParseException e) {
 						Log.d("cz.tomas.StockAnalyze.RSSHandler", "Failed to parse news item date! " + e.getMessage());

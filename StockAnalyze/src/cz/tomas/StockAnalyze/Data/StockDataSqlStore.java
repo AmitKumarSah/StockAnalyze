@@ -17,7 +17,9 @@ import android.util.Log;
 public class StockDataSqlStore extends SQLiteOpenHelper {
 	
 	private final String DATABASE_NAME = "cz.tomas.StockAnalyze.Data";
-	private final static int DATABASE_VERSION_NUMBER = 4;
+	
+	private final static int DATABASE_VERSION_NUMBER = 1;
+	
 	private final static String DATABASE_FILE_NAME = "cz.tomas.StockAnalyze.Data.db";
 	
 	protected static final String STOCK_TABLE_NAME = "stock_data";
@@ -34,7 +36,7 @@ public class StockDataSqlStore extends SQLiteOpenHelper {
 			+ "title text not null, url text not null, country text not null);";
 
 	private static final String CREATE_TABLE_ARTICLES = "create table articles (article_id integer primary key autoincrement, "
-			+ "feed_id int not null, title text not null, description text, url text not null);";
+			+ "feed_id int not null, title text not null, description text, url text not null, date int not null);";
 
 	protected static final String FEEDS_TABLE = "feeds";
 	protected static final String ARTICLES_TABLE = "articles";

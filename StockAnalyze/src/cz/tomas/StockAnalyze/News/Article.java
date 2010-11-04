@@ -74,7 +74,10 @@ public class Article extends Object {
 	 * @param description the description to set
 	 */
 	public void setDescription(String description) {
-		this.description = description;
+		if (this.description != null && description != null)
+			this.description = this.description.concat(description);
+		else
+			this.description = description;
 	}
 	@Override
 	public String toString() {
