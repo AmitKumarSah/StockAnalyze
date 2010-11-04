@@ -7,6 +7,7 @@ import java.util.List;
 
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
+import cz.tomas.StockAnalyze.StockList.StockListAdapter;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;

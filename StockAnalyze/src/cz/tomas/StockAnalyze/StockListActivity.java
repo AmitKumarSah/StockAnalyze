@@ -25,6 +25,7 @@ import android.widget.Toast;
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
+import cz.tomas.StockAnalyze.StockList.StockListAdapter;
 
 /**
  * @author tomas

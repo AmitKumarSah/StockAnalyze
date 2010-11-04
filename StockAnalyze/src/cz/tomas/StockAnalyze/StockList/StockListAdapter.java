@@ -1,18 +1,19 @@
 /**
  * 
  */
-package cz.tomas.StockAnalyze;
+package cz.tomas.StockAnalyze.StockList;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
-import cz.tomas.StockAnalyze.StockList.StockCompareTypes;
-import cz.tomas.StockAnalyze.StockList.StockComparator;
+import cz.tomas.StockAnalyze.R.id;
+import cz.tomas.StockAnalyze.R.layout;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
