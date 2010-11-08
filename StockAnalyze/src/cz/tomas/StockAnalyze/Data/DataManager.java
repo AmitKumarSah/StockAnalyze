@@ -14,6 +14,8 @@ import java.util.Map;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.Data.PseCsvData.PseCsvDataProvider;
+import cz.tomas.StockAnalyze.Data.PsePatriaData.PsePatriaDataAdapter;
+import cz.tomas.StockAnalyze.Data.PsePatriaData.PsePatriaDataProvider;
 
 import android.content.Context;
 import android.database.SQLException;
@@ -39,11 +41,13 @@ public class DataManager {
 		this.providers = new HashMap<String, IStockDataProvider>();
 		
 		IStockDataProvider pse = new PseCsvDataProvider();
+		IStockDataProvider patriaPse = new PsePatriaDataAdapter();
 		this.providers.put(pse.getId(), pse);
+		this.providers.put(patriaPse.getId(), patriaPse);
 	}
 
 	public List<StockItem> search(String pattern) {
-		IStockDataProvider provider = this.providers.get("PSE");
+		IStockDataProvider provider = this.providers.get("PSE_PATRIA");
 		List<StockItem> stocks = provider.getAvailableStockList();
 		if (stocks == null)
 			throw new NullPointerException("can't get list of available stock items");
@@ -58,7 +62,7 @@ public class DataManager {
 	}
 	
 	public StockItem getStockItem(String id) {
-		IStockDataProvider provider = this.providers.get("PSE");
+		IStockDataProvider provider = this.providers.get("PSE_PATRIA");
 		List<StockItem> stocks = provider.getAvailableStockList();
 		
 		// TODO find in db
@@ -106,8 +110,8 @@ public class DataManager {
 	
 	private IStockDataProvider getDataProvider(String ticker) {
 		IStockDataProvider dataProvider = null;
-		if (ticker.startsWith("BAA") && this.providers.containsKey("PSE")) {
-			dataProvider = this.providers.get("PSE");
+		if (ticker.startsWith("BAA") && this.providers.containsKey("PSE_PATRIA")) {
+			dataProvider = this.providers.get("PSE_PATRIA");
 		}
 		
 		return dataProvider;
@@ -120,10 +124,10 @@ public class DataManager {
 	}
 
 	public boolean refresh() throws Exception {
-		boolean result = true;
+		boolean result = false;
 		try {
 			for(IStockDataProvider p : this.providers.values()) {
-				result &= p.refresh();
+				result |= p.refresh();
 			}
 		} catch (Exception e) {
 			Log.d("DataManager", "Failed to refresh data! " + e.getMessage());

@@ -4,9 +4,12 @@
 package cz.tomas.StockAnalyze.Data.PsePatriaData;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import cz.tomas.StockAnalyze.Data.IStockDataProvider;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
@@ -16,49 +19,34 @@ import cz.tomas.StockAnalyze.Data.Model.StockItem;
  * @author tomas
  *
  */
-public class PsePatriaDataProvider implements IStockDataProvider {
+public class PsePatriaDataProvider {
 	
-	@Override
-	public DayData getLastData(String ticker) throws IOException {
-		// TODO Auto-generated method stub
-		return null;
+	PsePatriaDataMarketItem currentMarketData;
+	
+	public PsePatriaDataProvider() {
+		this.currentMarketData = new PsePatriaDataMarketItem();
+	}
+	
+	public PsePatriaDataItem getLastData(String ticker) {
+		//this.currentMarketData.update();
+		PsePatriaDataItem stockDataItem = this.currentMarketData.getStock(ticker);
+		
+		return stockDataItem;
+	}
+	
+	public long getLastUpdateTime() {
+		return this.currentMarketData.getLastUpdate();
 	}
 
-	@Override
-	public DayData getDayData(String ticker, Calendar date) throws IOException {
-		// TODO Auto-generated method stub
-		return null;
+	public Map<String, PsePatriaDataItem> getAvailableStockMap() {
+		Map<String, PsePatriaDataItem> stocks = this.currentMarketData.getStocks();
+		
+		return stocks;
 	}
 
-	@Override
-	public DayData[] getIntraDayData(String ticker, Date date,
-			int minuteInterval) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<StockItem> getAvailableStockList() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getId() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getDescriptiveName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public boolean refresh() {
-		// TODO Auto-generated method stub
-		return false;
+		this.currentMarketData.update();
+		return true;
 	}
 
 }

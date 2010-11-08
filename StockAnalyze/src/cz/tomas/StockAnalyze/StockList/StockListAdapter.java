@@ -87,7 +87,11 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 	            		tempItems.add(items.get(i));
 					}
 				} catch (Exception e) {
-					Log.d("StockListAdapter", e.getMessage());
+					String message = "Failed to get stock list. ";
+					if (e.getMessage() != null)
+						message += e.getMessage();
+					Log.d("StockListAdapter", message);
+					e.printStackTrace();
 				}
 				finally {
 	            	((Activity) context).runOnUiThread(updateUi);	

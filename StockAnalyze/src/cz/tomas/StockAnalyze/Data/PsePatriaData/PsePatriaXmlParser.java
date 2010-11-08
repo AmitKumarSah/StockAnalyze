@@ -3,7 +3,13 @@
  */
 package cz.tomas.StockAnalyze.Data.PsePatriaData;
 
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
@@ -17,6 +23,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
+
+import cz.tomas.StockAnalyze.Data.DownloadService;
 
 import android.util.Log;
 
@@ -38,10 +46,11 @@ public class PsePatriaXmlParser {
 	public List<PsePatriaDataItem> parse() {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		List<PsePatriaDataItem> items = new ArrayList<PsePatriaDataItem>();
-		
+		InputStream stream = null;
 		try {
 			DocumentBuilder builder = factory.newDocumentBuilder();
-			Document doc = builder.parse(this.url);
+			stream = DownloadService.GetInstance().OpenHttpConnection(this.url);
+			Document doc = builder.parse(stream);
 			
 			Element root = doc.getDocumentElement();
 			Node confNode = root.getElementsByTagName("Configuration").item(0);
@@ -61,7 +70,15 @@ public class PsePatriaXmlParser {
 			String message = "Failed to process patria data xml! ";
 			if (e.getMessage() != null)
 				message += e.getMessage();
-			//Log.d("PsePatriaXmlParser", message);
+			e.printStackTrace();
+			Log.d("PsePatriaXmlParser", message);
+		} finally {
+			if (stream != null)
+				try {
+					stream.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 		}
 		return items;
 	}
@@ -100,4 +117,5 @@ public class PsePatriaXmlParser {
 		}
 		return item;
 	}
+	
 }
