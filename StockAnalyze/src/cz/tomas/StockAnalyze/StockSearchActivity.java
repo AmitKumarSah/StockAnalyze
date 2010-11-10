@@ -38,7 +38,7 @@ public class StockSearchActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		this.dataManger = new DataManager(this);
+		this.dataManger = DataManager.getInstance(this);
 		
 		this.setContentView(R.layout.stock_search);
 		final ListView list = (ListView) this.findViewById(R.id.listFoundItems);

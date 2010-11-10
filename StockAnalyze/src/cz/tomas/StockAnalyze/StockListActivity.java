@@ -44,7 +44,7 @@ public class StockListActivity extends ListActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		this.dataManager = new DataManager(this);
+		this.dataManager = DataManager.getInstance(this);
 		
 		fill();
 		this.setContentView(R.layout.stock_list);
@@ -100,11 +100,13 @@ public class StockListActivity extends ListActivity {
 			    	this.setListAdapter(null);
 			    	this.findViewById(R.id.progressStockList).setVisibility(View.VISIBLE);
 			    	this.fill();
-			    	Toast.makeText(this.getParent(), R.string.update_succes, Toast.LENGTH_LONG).show();
+			    	Toast.makeText(this.getParent(), R.string.update_succes, Toast.LENGTH_SHORT).show();
 				}
 				else
-					Toast.makeText(this.getParent(), R.string.NoRefresh, Toast.LENGTH_LONG).show();
+					Toast.makeText(this.getParent(), R.string.NoRefresh, Toast.LENGTH_SHORT).show();
 			} catch (Exception e) {
+				if (e.getMessage() != null)
+					Log.d("StockListlActivity", e.getMessage());
 				Toast.makeText(this.getParent(), R.string.update_fail, Toast.LENGTH_LONG).show();
 			}
 	        return true;

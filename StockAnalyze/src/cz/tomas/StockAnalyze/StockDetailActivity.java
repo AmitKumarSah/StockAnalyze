@@ -54,6 +54,7 @@ public class StockDetailActivity extends Activity {
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
+						Toast.makeText(StockDetailActivity.this, R.string.InvalidData, Toast.LENGTH_LONG).show();
 						if (e.getMessage() != null)
 							Log.d("StockDetailActivity", e.getMessage());
 					}
@@ -72,13 +73,13 @@ public class StockDetailActivity extends Activity {
 		TextView txtMax = (TextView) this.findViewById(R.id.txtDetailMax);
 		TextView txtMin = (TextView) this.findViewById(R.id.txtDetailMin);
 		
-		final DataManager manager = new DataManager(this);
+		final DataManager manager = DataManager.getInstance(this);
 		
 		if (txtPrice != null) {
 			txtPrice.setText(R.string.loading);
 		}
-		final StockItem stockItem = manager.getStockItem(stockId);
-		final DayData data = manager.getLastValue(stockItem.getTicker());
+		StockItem stockItem = manager.getStockItem(stockId);
+		DayData data = manager.getLastValue(stockItem.getTicker());
 		
 		NumberFormat priceFormat = DecimalFormat.getCurrencyInstance();
 		// TODO set currency according to stock item

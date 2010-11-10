@@ -23,4 +23,5 @@ public interface IStockDataProvider {
 	String getId();
 	String getDescriptiveName();
 	boolean refresh();
+
 }

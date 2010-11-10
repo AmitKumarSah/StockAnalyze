@@ -65,6 +65,7 @@ public final class R {
     }
     public static final class string {
         public static final int FailedGetNews=0x7f05000f;
+        public static final int InvalidData=0x7f050010;
         public static final int LabelDetailMax=0x7f05000c;
         public static final int LabelDetailMin=0x7f05000b;
         public static final int LabelDetailVolume=0x7f05000d;

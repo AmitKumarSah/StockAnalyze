@@ -1,5 +1,10 @@
 package cz.tomas.StockAnalyze;
 
+import java.text.DateFormat;
+import java.util.Calendar;
+
+import cz.tomas.StockAnalyze.Data.DataManager;
+import cz.tomas.StockAnalyze.Data.DataManager.IUpdateDateChangedHandler;
 import android.app.*;
 import android.content.*;
 import android.content.res.Resources;
@@ -38,7 +43,22 @@ public class StockAnalyze extends TabActivity {
 
 		tabHost.setCurrentTab(0);
 		
-
-		this.getIntent().putExtra("ticker", "BAACEZ");
+		// default stock to show (CEZ)
+		this.getIntent().putExtra("stock_id", "CZ0005112300");
+		
+		DataManager manager = DataManager.getInstance(this);
+		manager.addUpdateChangedListener(new IUpdateDateChangedHandler() {
+			
+			@Override
+			public void OnLastUpdateDateChanged(long updateTime) {
+				Calendar cal = Calendar.getInstance();
+				cal.setTimeInMillis(updateTime);
+				DateFormat frm = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+				
+				String title = StockAnalyze.this.getString(R.string.app_name);
+				title = String.format("%s (%s)", title, frm.format(cal.getTime()));
+				setTitle(title);
+			}
+		});
 	}
 }

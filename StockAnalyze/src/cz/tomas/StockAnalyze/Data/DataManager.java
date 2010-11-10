@@ -6,20 +6,18 @@ package cz.tomas.StockAnalyze.Data;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import cz.tomas.StockAnalyze.Data.IStockDataProvider;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.Data.PseCsvData.PseCsvDataProvider;
 import cz.tomas.StockAnalyze.Data.PsePatriaData.PsePatriaDataAdapter;
-import cz.tomas.StockAnalyze.Data.PsePatriaData.PsePatriaDataProvider;
 
 import android.content.Context;
-import android.database.SQLException;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
@@ -33,8 +31,19 @@ public class DataManager {
 	StockDataSqlStore sqlStore;
 	Map<String, IStockDataProvider> providers;
 	
+	List<IUpdateDateChangedHandler> updateDateChangedListeners;
+	
 	Context context;
-	public DataManager(Context context) {
+	private static DataManager instance;
+	
+	public static DataManager getInstance(Context context) {
+		if (instance == null)
+			instance = new DataManager(context);
+		
+		return instance;
+	}
+	
+	private DataManager(Context context) {
 		this.context = context;
 		
 		this.sqlStore = new StockDataSqlStore(context);
@@ -44,6 +53,8 @@ public class DataManager {
 		IStockDataProvider patriaPse = new PsePatriaDataAdapter();
 		this.providers.put(pse.getId(), pse);
 		this.providers.put(patriaPse.getId(), patriaPse);
+		
+		this.updateDateChangedListeners = new ArrayList<IUpdateDateChangedHandler>();
 	}
 
 	public List<StockItem> search(String pattern) {
@@ -133,6 +144,22 @@ public class DataManager {
 			Log.d("DataManager", "Failed to refresh data! " + e.getMessage());
 			throw e;
 		}
+		if (result)
+			fireUpdateDateChanged(Calendar.getInstance().getTimeInMillis());
 		return result;
+	}
+	
+	private void fireUpdateDateChanged(long timeInMillis) {
+		for (IUpdateDateChangedHandler handler : this.updateDateChangedListeners) {
+			handler.OnLastUpdateDateChanged(timeInMillis);
+		}
+	}
+
+	public void addUpdateChangedListener(IUpdateDateChangedHandler handler) {
+		this.updateDateChangedListeners.add(handler);
+	}
+	
+	public interface IUpdateDateChangedHandler {
+		public void OnLastUpdateDateChanged(long updateTime);
 	}
 }
