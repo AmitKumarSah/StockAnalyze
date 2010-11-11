@@ -14,9 +14,11 @@ import java.util.Locale;
 
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
+import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import android.app.Activity;
 import android.app.TabActivity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -43,27 +45,35 @@ public class StockDetailActivity extends Activity {
 				public void onTabChanged(String tabId) {
 					try {
 						if (tabId.equals("StockDetail")) {
-							if (StockDetailActivity.this.getParent().getIntent().hasExtra("stock_id")) {
-								String id = StockDetailActivity.this
-										.getParent().getIntent()
-										.getStringExtra("stock_id");
-								updateCurrentStock(id);
+							Intent intent = StockDetailActivity.this.getParent().getIntent();
+							if (intent.hasExtra("stock_id") && intent.hasExtra("market_id")) {
+								String id = intent.getExtras().getString("stock_id");
+								Market market = (Market) intent.getExtras().getSerializable("market_id");
+								
+								updateCurrentStock(id, market);
 							}
 							else
 								showWarning();
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
-						Toast.makeText(StockDetailActivity.this, R.string.InvalidData, Toast.LENGTH_LONG).show();
-						if (e.getMessage() != null)
+						Toast toast = Toast.makeText(StockDetailActivity.this, R.string.InvalidData, Toast.LENGTH_LONG);
+						if (e.getMessage() != null) {
 							Log.d("StockDetailActivity", e.getMessage());
+							toast.setText(getString(R.string.InvalidData) + ": " + e.getMessage());
+						}
+						toast.show();
 					}
 				}
 			});
 		}
 	}
 
-	private void updateCurrentStock(final String stockId) throws NullPointerException, IOException {
+	private void updateCurrentStock(final String stockId, Market market) throws NullPointerException, IOException {
+		if (stockId == null || stockId.length() == 0)
+			throw new NullPointerException("StockID must be defined");
+		if (market == null)
+			throw new NullPointerException("market must be defined");
 		
 		TextView txtHeader = (TextView) this.findViewById(R.id.txtDetailHeader);
 		TextView txtDate = (TextView) this.findViewById(R.id.txtDetailDate);
@@ -78,12 +88,11 @@ public class StockDetailActivity extends Activity {
 		if (txtPrice != null) {
 			txtPrice.setText(R.string.loading);
 		}
-		StockItem stockItem = manager.getStockItem(stockId);
+		StockItem stockItem = manager.getStockItem(stockId, market);
 		DayData data = manager.getLastValue(stockItem.getTicker());
 		
 		NumberFormat priceFormat = DecimalFormat.getCurrencyInstance();
-		// TODO set currency according to stock item
-		priceFormat.setCurrency(Currency.getInstance("CZK"));
+		priceFormat.setCurrency(stockItem.getMarket().getCurrency());
 		NumberFormat percentFormat = DecimalFormat.getNumberInstance();
 		NumberFormat volumeFormat = DecimalFormat.getNumberInstance();
 		volumeFormat.setGroupingUsed(true);

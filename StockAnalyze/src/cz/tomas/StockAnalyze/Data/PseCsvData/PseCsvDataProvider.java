@@ -12,9 +12,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import cz.tomas.StockAnalyze.Data.DataProviderAdviser;
 import cz.tomas.StockAnalyze.Data.DownloadService;
 import cz.tomas.StockAnalyze.Data.IStockDataProvider;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
+import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 
 import android.util.Log;
@@ -36,7 +38,7 @@ public class PseCsvDataProvider implements IStockDataProvider {
 	PseCsvParser parser;
 	//Map<String, Long> updateTimes;
 	long lasUpdateTime;
-	
+	Market market;
 	/*
 	 * first key is a date as "yyyy.MM.dd"
 	 * under this key is a map of CsvRows for that day
@@ -49,6 +51,7 @@ public class PseCsvDataProvider implements IStockDataProvider {
 		
 		//this.updateTimes = new HashMap<String, Long>();
 		this.lasUpdateTime = 0;
+		market = new Market("PSE", "XPRA", "CZK", this.getDescriptiveName());
 	}
 
 	/**
@@ -205,7 +208,7 @@ public class PseCsvDataProvider implements IStockDataProvider {
 		// we can take any item from cache
 		Map <String, CsvDataRow> rows = PseCsvDataProvider.dataCache.values().iterator().next();
 		for (CsvDataRow row : rows.values()) {
-			StockItem stockItem = new StockItem(row.ticker, row.code, row.name, row.market);
+			StockItem stockItem = new StockItem(row.ticker, row.code, row.name, this.market);
 			stocks.add(stockItem);
 		}
 			
@@ -253,5 +256,11 @@ public class PseCsvDataProvider implements IStockDataProvider {
 		}
 		
 		return result;
+	}
+
+	@Override
+	public DataProviderAdviser getAdviser() {
+		DataProviderAdviser adviser = new DataProviderAdviser(false, true, true, this.market);
+		return adviser;
 	}
 }

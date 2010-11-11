@@ -30,7 +30,8 @@ import android.widget.Toast;
  */
 public class StockSearchActivity extends Activity {
 
-	private static final String SELECTED_STOCK = "selected_stock";
+	private static final String SELECTED_STOCK = "stock_id";
+	private static final String MARKET = "market_id";
 	DataManager dataManger;
 	static final int DIALOG_ADD = 0;
 	
@@ -131,6 +132,7 @@ public class StockSearchActivity extends Activity {
 									
 									TabActivity act = (TabActivity) StockSearchActivity.this.getParent();
 									act.getIntent().putExtra("stock_id", stock.getId());
+									act.getIntent().putExtra("market_id", stock.getMarket());
 									act.getTabHost().setCurrentTabByTag("StockDetail");
 								} catch (Exception e) {
 									Toast.makeText(StockSearchActivity.this, e.getMessage(), Toast.LENGTH_LONG);

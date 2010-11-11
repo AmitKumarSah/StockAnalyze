@@ -13,6 +13,7 @@ import java.util.Map;
 
 import cz.tomas.StockAnalyze.Data.IStockDataProvider;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
+import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.Data.PseCsvData.PseCsvDataProvider;
 import cz.tomas.StockAnalyze.Data.PsePatriaData.PsePatriaDataAdapter;
@@ -59,7 +60,8 @@ public class DataManager {
 	}
 
 	public List<StockItem> search(String pattern) {
-		IStockDataProvider provider = DataProviderFactory.getDataProvider(pattern);
+		// FIXME
+		IStockDataProvider provider = DataProviderFactory.getRealTimeDataProvider(new Market("PSE", "XPRA", "CZK", null));
 		List<StockItem> stocks = provider.getAvailableStockList();
 		if (stocks == null)
 			throw new NullPointerException("can't get list of available stock items");
@@ -73,9 +75,8 @@ public class DataManager {
 		return results;
 	}
 	
-	public StockItem getStockItem(String id) {
-		// FIXME
-		IStockDataProvider provider = DataProviderFactory.getDataProvider("baa");
+	public StockItem getStockItem(String id, Market market) {
+		IStockDataProvider provider = DataProviderFactory.getDataProvider(market);
 		List<StockItem> stocks = provider.getAvailableStockList();
 		
 		// TODO find in db

@@ -6,14 +6,17 @@ package cz.tomas.StockAnalyze.Data.PsePatriaData;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Currency;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import cz.tomas.StockAnalyze.Data.DataProviderAdviser;
 import cz.tomas.StockAnalyze.Data.IStockDataProvider;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
+import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 
 /**
@@ -30,6 +33,8 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 	 * patria does not contain isin information
 	 */
 	Map<String, String> tickerIsinMapping;
+	
+	Market market;
 	
 	public PsePatriaDataAdapter() {
 		this.provider = new PsePatriaDataProvider();
@@ -51,6 +56,8 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 		this.tickerIsinMapping.put("BAAKTELEC", "CZ0009093209");
 		this.tickerIsinMapping.put("BAAUNIPE", "CZ0009091500");
 		this.tickerIsinMapping.put("BAAVIG", "AT0000908504");
+		
+		market = new Market("PSE", "XPRA", "CZK", this.getDescriptiveName());
 	}
 	
 	/* 
@@ -108,7 +115,7 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 				String isin = null;
 				if (this.tickerIsinMapping.containsKey(item.getKey()))
 					isin = this.tickerIsinMapping.get(item.getKey());
-				StockItem stockItem = new StockItem(item.getKey(), isin, data.getName(), "BCPP");
+				StockItem stockItem = new StockItem(item.getKey(), isin, data.getName(), this.market);
 				items.add(stockItem);
 			}
 		return items;
@@ -137,6 +144,12 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 	@Override
 	public boolean refresh() {
 		return this.provider.refresh();
+	}
+
+	@Override
+	public DataProviderAdviser getAdviser() {
+		DataProviderAdviser adviser = new DataProviderAdviser(true, false, false, this.market);
+		return adviser;
 	}
 
 }

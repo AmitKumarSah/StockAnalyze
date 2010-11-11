@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 import cz.tomas.StockAnalyze.Data.Model.DayData;
+import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 
 /**
@@ -23,5 +24,5 @@ public interface IStockDataProvider {
 	String getId();
 	String getDescriptiveName();
 	boolean refresh();
-
+	DataProviderAdviser getAdviser();
 }

@@ -5,7 +5,11 @@ package cz.tomas.StockAnalyze.Data;
 
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
+
+import cz.tomas.StockAnalyze.Data.Model.Market;
 
 import android.util.Log;
 
@@ -29,6 +33,70 @@ public class DataProviderFactory {
 		if (ticker.toUpperCase().startsWith("BAA") || 
 				ticker.toUpperCase().equals("PX")) {
 			return providers.get("PSE_PATRIA");
+		}
+		
+		return null;
+	}
+	
+	/*
+	 * get real time data provider for market specified
+	 * if no provider fits the condition, null is returned
+	 */
+	public static IStockDataProvider getDataProvider(Market market) {
+		
+		for (Entry<String, IStockDataProvider> provider : providers.entrySet()) {
+			DataProviderAdviser providerAdviser =  provider.getValue().getAdviser();
+			
+			if (providerAdviser.getMarkets().contains(market))
+				return provider.getValue();
+		}
+		
+		return null;
+	}
+	
+	/*
+	 * get data provider based on adviser,
+	 * if no provider fits the condition, null is returned
+	 */
+	public static IStockDataProvider getDataProvider(DataProviderAdviser adviser) {
+		
+		for (Entry<String, IStockDataProvider> provider : providers.entrySet()) {
+			DataProviderAdviser providerAdviser =  provider.getValue().getAdviser();
+			
+			if (providerAdviser.equals(adviser))
+				return provider.getValue();
+		}
+		
+		return null;
+	}
+	
+	/*
+	 * get real time data provider for market specified
+	 * if no provider fits the condition, null is returned
+	 */
+	public static IStockDataProvider getRealTimeDataProvider(Market market) {
+		
+		for (Entry<String, IStockDataProvider> provider : providers.entrySet()) {
+			DataProviderAdviser providerAdviser =  provider.getValue().getAdviser();
+			
+			if (providerAdviser.isRealTime() && providerAdviser.getMarkets().contains(market))
+				return provider.getValue();
+		}
+		
+		return null;
+	}
+	
+	/*
+	 * get real time data provider for market specified
+	 * if no provider fits the condition, null is returned
+	 */
+	public static IStockDataProvider getHistoricalDataProvider(Market market) {
+		
+		for (Entry<String, IStockDataProvider> provider : providers.entrySet()) {
+			DataProviderAdviser providerAdviser =  provider.getValue().getAdviser();
+			
+			if (! providerAdviser.isRealTime() && providerAdviser.getMarkets().contains(market))
+				return provider.getValue();
 		}
 		
 		return null;

@@ -60,6 +60,7 @@ public class StockListActivity extends ListActivity {
 					TabActivity act = (TabActivity) StockListActivity.this.getParent();
 					if (act != null) {
 						act.getIntent().putExtra("stock_id", stock.getId());
+						act.getIntent().putExtra("market_id", stock.getMarket());
 						act.getTabHost().setCurrentTabByTag("StockDetail");
 					}
 					else
