@@ -22,7 +22,7 @@ public class StockDataSqlStore extends SQLiteOpenHelper {
 	
 	private final static String DATABASE_FILE_NAME = "cz.tomas.StockAnalyze.Data.db";
 	
-	protected static final String STOCK_TABLE_NAME = "stock_data";
+	public static final String STOCK_TABLE_NAME = "stock_data";
 	private static final String STOCK_TABLE_CREATE =
          "CREATE TABLE " + STOCK_TABLE_NAME + " (" +
         // "id INTEGER PRIMARY KEY AUTOINCREMENT, " +

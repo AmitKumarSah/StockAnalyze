@@ -18,6 +18,8 @@ import cz.tomas.StockAnalyze.Data.PseCsvData.PseCsvDataProvider;
 import cz.tomas.StockAnalyze.Data.PsePatriaData.PsePatriaDataAdapter;
 
 import android.content.Context;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
@@ -29,7 +31,6 @@ import android.util.Log;
 public class DataManager {
 		
 	StockDataSqlStore sqlStore;
-	Map<String, IStockDataProvider> providers;
 	
 	List<IUpdateDateChangedHandler> updateDateChangedListeners;
 	
@@ -47,18 +48,18 @@ public class DataManager {
 		this.context = context;
 		
 		this.sqlStore = new StockDataSqlStore(context);
-		this.providers = new HashMap<String, IStockDataProvider>();
 		
 		IStockDataProvider pse = new PseCsvDataProvider();
 		IStockDataProvider patriaPse = new PsePatriaDataAdapter();
-		this.providers.put(pse.getId(), pse);
-		this.providers.put(patriaPse.getId(), patriaPse);
+		
+		DataProviderFactory.registerDataProvider(pse);
+		DataProviderFactory.registerDataProvider(patriaPse);
 		
 		this.updateDateChangedListeners = new ArrayList<IUpdateDateChangedHandler>();
 	}
 
 	public List<StockItem> search(String pattern) {
-		IStockDataProvider provider = this.providers.get("PSE_PATRIA");
+		IStockDataProvider provider = DataProviderFactory.getDataProvider(pattern);
 		List<StockItem> stocks = provider.getAvailableStockList();
 		if (stocks == null)
 			throw new NullPointerException("can't get list of available stock items");
@@ -73,7 +74,8 @@ public class DataManager {
 	}
 	
 	public StockItem getStockItem(String id) {
-		IStockDataProvider provider = this.providers.get("PSE_PATRIA");
+		// FIXME
+		IStockDataProvider provider = DataProviderFactory.getDataProvider("baa");
 		List<StockItem> stocks = provider.getAvailableStockList();
 		
 		// TODO find in db
@@ -88,10 +90,10 @@ public class DataManager {
 		float val = -1;
 		DayData data = null;
 		try {
-			IStockDataProvider provider = this.getDataProvider(ticker);
+			IStockDataProvider provider = DataProviderFactory.getDataProvider(ticker);
 			if (provider != null) {
 				data = provider.getLastData(ticker);
-				//val = data.getPrice();
+				val = data.getPrice();
 			}
 			else
 				throw new NullPointerException("Can't find appropriate data provider for " + ticker);
@@ -118,15 +120,6 @@ public class DataManager {
 //		}
 		return data;
 	}	
-	
-	private IStockDataProvider getDataProvider(String ticker) {
-		IStockDataProvider dataProvider = null;
-		if (ticker.startsWith("BAA") && this.providers.containsKey("PSE_PATRIA")) {
-			dataProvider = this.providers.get("PSE_PATRIA");
-		}
-		
-		return dataProvider;
-	}
 
 	public boolean isOnline(Context context) {
 		ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -135,15 +128,8 @@ public class DataManager {
 	}
 
 	public boolean refresh() throws Exception {
-		boolean result = false;
-		try {
-			for(IStockDataProvider p : this.providers.values()) {
-				result |= p.refresh();
-			}
-		} catch (Exception e) {
-			Log.d("DataManager", "Failed to refresh data! " + e.getMessage());
-			throw e;
-		}
+		boolean result = DataProviderFactory.refreshAll();
+
 		if (result)
 			fireUpdateDateChanged(Calendar.getInstance().getTimeInMillis());
 		return result;
