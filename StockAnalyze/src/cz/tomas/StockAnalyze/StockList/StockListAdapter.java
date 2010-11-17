@@ -154,7 +154,7 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
         if(txtPrice != null && txtChange != null) {
         	DayData data = null;
 			try {
-				data = this.dataManager.getLastValue(stock.getTicker());
+				data = this.dataManager.getLastValue(stock);
 			} catch (Exception e) {
 				txtPrice.setText("Fail");
 				if (e.getMessage() != null) {

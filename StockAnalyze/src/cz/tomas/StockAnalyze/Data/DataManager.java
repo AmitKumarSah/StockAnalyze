@@ -87,38 +87,34 @@ public class DataManager {
 		return null; 
 	}
 	
-	public DayData getLastValue(String ticker) throws IOException, NullPointerException {
+	public DayData getLastValue(StockItem item) throws IOException, NullPointerException {
 		float val = -1;
 		DayData data = null;
-		try {
-			IStockDataProvider provider = DataProviderFactory.getDataProvider(ticker);
-			if (provider != null) {
-				data = provider.getLastData(ticker);
-				val = data.getPrice();
+		Calendar now = Calendar.getInstance();
+		if (this.sqlStore.checkForData(now))
+			data = this.sqlStore.getDayData(now, item);
+		// we still can be without data- so we need to download it
+		if (data == null) {
+			try {
+				IStockDataProvider provider = DataProviderFactory.getDataProvider(item.getTicker());
+				if (provider != null) {
+					data = provider.getLastData(item.getTicker());
+					val = data.getPrice();
+				}
+				else
+					throw new NullPointerException("Can't find appropriate data provider for " + item.toString());
+			} catch (NullPointerException e) {
+				e.printStackTrace();
+				throw e;
 			}
-			else
-				throw new NullPointerException("Can't find appropriate data provider for " + ticker);
-		} catch (NullPointerException e) {
-			e.printStackTrace();
-			throw e;
+			catch (FileNotFoundException e) {
+				e.printStackTrace();
+				throw e;
+			}
+			if (val > 0) {
+				this.sqlStore.insertDayData(item, data);
+			}
 		}
-		catch (FileNotFoundException e) {
-			e.printStackTrace();
-			throw e;
-		}
-		
-//		if (val > 0) {
-//			try {
-//				SQLiteDatabase db = this.sqlStore.getWritableDatabase();
-//				db.execSQL("INSERT INTO " + StockDataSqlStore.TABLE_NAME + " values('"+ ticker + "', date('now'), " + val + ");");
-//			} catch (SQLException e) {
-//				Log.d("StockDataSqlStore", "failed to insert data." + e.getMessage());
-//				e.printStackTrace();
-//			} finally {
-//				if (this.sqlStore != null)
-//					this.sqlStore.close();
-//			}
-//		}
 		return data;
 	}	
 

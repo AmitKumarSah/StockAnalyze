@@ -22,6 +22,7 @@ public class DayData {
 	float yearMaximum;
 	float yearMinimum;
 	
+	// TODO get rid of this ctor
 	public DayData(CsvDataRow dataRow) {
 		if (dataRow == null) {
 			throw new NullPointerException("dataRow is null");
@@ -70,11 +71,13 @@ public class DayData {
 		}
 	}
 	
-	public DayData(float price, float change, Date date, float volume) {
+	public DayData(float price, float change, Date date, float volume, float yearMax, float yearMin) {
 		this.price = price;
 		this.change = change;
 		this.date = date;
 		this.volume = volume;
+		this.yearMaximum = yearMax;
+		this.yearMinimum = yearMin;
 	}
 	public float getPrice() {
 		return price;

@@ -12,9 +12,10 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteFullException;
 import android.util.Log;
+import cz.tomas.StockAnalyze.Data.DataSqlHelper;
 import cz.tomas.StockAnalyze.Data.StockDataSqlStore;
 
-public final class NewsSqlHelper extends StockDataSqlStore {
+public final class NewsSqlHelper extends DataSqlHelper {
 
 	private static final String SOURCE_CYRRUS = "http://www.cyrrus.cz/rss/cs";
 	private static final String SOURCE_CYRRUS_NAME = "Cyrrus";

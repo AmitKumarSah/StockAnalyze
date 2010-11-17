@@ -89,7 +89,7 @@ public class StockDetailActivity extends Activity {
 			txtPrice.setText(R.string.loading);
 		}
 		StockItem stockItem = manager.getStockItem(stockId, market);
-		DayData data = manager.getLastValue(stockItem.getTicker());
+		DayData data = manager.getLastValue(stockItem);
 		
 		NumberFormat priceFormat = DecimalFormat.getCurrencyInstance();
 		priceFormat.setCurrency(stockItem.getMarket().getCurrency());

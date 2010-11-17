@@ -30,8 +30,8 @@ public class StockComparator implements Comparator<StockItem> {
 		DayData data1 = null;
 		DayData data2 = null;
 		try {
-		 	data1 = this.dataManager.getLastValue(stock1.getTicker());
-			data2 = this.dataManager.getLastValue(stock2.getTicker());
+		 	data1 = this.dataManager.getLastValue(stock1);
+			data2 = this.dataManager.getLastValue(stock2);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return 0;
