@@ -75,7 +75,7 @@ public class DataManager {
 		return results;
 	}
 	
-	public StockItem getStockItem(String id, Market market) {
+	public StockItem getStockItem(String id, Market market) throws NullPointerException {
 		IStockDataProvider provider = DataProviderFactory.getDataProvider(market);
 		List<StockItem> stocks = provider.getAvailableStockList();
 		

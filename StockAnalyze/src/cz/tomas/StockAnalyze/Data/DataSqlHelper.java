@@ -10,7 +10,7 @@ public class DataSqlHelper extends SQLiteOpenHelper {
 		
 		private final String DATABASE_NAME = "cz.tomas.StockAnalyze.Data";
 		
-		private final static int DATABASE_VERSION_NUMBER = 4;
+		private final static int DATABASE_VERSION_NUMBER = 7;
 		
 		private final static String DATABASE_FILE_NAME = "cz.tomas.StockAnalyze.Data.db";
 		
@@ -27,12 +27,13 @@ public class DataSqlHelper extends SQLiteOpenHelper {
 			"CREATE TABLE " + DAY_DATA_TABLE_NAME + " (" +
 	         "id integer PRIMARY KEY AUTOINCREMENT," +
 	         "stock_id varchar(50)," +
-	         "FOREIGN KEY(stock_id) REFERENCES " + STOCK_TABLE_NAME + "(id));" +
 	         "year_min real," +
 	         "year_max real," +
 	         "change real not null," +
 	         "date TEXT not null, " +				//ISO8601 strings "YYYY-MM-DD HH:MM:SS.SSS"
-	         "price real not null);";
+	         "price real not null," +
+	         "FOREIGN KEY(stock_id) REFERENCES " + STOCK_TABLE_NAME + "(id)" +
+	         ");";
 		
 		private static final String STOCK_TABLE_DROP =
 			"DROP TABLE IF EXISTS " + STOCK_TABLE_NAME;
@@ -43,7 +44,7 @@ public class DataSqlHelper extends SQLiteOpenHelper {
 				+ "title text not null, url text not null, country text not null);";
 
 		private static final String CREATE_TABLE_ARTICLES = "create table articles (article_id integer primary key autoincrement, "
-				+ "feed_id int not null, title text not null, description text, url text not null, date int not null);";
+				+ "feed_id int not null, title text not null, description text, url text not null, date int not null, read int);";
 
 		protected static final String FEEDS_TABLE = "feeds";
 		protected static final String ARTICLES_TABLE = "articles";

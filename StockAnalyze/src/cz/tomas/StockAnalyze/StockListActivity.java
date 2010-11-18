@@ -97,6 +97,7 @@ public class StockListActivity extends ListActivity {
 	    switch (item.getItemId()) {
 	    case R.id.menu_stock_list_refresh:
 	    	try {
+	    		// TODO -background thread!
 				if (this.dataManager.refresh()){
 			    	this.setListAdapter(null);
 			    	this.findViewById(R.id.progressStockList).setVisibility(View.VISIBLE);

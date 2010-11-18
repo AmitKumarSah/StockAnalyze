@@ -8,6 +8,7 @@ import java.util.List;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.CursorIndexOutOfBoundsException;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteFullException;
@@ -91,17 +92,19 @@ public final class NewsSqlHelper extends DataSqlHelper {
 					"feed_id", "title", "url", "country" }, null, null, null, null, null);
 
 			c.moveToFirst();
-			while (c.moveToNext()) {
+			do {
 				Feed feed = new Feed();
 				feed.setFeedId(c.getLong(0));
 				feed.setTitle(c.getString(1));
 				feed.setUrl(new URL(c.getString(2)));
 				feed.setCountryCode(c.getString(3));
 				feeds.add(feed);
-			}
+			} while (c.moveToNext());
 		} catch (SQLException e) {
 			Log.e("NewsSqlHelper", e.toString());
 		} catch (MalformedURLException e) {
+			Log.e("NewsSqlHelper", e.toString());
+		} catch (CursorIndexOutOfBoundsException e) {
 			Log.e("NewsSqlHelper", e.toString());
 		} finally {
 			if (c != null)
@@ -119,7 +122,7 @@ public final class NewsSqlHelper extends DataSqlHelper {
 					+ feedId.toString(), null, null, null, null);
 
 			c.moveToFirst();
-			while (c.moveToNext()) {
+			do {
 				Article article = new Article();
 				article.setArticleId(c.getLong(0));
 				article.setFeedId(c.getLong(1));
@@ -128,7 +131,7 @@ public final class NewsSqlHelper extends DataSqlHelper {
 				article.setUrl(new URL(c.getString(4)));
 				article.setDate(Long.parseLong(c.getString(5)));
 				articles.add(article);
-			}
+			} while (c.moveToNext());
 		} catch (SQLException e) {
 			Log.e("NewsSqlHelper", e.toString());
 		} catch (MalformedURLException e) {
