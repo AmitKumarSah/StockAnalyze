@@ -50,10 +50,10 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 		this.tickerIsinMapping.put("BAAKOMB", "CZ0008019106");
 		this.tickerIsinMapping.put("BAAKITDG", "US4824702009");
 		this.tickerIsinMapping.put("BAANWR", "NL0006282204");
-		this.tickerIsinMapping.put("BAAKORCO", "LU0122624777");
+		this.tickerIsinMapping.put("BAAORCO", "LU0122624777");
 		this.tickerIsinMapping.put("BAAPEGAS", "LU0275164910");
 		this.tickerIsinMapping.put("BAATABAK", "CS0008418869");
-		this.tickerIsinMapping.put("BAAKTELEC", "CZ0009093209");
+		this.tickerIsinMapping.put("BAATELEC", "CZ0009093209");
 		this.tickerIsinMapping.put("BAAUNIPE", "CZ0009091500");
 		this.tickerIsinMapping.put("BAAVIG", "AT0000908504");
 		
