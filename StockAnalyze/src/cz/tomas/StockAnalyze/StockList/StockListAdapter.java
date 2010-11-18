@@ -3,31 +3,27 @@
  */
 package cz.tomas.StockAnalyze.StockList;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
-import cz.tomas.StockAnalyze.R.id;
-import cz.tomas.StockAnalyze.R.layout;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Color;
-import android.opengl.Visibility;
 import android.os.AsyncTask;
-import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,12 +38,15 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 	protected DataManager dataManager;
 	LayoutInflater vi; 
 	
+	Map<StockItem, DayData> datas;
+	
 	Boolean showIcons = true;
 	
 	public StockListAdapter(final Context context, int textViewResourceId, final DataManager dataManager, final String filter) {
 		super(context, textViewResourceId);
 		this.dataManager = dataManager;
 
+		this.datas = new HashMap<StockItem, DayData>();
         this.vi = (LayoutInflater)	this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         StockListTask task = new StockListTask();
@@ -63,7 +62,7 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 	public View getView(int position, View convertView, ViewGroup parent) {
         View v = convertView;
      // Handle dividers
-        if(this.isDivider(position)){
+        if(this.isDivider(position)) {
             View divider = this.vi.inflate(R.layout.stock_list_divider, null);
             TextView txt = (TextView) divider.findViewById(R.id.txtStockListDivider);
             txt.setText("Prague Stock Exchange");
@@ -102,7 +101,8 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
         if(txtPrice != null && txtChange != null) {
         	DayData data = null;
 			try {
-				data = this.dataManager.getLastValue(stock);
+				//data = this.dataManager.getLastValue(stock);
+				data = this.datas.get(stock);
 			} catch (Exception e) {
 				txtPrice.setText("Fail");
 				if (e.getMessage() != null) {
@@ -160,8 +160,23 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 				items = StockListAdapter.this.dataManager.search(params[0]);
 
             	Collections.sort(items, new StockComparator(StockCompareTypes.Volume, dataManager));
+            	
 			} catch (Exception e) {
 				String message = "Failed to get stock list. ";
+				if (e.getMessage() != null)
+					message += e.getMessage();
+				Log.d("StockListAdapter", message);
+				e.printStackTrace();
+			}
+			try {
+				// get day data for each stock and save it
+            	datas.clear();
+            	for (StockItem stockItem : items) {
+					DayData dayData = dataManager.getLastValue(stockItem);
+					datas.put(stockItem, dayData);
+				}
+			} catch (Exception e) {
+				String message = "Failed to get stock day data. ";
 				if (e.getMessage() != null)
 					message += e.getMessage();
 				Log.d("StockListAdapter", message);

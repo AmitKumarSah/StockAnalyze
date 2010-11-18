@@ -53,11 +53,11 @@ public final class NewsSqlHelper extends DataSqlHelper {
 		values.put("url", url.toString());
 		values.put("country", countryCode);
 		
-		return (super.getWritableDatabase().insert(FEEDS_TABLE, null, values) > 0);
+		return (super.getWritableDatabase().insert(FEEDS_TABLE_NAME, null, values) > 0);
 	}
 
 	public boolean deleteFeed(Long feedId) throws SQLException {
-		return (super.getWritableDatabase().delete(FEEDS_TABLE,
+		return (super.getWritableDatabase().delete(FEEDS_TABLE_NAME,
 				"feed_id=" + feedId.toString(), null) > 0);
 	}
 
@@ -72,7 +72,7 @@ public final class NewsSqlHelper extends DataSqlHelper {
 		
 		SQLiteDatabase db = this.getWritableDatabase();
 		db.beginTransaction();
-		Boolean result = (db.insert(ARTICLES_TABLE, null, values) > 0);
+		Boolean result = (db.insert(ARTICLES_TABLE_NAME, null, values) > 0);
 		if (result)
 			db.setTransactionSuccessful();
 		db.endTransaction();
@@ -80,7 +80,7 @@ public final class NewsSqlHelper extends DataSqlHelper {
 	}
 
 	public boolean deleteAricles(Long feedId) throws SQLException {
-		return (this.getWritableDatabase().delete(ARTICLES_TABLE,
+		return (this.getWritableDatabase().delete(ARTICLES_TABLE_NAME,
 				"feed_id=" + feedId.toString(), null) > 0);
 	}
 
@@ -88,7 +88,7 @@ public final class NewsSqlHelper extends DataSqlHelper {
 		ArrayList<Feed> feeds = new ArrayList<Feed>();
 		Cursor c = null;
 		try {
-			c = super.getReadableDatabase().query(FEEDS_TABLE, new String[] {
+			c = super.getWritableDatabase().query(FEEDS_TABLE_NAME, new String[] {
 					"feed_id", "title", "url", "country" }, null, null, null, null, null);
 
 			c.moveToFirst();
@@ -117,7 +117,7 @@ public final class NewsSqlHelper extends DataSqlHelper {
 		ArrayList<Article> articles = new ArrayList<Article>();
 		Cursor c = null;
 		try {
-			c = super.getWritableDatabase().query(ARTICLES_TABLE, new String[] {
+			c = super.getWritableDatabase().query(ARTICLES_TABLE_NAME, new String[] {
 					"article_id", "feed_id", "title", "description", "url", "date" }, "feed_id="
 					+ feedId.toString(), null, null, null, null);
 

@@ -10,12 +10,13 @@ public class DataSqlHelper extends SQLiteOpenHelper {
 		
 		private final String DATABASE_NAME = "cz.tomas.StockAnalyze.Data";
 		
-		private final static int DATABASE_VERSION_NUMBER = 7;
+		private final static int DATABASE_VERSION_NUMBER = 13;
 		
 		private final static String DATABASE_FILE_NAME = "cz.tomas.StockAnalyze.Data.db";
 		
-		public static final String STOCK_TABLE_NAME = "stock_item";
-		public static final String DAY_DATA_TABLE_NAME = "stock_data";
+		protected static final String STOCK_TABLE_NAME = "stock_item";
+		protected static final String DAY_DATA_TABLE_NAME = "stock_data";
+		protected static final String USER_STOCK_TABLE_NAME = "user_stocks";
 		
 		private static final String STOCK_TABLE_CREATE =
 	         "CREATE TABLE " + STOCK_TABLE_NAME + " (" +
@@ -30,15 +31,22 @@ public class DataSqlHelper extends SQLiteOpenHelper {
 	         "year_min real," +
 	         "year_max real," +
 	         "change real not null," +
-	         "date TEXT not null, " +				//ISO8601 strings "YYYY-MM-DD HH:MM:SS.SSS"
+	         "date integer not null, " +				//ISO8601 strings "YYYY-MM-DD HH:MM:SS.SSS"
 	         "price real not null," +
+	         "volume real not null," +
+	         "FOREIGN KEY(stock_id) REFERENCES " + STOCK_TABLE_NAME + "(id)" +
+	         ");";
+
+		private static final String USER_STOCK_TABLE_CRETE = 
+			"CREATE TABLE " + USER_STOCK_TABLE_NAME + " (" +
+	         "id integer PRIMARY KEY AUTOINCREMENT," +
+	         "stock_id varchar(50)," +
+	         "tag varchar(20)," +
 	         "FOREIGN KEY(stock_id) REFERENCES " + STOCK_TABLE_NAME + "(id)" +
 	         ");";
 		
-		private static final String STOCK_TABLE_DROP =
-			"DROP TABLE IF EXISTS " + STOCK_TABLE_NAME;
-		private static final String DAY_DATA_TABLE_DROP =
-			"DROP TABLE IF EXISTS " + DAY_DATA_TABLE_NAME;
+		private static final String TABLE_DROP =
+			"DROP TABLE IF EXISTS ";
 		
 		private static final String CREATE_TABLE_FEEDS = "create table feeds (feed_id integer primary key autoincrement, "
 				+ "title text not null, url text not null, country text not null);";
@@ -46,8 +54,8 @@ public class DataSqlHelper extends SQLiteOpenHelper {
 		private static final String CREATE_TABLE_ARTICLES = "create table articles (article_id integer primary key autoincrement, "
 				+ "feed_id int not null, title text not null, description text, url text not null, date int not null, read int);";
 
-		protected static final String FEEDS_TABLE = "feeds";
-		protected static final String ARTICLES_TABLE = "articles";
+		protected static final String FEEDS_TABLE_NAME = "feeds";
+		protected static final String ARTICLES_TABLE_NAME = "articles";
 		
 		public DataSqlHelper(Context context) {
 			super(context, DATABASE_FILE_NAME, null, DATABASE_VERSION_NUMBER);
@@ -60,6 +68,8 @@ public class DataSqlHelper extends SQLiteOpenHelper {
 				db.execSQL(STOCK_TABLE_CREATE);
 				Log.d("DataSqlHelper", "creating day data table!");
 				db.execSQL(DAY_DATA_TABLE_CRETE);
+				Log.d("DataSqlHelper", "creating user stock table!");
+				db.execSQL(USER_STOCK_TABLE_CRETE);
 				Log.d("DataSqlHelper", "creating Feeds table!");
 				db.execSQL(CREATE_TABLE_FEEDS);
 				Log.d("DataSqlHelper", "creating Articles table!");
@@ -74,8 +84,11 @@ public class DataSqlHelper extends SQLiteOpenHelper {
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 			Log.d("StockDataSqlStore", "droping tables!");
-			db.execSQL(DAY_DATA_TABLE_DROP);
-			db.execSQL(STOCK_TABLE_DROP);
+			db.execSQL(TABLE_DROP + DAY_DATA_TABLE_NAME);
+			db.execSQL(TABLE_DROP + STOCK_TABLE_NAME);
+			db.execSQL(TABLE_DROP + USER_STOCK_TABLE_NAME);
+			db.execSQL(TABLE_DROP + ARTICLES_TABLE_NAME);
+			db.execSQL(TABLE_DROP + FEEDS_TABLE_NAME);
 			onCreate(db);
 		}
 

@@ -91,7 +91,7 @@ public class DataManager {
 		float val = -1;
 		DayData data = null;
 		Calendar now = Calendar.getInstance();
-		if (this.sqlStore.checkForData(now))
+		if (this.sqlStore.checkForData(item, now))
 			data = this.sqlStore.getDayData(now, item);
 		// we still can be without data- so we need to download it
 		if (data == null) {
