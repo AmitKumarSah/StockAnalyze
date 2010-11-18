@@ -49,7 +49,7 @@ public class PsePatriaDataMarketItem {
 		this.patriaTickerMapping.put("ORCO", "BAAORCO");
 		this.patriaTickerMapping.put("PEGAS", "BAAPEGAS");
 		this.patriaTickerMapping.put("PM", "BAATABAK");
-		this.patriaTickerMapping.put("TEL. O2", "BAAKTELEC");
+		this.patriaTickerMapping.put("TEL. O2", "BAATELEC");
 		this.patriaTickerMapping.put("UNI", "BAAUNIPE");
 		this.patriaTickerMapping.put("VIG", "BAAVIG");
 	}
