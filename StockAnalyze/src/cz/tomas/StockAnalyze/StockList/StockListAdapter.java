@@ -20,6 +20,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.opengl.Visibility;
+import android.os.AsyncTask;
 import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -48,62 +49,9 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 		this.dataManager = dataManager;
 
         this.vi = (LayoutInflater)	this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		
-		final List<StockItem> tempItems = new ArrayList<StockItem>();
-		//tempItems.add(new StockItem("-", "-", "-", "-"));
-		// firstly, "getStockList" is run to get data, then in ui thread "updateUi" is invoked
-		
-		final Runnable updateUi = new Runnable() {
-			
-			@Override
-			public void run() {
-				if (tempItems.size() == 0)
-					Toast.makeText(context, "Failed!", Toast.LENGTH_LONG).show();
-				else
-		        	for (int i = 0; i < tempItems.size(); i++) {
-		        		add(tempItems.get(i));
-					}
-            	
-		    	notifyDataSetChanged();
-		    	try {
-					((Activity) getContext()).findViewById(R.id.progressStockList).setVisibility(View.GONE);
-				} catch (Exception e) {
-					Log.d("cz.tomas.StockAnalyze.News.NewsListAdapter", "failed to dissmis progess bar! " + e.getMessage());
-				}
-		    	//progressDialog.dismiss();
-			}
-		};
-		
-		Runnable getStockList = new Runnable() {
-            @Override
-            public void run() {
-            	List<StockItem> items = null;
-            	try {
-					items = StockListAdapter.this.dataManager.search(filter);
 
-	            	Collections.sort(items, new StockComparator(StockCompareTypes.Volume, dataManager));
-	            	
-	            	for (int i = 0; i < items.size(); i++) {
-	            		tempItems.add(items.get(i));
-					}
-				} catch (Exception e) {
-					String message = "Failed to get stock list. ";
-					if (e.getMessage() != null)
-						message += e.getMessage();
-					Log.d("StockListAdapter", message);
-					e.printStackTrace();
-				}
-				finally {
-	            	((Activity) context).runOnUiThread(updateUi);	
-				}
-            	
-            }
-        };
-    	
-		Thread thread =  new Thread(null, getStockList, "StockListBackground");
-        thread.start();
-//        progressDialog = ProgressDialog.show(getContext(),    
-//                "Please wait...", "Retrieving data ...", true);
+        StockListTask task = new StockListTask();
+        task.execute(filter);
 	}
 	
 	@Override
@@ -201,5 +149,57 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 	
 	public void showIcons(Boolean show) {
 		this.showIcons = show;
+	}
+	
+	class StockListTask extends AsyncTask<String, Integer, List<StockItem>> {
+
+		@Override
+		protected List<StockItem> doInBackground(String... params) {
+			List<StockItem> items = null;
+        	try {
+				items = StockListAdapter.this.dataManager.search(params[0]);
+
+            	Collections.sort(items, new StockComparator(StockCompareTypes.Volume, dataManager));
+			} catch (Exception e) {
+				String message = "Failed to get stock list. ";
+				if (e.getMessage() != null)
+					message += e.getMessage();
+				Log.d("StockListAdapter", message);
+				e.printStackTrace();
+			}
+			return items;
+		}
+
+		/* 
+		 * notify list
+		 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
+		 */
+		@Override
+		protected void onPostExecute(List<StockItem> result) {
+			super.onPostExecute(result);
+			if (result.size() == 0)
+				Toast.makeText(getContext(), "Failed!", Toast.LENGTH_LONG).show();
+			else
+	        	for (int i = 0; i < result.size(); i++) {
+	        		add(result.get(i));
+				}
+        	
+	    	notifyDataSetChanged();
+	    	try {
+				((Activity) getContext()).findViewById(R.id.progressStockList).setVisibility(View.GONE);
+			} catch (Exception e) {
+				Log.d("cz.tomas.StockAnalyze.News.NewsListAdapter", "failed to dissmis progess bar! " + e.getMessage());
+			}
+		}
+
+		/* 
+		 * @see android.os.AsyncTask#onProgressUpdate(Progress[])
+		 */
+		@Override
+		protected void onProgressUpdate(Integer... values) {
+			super.onProgressUpdate(values);
+		}
+		
+		 
 	}
 }
