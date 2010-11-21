@@ -15,6 +15,7 @@ import cz.tomas.StockAnalyze.Data.PseCsvData.CsvDataRow;
 public class DayData {
 	float price;
 	float change;
+	float absChange;
 	Date date;
 	float volume;
 	int tradedPieaces;
@@ -78,13 +79,28 @@ public class DayData {
 		this.volume = volume;
 		this.yearMaximum = yearMax;
 		this.yearMinimum = yearMin;
+		
+		this.absChange = this.price * this.change / 100.0f;
 	}
+	
 	public float getPrice() {
 		return price;
 	}
+	/*
+	 * percentual change
+	 */
 	public float getChange() {
 		return change;
 	}
+	
+	/**
+	 * absolute change in currency of the stock
+	 * @return the absChange
+	 */
+	public float getAbsChange() {
+		return absChange;
+	}
+	
 	public Date getDate() {
 		return date;
 	}

@@ -3,6 +3,8 @@
  */
 package cz.tomas.StockAnalyze.StockList;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -111,17 +113,21 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 			}
         	if (data != null) {
 				txtPrice.setText(String.valueOf(data.getPrice()));
-				txtChange.setText(data.getChange() + "%");
+				NumberFormat percentFormat = DecimalFormat.getNumberInstance();
+				percentFormat.setMaximumFractionDigits(2);
+				String strChange = percentFormat.format(data.getChange());
+				String strAbsChange = percentFormat.format(data.getAbsChange());
+				txtChange.setText(String.format("%s (%s%%)", strAbsChange, strChange));
 				if (data.getChange() > 0) {
-					txtPrice.setTextColor(Color.GREEN);
+					//txtPrice.setTextColor(Color.GREEN);
 					txtChange.setTextColor(Color.GREEN);
 				}
 				else if (data.getChange() < 0) {
-					txtPrice.setTextColor(Color.RED);
+					//txtPrice.setTextColor(Color.RED);
 					txtChange.setTextColor(Color.RED);
 				}
 				else {
-					txtPrice.setTextColor(Color.BLACK);
+					//txtPrice.setxtChange.setText(String.format("%s (%s%%)", strAbsChange, strChange));tTextColor(Color.BLACK);
 					txtChange.setTextColor(Color.BLACK);
 				}
 			}

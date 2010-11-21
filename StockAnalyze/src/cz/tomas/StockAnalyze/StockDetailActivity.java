@@ -79,6 +79,7 @@ public class StockDetailActivity extends Activity {
 		TextView txtDate = (TextView) this.findViewById(R.id.txtDetailDate);
 		TextView txtName = (TextView) this.findViewById(R.id.txtDetailName);
 		TextView txtPrice = (TextView) this.findViewById(R.id.txtDetailClosingPrice);
+		TextView txtChange = (TextView) this.findViewById(R.id.txtDetailChange);
 		TextView txtVolume = (TextView) this.findViewById(R.id.txtDetailVolume);
 		TextView txtMax = (TextView) this.findViewById(R.id.txtDetailMax);
 		TextView txtMin = (TextView) this.findViewById(R.id.txtDetailMin);
@@ -94,6 +95,7 @@ public class StockDetailActivity extends Activity {
 		NumberFormat priceFormat = DecimalFormat.getCurrencyInstance();
 		priceFormat.setCurrency(stockItem.getMarket().getCurrency());
 		NumberFormat percentFormat = DecimalFormat.getNumberInstance();
+		percentFormat.setMaximumFractionDigits(2);
 		NumberFormat volumeFormat = DecimalFormat.getNumberInstance();
 		volumeFormat.setGroupingUsed(true);
 
@@ -120,13 +122,18 @@ public class StockDetailActivity extends Activity {
 			txtName.setText(stockItem.getName());
 		if (txtPrice != null) {
 			String strPrice = priceFormat.format(data.getPrice());
+			txtPrice.setText(strPrice);
+			//txtPrice.setText(String.format("%s (%s%%)", strPrice, strChange));
+		}
+		if (txtChange != null) {
 			String strChange = percentFormat.format(data.getChange());
+			String strAbsChange = percentFormat.format(data.getAbsChange());
+			txtChange.setText(String.format("%s (%s%%)", strAbsChange, strChange));
 			
-			txtPrice.setText(String.format("%s (%s%%)", strPrice, strChange));
 			if (data.getChange() > 0f)
-        		txtPrice.setTextColor(Color.GREEN);
+				txtChange.setTextColor(Color.GREEN);
 			else if (data.getChange() < 0f)
-            	txtPrice.setTextColor(Color.RED);
+				txtChange.setTextColor(Color.RED);
 		}
 	}
 
