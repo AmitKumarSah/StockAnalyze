@@ -2,4 +2,6 @@
 <resources>
 <color name="list_item_background">#EDEFFF</color>
 <color name="font_color">#101010</color>
+<color name="news_item_unread_color">#00EE00</color>
+<color name="news_item_read_color">#DDDDDD</color>
 </resources>

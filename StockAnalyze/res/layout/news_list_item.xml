@@ -3,11 +3,24 @@
   xmlns:android="http://schemas.android.com/apk/res/android"
   android:layout_width="fill_parent"
   android:layout_height="fill_parent"
-  android:orientation="vertical">
-<TextView android:layout_height="wrap_content" android:layout_width="fill_parent" android:id="@+id/txtNewsItemTitle" android:textStyle="bold"></TextView>
-<TextView android:id="@+id/txtNewsItemContentPreview" android:layout_width="fill_parent" android:layout_height="fill_parent"></TextView>
-<TextView android:id="@+id/txtNewsItemBottomInfo" android:layout_width="fill_parent" android:layout_height="wrap_content" android:textStyle="italic"></TextView>
+  android:orientation="horizontal">
+<View android:id="@+id/viewReadMark" android:layout_gravity="left" android:layout_marginBottom="5pt" android:layout_marginRight="2pt"
+	android:layout_weight="96" android:layout_height="20pt" android:layout_width="wrap_content"
+	android:background="@color/news_item_unread_color" />
+<LinearLayout android:id="@+id/LinearLayout01" android:layout_width="fill_parent" android:layout_height="wrap_content"
+	android:layout_gravity="fill_horizontal" android:layout_weight="4" android:orientation="vertical">
 
+<TextView 
+	android:layout_height="wrap_content" 
+	android:layout_width="fill_parent" 
+	android:id="@+id/txtNewsItemTitle" 
+	android:textStyle="bold" />
+<TextView android:id="@+id/txtNewsItemBottomInfo"
+	style="@style/subText.Small" />
+<TextView android:id="@+id/txtNewsItemContentPreview"
+	android:layout_width="fill_parent" 
+	android:layout_height="fill_parent" />
 
+</LinearLayout>
 
 </LinearLayout>

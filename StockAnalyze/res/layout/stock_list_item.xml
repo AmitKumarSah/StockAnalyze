@@ -5,50 +5,44 @@
     android:padding="6dip"
     android:orientation="horizontal" >
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
-        android:layout_marginRight="6dip"
+        style="@style/logoView"
         android:id="@+id/iconStockItem" android:src="@drawable/px_logo" android:maxHeight="16dip"/>
     <LinearLayout
         android:orientation="vertical"
-        android:layout_width="0dip"
+        android:layout_width="fill_parent"
         android:layout_weight="1"
         android:layout_height="fill_parent">
         <TextView
             android:id="@+id/toptext"
             android:layout_width="fill_parent"
-            android:layout_height="0dip"
-            android:layout_weight="1"
-            android:gravity="center_vertical"
-        android:textColor="@color/font_color"/>
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="0dip"
-            android:layout_weight="1" 
-            android:id="@+id/bottomtext"
+            android:layout_height="wrap_content"
+            android:layout_weight="50"
             android:singleLine="true"
-            android:ellipsize="marquee"
-        android:textStyle="italic" android:textColor="@color/font_color"/>
+            android:gravity="center_vertical"/>
+        <TextView
+            android:id="@+id/bottomtext"
+            style="@style/subText"
+            android:layout_weight="50"
+            android:layout_gravity="fill_horizontal" />
     </LinearLayout>
 	<LinearLayout
 		android:orientation="vertical"
-		android:layout_width="0dip"
+		android:layout_width="fill_parent"
 		android:layout_weight="1"
-		android:layout_height="fill_parent">
+		android:layout_height="fill_parent"
+		android:paddingRight="4dip">
 		<TextView
-         android:id="@+id/righttext"
-         android:layout_width="fill_parent"
-         android:layout_height="0dip"
-         android:layout_weight="1"
-         android:gravity="right"
-     android:textColor="@color/font_color"/>
-     <TextView
-         android:id="@+id/righttext2"
-         android:layout_width="fill_parent"
-         android:layout_height="0dip"
-         android:layout_weight="1"
-         android:gravity="right"
-     android:textColor="@color/font_color"/>
+			style="@style/moneyText"
+        	android:id="@+id/righttext"
+        	android:layout_width="fill_parent"
+        	android:layout_height="wrap_content"
+        	android:layout_weight="1"
+        	android:gravity="right"/>
+	    <TextView
+	        android:id="@+id/righttext2"
+	        android:layout_weight="1"
+	        android:gravity="right"
+			style="@style/subText"/>
 	</LinearLayout>
     
 </LinearLayout>
