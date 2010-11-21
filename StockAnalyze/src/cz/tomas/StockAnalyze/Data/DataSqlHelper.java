@@ -16,6 +16,7 @@ public class DataSqlHelper extends SQLiteOpenHelper {
 		
 		protected static final String STOCK_TABLE_NAME = "stock_item";
 		protected static final String DAY_DATA_TABLE_NAME = "stock_data";
+		protected static final String INTRADAY_DATA_TABLE_NAME = "stock_intraday_data";
 		protected static final String USER_STOCK_TABLE_NAME = "user_stocks";
 		
 		private static final String STOCK_TABLE_CREATE =
@@ -25,6 +26,17 @@ public class DataSqlHelper extends SQLiteOpenHelper {
 	         "name TEXT);";
 		
 		private static final String DAY_DATA_TABLE_CRETE = 
+			"CREATE TABLE " + DAY_DATA_TABLE_NAME + " (" +
+	         "id integer PRIMARY KEY AUTOINCREMENT," +
+	         "stock_id varchar(50)," +
+	         "change real not null," +
+	         "date integer not null, " +				//ISO8601 strings "YYYY-MM-DD HH:MM:SS.SSS"
+	         "price real not null," +
+	         "volume real not null," +
+	         "FOREIGN KEY(stock_id) REFERENCES " + STOCK_TABLE_NAME + "(id)" +
+	         ");";
+		
+		private static final String INTRADAY_DATA_TABLE_CRETE = 
 			"CREATE TABLE " + DAY_DATA_TABLE_NAME + " (" +
 	         "id integer PRIMARY KEY AUTOINCREMENT," +
 	         "stock_id varchar(50)," +

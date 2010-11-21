@@ -17,46 +17,54 @@ public final class R {
         public static final int news_item_unread_color=0x7f040002;
     }
     public static final class drawable {
-        public static final int ic_launcher=0x7f020000;
-        public static final int ic_menu_home=0x7f020001;
-        public static final int ic_menu_refresh=0x7f020002;
-        public static final int ic_menu_settings=0x7f020003;
-        public static final int icon=0x7f020004;
-        public static final int px_logo=0x7f020005;
+        public static final int groupbox_body_shape=0x7f020000;
+        public static final int groupbox_header_shape=0x7f020001;
+        public static final int groupbox_shape=0x7f020002;
+        public static final int ic_launcher=0x7f020003;
+        public static final int ic_menu_home=0x7f020004;
+        public static final int ic_menu_refresh=0x7f020005;
+        public static final int ic_menu_settings=0x7f020006;
+        public static final int icon=0x7f020007;
+        public static final int px_logo=0x7f020008;
     }
     public static final class id {
+        public static final int ChartView=0x7f080019;
         public static final int DetailLinear=0x7f080006;
+        public static final int DetailLinearSummary=0x7f08000a;
         public static final int LinearLayout01=0x7f080002;
-        public static final int SearchEditText=0x7f08001d;
-        public static final int TableDetailRow01=0x7f08000d;
-        public static final int TextView01=0x7f080007;
-        public static final int bottomtext=0x7f08001a;
-        public static final int iconStockItem=0x7f080018;
-        public static final int lblDetailMax=0x7f080011;
-        public static final int lblDetailMin=0x7f08000e;
-        public static final int lblDetailVolume=0x7f080014;
-        public static final int listFoundItems=0x7f08001e;
-        public static final int menu_stock_list_refresh=0x7f080020;
-        public static final int menu_stock_list_settings=0x7f08001f;
+        public static final int SearchEditText=0x7f080022;
+        public static final int TableDetailRow01=0x7f080010;
+        public static final int TextView01=0x7f080008;
+        public static final int bottomtext=0x7f08001e;
+        public static final int iconStockItem=0x7f08001c;
+        public static final int label_stats=0x7f08000e;
+        public static final int lblDetailMax=0x7f080014;
+        public static final int lblDetailMin=0x7f080011;
+        public static final int lblDetailVolume=0x7f080017;
+        public static final int listFoundItems=0x7f080023;
+        public static final int menu_stock_list_refresh=0x7f080025;
+        public static final int menu_stock_list_settings=0x7f080024;
+        public static final int pricelayout=0x7f08001f;
         public static final int progressNews=0x7f080000;
-        public static final int progressStockList=0x7f080016;
-        public static final int righttext=0x7f08001b;
-        public static final int righttext2=0x7f08001c;
-        public static final int tableDetailRow02=0x7f080010;
-        public static final int tableDetailRow03=0x7f080013;
-        public static final int toptext=0x7f080019;
-        public static final int txtDetailChange=0x7f08000c;
-        public static final int txtDetailClosingPrice=0x7f08000b;
-        public static final int txtDetailDate=0x7f080009;
-        public static final int txtDetailHeader=0x7f080008;
-        public static final int txtDetailMax=0x7f080012;
-        public static final int txtDetailMin=0x7f08000f;
-        public static final int txtDetailName=0x7f08000a;
-        public static final int txtDetailVolume=0x7f080015;
+        public static final int progressStockList=0x7f08001a;
+        public static final int righttext=0x7f080020;
+        public static final int righttext2=0x7f080021;
+        public static final int tableDetailData=0x7f08000f;
+        public static final int tableDetailRow02=0x7f080013;
+        public static final int tableDetailRow03=0x7f080016;
+        public static final int toptext=0x7f08001d;
+        public static final int txtDetailChange=0x7f08000d;
+        public static final int txtDetailClosingPrice=0x7f08000c;
+        public static final int txtDetailDate=0x7f080007;
+        public static final int txtDetailHeader=0x7f080009;
+        public static final int txtDetailMax=0x7f080015;
+        public static final int txtDetailMin=0x7f080012;
+        public static final int txtDetailName=0x7f08000b;
+        public static final int txtDetailVolume=0x7f080018;
         public static final int txtNewsItemBottomInfo=0x7f080004;
         public static final int txtNewsItemContentPreview=0x7f080005;
         public static final int txtNewsItemTitle=0x7f080003;
-        public static final int txtStockListDivider=0x7f080017;
+        public static final int txtStockListDivider=0x7f08001b;
         public static final int viewReadMark=0x7f080001;
     }
     public static final class layout {
@@ -82,6 +90,7 @@ public final class R {
         public static final int NoRefresh=0x7f050007;
         public static final int NoStockSelected=0x7f05000e;
         public static final int SearchTextView=0x7f050004;
+        public static final int Statistics=0x7f050011;
         public static final int app_name=0x7f050003;
         public static final int failed_price_update=0x7f050008;
         public static final int hello=0x7f050002;
@@ -92,6 +101,8 @@ public final class R {
         public static final int update_succes=0x7f050005;
     }
     public static final class style {
+        public static final int groupboxBody=0x7f060004;
+        public static final int groupboxHeader=0x7f060005;
         public static final int logoView=0x7f060003;
         /**         <item name="android:typeface">serif</item>
          */

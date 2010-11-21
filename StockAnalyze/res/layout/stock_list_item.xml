@@ -26,11 +26,13 @@
             android:layout_gravity="fill_horizontal" />
     </LinearLayout>
 	<LinearLayout
+		android:id="@+id/pricelayout"
 		android:orientation="vertical"
 		android:layout_width="fill_parent"
 		android:layout_weight="1"
 		android:layout_height="fill_parent"
-		android:paddingRight="4dip">
+		android:paddingRight="4dp"
+		android:background="@drawable/groupbox_shape">
 		<TextView
 			style="@style/moneyText"
         	android:id="@+id/righttext"
