@@ -3,10 +3,7 @@
  */
 package cz.tomas.StockAnalyze.Data.Model;
 
-import java.util.Calendar;
 import java.util.Date;
-
-import cz.tomas.StockAnalyze.Data.PseCsvData.CsvDataRow;
 
 /**
  * @author tomas
@@ -18,60 +15,11 @@ public class DayData {
 	float absChange;
 	Date date;
 	float volume;
-	int tradedPieaces;
+	int tradedPieces;
 	
 	float yearMaximum;
 	float yearMinimum;
-	
-	// TODO get rid of this ctor
-	public DayData(CsvDataRow dataRow) {
-		if (dataRow == null) {
-			throw new NullPointerException("dataRow is null");
-		}
-		try {
-			this.price = Float.parseFloat(dataRow.getClosePrice());
-		} catch (Exception e) {
-			this.price = -1;
-			e.printStackTrace();
-		}
-		try {
-			this.change = Float.parseFloat(dataRow.getChange());
-		} catch (Exception e) {
-			this.change = 0;
-			e.printStackTrace();
-		}
-		try {
-			this.date = new Date(Date.parse(dataRow.getDate()));
-		} catch (Exception e) {
-			this.date = Calendar.getInstance().getTime();
-			e.printStackTrace();
-		}
-		try {
-			this.volume = Float.parseFloat(dataRow.getDayVolume());
-		} catch (Exception e) {
-			this.volume = -1;
-			e.printStackTrace();
-		}
-		try {
-			this.yearMaximum = Float.parseFloat(dataRow.getYearMax());
-		} catch (NumberFormatException e) {
-			this.yearMaximum = -1;
-			e.printStackTrace();
-		}
-		try {
-			this.yearMinimum = Float.parseFloat(dataRow.getYearMin());
-		} catch (NumberFormatException e) {
-			this.yearMinimum = -1;
-			e.printStackTrace();
-		}
-		try {
-			this.tradedPieaces = Integer.parseInt(dataRow.getTradedPieces());
-		} catch (NumberFormatException e) {
-			this.tradedPieaces = -1;
-			e.printStackTrace();
-		}
-	}
-	
+		
 	public DayData(float price, float change, Date date, float volume, float yearMax, float yearMin) {
 		this.price = price;
 		this.change = change;
@@ -132,6 +80,6 @@ public class DayData {
 	 * @return the tradedPieaces
 	 */
 	public int getTradedPieaces() {
-		return tradedPieaces;
+		return tradedPieces;
 	}
 }

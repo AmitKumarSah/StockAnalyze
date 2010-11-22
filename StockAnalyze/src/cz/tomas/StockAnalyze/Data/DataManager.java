@@ -7,20 +7,17 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import cz.tomas.StockAnalyze.Data.IStockDataProvider;
+import cz.tomas.StockAnalyze.Data.Interfaces.IUpdateDateChangedListener;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
-import cz.tomas.StockAnalyze.Data.PseCsvData.PseCsvDataProvider;
+import cz.tomas.StockAnalyze.Data.PseCsvData.PseCsvDataAdapter;
 import cz.tomas.StockAnalyze.Data.PsePatriaData.PsePatriaDataAdapter;
 
 import android.content.Context;
-import android.database.SQLException;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
@@ -33,7 +30,7 @@ public class DataManager {
 		
 	StockDataSqlStore sqlStore;
 	
-	List<IUpdateDateChangedHandler> updateDateChangedListeners;
+	List<IUpdateDateChangedListener> updateDateChangedListeners;
 	
 	Context context;
 	private static DataManager instance;
@@ -50,13 +47,13 @@ public class DataManager {
 		
 		this.sqlStore = new StockDataSqlStore(context);
 		
-		IStockDataProvider pse = new PseCsvDataProvider();
+		IStockDataProvider pse = new PseCsvDataAdapter();
 		IStockDataProvider patriaPse = new PsePatriaDataAdapter();
 		
 		DataProviderFactory.registerDataProvider(pse);
 		DataProviderFactory.registerDataProvider(patriaPse);
 		
-		this.updateDateChangedListeners = new ArrayList<IUpdateDateChangedHandler>();
+		this.updateDateChangedListeners = new ArrayList<IUpdateDateChangedListener>();
 	}
 
 	public List<StockItem> search(String pattern) {
@@ -133,16 +130,12 @@ public class DataManager {
 	}
 	
 	private void fireUpdateDateChanged(long timeInMillis) {
-		for (IUpdateDateChangedHandler handler : this.updateDateChangedListeners) {
+		for (IUpdateDateChangedListener handler : this.updateDateChangedListeners) {
 			handler.OnLastUpdateDateChanged(timeInMillis);
 		}
 	}
 
-	public void addUpdateChangedListener(IUpdateDateChangedHandler handler) {
+	public void addUpdateChangedListener(IUpdateDateChangedListener handler) {
 		this.updateDateChangedListeners.add(handler);
-	}
-	
-	public interface IUpdateDateChangedHandler {
-		public void OnLastUpdateDateChanged(long updateTime);
 	}
 }

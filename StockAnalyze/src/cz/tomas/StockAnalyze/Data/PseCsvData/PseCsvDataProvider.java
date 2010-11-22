@@ -8,13 +8,16 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import cz.tomas.StockAnalyze.Data.DataProviderAdviser;
 import cz.tomas.StockAnalyze.Data.DownloadService;
 import cz.tomas.StockAnalyze.Data.IStockDataProvider;
+import cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
@@ -27,7 +30,7 @@ import android.util.Log;
  * @author tomas
  * 
  */
-public class PseCsvDataProvider implements IStockDataProvider {
+class PseCsvDataProvider {
 
 	@SuppressWarnings("unused")
 	private final String PSE_DATA_ROOT_FTP_URL = "ftp://ftp.pse.cz/Results.ak/";
@@ -36,9 +39,12 @@ public class PseCsvDataProvider implements IStockDataProvider {
 	private final String REMOTE_LAST_DATA_NAME = "ak.csv";
 	
 	PseCsvParser parser;
-	//Map<String, Long> updateTimes;
+
 	long lasUpdateTime;
 	Market market;
+	
+	Set<IStockDataListener> listeners;
+	
 	/*
 	 * first key is a date as "yyyy.MM.dd"
 	 * under this key is a map of CsvRows for that day
@@ -52,6 +58,15 @@ public class PseCsvDataProvider implements IStockDataProvider {
 		//this.updateTimes = new HashMap<String, Long>();
 		this.lasUpdateTime = 0;
 		market = new Market("PSE", "XPRA", "CZK", this.getDescriptiveName());
+		this.listeners = new HashSet<IStockDataListener>();
+	}
+	
+	public void addListener(IStockDataListener listener) {
+		this.listeners.add(listener);
+	}
+	
+	public Market getMarket() {
+		return this.market;
 	}
 
 	/**
@@ -135,8 +150,7 @@ public class PseCsvDataProvider implements IStockDataProvider {
 		return key;
 	}
 
-	@Override
-	public DayData getLastData(String ticker) throws IOException {
+	public CsvDataRow getLastData(String ticker) throws IOException {
 
 		Calendar now = Calendar.getInstance();
 		CsvDataRow row = checkInCache(ticker, now);
@@ -156,8 +170,7 @@ public class PseCsvDataProvider implements IStockDataProvider {
 				row = rows.get(ticker);
 		}
 		
-		DayData data = new DayData(row);
-		return data;
+		return row;
 	}
 
 	/**
@@ -173,18 +186,16 @@ public class PseCsvDataProvider implements IStockDataProvider {
 		return rows;
 	}
 	
-	@Override
-	public DayData getDayData(String ticker, Calendar date) throws IOException {
+	public CsvDataRow getDayData(String ticker, Calendar date) throws IOException {
 		String remoteFileName = this.buildRemoteFileName(date);
 		
 		Map<String, CsvDataRow> rows = getDataFromRemoteFile(remoteFileName);
 		CsvDataRow row = null;
 		if (rows.containsKey(ticker))
 			row = rows.get(ticker);
-		return new DayData(row);
+		return row;
 	}
 
-	@Override
 	public List<StockItem> getAvailableStockList() {
 		if (PseCsvDataProvider.dataCache.size() == 0) {
 			// if there is nothing in cache, download last data
@@ -215,22 +226,6 @@ public class PseCsvDataProvider implements IStockDataProvider {
 		return stocks;
 	}
 
-	@Override
-	public String getId() {
-		return "PSE";
-	}
-
-	@Override
-	public DayData[] getIntraDayData(String ticker, Date date, int minuteInterval) {
-		return null;
-	}
-
-	@Override
-	public String getDescriptiveName() {
-		return "Prague Stock Exchange";
-	}
-
-	@Override
 	public boolean refresh() {
 		boolean result = false;	// update performed?
 		Calendar now = Calendar.getInstance();
@@ -257,10 +252,8 @@ public class PseCsvDataProvider implements IStockDataProvider {
 		
 		return result;
 	}
-
-	@Override
-	public DataProviderAdviser getAdviser() {
-		DataProviderAdviser adviser = new DataProviderAdviser(false, true, true, this.market);
-		return adviser;
+	
+	String getDescriptiveName() {
+		return "Prague Stock Exchange";
 	}
 }

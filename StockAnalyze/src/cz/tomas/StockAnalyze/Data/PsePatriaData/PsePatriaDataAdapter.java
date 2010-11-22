@@ -15,6 +15,7 @@ import java.util.Map.Entry;
 
 import cz.tomas.StockAnalyze.Data.DataProviderAdviser;
 import cz.tomas.StockAnalyze.Data.IStockDataProvider;
+import cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
@@ -150,6 +151,18 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 	public DataProviderAdviser getAdviser() {
 		DataProviderAdviser adviser = new DataProviderAdviser(true, false, false, this.market);
 		return adviser;
+	}
+
+	@Override
+	public void addListener(IStockDataListener listener) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void enable(boolean enabled) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

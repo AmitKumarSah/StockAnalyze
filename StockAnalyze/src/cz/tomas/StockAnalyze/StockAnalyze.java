@@ -4,7 +4,7 @@ import java.text.DateFormat;
 import java.util.Calendar;
 
 import cz.tomas.StockAnalyze.Data.DataManager;
-import cz.tomas.StockAnalyze.Data.DataManager.IUpdateDateChangedHandler;
+import cz.tomas.StockAnalyze.Data.Interfaces.IUpdateDateChangedListener;
 import android.app.*;
 import android.content.*;
 import android.content.res.Resources;
@@ -47,7 +47,7 @@ public class StockAnalyze extends TabActivity {
 		this.getIntent().putExtra("stock_id", "CZ0005112300");
 		
 		DataManager manager = DataManager.getInstance(this);
-		manager.addUpdateChangedListener(new IUpdateDateChangedHandler() {
+		manager.addUpdateChangedListener(new IUpdateDateChangedListener() {
 			
 			@Override
 			public void OnLastUpdateDateChanged(long updateTime) {
