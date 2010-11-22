@@ -9,7 +9,9 @@ import android.app.Dialog;
 import android.app.ListActivity;
 import android.app.TabActivity;
 import android.content.DialogInterface;
+import android.content.res.Resources.NotFoundException;
 import android.database.DataSetObserver;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -96,21 +98,8 @@ public class StockListActivity extends ListActivity {
 	    // Handle item selection
 	    switch (item.getItemId()) {
 	    case R.id.menu_stock_list_refresh:
-	    	try {
-	    		// TODO -background thread!
-				if (this.dataManager.refresh()){
-			    	this.setListAdapter(null);
-			    	this.findViewById(R.id.progressStockList).setVisibility(View.VISIBLE);
-			    	this.fill();
-			    	Toast.makeText(this.getParent(), R.string.update_succes, Toast.LENGTH_SHORT).show();
-				}
-				else
-					Toast.makeText(this.getParent(), R.string.NoRefresh, Toast.LENGTH_SHORT).show();
-			} catch (Exception e) {
-				if (e.getMessage() != null)
-					Log.d("StockListlActivity", e.getMessage());
-				Toast.makeText(this.getParent(), R.string.update_fail, Toast.LENGTH_LONG).show();
-			}
+	    	RefreshTask task = new RefreshTask();
+	    	task.execute((Void[]) null);
 	        return true;
 	    case R.id.menu_stock_list_settings:
 	        return true;
@@ -118,6 +107,26 @@ public class StockListActivity extends ListActivity {
 	        return super.onOptionsItemSelected(item);
 	    }
 	}
+
+//	/**
+//	 * @throws NotFoundException
+//	 */
+//	private void refreshStockListData() {
+//		try {
+//			if (this.dataManager.refresh()){
+//		    	this.setListAdapter(null);
+//		    	this.findViewById(R.id.progressStockList).setVisibility(View.VISIBLE);
+//		    	this.fill();
+//		    	Toast.makeText(this.getParent(), R.string.update_succes, Toast.LENGTH_SHORT).show();
+//			}
+//			else
+//				Toast.makeText(this.getParent(), R.string.NoRefresh, Toast.LENGTH_SHORT).show();
+//		} catch (Exception e) {
+//			if (e.getMessage() != null)
+//				Log.d("StockListlActivity", e.getMessage());
+//			Toast.makeText(this.getParent(), R.string.update_fail, Toast.LENGTH_LONG).show();
+//		}
+//	}
 	
 	@Override
 	protected Dialog onCreateDialog(int id) {
@@ -150,6 +159,60 @@ public class StockListActivity extends ListActivity {
 		}
 		
 		return dlg;
+	}
+	
+	class RefreshTask extends AsyncTask<Void, Integer, Boolean> {
+
+		/* (non-Javadoc)
+		 * @see android.os.AsyncTask#onPreExecute()
+		 */
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+
+	    	setListAdapter(null);
+	    	findViewById(R.id.progressStockList).setVisibility(View.VISIBLE);
+		}
+
+		/* (non-Javadoc)
+		 * @see android.os.AsyncTask#onCancelled()
+		 */
+		@Override
+		protected void onCancelled() {
+			super.onCancelled();
+			Toast.makeText(getParent(), R.string.update_fail, Toast.LENGTH_LONG).show();
+		}
+
+		/* (non-Javadoc)
+		 * @see android.os.AsyncTask#doInBackground(Params[])
+		 */
+		@Override
+		protected Boolean doInBackground(Void... params) {
+			boolean result = false;
+			try {
+				result = dataManager.refresh();
+			} catch (Exception e) {
+				e.printStackTrace();
+				if (e.getMessage() != null)
+					Log.d("StockListlActivity", e.getMessage());
+			}
+			return result;
+		}
+
+		/* (non-Javadoc)
+		 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
+		 */
+		@Override
+		protected void onPostExecute(Boolean result) {
+			super.onPostExecute(result);
+			if (result){
+		    	fill();
+		    	Toast.makeText(getParent(), R.string.update_succes, Toast.LENGTH_SHORT).show();
+			}
+			else
+				Toast.makeText(getParent(), R.string.NoRefresh, Toast.LENGTH_SHORT).show();
+		}
+		
 	}
 }
 

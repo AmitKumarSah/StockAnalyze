@@ -55,9 +55,14 @@ public class StockAnalyze extends TabActivity {
 				cal.setTimeInMillis(updateTime);
 				DateFormat frm = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
 				
-				String title = StockAnalyze.this.getString(R.string.app_name);
-				title = String.format("%s (%s)", title, frm.format(cal.getTime()));
-				setTitle(title);
+				final String title = String.format("%s (%s)", getString(R.string.app_name), frm.format(cal.getTime()));
+				StockAnalyze.this.runOnUiThread(new Runnable() {
+					
+					@Override
+					public void run() {
+						setTitle(title);
+					}
+				});
 			}
 		});
 	}
