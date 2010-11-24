@@ -1,12 +1,8 @@
 package cz.tomas.StockAnalyze.test;
 
 import java.io.*;
-import java.util.List;
-import java.util.Map;
 
 import cz.tomas.StockAnalyze.Data.PseCsvData.CsvDataRow;
-import cz.tomas.StockAnalyze.Data.PseCsvData.PseCsvDataProvider;
-import cz.tomas.StockAnalyze.Data.PseCsvData.PseCsvParser;
 import junit.framework.TestCase;
 
 public class CsvDataTest extends TestCase {
