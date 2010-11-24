@@ -2,8 +2,12 @@ package cz.tomas.StockAnalyze.test;
 
 import static org.junit.Assert.*;
 
+import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -18,8 +22,9 @@ public class PatriaDataTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		//this.parser = new PsePatriaXmlParser("http://www.patria.cz/dataexport/VistaGadget.ashx?guid=D88B6094-E9C7-11DF-A5A1-05E4DED72085");
-		this.parser = new PsePatriaXmlParser("ExamplePatriaData.xml");
+		this.parser = new PsePatriaXmlParser("http://www.patria.cz/dataexport/VistaGadget.ashx?guid=D88B6094-E9C7-11DF-A5A1-05E4DED72085");
+		URL url = new URL("file://ExamplPatriaData.xml");
+		//this.parser = new PsePatriaXmlParser(url.toString());
 		this.expectedItems = new ArrayList<PsePatriaDataItem>();
 		
 		PsePatriaDataItem itemPx = new PsePatriaDataItem();
@@ -67,7 +72,14 @@ public class PatriaDataTest {
 
 	@Test
 	public void testParse() {
-		List<PsePatriaDataItem> actualItems = this.parser.parse();
+		List<PsePatriaDataItem> actualItems = null;
+		try {
+			actualItems = this.parser.parse();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			assertTrue(false);
+		}
 		
 		assertEquals(this.expectedItems.size(), actualItems.size());
 		
@@ -75,5 +87,30 @@ public class PatriaDataTest {
 			assertEquals(this.expectedItems.get(i), actualItems.get(i));
 		}
 	}
-
+	
+	@Test
+	public void testParseConf() {
+		try {
+			List<PsePatriaDataItem> actualItems = this.parser.parse();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			assertTrue(false);
+			e.printStackTrace();
+		}
+		
+		assertEquals(true, this.parser.isClosePhase());
+		assertEquals(10, this.parser.getXmlRefreshInterval());
+		
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.YEAR, 2010);
+		cal.set(Calendar.MONTH, 11);
+		cal.set(Calendar.DAY_OF_MONTH, 5);
+		cal.set(Calendar.HOUR, 0);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
+		
+		assertEquals(cal.getTimeInMillis(), cal.getTimeInMillis());
+		TimeZone tz = TimeZone.getTimeZone("Europe/Prague");
+		assertEquals(tz, cal.getTimeZone());
+	}
 }
