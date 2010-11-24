@@ -9,14 +9,17 @@ import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.hamcrest.Matcher;
 import org.xml.sax.*;
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -129,8 +132,9 @@ public class RSSHandler extends DefaultHandler {
 					currentArticle.setUrl(new URL(chars));
 				if (inTitle)
 					currentArticle.setTitle(chars);
-				if (inDescription)
+				if (inDescription) {
 					currentArticle.setDescription(chars);
+				}
 				if (inPubDate) {
 					Calendar date = Calendar.getInstance();
 					try {
@@ -163,10 +167,13 @@ public class RSSHandler extends DefaultHandler {
 
 		} catch (IOException e) {
 			Log.e("cz.tomas.StockAnalyze.News.RssHandler", e.toString());
+			e.printStackTrace();
 		} catch (SAXException e) {
 			Log.e("cz.tomas.StockAnalyze.News.RssHandler", e.toString());
+			e.printStackTrace();
 		} catch (ParserConfigurationException e) {
 			Log.e("cz.tomas.StockAnalyze.News.RssHandler", e.toString());
+			e.printStackTrace();
 		}
 	}
 
@@ -178,16 +185,26 @@ public class RSSHandler extends DefaultHandler {
 
 			SAXParserFactory spf = SAXParserFactory.newInstance();
 			SAXParser sp = spf.newSAXParser();
+			
 			XMLReader xr = sp.getXMLReader();
 			xr.setContentHandler(this);
-			xr.parse(new InputSource(currentFeed.getUrl().openStream()));
+			InputSource source = new InputSource(currentFeed.getUrl().openStream());
+			Log.d("news encoding", feed.getTitle() + " - encoding: " + source.getEncoding());
+
+			//source.setEncoding("CP-1250");
+			if (source.getEncoding() == null)
+				source.setEncoding("UTF-8");
+			xr.parse(source);
 
 		} catch (IOException e) {
 			Log.e("cz.tomas.StockAnalyze.News.RssHandler", e.toString());
+			e.printStackTrace();
 		} catch (SAXException e) {
 			Log.e("cz.tomas.StockAnalyze.News.RssHandler", e.toString());
+			e.printStackTrace();
 		} catch (ParserConfigurationException e) {
 			Log.e("cz.tomas.StockAnalyze.News.RssHandler", e.toString());
+			e.printStackTrace();
 		}
 	}
 

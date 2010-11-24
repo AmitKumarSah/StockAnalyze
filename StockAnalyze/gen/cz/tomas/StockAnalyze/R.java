@@ -25,7 +25,8 @@ public final class R {
         public static final int ic_menu_refresh=0x7f020005;
         public static final int ic_menu_settings=0x7f020006;
         public static final int icon=0x7f020007;
-        public static final int px_logo=0x7f020008;
+        public static final int news_marker_shape=0x7f020008;
+        public static final int px_logo=0x7f020009;
     }
     public static final class id {
         public static final int ChartView=0x7f080019;
@@ -61,8 +62,8 @@ public final class R {
         public static final int txtDetailMin=0x7f080012;
         public static final int txtDetailName=0x7f08000b;
         public static final int txtDetailVolume=0x7f080018;
-        public static final int txtNewsItemBottomInfo=0x7f080004;
-        public static final int txtNewsItemContentPreview=0x7f080005;
+        public static final int txtNewsItemBottomInfo=0x7f080005;
+        public static final int txtNewsItemContentPreview=0x7f080004;
         public static final int txtNewsItemTitle=0x7f080003;
         public static final int txtStockListDivider=0x7f08001b;
         public static final int viewReadMark=0x7f080001;

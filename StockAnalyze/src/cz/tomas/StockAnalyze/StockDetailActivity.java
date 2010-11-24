@@ -107,7 +107,11 @@ public class StockDetailActivity extends Activity {
 		if (txtHeader != null)
 			txtHeader.setText(stockItem.getTicker() + " - " + stockId);
 		if (txtDate != null) {
-			DateFormat formatter = DateFormat.getDateInstance(DateFormat.LONG);
+			DateFormat formatter = null;
+			if (data.getDate().getHours() != 0)
+				formatter = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.MEDIUM);
+			else
+				formatter = DateFormat.getDateInstance(DateFormat.LONG);
 			txtDate.setText(formatter.format(data.getDate()));
 		}
 		if (txtVolume != null) {

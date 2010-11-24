@@ -24,6 +24,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * @author tomas
@@ -35,6 +36,7 @@ public class NewsListAdapter extends ArrayAdapter<Article> {
 	
 	LayoutInflater vi; 
 	NewsItemsTask task;
+	private final int MAX_DESCRIPTION_LENGHT = 100; 
 	
 	/**
 	 * @param context
@@ -70,8 +72,15 @@ public class NewsListAdapter extends ArrayAdapter<Article> {
 					txtTitle.setText(article.getTitle());
 				else
 					Log.d("cz.tomas.StockAnalyze.News.NewsListAdapter", "can't set title text - TextView is null");	
-//				if (txtPreview != null)
-//					txtPreview.setText(article.getUrl().toString());
+				if (txtPreview != null) {
+					String description = article.getDescription();
+					if (description != null) {
+						if (description.length() > MAX_DESCRIPTION_LENGHT)
+							description = description.substring(0,
+									MAX_DESCRIPTION_LENGHT);
+						txtPreview.setText(description);
+					}
+				}
 				if (txtInfo != null) {
 					Calendar cal = Calendar.getInstance();
 					long date = article.getDate();
@@ -141,6 +150,9 @@ public class NewsListAdapter extends ArrayAdapter<Article> {
 				add(result.get(i));
 				notifyDataSetChanged();
 			}
+			
+			if (result.size() == 0)
+				Toast.makeText(getContext(), R.string.FailedGetNews, Toast.LENGTH_LONG).show();
 			try {
 				((Activity) getContext()).findViewById(R.id.progressNews).setVisibility(View.GONE);
 			} catch (Exception e) {

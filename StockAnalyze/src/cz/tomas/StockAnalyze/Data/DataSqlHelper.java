@@ -10,12 +10,12 @@ public class DataSqlHelper extends SQLiteOpenHelper {
 		
 		private final String DATABASE_NAME = "cz.tomas.StockAnalyze.Data";
 		
-		private final static int DATABASE_VERSION_NUMBER = 13;
+		private final static int DATABASE_VERSION_NUMBER = 4;
 		
 		private final static String DATABASE_FILE_NAME = "cz.tomas.StockAnalyze.Data.db";
 		
 		protected static final String STOCK_TABLE_NAME = "stock_item";
-		protected static final String DAY_DATA_TABLE_NAME = "stock_data";
+		protected static final String DAY_DATA_TABLE_NAME = "stock_day_data";
 		protected static final String INTRADAY_DATA_TABLE_NAME = "stock_intraday_data";
 		protected static final String USER_STOCK_TABLE_NAME = "user_stocks";
 		
@@ -25,25 +25,25 @@ public class DataSqlHelper extends SQLiteOpenHelper {
 	         "ticker varchar(10) not null, " +
 	         "name TEXT);";
 		
-		private static final String DAY_DATA_TABLE_CRETE = 
-			"CREATE TABLE " + DAY_DATA_TABLE_NAME + " (" +
+		private static final String INTRADAY_DATA_TABLE_CREATE = 
+			"CREATE TABLE " + INTRADAY_DATA_TABLE_NAME + " (" +
 	         "id integer PRIMARY KEY AUTOINCREMENT," +
 	         "stock_id varchar(50)," +
 	         "change real not null," +
-	         "date integer not null, " +				//ISO8601 strings "YYYY-MM-DD HH:MM:SS.SSS"
+	         "date integer not null, " +				//long - miliseconds
 	         "price real not null," +
 	         "volume real not null," +
 	         "FOREIGN KEY(stock_id) REFERENCES " + STOCK_TABLE_NAME + "(id)" +
 	         ");";
 		
-		private static final String INTRADAY_DATA_TABLE_CRETE = 
+		private static final String DAY_DATA_TABLE_CREATE = 
 			"CREATE TABLE " + DAY_DATA_TABLE_NAME + " (" +
 	         "id integer PRIMARY KEY AUTOINCREMENT," +
 	         "stock_id varchar(50)," +
 	         "year_min real," +
 	         "year_max real," +
 	         "change real not null," +
-	         "date integer not null, " +				//ISO8601 strings "YYYY-MM-DD HH:MM:SS.SSS"
+	         "date integer not null, " +				//long - miliseconds
 	         "price real not null," +
 	         "volume real not null," +
 	         "FOREIGN KEY(stock_id) REFERENCES " + STOCK_TABLE_NAME + "(id)" +
@@ -79,9 +79,12 @@ public class DataSqlHelper extends SQLiteOpenHelper {
 				Log.d("DataSqlHelper", "creating stock table!");
 				db.execSQL(STOCK_TABLE_CREATE);
 				Log.d("DataSqlHelper", "creating day data table!");
-				db.execSQL(DAY_DATA_TABLE_CRETE);
+				db.execSQL(DAY_DATA_TABLE_CREATE);
+				Log.d("DataSqlHelper", "creating intraday data table!");
+				db.execSQL(INTRADAY_DATA_TABLE_CREATE);
 				Log.d("DataSqlHelper", "creating user stock table!");
 				db.execSQL(USER_STOCK_TABLE_CRETE);
+				
 				Log.d("DataSqlHelper", "creating Feeds table!");
 				db.execSQL(CREATE_TABLE_FEEDS);
 				Log.d("DataSqlHelper", "creating Articles table!");
@@ -96,6 +99,7 @@ public class DataSqlHelper extends SQLiteOpenHelper {
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 			Log.d("StockDataSqlStore", "droping tables!");
+			db.execSQL(TABLE_DROP + INTRADAY_DATA_TABLE_NAME);
 			db.execSQL(TABLE_DROP + DAY_DATA_TABLE_NAME);
 			db.execSQL(TABLE_DROP + STOCK_TABLE_NAME);
 			db.execSQL(TABLE_DROP + USER_STOCK_TABLE_NAME);

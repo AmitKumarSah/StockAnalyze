@@ -22,6 +22,10 @@ public final class NewsSqlHelper extends DataSqlHelper {
 	private static final String SOURCE_CYRRUS_NAME = "Cyrrus";
 	private static final String SOURCE_CYRRUS_COUNTRY = "cz";
 	
+	private static final String SOURCE_AKCIE = "http://www.akcie.cz/rss/novinky-a-zpravy.xml";
+	private static final String SOURCE_AKCIE_NAME = "Akcie.cz";
+	private static final String SOURCE_AKCIE_COUNTRY = "cz";
+	
 	public NewsSqlHelper(Context context) {
 		super(context);
 
@@ -88,7 +92,7 @@ public final class NewsSqlHelper extends DataSqlHelper {
 		ArrayList<Feed> feeds = new ArrayList<Feed>();
 		Cursor c = null;
 		try {
-			c = super.getWritableDatabase().query(FEEDS_TABLE_NAME, new String[] {
+			c = this.getWritableDatabase().query(FEEDS_TABLE_NAME, new String[] {
 					"feed_id", "title", "url", "country" }, null, null, null, null, null);
 
 			c.moveToFirst();
@@ -117,7 +121,7 @@ public final class NewsSqlHelper extends DataSqlHelper {
 		ArrayList<Article> articles = new ArrayList<Article>();
 		Cursor c = null;
 		try {
-			c = super.getWritableDatabase().query(ARTICLES_TABLE_NAME, new String[] {
+			c = this.getWritableDatabase().query(ARTICLES_TABLE_NAME, new String[] {
 					"article_id", "feed_id", "title", "description", "url", "date" }, "feed_id="
 					+ feedId.toString(), null, null, null, null);
 

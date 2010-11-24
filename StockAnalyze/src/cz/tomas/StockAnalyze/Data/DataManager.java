@@ -124,8 +124,9 @@ public class DataManager {
 	public boolean refresh() throws Exception {
 		boolean result = DataProviderFactory.refreshAll();
 
-		if (result)
+		if (result) {
 			fireUpdateDateChanged(Calendar.getInstance().getTimeInMillis());
+		}
 		return result;
 	}
 	
