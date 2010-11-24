@@ -3,30 +3,26 @@
  */
 package cz.tomas.StockAnalyze.Data.PsePatriaData;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Iterator;
 import java.util.List;
+import java.util.TimeZone;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 
 import cz.tomas.StockAnalyze.Data.DownloadService;
 
-import android.util.Log;
 
 /**
  * @author tomas
@@ -36,14 +32,35 @@ public class PsePatriaXmlParser {
 	
 	String url;
 	boolean isClosePhase;
-	int xmlRefreshInterval;
+	int xmlRefreshInterval;	//minutes
 	Calendar date;
 	
 	public PsePatriaXmlParser(String url) {
 		this.url = url;
 	}
 	
-	public List<PsePatriaDataItem> parse() {
+	/**
+	 * @return the isClosePhase
+	 */
+	public boolean isClosePhase() {
+		return isClosePhase;
+	}
+
+	/**
+	 * @return the xmlRefreshInterval
+	 */
+	public int getXmlRefreshInterval() {
+		return xmlRefreshInterval;
+	}
+
+	/**
+	 * @return the date
+	 */
+	public Calendar getDate() {
+		return date;
+	}
+
+	public List<PsePatriaDataItem> parse() throws Exception {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		List<PsePatriaDataItem> items = new ArrayList<PsePatriaDataItem>();
 		InputStream stream = null;
@@ -71,7 +88,7 @@ public class PsePatriaXmlParser {
 			if (e.getMessage() != null)
 				message += e.getMessage();
 			e.printStackTrace();
-			Log.d("PsePatriaXmlParser", message);
+			throw new Exception(message, e);
 		} finally {
 			if (stream != null)
 				try {
@@ -83,8 +100,39 @@ public class PsePatriaXmlParser {
 		return items;
 	}
 	
-	private void processConfNode(Node node) {
+	/*
+	 * parse configuration tag
+	 * example:
+	 * <Configuration RefreshInterval="10" Phase="CLOSE" Date="2010-11-05T00:00:00"/>
+	 */
+	private void processConfNode(Node node) throws Exception {
+		NamedNodeMap attributes = node.getAttributes();
+		Node refreshNode = attributes.getNamedItem("RefreshInterval");
+		Node phaseNode = attributes.getNamedItem("Phase");
+		Node dateNode = attributes.getNamedItem("Date");
 		
+		this.xmlRefreshInterval = Integer.valueOf(refreshNode.getNodeValue());
+		this.isClosePhase = phaseNode.getNodeValue().equals("CLOSE");
+
+		try {
+			SimpleDateFormat format = (SimpleDateFormat) DateFormat.getDateTimeInstance();
+			format.applyPattern("yyyy-MM-DD'T'HH:mm:ss");
+
+			this.date = Calendar.getInstance();
+			this.date.setTime(format.parse(dateNode.getNodeValue()));
+			TimeZone tz = TimeZone.getTimeZone("Europe/Prague");
+			this.date.setTimeZone(tz);
+			String[] tzs = TimeZone.getAvailableIDs();
+			int count = tzs.length;
+			
+		} catch (Exception e) {
+			String message = "Failed to process patria data xml configuration tag! ";
+			if (e.getMessage() != null)
+				message += e.getMessage();
+			//e.printStackTrace();
+			//Log.d("PsePatriaXmlParser", message);
+			throw new Exception(message, e);
+		}
 	}
 
 	private PsePatriaDataItem processEquityNode(Node node) {

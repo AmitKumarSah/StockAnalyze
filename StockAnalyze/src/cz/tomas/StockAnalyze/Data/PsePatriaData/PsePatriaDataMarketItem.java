@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import android.util.Log;
+
 /**
  * @author tomas
  *
@@ -55,10 +57,20 @@ public class PsePatriaDataMarketItem {
 	}
 	
 	private void createMarketData() {
-		List<PsePatriaDataItem> items = this.xmlParser.parse();
+		List<PsePatriaDataItem> items = null;
+		try {
+			items = this.xmlParser.parse();
+		} catch (Exception e) {
+			String message = "Failed to process patria data xml! ";
+			if (e.getMessage() != null)
+				message += e.getMessage();
+			Log.d("PsePatriaDataMarket", message);
+			e.printStackTrace();
+			return;
+		}
 		
-		// TODO - get last update time from xml
-		this.lastUpdate = Calendar.getInstance().getTimeInMillis();
+		//this.lastUpdate = Calendar.getInstance().getTimeInMillis();
+		this.lastUpdate = this.xmlParser.getDate().getTimeInMillis();
 		
 		for (PsePatriaDataItem item : items) {
 			if (! this.patriaTickerMapping.containsKey(item.getName()))
