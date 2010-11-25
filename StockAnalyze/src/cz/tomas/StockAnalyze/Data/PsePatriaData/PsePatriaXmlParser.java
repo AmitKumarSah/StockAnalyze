@@ -116,14 +116,12 @@ public class PsePatriaXmlParser {
 
 		try {
 			SimpleDateFormat format = (SimpleDateFormat) DateFormat.getDateTimeInstance();
-			format.applyPattern("yyyy-MM-DD'T'HH:mm:ss");
+			format.applyPattern("yyyy-MM-dd'T'HH:mm:ss");
 
 			this.date = Calendar.getInstance();
 			this.date.setTime(format.parse(dateNode.getNodeValue()));
 			TimeZone tz = TimeZone.getTimeZone("Europe/Prague");
 			this.date.setTimeZone(tz);
-			String[] tzs = TimeZone.getAvailableIDs();
-			int count = tzs.length;
 			
 		} catch (Exception e) {
 			String message = "Failed to process patria data xml configuration tag! ";
