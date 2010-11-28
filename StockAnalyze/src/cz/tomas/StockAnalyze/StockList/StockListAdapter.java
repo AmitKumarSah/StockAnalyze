@@ -198,8 +198,8 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 		@Override
 		protected void onPostExecute(List<StockItem> result) {
 			super.onPostExecute(result);
-			if (result.size() == 0)
-				Toast.makeText(getContext(), "Failed!", Toast.LENGTH_LONG).show();
+			if (result == null || result.size() == 0)
+				Toast.makeText(getContext(), R.string.update_fail, Toast.LENGTH_LONG).show();
 			else
 	        	for (int i = 0; i < result.size(); i++) {
 	        		add(result.get(i));

@@ -73,11 +73,15 @@ public class PsePatriaDataMarketItem {
 		this.lastUpdate = this.xmlParser.getDate().getTimeInMillis();
 		
 		for (PsePatriaDataItem item : items) {
-			if (! this.patriaTickerMapping.containsKey(item.getName()))
+			String name = item.getName();
+			if (name == null || ! this.patriaTickerMapping.containsKey(name.toUpperCase()))
 				continue;
-			String ticker = this.patriaTickerMapping.get(item.getName());
+			else
+				Log.d("PsePatriaDataMarket", "Failed to find info about stockItem: " + ( item != null ? item.toString() : "NULL"));
+			String ticker = this.patriaTickerMapping.get(name.toUpperCase());
 			
-			this.stocksData.put(ticker, item);
+			if (ticker != null)
+				this.stocksData.put(ticker, item);
 		}
 	}
 	

@@ -65,9 +65,12 @@ public class DataManager {
 		List<StockItem> results = new ArrayList<StockItem>();
 		
 		for (StockItem stock : stocks) {
-			if (stock.getTicker().contains(pattern.toUpperCase()) ||
-					stock.getName().contains(pattern.toUpperCase()))
-				results.add(stock);
+			if (stock != null && stock.getTicker() != null && stock.getName() != null) {
+				// search for pattern
+				if (stock.getTicker().contains(pattern.toUpperCase())
+						|| stock.getName().contains(pattern.toUpperCase()))
+					results.add(stock);
+			}
 		}
 		return results;
 	}
