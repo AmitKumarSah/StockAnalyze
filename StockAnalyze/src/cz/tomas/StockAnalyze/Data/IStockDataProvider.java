@@ -18,10 +18,10 @@ import cz.tomas.StockAnalyze.Data.Model.StockItem;
  *
  */
 public interface IStockDataProvider extends IObservableDataProvider {
-	DayData getLastData(String ticker) throws IOException;
-	DayData getDayData(String ticker, Calendar date) throws IOException;
+	DayData getLastData(String ticker) throws FailedToGetDataException;
+	DayData getDayData(String ticker, Calendar date) throws IOException, FailedToGetDataException;
 	DayData[] getIntraDayData(String ticker, Date date, int minuteInterval);
-	List<StockItem> getAvailableStockList();
+	List<StockItem> getAvailableStockList() throws FailedToGetDataException;
 	String getId();
 	String getDescriptiveName();
 	boolean refresh();

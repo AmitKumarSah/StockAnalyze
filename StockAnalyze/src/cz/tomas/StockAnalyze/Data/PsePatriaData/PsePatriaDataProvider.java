@@ -27,7 +27,7 @@ public class PsePatriaDataProvider {
 		this.currentMarketData = new PsePatriaDataMarketItem();
 	}
 	
-	public PsePatriaDataItem getLastData(String ticker) {
+	public PsePatriaDataItem getLastData(String ticker) throws Exception {
 		//this.currentMarketData.update();
 		PsePatriaDataItem stockDataItem = this.currentMarketData.getStock(ticker);
 		
@@ -38,13 +38,13 @@ public class PsePatriaDataProvider {
 		return this.currentMarketData.getLastUpdate();
 	}
 
-	public Map<String, PsePatriaDataItem> getAvailableStockMap() {
+	public Map<String, PsePatriaDataItem> getAvailableStockMap() throws Exception {
 		Map<String, PsePatriaDataItem> stocks = this.currentMarketData.getStocks();
 		
 		return stocks;
 	}
 
-	public boolean refresh() {
+	public boolean refresh() throws Exception {
 		this.currentMarketData.update();
 		return true;
 	}

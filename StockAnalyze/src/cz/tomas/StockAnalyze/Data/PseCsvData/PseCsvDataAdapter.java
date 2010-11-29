@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 
 import cz.tomas.StockAnalyze.Data.DataProviderAdviser;
+import cz.tomas.StockAnalyze.Data.FailedToGetDataException;
 import cz.tomas.StockAnalyze.Data.IStockDataProvider;
 import cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
@@ -40,8 +41,15 @@ public class PseCsvDataAdapter implements IStockDataProvider {
 	 * @see cz.tomas.StockAnalyze.Data.IStockDataProvider#getLastData(java.lang.String)
 	 */
 	@Override
-	public DayData getLastData(String ticker) throws IOException {
-		CsvDataRow row = this.provider.getLastData(ticker);
+	public DayData getLastData(String ticker) throws FailedToGetDataException {
+		CsvDataRow row;
+		try {
+			row = this.provider.getLastData(ticker);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new FailedToGetDataException(e);
+		}
 		return this.createDayData(row);
 	}
 

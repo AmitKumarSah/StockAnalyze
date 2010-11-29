@@ -56,7 +56,7 @@ public class PsePatriaDataMarketItem {
 		this.patriaTickerMapping.put("VIG", "BAAVIG");
 	}
 	
-	private void createMarketData() {
+	private void createMarketData() throws Exception {
 		List<PsePatriaDataItem> items = null;
 		try {
 			items = this.xmlParser.parse();
@@ -66,7 +66,7 @@ public class PsePatriaDataMarketItem {
 				message += e.getMessage();
 			Log.d("PsePatriaDataMarket", message);
 			e.printStackTrace();
-			return;
+			throw e;
 		}
 		
 		//this.lastUpdate = Calendar.getInstance().getTimeInMillis();
@@ -74,25 +74,28 @@ public class PsePatriaDataMarketItem {
 		
 		for (PsePatriaDataItem item : items) {
 			String name = item.getName();
-			if (name == null || ! this.patriaTickerMapping.containsKey(name.toUpperCase()))
-				continue;
-			else
+			if (name == null || ! this.patriaTickerMapping.containsKey(name.toUpperCase())) {
 				Log.d("PsePatriaDataMarket", "Failed to find info about stockItem: " + ( item != null ? item.toString() : "NULL"));
+				continue;
+			}
 			String ticker = this.patriaTickerMapping.get(name.toUpperCase());
 			
 			if (ticker != null)
 				this.stocksData.put(ticker, item);
+			else
+				Log.d("PsePatriaDataMarket", "Failed to find ticker info for stockItem: " + ( item != null ? item.toString() : "NULL"));
 		}
 	}
 	
-	public void update() {
+	public void update() throws Exception {
 		this.createMarketData();
 	}
 	
 	/**
 	 * @return the stocks
+	 * @throws Exception 
 	 */
-	public Map<String, PsePatriaDataItem> getStocks() {
+	public Map<String, PsePatriaDataItem> getStocks() throws Exception {
 		if (this.stocksData == null || this.stocksData.size() == 0)
 			this.update();
 		return stocksData;
@@ -112,7 +115,7 @@ public class PsePatriaDataMarketItem {
 		return isClosePhase;
 	}
 
-	public PsePatriaDataItem getStock(String ticker) {
+	public PsePatriaDataItem getStock(String ticker) throws Exception {
 		if (this.stocksData == null || this.stocksData.size() == 0)
 			this.update();
 		if (! this.stocksData.containsKey(ticker))

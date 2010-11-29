@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import cz.tomas.StockAnalyze.Data.DataProviderAdviser;
+import cz.tomas.StockAnalyze.Data.FailedToGetDataException;
 import cz.tomas.StockAnalyze.Data.IStockDataProvider;
 import cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
@@ -66,8 +67,15 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 	 * @see cz.tomas.StockAnalyze.Data.IStockDataProvider#getLastData(java.lang.String)
 	 */
 	@Override
-	public DayData getLastData(String ticker) throws IOException {
-		PsePatriaDataItem stockItem = this.provider.getLastData(ticker);
+	public DayData getLastData(String ticker) throws FailedToGetDataException {
+		PsePatriaDataItem stockItem;
+		try {
+			stockItem = this.provider.getLastData(ticker);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new FailedToGetDataException(e);
+		}
 		DayData data = null;
 		if (stockItem != null) {
 			Date date = new Date(this.provider.getLastUpdateTime());
@@ -104,9 +112,16 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 	 * @see cz.tomas.StockAnalyze.Data.IStockDataProvider#getAvailableStockList()
 	 */
 	@Override
-	public List<StockItem> getAvailableStockList() {
+	public List<StockItem> getAvailableStockList() throws FailedToGetDataException {
 		List<StockItem> items = new ArrayList<StockItem>();
-		Map<String, PsePatriaDataItem> stocks = this.provider.getAvailableStockMap();
+		Map<String, PsePatriaDataItem> stocks = null;
+		try {
+			stocks = this.provider.getAvailableStockMap();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new FailedToGetDataException(e);
+		}
 
 		if (stocks != null)
 			for (Entry<String, PsePatriaDataItem> item : stocks.entrySet()) {
@@ -144,7 +159,13 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 	 */
 	@Override
 	public boolean refresh() {
-		return this.provider.refresh();
+		try {
+			return this.provider.refresh();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 	@Override

@@ -107,10 +107,6 @@ public class DataManager {
 				e.printStackTrace();
 				throw e;
 			}
-			catch (FileNotFoundException e) {
-				e.printStackTrace();
-				throw e;
-			}
 			if (val > 0) {
 				this.sqlStore.insertDayData(item, data);
 			}
