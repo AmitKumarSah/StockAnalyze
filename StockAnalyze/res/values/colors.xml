@@ -4,4 +4,5 @@
 <color name="font_color">#101010</color>
 <color name="news_item_unread_color">#00EE00</color>
 <color name="news_item_read_color">#DDDDDD</color>
+<color name="separator_color">#AAAAAA</color>
 </resources>

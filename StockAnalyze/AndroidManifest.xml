@@ -3,8 +3,14 @@
 	package="cz.tomas.StockAnalyze" android:versionCode="1"
 	android:versionName="1.0">
 	<application android:icon="@drawable/ic_launcher" android:label="@string/app_name"
-		android:debuggable="true" android:theme="@android:style/Theme.Light">
+		android:debuggable="true" android:theme="@style/themeLight" >
 		<activity android:name=".StockAnalyze" android:label="@string/app_name">
+			<intent-filter>
+				<category android:name="android.intent.category.LAUNCHER" />
+<!--				<action android:name="android.intent.action.MAIN" />-->
+        	</intent-filter>
+		</activity>
+		<activity android:name=".HomeActivity" android:label="@string/app_name">
 			<intent-filter>
 				<category android:name="android.intent.category.LAUNCHER" />
 				<action android:name="android.intent.action.MAIN" />
@@ -15,7 +21,7 @@
 		<activity android:name="StockSearchActivity"></activity>
 		<activity android:name="StockDetailActivity"></activity>
 		<activity android:name="NewsActivity"></activity>
-</application>
+	</application>
 	<uses-sdk android:minSdkVersion="7" />
 
 	<uses-permission android:name="android.permission.INTERNET"></uses-permission>

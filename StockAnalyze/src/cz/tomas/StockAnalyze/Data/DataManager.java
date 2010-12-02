@@ -3,7 +3,6 @@
  */
 package cz.tomas.StockAnalyze.Data;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -20,7 +19,6 @@ import cz.tomas.StockAnalyze.Data.PsePatriaData.PsePatriaDataAdapter;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.util.Log;
 
 /**
  * @author tomas
@@ -56,7 +54,7 @@ public class DataManager {
 		this.updateDateChangedListeners = new ArrayList<IUpdateDateChangedListener>();
 	}
 
-	public List<StockItem> search(String pattern) {
+	public List<StockItem> search(String pattern) throws NullPointerException, FailedToGetDataException {
 		// FIXME
 		IStockDataProvider provider = DataProviderFactory.getRealTimeDataProvider(new Market("PSE", "XPRA", "CZK", null));
 		List<StockItem> stocks = provider.getAvailableStockList();

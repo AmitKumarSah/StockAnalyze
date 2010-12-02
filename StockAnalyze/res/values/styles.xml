@@ -9,6 +9,12 @@
         <item name="android:layout_gravity">center_vertical</item>
 <!--        <item name="android:typeface">serif</item>-->
 	</style>
+	<style name="priceInfoBlock">
+		<item name="android:layout_height">fill_parent</item>
+		<item name="android:layout_width">fill_parent</item>
+		<item name="android:paddingRight">4dip</item>
+		<item name="android:background">@drawable/groupbox_shape</item>
+	</style>
 	<style name="subText" parent="@android:style/TextAppearance.Small">
 		<item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -43,5 +49,21 @@
         <item name="android:layout_marginLeft">4dip</item>
         <item name="android:layout_marginRight">4dip</item>
         <item name="android:layout_marginBottom">0dip</item>
-    </style>    
+    </style>
+    <style name="homeBlock">
+		<item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    	<item name="android:padding">10dip</item>
+    	<item name="android:layout_margin">10dip</item>
+<!--    	<item name="android:layout_gravity">center</item>-->
+    	<item name="android:background">@drawable/actionbar_shape</item>
+    </style>
+    <style name="actionBar">
+		<item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">@dimen/actionBar_height</item>
+        <item name="android:background">@drawable/actionbar_shape</item>
+        <item name="android:textColor">#EEEEEE</item>
+        <item name="android:textSize">14dip</item>
+        <item name="android:textStyle">normal</item>
+    </style>
 </resources>

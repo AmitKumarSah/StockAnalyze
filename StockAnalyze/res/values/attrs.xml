@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+	<declare-styleable name="HomeBlockItemAtts">
+
+		<attr name="textColorNotFocused" format="integer" />
+		<attr name="textColorFocused" format="integer" />
+		<attr name="textId" format="integer" />
+		<attr name="imageId" format="integer" />
+		<attr name="target" format="string" />
+
+	</declare-styleable>
+
+</resources>

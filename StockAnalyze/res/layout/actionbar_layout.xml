@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+<!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--	android:orientation="vertical"-->
+<!--	android:layout_width="fill_parent" -->
+<!--	android:layout_height="fill_parent" >-->
+	<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		style="@style/actionBar" android:orientation="horizontal">
+		<ImageView android:id="@+id/actionHomeView"
+			android:layout_height="fill_parent" 
+			android:background="@drawable/ic_tab_home"
+			android:layout_width="@dimen/actionBar_height" 
+			android:layout_gravity="left" 
+			android:layout_alignParentLeft="true"
+	        android:layout_alignParentTop="true"
+	        android:layout_alignParentBottom="true"/>
+		<TextView android:id="@+id/actionTitle" 
+			android:text="@string/app_name"
+			android:layout_width="wrap_content" 
+			android:layout_height="fill_parent"
+			android:paddingLeft="12dip"
+        	android:layout_alignWithParentIfMissing="true"
+			android:layout_toRightOf="@+id/actionHomeView"
+			android:layout_toLeftOf="@+id/actionSearchButton"
+	        android:layout_alignParentTop="true"
+	        android:layout_alignParentBottom="true"
+			android:gravity="center_vertical" />
+		<ImageView android:id="@+id/actionSearchButton"
+			android:layout_height="fill_parent" 
+			android:layout_width="@dimen/actionBar_height"
+			android:background="@drawable/ic_tab_search" 
+			android:gravity="right" 
+			android:layout_alignParentRight="true"
+	        android:layout_alignParentTop="true"
+	        android:layout_alignParentBottom="true"/>
+		<View android:id="@+id/actionSeparator" 
+			android:layout_width="fill_parent" 
+			android:layout_height="1dip"
+			android:layout_below="@+id/actionTitle"
+			android:layout_alignParentBottom="true"
+			android:background="@color/separator_color" />
+	</RelativeLayout>
+<!--</LinearLayout>-->
+</merge>

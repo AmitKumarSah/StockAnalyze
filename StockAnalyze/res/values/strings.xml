@@ -21,4 +21,9 @@
 	<string name="FailedGetNews">"Failed to get news."</string>
 	<string name="InvalidData">Invalid data</string>
 	<string name="Statistics">Statistics</string>
+	
+	<string name="homeStockList">Stock List</string>
+	<string name="homeNews">Market News</string>
+	<string name="homeCurrencies">Currencies</string>
+	<string name="homeMyPortfolio">My Portfolio</string>
 </resources>
