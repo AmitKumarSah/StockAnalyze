@@ -67,6 +67,27 @@ public class StockDetailActivity extends Activity {
 				}
 			});
 		}
+		else {
+			Intent intent = this.getIntent();
+			if (intent.hasExtra("stock_id") && intent.hasExtra("market_id")) {
+				String id = intent.getExtras().getString("stock_id");
+				Market market = (Market) intent.getExtras().getSerializable("market_id");
+				
+				try {
+					updateCurrentStock(id, market);
+				} catch (Exception e) {
+					e.printStackTrace();
+					Toast toast = Toast.makeText(StockDetailActivity.this, R.string.InvalidData, Toast.LENGTH_LONG);
+					if (e.getMessage() != null) {
+						Log.d("StockDetailActivity", e.getMessage());
+						toast.setText(getString(R.string.InvalidData) + ": " + e.getMessage());
+					}
+					toast.show();
+				}
+			}
+			else
+				showWarning();
+		}
 	}
 
 	private void updateCurrentStock(final String stockId, Market market) throws NullPointerException, IOException {

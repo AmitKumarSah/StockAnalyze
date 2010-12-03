@@ -9,6 +9,7 @@ import android.app.Dialog;
 import android.app.ListActivity;
 import android.app.TabActivity;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Resources.NotFoundException;
 import android.database.DataSetObserver;
 import android.os.AsyncTask;
@@ -39,7 +40,11 @@ public class StockListActivity extends ListActivity {
 	static final int UPDATE_DLG_FAIL = 1;
 	static final int NO_INTERNET = 2;
 	
+	boolean creatingAdapter = false;
+	
 	DataManager dataManager;
+	
+	static StockListAdapter adapter;
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -48,16 +53,16 @@ public class StockListActivity extends ListActivity {
 		
 		this.dataManager = DataManager.getInstance(this);
 		
-		fill();
+		//fill();
 		this.setContentView(R.layout.stock_list);
 		this.getListView().setTextFilterEnabled(true);
 
 		this.getListView().setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long rowId) {
-				if (StockListActivity.this.getParent() instanceof TabActivity) {
+				StockItem stock = (StockItem) StockListActivity.this.getListView().getItemAtPosition(position);
+				if (stock != null && StockListActivity.this.getParent() instanceof TabActivity) {
 					// set currently selected ticker
-					StockItem stock = (StockItem) StockListActivity.this.getListView().getItemAtPosition(position);
 					
 					TabActivity act = (TabActivity) StockListActivity.this.getParent();
 					if (act != null) {
@@ -68,14 +73,26 @@ public class StockListActivity extends ListActivity {
 					else
 						Log.d("cz.tomas.StockAnalyze.StockListActivity", "Failed to get TabActivity");
 				}
+				else if (stock != null) {
+					Intent intent = new Intent();
+					intent.putExtra("stock_id", stock.getId());
+					intent.putExtra("market_id", stock.getMarket());
+					intent.setClass(StockListActivity.this, StockDetailActivity.class);
+					startActivity(intent);
+				}
 			}
 		});
 		
 	}
 
 	private synchronized void fill() {
-		StockListAdapter adapter = new StockListAdapter(this, R.layout.stock_list, this.dataManager, "baa");	//TODO replace string with filter
-		this.setListAdapter(adapter);
+		if (adapter == null) {
+			adapter = new StockListAdapter(this, R.layout.stock_list, this.dataManager, "baa");	//TODO replace string with filter
+			this.creatingAdapter = true;
+			this.setListAdapter(adapter);
+		}
+		else
+			this.creatingAdapter = false;
 	}
 	
 	@Override
@@ -84,6 +101,15 @@ public class StockListActivity extends ListActivity {
 
 		if (!this.dataManager.isOnline(this))
 			this.showDialog(NO_INTERNET);
+		//this.setListAdapter(this.adapter);
+		this.fill();
+		
+		if (! this.creatingAdapter)
+	    	try {
+				this.findViewById(R.id.progressStockList).setVisibility(View.GONE);
+			} catch (Exception e) {
+				Log.d("cz.tomas.StockAnalyze.News.NewsListAdapter", "failed to dissmis progess bar! " + e.getMessage());
+			}
 	}
 	
 	@Override
@@ -171,6 +197,7 @@ public class StockListActivity extends ListActivity {
 			super.onPreExecute();
 
 	    	setListAdapter(null);
+	    	StockListActivity.adapter = null;
 	    	findViewById(R.id.progressStockList).setVisibility(View.VISIBLE);
 		}
 
@@ -207,10 +234,10 @@ public class StockListActivity extends ListActivity {
 			super.onPostExecute(result);
 			if (result){
 		    	fill();
-		    	Toast.makeText(getParent(), R.string.update_succes, Toast.LENGTH_SHORT).show();
+		    	Toast.makeText(StockListActivity.this, R.string.update_succes, Toast.LENGTH_SHORT).show();
 			}
 			else
-				Toast.makeText(getParent(), R.string.NoRefresh, Toast.LENGTH_SHORT).show();
+				Toast.makeText(StockListActivity.this, R.string.NoRefresh, Toast.LENGTH_SHORT).show();
 		}
 		
 	}
