@@ -2,9 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
          android:orientation="vertical"
          android:layout_width="fill_parent"
-         android:layout_height="fill_parent"
-         android:paddingLeft="8dp"
-         android:paddingRight="8dp">
+         android:layout_height="fill_parent">
 	<cz.tomas.StockAnalyze.ui.widgets.ActionBar
 		android:id="@+id/homeActionBar"
 		android:layout_width="fill_parent" 
@@ -15,7 +13,8 @@
 	    android:id="@+id/progressStockList"
 	    android:indeterminate="true"
 	 	android:layout_gravity="center_vertical|center_horizontal"
-	 	android:padding="12dp"/>
+	 	android:padding="12dp"
+	 	android:visibility="gone" />
      <ListView android:id="@id/android:list"
                android:layout_width="fill_parent"
                android:layout_height="fill_parent"

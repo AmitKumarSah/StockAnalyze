@@ -14,12 +14,6 @@
         android:top="2dp"
         android:right="2dp"
         android:bottom="2dp" />
-<!--    <size
-	        android:width="integer"
-	        android:color="color"
-	        android:dashWidth="integer"
-			android:dashGap="integer" />-->
-<!--    <solid android:color="color" />-->
     <stroke
         android:width="0.5dp"
         android:color="#909090"/>
