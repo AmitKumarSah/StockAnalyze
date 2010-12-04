@@ -16,7 +16,8 @@
 	    android:id="@+id/progressNews"
 	    android:indeterminate="true"
 	 	android:layout_gravity="center_vertical|center_horizontal"
-	 	android:padding="12dp"/>
+	 	android:padding="12dp"
+	 	android:visibility="gone" />
      <ListView android:id="@id/android:list"
                android:layout_width="fill_parent"
                android:layout_height="fill_parent"

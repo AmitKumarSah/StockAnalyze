@@ -103,10 +103,14 @@ public class NewsListAdapter extends ArrayAdapter<Article> {
 	private class NewsItemsTask extends AsyncTask<Void, Integer, List<Article>> {
 		View view;
 		
-//		@Override
-//		protected void onPreExecute() {
-//			((Activity) getContext()).getWindow().setFeatureInt(Window.FEATURE_PROGRESS, 5);
-//		}
+		@Override
+		protected void onPreExecute() {
+			try {
+				((Activity) getContext()).findViewById(R.id.progressNews).setVisibility(View.VISIBLE);
+			} catch (Exception e) {
+				Log.d("cz.tomas.StockAnalyze.News.NewsListAdapter", "failed to dissmis progess bar! " + e.getMessage());
+			}
+		}
 		
 		@Override
 		protected List<Article> doInBackground(Void... params) {

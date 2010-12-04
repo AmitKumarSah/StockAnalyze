@@ -95,6 +95,7 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
         TextView txtName = (TextView) v.findViewById(R.id.bottomtext);
         TextView txtPrice = (TextView) v.findViewById(R.id.righttext);
         TextView txtChange = (TextView) v.findViewById(R.id.righttext2);
+        View priceGroupView = v.findViewById(R.id.pricelayout);
         
         if (txtName != null) 
         	txtName.setText(stock.getName());
@@ -118,17 +119,16 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 				String strChange = percentFormat.format(data.getChange());
 				String strAbsChange = percentFormat.format(data.getAbsChange());
 				txtChange.setText(String.format("%s (%s%%)", strAbsChange, strChange));
-				if (data.getChange() > 0) {
-					//txtPrice.setTextColor(Color.GREEN);
-					txtChange.setTextColor(Color.GREEN);
+				
+				// set background drawable according to positive/negative price change
+				if (data.getChange() > 0 && priceGroupView != null) {
+					priceGroupView.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.groupbox_green_shape));
 				}
-				else if (data.getChange() < 0) {
-					//txtPrice.setTextColor(Color.RED);
-					txtChange.setTextColor(Color.RED);
+				else if (data.getChange() < 0 && priceGroupView != null) {
+					priceGroupView.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.groupbox_red_shape));
 				}
-				else {
-					//txtPrice.setxtChange.setText(String.format("%s (%s%%)", strAbsChange, strChange));tTextColor(Color.BLACK);
-					txtChange.setTextColor(Color.BLACK);
+				else if (priceGroupView != null) {
+					priceGroupView.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.groupbox_shape));
 				}
 			}
         }
@@ -158,6 +158,16 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 	}
 	
 	class StockListTask extends AsyncTask<String, Integer, List<StockItem>> {
+
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+	    	try {
+				((Activity) getContext()).findViewById(R.id.progressStockList).setVisibility(View.VISIBLE);
+			} catch (Exception e) {
+				Log.d("cz.tomas.StockAnalyze.News.NewsListAdapter", "failed to show progess bar! " + e.getMessage());
+			}
+		}
 
 		@Override
 		protected List<StockItem> doInBackground(String... params) {

@@ -40,11 +40,12 @@ public class NewsActivity extends ListActivity {
 	private NewsSqlHelper news;
 	private ProgressDialog progressDialog;
 	
+	private static ArrayAdapter<Article> adapter;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		fill();
 		this.setContentView(R.layout.news_layout);
 		this.getListView().setTextFilterEnabled(true);
 		this.getListView().setOnItemClickListener(new OnItemClickListener() {
@@ -62,10 +63,19 @@ public class NewsActivity extends ListActivity {
 	}
 
 	private void fill() {
-		ArrayAdapter<Article> adapter = new NewsListAdapter(this, R.layout.news_layout);
+		if (adapter == null)
+			adapter = new NewsListAdapter(this, R.layout.news_layout);
+		
 		this.setListAdapter(adapter);
 	}
 	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		
+		fill();
+	}
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 	    MenuInflater inflater = getMenuInflater();

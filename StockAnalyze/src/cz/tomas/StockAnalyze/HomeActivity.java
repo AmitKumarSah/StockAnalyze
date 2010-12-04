@@ -44,7 +44,7 @@ public class HomeActivity extends Activity implements OnClickListener {
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
-				Toast.makeText(this, "Failed to start " + target == null ? "unkown" : target, Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, "Failed to start:\n" + (target == null ? "unkown" : target), Toast.LENGTH_SHORT).show();
 			}
 		}
 		

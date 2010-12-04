@@ -40,8 +40,6 @@ public class StockListActivity extends ListActivity {
 	static final int UPDATE_DLG_FAIL = 1;
 	static final int NO_INTERNET = 2;
 	
-	boolean creatingAdapter = false;
-	
 	DataManager dataManager;
 	
 	static StockListAdapter adapter;
@@ -53,7 +51,6 @@ public class StockListActivity extends ListActivity {
 		
 		this.dataManager = DataManager.getInstance(this);
 		
-		//fill();
 		this.setContentView(R.layout.stock_list);
 		this.getListView().setTextFilterEnabled(true);
 
@@ -86,13 +83,10 @@ public class StockListActivity extends ListActivity {
 	}
 
 	private synchronized void fill() {
-		if (adapter == null) {
+		if (adapter == null)
 			adapter = new StockListAdapter(this, R.layout.stock_list, this.dataManager, "baa");	//TODO replace string with filter
-			this.creatingAdapter = true;
-			this.setListAdapter(adapter);
-		}
-		else
-			this.creatingAdapter = false;
+
+		this.setListAdapter(adapter);
 	}
 	
 	@Override
@@ -101,15 +95,16 @@ public class StockListActivity extends ListActivity {
 
 		if (!this.dataManager.isOnline(this))
 			this.showDialog(NO_INTERNET);
-		//this.setListAdapter(this.adapter);
+
 		this.fill();
 		
-		if (! this.creatingAdapter)
-	    	try {
-				this.findViewById(R.id.progressStockList).setVisibility(View.GONE);
-			} catch (Exception e) {
-				Log.d("cz.tomas.StockAnalyze.News.NewsListAdapter", "failed to dissmis progess bar! " + e.getMessage());
-			}
+		// check if it is neccessary to dissmis the progres bar 
+//		if (! this.creatingAdapter)
+//	    	try {
+//				this.findViewById(R.id.progressStockList).setVisibility(View.GONE);
+//			} catch (Exception e) {
+//				Log.d("cz.tomas.StockAnalyze.News.NewsListAdapter", "failed to dissmis progess bar! " + e.getMessage());
+//			}
 	}
 	
 	@Override
@@ -198,7 +193,7 @@ public class StockListActivity extends ListActivity {
 
 	    	setListAdapter(null);
 	    	StockListActivity.adapter = null;
-	    	findViewById(R.id.progressStockList).setVisibility(View.VISIBLE);
+	    	//findViewById(R.id.progressStockList).setVisibility(View.VISIBLE);
 		}
 
 		/* (non-Javadoc)
