@@ -7,13 +7,14 @@
         android:bottomRightRadius="4dp"
         android:topLeftRadius="0.1dp"
         android:topRightRadius="0.1dp" />
-<!--    <gradient-->
-<!--        android:angle="90"-->
-<!--        android:endColor="#FEFEFF"-->
-<!--        android:startColor="#EBEBF1"-->
-<!--        android:type="linear"/>-->
-	<solid
-        android:color="@color/actionbar_color" />
+    <gradient
+        android:angle="90"
+        android:endColor="@color/actionbar_color_end"
+        android:startColor="@color/actionbar_color_start"
+        android:centerColor="@color/actionbar_color"
+        android:type="linear" />
+<!--	<solid-->
+<!--        android:color="@color/actionbar_color" />-->
     <padding
         android:left="2dp"
         android:top="2dp"
@@ -24,8 +25,7 @@
 	        android:color="color"
 	        android:dashWidth="integer"
 			android:dashGap="integer" />-->
-<!--    <solid android:color="color" />-->
-    <stroke
-        android:width="0.1dp"
-        android:color="#F0F0F0"/>
+<!--    <stroke-->
+<!--        android:width="0.1dp"-->
+<!--        android:color="#F0F0F0"/>-->
 </shape>

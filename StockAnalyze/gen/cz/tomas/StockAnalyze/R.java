@@ -51,7 +51,11 @@ containing a value of this type.
         public static final int textId=0x7f010002;
     }
     public static final class color {
+        /** <color name="actionbar_color">#CED2FF</color>
+         */
         public static final int actionbar_color=0x7f040006;
+        public static final int actionbar_color_end=0x7f040008;
+        public static final int actionbar_color_start=0x7f040007;
         public static final int actionbar_separator_color=0x7f040005;
         public static final int font_color=0x7f040001;
         public static final int list_item_background=0x7f040000;
@@ -60,7 +64,7 @@ containing a value of this type.
         public static final int separator_color=0x7f040004;
     }
     public static final class dimen {
-        public static final int actionBar_height=0x7f050000;
+        public static final int actionbar_height=0x7f050000;
         public static final int text_size_large=0x7f050003;
         public static final int text_size_medium=0x7f050002;
         public static final int text_size_small=0x7f050001;
@@ -184,6 +188,8 @@ containing a value of this type.
     }
     public static final class style {
         public static final int actionBar=0x7f070008;
+        public static final int actionBar_ImageButton=0x7f07000a;
+        public static final int actionBar_title_text=0x7f070009;
         public static final int groupboxBody=0x7f070005;
         public static final int groupboxHeader=0x7f070006;
         public static final int homeBlock=0x7f070007;
@@ -199,7 +205,7 @@ containing a value of this type.
         /** 		<item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">wrap_content</item>
          */
-        public static final int themeLight=0x7f070009;
+        public static final int themeLight=0x7f07000b;
     }
     public static final class styleable {
         /** Attributes that can be used with a HomeBlockItemAtts.

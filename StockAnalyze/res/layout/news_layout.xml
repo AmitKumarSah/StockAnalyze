@@ -3,9 +3,7 @@
  <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
          android:orientation="vertical"
          android:layout_width="fill_parent"
-         android:layout_height="fill_parent"
-         android:paddingLeft="4dp"
-         android:paddingRight="8dp">
+         android:layout_height="fill_parent">
 	<cz.tomas.StockAnalyze.ui.widgets.ActionBar
 		android:id="@+id/homeActionBar"
 		android:layout_width="fill_parent" 

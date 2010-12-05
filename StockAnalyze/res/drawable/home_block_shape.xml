@@ -8,7 +8,8 @@
         android:angle="90"
         android:endColor="#FEFEFF"
         android:startColor="#EBEBF1"
-        android:type="linear"/>
+        android:type="radial"
+        android:gradientRadius="100"/>
     <stroke
         android:width="0.1dp"
         android:color="#F0F0F0"/>

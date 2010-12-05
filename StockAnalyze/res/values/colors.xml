@@ -5,6 +5,9 @@
 <color name="news_item_unread_color">#00EE00</color>
 <color name="news_item_read_color">#DDDDDD</color>
 <color name="separator_color">#AAAAAA</color>
-<color name="actionbar_separator_color">#FFFFFF</color>
-<color name="actionbar_color">#CED2FF</color>
+<color name="actionbar_separator_color">#DDDDDD</color>
+<!--<color name="actionbar_color">#CED2FF</color>-->
+<color name="actionbar_color">#000000</color>
+<color name="actionbar_color_start">#121212</color>
+<color name="actionbar_color_end">#393939</color>
 </resources>
