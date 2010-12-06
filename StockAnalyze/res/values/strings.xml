@@ -24,6 +24,6 @@
 	
 	<string name="homeStockList">Stock List</string>
 	<string name="homeNews">Market News</string>
-	<string name="homeCurrencies">Currencies</string>
+	<string name="homeCurrencies">World Currencies</string>
 	<string name="homeMyPortfolio">My Portfolio</string>
 </resources>

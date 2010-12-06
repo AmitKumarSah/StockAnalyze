@@ -21,24 +21,24 @@
 			<cz.tomas.StockAnalyze.ui.widgets.HomeBlockView
 				android:id="@+id/homeBlockStockList"
 				block:textId="@string/homeStockList" 
-				block:imageId="@drawable/icon"
+				block:imageId="@drawable/ic_launcher_list"
 				block:target="cz.tomas.StockAnalyze.StockListActivity"/>
 			<cz.tomas.StockAnalyze.ui.widgets.HomeBlockView 
 				android:id="@+id/homeBlockNews"
 				block:textId="@string/homeNews"
-				block:imageId="@drawable/icon" 
+				block:imageId="@drawable/ic_rss_simple" 
 				block:target="cz.tomas.StockAnalyze.NewsActivity"/>
 		</TableRow>
 		<TableRow>
 			<cz.tomas.StockAnalyze.ui.widgets.HomeBlockView
 				android:id="@+id/homeBlockCurrencies"
 				block:textId="@string/homeCurrencies" 
-				block:imageId="@drawable/icon"
+				block:imageId="@drawable/ic_globe"
 				block:target="cz.tomas.StockAnalyze.CurrenciesActivity"/>
 			<cz.tomas.StockAnalyze.ui.widgets.HomeBlockView 
 				android:id="@+id/homeBlockPortfolio"
 				block:textId="@string/homeMyPortfolio"
-				block:imageId="@drawable/icon" 
+				block:imageId="@drawable/ic_business" 
 				block:target="cz.tomas.StockAnalyze.PortfolioActivity"/>
 		</TableRow>
 	</TableLayout>

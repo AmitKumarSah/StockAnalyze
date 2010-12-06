@@ -13,6 +13,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.TabActivity;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -130,12 +131,22 @@ public class StockSearchActivity extends Activity {
 									int position = StockSearchActivity.this.getIntent().getIntExtra(SELECTED_STOCK, -1);
 									StockItem stock = (StockItem) list.getItemAtPosition(position);
 									
-									TabActivity act = (TabActivity) StockSearchActivity.this.getParent();
-									act.getIntent().putExtra("stock_id", stock.getId());
-									act.getIntent().putExtra("market_id", stock.getMarket());
-									act.getTabHost().setCurrentTabByTag("StockDetail");
+									Activity activity = StockSearchActivity.this.getParent();
+									if (activity != null && activity instanceof TabActivity) {
+										TabActivity act = (TabActivity) activity;
+										act.getIntent().putExtra("stock_id", stock.getId());
+										act.getIntent().putExtra("market_id", stock.getMarket());
+										act.getTabHost().setCurrentTabByTag("StockDetail");
+									}
+									else {
+										Intent intent = new Intent();
+										intent.putExtra("stock_id", stock.getId());
+										intent.putExtra("market_id", stock.getMarket());
+										intent.setClass(StockSearchActivity.this, StockDetailActivity.class);
+										startActivity(intent);
+									}
 								} catch (Exception e) {
-									Toast.makeText(StockSearchActivity.this, e.getMessage(), Toast.LENGTH_LONG);
+									Toast.makeText(StockSearchActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
 									e.printStackTrace();
 								}
 								dialog.dismiss();
