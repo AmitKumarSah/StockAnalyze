@@ -6,6 +6,7 @@ package cz.tomas.StockAnalyze;
 import java.util.List;
 
 import cz.tomas.StockAnalyze.Data.DataManager;
+import cz.tomas.StockAnalyze.Data.MarketFactory;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.StockList.StockListAdapter;
 import android.app.Activity;
@@ -50,7 +51,7 @@ public class StockSearchActivity extends Activity {
 			@Override
 			public void onTextChanged(CharSequence s, int start, int count, int after) {
 				if (s.length() > 1) {
-					List<StockItem> stocks = StockSearchActivity.this.dataManger.search(s.toString());
+					List<StockItem> stocks = StockSearchActivity.this.dataManger.search(s.toString(), MarketFactory.getMarket("cz"));
 					String[] displayResults = new String[stocks.size()];
 					
 					for (int i = 0; i < displayResults.length; i++) {

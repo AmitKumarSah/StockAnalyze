@@ -11,11 +11,11 @@ import java.util.List;
 import java.util.Set;
 
 import cz.tomas.StockAnalyze.Data.DataProviderAdviser;
-import cz.tomas.StockAnalyze.Data.FailedToGetDataException;
 import cz.tomas.StockAnalyze.Data.IStockDataProvider;
 import cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
+import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetDataException;
 
 /**
  * @author tomas

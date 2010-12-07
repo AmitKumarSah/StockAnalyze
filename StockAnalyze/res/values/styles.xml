@@ -47,6 +47,7 @@
         <item name="android:layout_marginLeft">4dip</item>
         <item name="android:layout_marginRight">4dip</item>
         <item name="android:layout_marginBottom">4dip</item>
+        <item name="android:background">@drawable/groupbox_body_shape</item>
     </style>
      <style name="groupboxHeader">
 		<item name="android:layout_width">fill_parent</item>
@@ -55,6 +56,7 @@
         <item name="android:layout_marginLeft">4dip</item>
         <item name="android:layout_marginRight">4dip</item>
         <item name="android:layout_marginBottom">0dip</item>
+        <item name="android:background">@drawable/groupbox_header_shape</item>
     </style>
     <style name="homeBlock">
 		<item name="android:layout_width">fill_parent</item>

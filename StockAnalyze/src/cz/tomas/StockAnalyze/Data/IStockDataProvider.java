@@ -10,8 +10,8 @@ import java.util.List;
 
 import cz.tomas.StockAnalyze.Data.Interfaces.IObservableDataProvider;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
-import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
+import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetDataException;
 
 /**
  * @author tomas

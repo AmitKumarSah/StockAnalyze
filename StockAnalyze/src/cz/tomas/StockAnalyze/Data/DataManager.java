@@ -15,6 +15,7 @@ import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.Data.PseCsvData.PseCsvDataAdapter;
 import cz.tomas.StockAnalyze.Data.PsePatriaData.PsePatriaDataAdapter;
+import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetDataException;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -54,9 +55,9 @@ public class DataManager {
 		this.updateDateChangedListeners = new ArrayList<IUpdateDateChangedListener>();
 	}
 
-	public List<StockItem> search(String pattern) throws NullPointerException, FailedToGetDataException {
+	public List<StockItem> search(String pattern, Market market) throws NullPointerException, FailedToGetDataException {
 		// FIXME
-		IStockDataProvider provider = DataProviderFactory.getRealTimeDataProvider(new Market("PSE", "XPRA", "CZK", null));
+		IStockDataProvider provider = DataProviderFactory.getRealTimeDataProvider(market);
 		List<StockItem> stocks = provider.getAvailableStockList();
 		if (stocks == null)
 			throw new NullPointerException("can't get list of available stock items");

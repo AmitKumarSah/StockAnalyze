@@ -18,13 +18,11 @@
 			android:layout_margin="4dp"/>
 		<TextView android:text="@+id/TextView01" 
 			style="@style/groupboxHeader"
-			android:id="@+id/txtDetailHeader" 
-			android:background="@drawable/groupbox_header_shape" />
+			android:id="@+id/txtDetailHeader" />
 		<LinearLayout android:id="@+id/DetailLinearSummary"
 			style="@style/groupboxBody"
 			xmlns:android="http://schemas.android.com/apk/res/android"
-			android:orientation="vertical"
-			android:background="@drawable/groupbox_body_shape" >
+			android:orientation="vertical">
 			<TextView android:id="@+id/txtDetailName" 
 				android:text="@+id/TextView01"
 				android:layout_height="wrap_content" android:layout_width="fill_parent"
@@ -50,14 +48,12 @@
 			</TextView>
 		</LinearLayout>
 		<TextView android:id="@+id/label_stats"
-			android:background="@drawable/groupbox_header_shape"
 			android:text="@string/Statistics" 
 			style="@style/groupboxHeader" />
 		<TableLayout android:id="@+id/tableDetailData"
 			style="@style/groupboxBody"
 		 	android:stretchColumns="1"
-			android:shrinkColumns="0"
-			android:background="@drawable/groupbox_body_shape" >
+			android:shrinkColumns="0">
 			<TableRow android:id="@+id/TableDetailRow01"
 				android:layout_width="fill_parent" android:layout_height="fill_parent">
 				<TextView android:layout_height="fill_parent"
@@ -108,7 +104,6 @@
 			style="@style/groupboxHeader" />
 		<ImageView android:id="@+id/ChartView" 
 			style="@style/groupboxBody"
-			android:background="@drawable/groupbox_shape"
 			android:src="@drawable/chart_preview"
 			android:layout_width="fill_parent" 
 			android:layout_height="fill_parent" 

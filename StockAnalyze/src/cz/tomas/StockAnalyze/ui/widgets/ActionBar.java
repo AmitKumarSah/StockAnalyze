@@ -56,9 +56,5 @@ public class ActionBar extends RelativeLayout {
         }
         else
         	Log.d("ActionBar", "action bar home button not found");
-        }
-	
-	private void init(Context context, AttributeSet attrs) {
-	
 	}
 }

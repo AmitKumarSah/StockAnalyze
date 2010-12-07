@@ -13,6 +13,7 @@ import java.util.Map;
 
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.DataManager;
+import cz.tomas.StockAnalyze.Data.MarketFactory;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 
@@ -157,6 +158,10 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 		this.showIcons = show;
 	}
 	
+	/*
+	 * this task load all stocks from datamanger and notify the ListView,
+	 * it also takes care about the progress view
+	 */
 	class StockListTask extends AsyncTask<String, Integer, List<StockItem>> {
 
 		@Override
@@ -173,7 +178,7 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 		protected List<StockItem> doInBackground(String... params) {
 			List<StockItem> items = null;
         	try {
-				items = StockListAdapter.this.dataManager.search(params[0]);
+				items = StockListAdapter.this.dataManager.search(params[0], MarketFactory.getMarket("cz"));
 
             	Collections.sort(items, new StockComparator(StockCompareTypes.Volume, dataManager));
             	
@@ -202,7 +207,7 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 		}
 
 		/* 
-		 * notify list
+		 * notify list and hide progress bar
 		 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
 		 */
 		@Override

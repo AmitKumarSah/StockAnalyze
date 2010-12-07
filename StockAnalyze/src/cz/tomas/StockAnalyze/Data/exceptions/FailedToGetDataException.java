@@ -1,4 +1,4 @@
-package cz.tomas.StockAnalyze.Data;
+package cz.tomas.StockAnalyze.Data.exceptions;
 
 public class FailedToGetDataException extends RuntimeException {
 	
