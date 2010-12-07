@@ -6,7 +6,8 @@
 	  
 	  <ImageView android:id="@+id/homeBlockItemImage" 
 	  	android:layout_width="fill_parent"
-	  	android:layout_height="wrap_content"/>
+	  	android:layout_height="wrap_content"
+	  	android:focusable="true"/>
 	  <TextView android:id="@+id/homeBlockItemTextView" 
 	  	android:layout_below="@id/homeBlockItemImage"
 	  	android:layout_width="fill_parent"

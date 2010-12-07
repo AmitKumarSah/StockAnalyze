@@ -49,5 +49,13 @@
 			android:layout_alignParentBottom="true"
 			android:background="@color/separator_color"
 			android:layout_margin="10dip" />
+	<TextView android:id="@+id/home_chart_title"
+		style="@style/titleText"
+		android:text="@string/homeChartTitle"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"/>
+	<ImageView android:id="@+id/home_chart" 
+		style="@style/homeBlock"
+		android:src="@drawable/chart_preview"/>
 </LinearLayout>
 </ScrollView>

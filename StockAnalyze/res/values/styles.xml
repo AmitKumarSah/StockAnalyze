@@ -16,6 +16,11 @@
 		<item name="android:textColor">#FFFFFF</item>
 		<item name="android:background">@drawable/groupbox_shape</item>
 	</style>
+	<style name="titleText" parent="@android:style/TextAppearance.Medium">
+	    <item name="android:textStyle">bold</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingLeft">12dip</item>
+	</style>
 	<style name="subText" parent="@android:style/TextAppearance.Small">
 		<item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -58,6 +63,7 @@
     	<item name="android:layout_margin">10dip</item>
 <!--    	<item name="android:layout_gravity">center</item>-->
     	<item name="android:background">@drawable/home_block_shape</item>
+    	<item name="android:focusable">true</item>
     </style>
     <style name="actionBar">
 		<item name="android:layout_width">fill_parent</item>
@@ -67,15 +73,12 @@
         <item name="android:textSize">16sp</item>
         <item name="android:textStyle">normal</item>
     </style>
-    <style name="actionBar.title_text">
+    <style name="actionBar.title_text" parent="titleText">
      	<item name="android:layout_width">wrap_content</item>
      	<item name="android:layout_height">fill_parent</item>
      	<item name="android:text">@string/app_name</item>
-<!--		<item name="android:textColor">#FFFFFF</item>-->
-<!--        <item name="android:textSize">14dip</item>-->
-        <item name="android:textStyle">bold</item>
-        <item name="android:gravity">center_vertical</item>
-        <item name="android:paddingLeft">12dip</item>
+		<item name="android:textColor">#FFFFFF</item>
+<!--        <item name="android:textSize">14sip</item>-->
     </style>
     <style name="actionBar.ImageButton">
 <!--    	<item name="android:layout_height">fill_parent</item>-->

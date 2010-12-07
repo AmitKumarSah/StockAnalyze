@@ -102,10 +102,16 @@
 			</TableRow>
 		</TableLayout>
 	
-	<ImageView android:id="@+id/ChartView" 
-		android:background="@drawable/groupbox_shape"
-		android:layout_width="fill_parent" 
-		android:layout_height="fill_parent" 
-		android:visibility="invisible"/>
+		<TextView android:id="@+id/detail_label_chart"
+			android:background="@drawable/groupbox_header_shape"
+			android:text="@string/homeChartTitle" 
+			style="@style/groupboxHeader" />
+		<ImageView android:id="@+id/ChartView" 
+			style="@style/groupboxBody"
+			android:background="@drawable/groupbox_shape"
+			android:src="@drawable/chart_preview"
+			android:layout_width="fill_parent" 
+			android:layout_height="fill_parent" 
+			android:visibility="visible"/>
 	</LinearLayout>
 </ScrollView>

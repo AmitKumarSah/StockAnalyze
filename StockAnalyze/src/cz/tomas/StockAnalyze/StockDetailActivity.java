@@ -114,6 +114,7 @@ public class StockDetailActivity extends Activity {
 		DayData data = manager.getLastValue(stockItem);
 		
 		NumberFormat priceFormat = DecimalFormat.getCurrencyInstance();
+		// TODO indeces don't have currency
 		priceFormat.setCurrency(stockItem.getMarket().getCurrency());
 		NumberFormat percentFormat = DecimalFormat.getNumberInstance();
 		percentFormat.setMaximumFractionDigits(2);

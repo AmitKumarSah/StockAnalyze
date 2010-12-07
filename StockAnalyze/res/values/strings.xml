@@ -26,4 +26,5 @@
 	<string name="homeNews">Market News</string>
 	<string name="homeCurrencies">World Currencies</string>
 	<string name="homeMyPortfolio">My Portfolio</string>
+	<string name="homeChartTitle">Market Chart:</string>
 </resources>
