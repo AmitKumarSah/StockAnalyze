@@ -129,7 +129,7 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 					priceGroupView.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.groupbox_red_shape));
 				}
 				else if (priceGroupView != null) {
-					priceGroupView.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.groupbox_shape));
+					priceGroupView.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.groupbox_dark_shape));
 				}
 			}
         }

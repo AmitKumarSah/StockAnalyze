@@ -1,16 +1,20 @@
 package cz.tomas.StockAnalyze;
 
+import java.util.Iterator;
+
 import cz.tomas.StockAnalyze.ui.widgets.HomeBlockView;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnKeyListener;
 import android.widget.Toast;
 
-public class HomeActivity extends Activity implements OnClickListener {
+public class HomeActivity extends Activity implements OnClickListener, OnKeyListener {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -18,10 +22,18 @@ public class HomeActivity extends Activity implements OnClickListener {
 		
 		this.setContentView(R.layout.home_layout);
 		
-		this.findViewById(R.id.homeBlockCurrencies).setOnClickListener(this);
-		this.findViewById(R.id.homeBlockNews).setOnClickListener(this);
-		this.findViewById(R.id.homeBlockPortfolio).setOnClickListener(this);
-		this.findViewById(R.id.homeBlockStockList).setOnClickListener(this);
+		View[] blockViews = new View[4];
+		blockViews[0] = this.findViewById(R.id.homeBlockCurrencies);
+		blockViews[1] = this.findViewById(R.id.homeBlockNews);
+		blockViews[2] = this.findViewById(R.id.homeBlockPortfolio);
+		blockViews[3] = this.findViewById(R.id.homeBlockStockList);
+		
+		for (View view : blockViews) {
+			if (view != null) {
+				view.setOnClickListener(this);
+				view.setOnKeyListener(this);
+			}
+		}
 	}
 
 	@Override
@@ -32,6 +44,20 @@ public class HomeActivity extends Activity implements OnClickListener {
 
 	@Override
 	public void onClick(View v) {
+		startChildActivity(v);
+	}
+
+
+	@Override
+	public boolean onKey(View v, int keyCode, KeyEvent event) {
+		startChildActivity(v);
+		return true;
+	}
+	
+	/**
+	 * @param v
+	 */
+	private void startChildActivity(View v) {
 		String target = null;
 		if (v instanceof HomeBlockView) {
 			try {
@@ -47,7 +73,6 @@ public class HomeActivity extends Activity implements OnClickListener {
 				Toast.makeText(this, "Failed to start:\n" + (target == null ? "unkown" : target), Toast.LENGTH_SHORT).show();
 			}
 		}
-		
 	}
 
 }

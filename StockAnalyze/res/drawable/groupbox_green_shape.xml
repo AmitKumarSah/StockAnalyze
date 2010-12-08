@@ -6,9 +6,9 @@
         android:radius="4dip" />
     <gradient
         android:angle="90"
-        android:endColor="#ADFFAD"
-        android:startColor="#00DD00"
-        android:centerColor="#00FF00"
+        android:endColor="@color/money_item_green_end"
+        android:startColor="@color/money_item_green_start"
+        android:centerColor="@color/money_item_green_center"
         android:type="linear"/>
     <padding
         android:left="2dip"

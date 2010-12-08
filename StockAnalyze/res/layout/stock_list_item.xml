@@ -35,11 +35,13 @@
         	android:layout_width="fill_parent"
         	android:layout_height="wrap_content"
         	android:layout_weight="1"
-        	android:gravity="right"/>
+        	android:gravity="right"
+        	android:textColor="@color/money_item_text"/>
 	    <TextView
 	        android:id="@+id/righttext2"
 	        android:layout_weight="1"
 	        android:gravity="right"
+	        android:textColor="@color/money_item_text"
 			style="@style/subText"/>
 	</LinearLayout>
     
