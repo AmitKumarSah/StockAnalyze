@@ -11,7 +11,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.Map.Entry;
+
+import android.util.Log;
 
 import cz.tomas.StockAnalyze.Data.DataProviderAdviser;
 import cz.tomas.StockAnalyze.Data.IStockDataProvider;
@@ -28,7 +32,34 @@ import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetDataException;
  */
 public class PsePatriaDataAdapter implements IStockDataProvider {
 
+	private final class TimedUpdateTask extends TimerTask {
+		@Override
+		public void run() {
+			if (enabled)
+				try {
+					if (provider.refresh()) {
+						// if refresh proceeded and the market is open, fire the event
+						for (IStockDataListener listener : eventListeners) {
+							listener.OnStockDataUpdated(PsePatriaDataAdapter.this);
+						}
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+					Log.d("PsePatriaDataProvider", "Regular update failed!");
+				}
+		}
+	}
+
 	PsePatriaDataProvider provider;
+	/*
+	 * time interval between refreshes - in miliseconds
+	 */
+	long refreshInterval = 1000 * 60 * 10;
+
+	Timer timer;
+	boolean enabled;
+
+	List<IStockDataListener> eventListeners;
 	
 	/*
 	 * mapping between ticker and ISIN (id)
@@ -37,6 +68,8 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 	Map<String, String> tickerIsinMapping;
 	
 	Market market;
+	
+	TimedUpdateTask updateTask;
 	
 	public PsePatriaDataAdapter() {
 		this.provider = new PsePatriaDataProvider();
@@ -60,6 +93,11 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 		this.tickerIsinMapping.put("BAAVIG", "AT0000908504");
 		
 		market = new Market("PSE", "XPRA", "CZK", this.getDescriptiveName());
+
+		this.eventListeners = new ArrayList<IStockDataListener>();
+		this.updateTask = new TimedUpdateTask();
+		this.timer = new Timer();
+	    this.timer.scheduleAtFixedRate(this.updateTask, 100, refreshInterval);
 	}
 	
 	/* 
@@ -159,13 +197,16 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 	 */
 	@Override
 	public boolean refresh() {
+		boolean result = false;
 		try {
-			return this.provider.refresh();
+			if (this.updateTask != null) {
+				this.updateTask.run();
+				result = true;
+			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return false;
 		}
+		return result;
 	}
 
 	@Override
@@ -176,14 +217,12 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 
 	@Override
 	public void addListener(IStockDataListener listener) {
-		// TODO Auto-generated method stub
-		
+		this.eventListeners.add(listener);
 	}
 
 	@Override
 	public void enable(boolean enabled) {
-		// TODO Auto-generated method stub
-		
+		this.enabled = enabled;
 	}
 
 }

@@ -10,7 +10,7 @@ public class DataSqlHelper extends SQLiteOpenHelper {
 		
 		private final String DATABASE_NAME = "cz.tomas.StockAnalyze.Data";
 		
-		private final static int DATABASE_VERSION_NUMBER = 4;
+		private final static int DATABASE_VERSION_NUMBER = 5;
 		
 		private final static String DATABASE_FILE_NAME = "cz.tomas.StockAnalyze.Data.db";
 		

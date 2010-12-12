@@ -82,4 +82,15 @@ public class DayData {
 	public int getTradedPieaces() {
 		return tradedPieces;
 	}
+
+	/* 
+	 * string representation with selected fields
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "DayData [price=" + price + ", change=" + change
+				+ ", absChange=" + absChange + ", date=" + date + ", volume="
+				+ volume + "]";
+	}
 }

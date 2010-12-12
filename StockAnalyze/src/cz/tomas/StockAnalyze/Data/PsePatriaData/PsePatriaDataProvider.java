@@ -9,9 +9,14 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.TimerTask;
 import java.util.Map.Entry;
+import java.util.Timer;
+
+import android.util.Log;
 
 import cz.tomas.StockAnalyze.Data.IStockDataProvider;
+import cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 
@@ -20,11 +25,12 @@ import cz.tomas.StockAnalyze.Data.Model.StockItem;
  *
  */
 public class PsePatriaDataProvider {
-	
+
 	PsePatriaDataMarketItem currentMarketData;
 	
 	public PsePatriaDataProvider() {
 		this.currentMarketData = new PsePatriaDataMarketItem();
+		
 	}
 	
 	public PsePatriaDataItem getLastData(String ticker) throws Exception {
@@ -46,7 +52,6 @@ public class PsePatriaDataProvider {
 
 	public boolean refresh() throws Exception {
 		this.currentMarketData.update();
-		return true;
+		return true;// ! this.currentMarketData.isClosePhase();
 	}
-
 }

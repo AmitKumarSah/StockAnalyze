@@ -57,17 +57,18 @@ public class StockDataSqlStore extends DataSqlHelper {
 		super(context);
 	}
 
-	public boolean checkForStock(StockItem item) {
-		if (item == null || item.getId() == null)
+
+	public boolean checkForStock(String id) {
+		if (id == null || id.length() == 0)
 			return false;
+
 		boolean result = false;
-		
 		try {
 			SQLiteDatabase db = this.getWritableDatabase();
 			Cursor c = null;
 			try {
 				//c = db.query(STOCK_TABLE_NAME, new String[] { "id" }, "id='"+ item.getId() +"'", null, null, null, null);
-				c = db.query(STOCK_TABLE_NAME, new String[] { "id" }, "id=?", new String[] { item.getId() }, null, null, null);
+				c = db.query(STOCK_TABLE_NAME, new String[] { "id" }, "id=?", new String[] { id }, null, null, null);
 				if (c.moveToFirst())
 					result = true;
 				
@@ -79,12 +80,20 @@ public class StockDataSqlStore extends DataSqlHelper {
 					c.close();
 			}
 		} catch (SQLException e) {
-			Log.d("StockDataSqlStore", "failed to get data." + e.getMessage());
+			Log.d("StockDataSqlStore", "failed to get stock item." + e.getMessage());
 			e.printStackTrace();
 		} finally {
 			this.close();
 		}
 		return result;
+	}
+	
+	public boolean checkForStock(StockItem item) {
+		if (item == null || item.getId() == null)
+			return false;
+		String id = item.getId();
+		
+		return this.checkForStock(id);
 	}
 	
 	public boolean checkForData(StockItem item, Calendar cal) {
@@ -173,7 +182,48 @@ public class StockDataSqlStore extends DataSqlHelper {
 			this.close();
 		}
 	}
+	
+	/*
+	 * get stock item by id from database
+	 * returns null if nothing is found
+	 */
+	public StockItem getStockItem(String id) {
+		StockItem item = null;
+		try {
+			SQLiteDatabase db = this.getWritableDatabase();
+			Cursor c = null;
+			try {
+				//c = db.query(STOCK_TABLE_NAME, new String[] { "id" }, "id='"+ item.getId() +"'", null, null, null, null);
+				c = db.query(STOCK_TABLE_NAME, new String[] { "id", "ticker", "name" }, "id=?", new String[] { id }, null, null, null);
+				if (c.moveToFirst()) {
+					String ticker = c.getString(1);
+					String name = c.getString(2);
+					// FIXME market table
+					item = new StockItem(ticker, id, name, MarketFactory.getMarket("cz"));
+				}
+				
+			} catch (SQLException e) {
+				Log.e("StockDataSqlStore", e.toString());
+			} finally {
+				// close cursor
+				if (c != null)
+					c.close();
+			}
+		} catch (SQLException e) {
+			Log.d("StockDataSqlStore", "failed to get stock item." + e.getMessage());
+			e.printStackTrace();
+		} finally {
+			this.close();
+		}
+		
+		return item;
+	}
 
+	/*
+	 * get day data item from stock_day_data table
+	 * for given stock item and day in year represented by Calendar.
+	 * returns null if nothing is found
+	 */
 	public DayData getDayData(Calendar now, StockItem item) {
 		List<DayData> datas = new ArrayList<DayData>();
 		try {
@@ -194,7 +244,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 					float volume = c.getFloat(5);
 					
 					Date date = new Date(millisecs);
-					
+					// FIXME - consider the date
 					DayData data = new DayData(price, change, date, volume, max, min);
 					datas.add(data);
 				} while (c.moveToNext());
@@ -210,6 +260,8 @@ public class StockDataSqlStore extends DataSqlHelper {
 		} finally {
 			this.close();
 		}
+		if (datas.size() > 1)
+			Log.d("StockDataSwlStore", "there is more data available for " + item.getTicker());	// for debuging
 		if (datas.size() > 0)
 			return datas.get(0);
 		return null;

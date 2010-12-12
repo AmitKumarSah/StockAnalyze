@@ -83,10 +83,14 @@ public class StockListActivity extends ListActivity {
 	}
 
 	private synchronized void fill() {
-		if (adapter == null)
-			adapter = new StockListAdapter(this, R.layout.stock_list, this.dataManager, "baa");	//TODO replace string with filter
+		if (adapter == null) {
+			// this should be done only one-time
+			adapter = new StockListAdapter(this, R.layout.stock_list, this.dataManager, "*");	//TODO replace string with filter
+		}
 
-		this.setListAdapter(adapter);
+		// in case of resuming when adapter is initialized but not set to list view
+		if (this.getListAdapter() == null) 
+			this.setListAdapter(adapter);
 	}
 	
 	@Override
@@ -97,14 +101,6 @@ public class StockListActivity extends ListActivity {
 			this.showDialog(NO_INTERNET);
 
 		this.fill();
-		
-		// check if it is neccessary to dissmis the progres bar 
-//		if (! this.creatingAdapter)
-//	    	try {
-//				this.findViewById(R.id.progressStockList).setVisibility(View.GONE);
-//			} catch (Exception e) {
-//				Log.d("cz.tomas.StockAnalyze.News.NewsListAdapter", "failed to dissmis progess bar! " + e.getMessage());
-//			}
 	}
 	
 	@Override
@@ -128,26 +124,6 @@ public class StockListActivity extends ListActivity {
 	        return super.onOptionsItemSelected(item);
 	    }
 	}
-
-//	/**
-//	 * @throws NotFoundException
-//	 */
-//	private void refreshStockListData() {
-//		try {
-//			if (this.dataManager.refresh()){
-//		    	this.setListAdapter(null);
-//		    	this.findViewById(R.id.progressStockList).setVisibility(View.VISIBLE);
-//		    	this.fill();
-//		    	Toast.makeText(this.getParent(), R.string.update_succes, Toast.LENGTH_SHORT).show();
-//			}
-//			else
-//				Toast.makeText(this.getParent(), R.string.NoRefresh, Toast.LENGTH_SHORT).show();
-//		} catch (Exception e) {
-//			if (e.getMessage() != null)
-//				Log.d("StockListlActivity", e.getMessage());
-//			Toast.makeText(this.getParent(), R.string.update_fail, Toast.LENGTH_LONG).show();
-//		}
-//	}
 	
 	@Override
 	protected Dialog onCreateDialog(int id) {
@@ -184,19 +160,21 @@ public class StockListActivity extends ListActivity {
 	
 	class RefreshTask extends AsyncTask<Void, Integer, Boolean> {
 
-		/* (non-Javadoc)
+		/* 
+		 * clear the list view
 		 * @see android.os.AsyncTask#onPreExecute()
 		 */
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
 
-	    	setListAdapter(null);
-	    	StockListActivity.adapter = null;
-	    	//findViewById(R.id.progressStockList).setVisibility(View.VISIBLE);
+	    	//setListAdapter(null);
+			if (StockListActivity.adapter != null)
+				StockListActivity.adapter.clear();
 		}
 
-		/* (non-Javadoc)
+		/* 
+		 * just show error message
 		 * @see android.os.AsyncTask#onCancelled()
 		 */
 		@Override
@@ -205,7 +183,8 @@ public class StockListActivity extends ListActivity {
 			Toast.makeText(getParent(), R.string.update_fail, Toast.LENGTH_LONG).show();
 		}
 
-		/* (non-Javadoc)
+		/*
+		 * invoke global data refresh
 		 * @see android.os.AsyncTask#doInBackground(Params[])
 		 */
 		@Override
@@ -221,7 +200,8 @@ public class StockListActivity extends ListActivity {
 			return result;
 		}
 
-		/* (non-Javadoc)
+		/* 
+		 * adapter should get updated on itself, just show proper message
 		 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
 		 */
 		@Override

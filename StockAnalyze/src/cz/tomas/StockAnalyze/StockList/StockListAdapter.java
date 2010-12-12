@@ -13,7 +13,9 @@ import java.util.Map;
 
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.DataManager;
+import cz.tomas.StockAnalyze.Data.IStockDataProvider;
 import cz.tomas.StockAnalyze.Data.MarketFactory;
+import cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 
@@ -52,8 +54,29 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 		this.datas = new HashMap<StockItem, DayData>();
         this.vi = (LayoutInflater)	this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        StockListTask task = new StockListTask();
-        task.execute(filter);
+//        final StockListTask task = new StockListTask();
+//        task.execute(filter);
+        
+        this.dataManager.addStockDataListener(new IStockDataListener() {
+			
+			@Override
+			public void OnStockDataUpdated(IStockDataProvider sender) {
+				((Activity) context).runOnUiThread(new Runnable() {
+					
+					@Override
+					public void run() {
+						StockListTask task = new StockListTask();
+				        task.execute(filter);
+					}
+				});
+			}
+			
+			@Override
+			public void OnStockDataUpdateBegin(IStockDataProvider sender) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 	}
 	
 	@Override
@@ -177,6 +200,8 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 		@Override
 		protected List<StockItem> doInBackground(String... params) {
 			List<StockItem> items = null;
+			// first, get all stock items we need, according to the search pattern 
+			// that is params[0] in this case
         	try {
 				items = StockListAdapter.this.dataManager.search(params[0], MarketFactory.getMarket("cz"));
 
@@ -190,11 +215,13 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 				e.printStackTrace();
 			}
 			try {
-				// get day data for each stock and save it
-            	datas.clear();
-            	for (StockItem stockItem : items) {
-					DayData dayData = dataManager.getLastValue(stockItem);
-					datas.put(stockItem, dayData);
+				if (items != null) {
+					// get day data for each stock and save it
+					datas.clear();
+					for (StockItem stockItem : items) {
+						DayData dayData = dataManager.getLastValue(stockItem);
+						datas.put(stockItem, dayData);
+					}
 				}
 			} catch (Exception e) {
 				String message = "Failed to get stock day data. ";
