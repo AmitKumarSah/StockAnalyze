@@ -10,25 +10,37 @@ import java.util.Date;
  * class representing one price value for one day of one stock
  */
 public class DayData {
+	long id;
+
 	float price;
 	float change;
 	float absChange;
 	Date date;
+	long lastUpdate;
+
 	float volume;
 	int tradedPieces;
 	
 	float yearMaximum;
 	float yearMinimum;
-		
-	public DayData(float price, float change, Date date, float volume, float yearMax, float yearMin) {
+	public DayData(float price, float change, Date date, float volume, float yearMax, float yearMin, long updateTime, long id) {
+		this(price, change, date, volume, yearMax, yearMin, updateTime);
+		this.id = id;
+	}	
+	public DayData(float price, float change, Date date, float volume, float yearMax, float yearMin, long updateTime) {
 		this.price = price;
 		this.change = change;
 		this.date = date;
 		this.volume = volume;
 		this.yearMaximum = yearMax;
 		this.yearMinimum = yearMin;
+		this.lastUpdate = updateTime;
 		
 		this.absChange = this.price * this.change / 100.0f;
+	}
+
+	public long getId() {
+		return id;
 	}
 	
 	public float getPrice() {
@@ -51,6 +63,13 @@ public class DayData {
 	
 	public Date getDate() {
 		return date;
+	}
+	
+	/*
+	 * last update time (in miliseconds)
+	 */
+	public long getLastUpdate() {
+		return lastUpdate;
 	}
 	/*
 	 * Day volume in stock's currency

@@ -117,7 +117,7 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 		DayData data = null;
 		if (stockItem != null) {
 			Date date = new Date(this.provider.getLastUpdateTime());
-			data = new DayData(stockItem.getValue(), stockItem.getPercentableChange(), date, 0, 0,0);
+			data = new DayData(stockItem.getValue(), stockItem.getPercentableChange(), date, 0, 0, 0, date.getTime());
 		}
 		return data;
 	}

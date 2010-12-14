@@ -169,8 +169,8 @@ public class StockListActivity extends ListActivity {
 			super.onPreExecute();
 
 	    	//setListAdapter(null);
-			if (StockListActivity.adapter != null)
-				StockListActivity.adapter.clear();
+//			if (StockListActivity.adapter != null)
+//				StockListActivity.adapter.clear();
 		}
 
 		/* 

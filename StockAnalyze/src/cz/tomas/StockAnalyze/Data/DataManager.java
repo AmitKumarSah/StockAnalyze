@@ -116,7 +116,7 @@ public class DataManager implements IStockDataListener {
 		//if (this.sqlStore.checkForData(item, now))
 		
 		data = this.sqlStore.getDayData(now, item);
-		// we still can be without data- so we need to download it
+		// we still can be without data from db - so we need to download it
 		if (data == null) {
 			try {
 				IStockDataProvider provider = DataProviderFactory.getDataProvider(item.getTicker());

@@ -8,6 +8,7 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Currency;
 import java.util.Formatter;
 import java.util.Locale;
@@ -130,11 +131,13 @@ public class StockDetailActivity extends Activity {
 			txtHeader.setText(stockItem.getTicker() + " - " + stockId);
 		if (txtDate != null) {
 			DateFormat formatter = null;
-			if (data.getDate().getHours() != 0)
+			Calendar cal = Calendar.getInstance();
+			cal.setTimeInMillis(data.getLastUpdate());
+			if (cal.get(Calendar.HOUR_OF_DAY) != 0)
 				formatter = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.MEDIUM);
 			else
 				formatter = DateFormat.getDateInstance(DateFormat.LONG);
-			txtDate.setText(formatter.format(data.getDate()));
+			txtDate.setText(formatter.format(cal.getTime()));
 		}
 		if (txtVolume != null) {
 			String strVolume = priceFormat.format(data.getVolume());

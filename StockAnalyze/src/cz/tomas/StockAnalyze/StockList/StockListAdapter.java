@@ -242,11 +242,12 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 			super.onPostExecute(result);
 			if (result == null || result.size() == 0)
 				Toast.makeText(getContext(), R.string.update_fail, Toast.LENGTH_LONG).show();
-			else
+			else {
+				clear();
 	        	for (int i = 0; i < result.size(); i++) {
 	        		add(result.get(i));
 				}
-        	
+			}
 	    	notifyDataSetChanged();
 	    	try {
 				((Activity) getContext()).findViewById(R.id.progressStockList).setVisibility(View.GONE);

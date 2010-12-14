@@ -10,7 +10,7 @@ public class DataSqlHelper extends SQLiteOpenHelper {
 		
 		private final String DATABASE_NAME = "cz.tomas.StockAnalyze.Data";
 		
-		private final static int DATABASE_VERSION_NUMBER = 5;
+		private final static int DATABASE_VERSION_NUMBER = 6;
 		
 		private final static String DATABASE_FILE_NAME = "cz.tomas.StockAnalyze.Data.db";
 		
@@ -44,6 +44,7 @@ public class DataSqlHelper extends SQLiteOpenHelper {
 	         "year_max real," +
 	         "change real not null," +
 	         "date integer not null, " +				//long - miliseconds
+	         "last_update integer not null, " +				//long - miliseconds
 	         "price real not null," +
 	         "volume real not null," +
 	         "FOREIGN KEY(stock_id) REFERENCES " + STOCK_TABLE_NAME + "(id)" +

@@ -16,6 +16,7 @@ import cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetDataException;
+import cz.tomas.StockAnalyze.utils.Utils;
 
 /**
  * @author tomas
@@ -164,7 +165,7 @@ public class PseCsvDataAdapter implements IStockDataProvider {
 			tradedPieces = -1;
 			e.printStackTrace();
 		}
-		return new DayData(price, change, date, volume, yearMaximum, yearMinimum);
+		return new DayData(price, change, date, volume, yearMaximum, yearMinimum, Utils.createDateOnlyCalendar(date).getTimeInMillis());
 	}
 
 }
