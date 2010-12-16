@@ -195,6 +195,7 @@ containing a value of this type.
         public static final int SearchTextView=0x7f060004;
         public static final int Statistics=0x7f060011;
         public static final int app_name=0x7f060003;
+        public static final int disclaimer=0x7f060017;
         public static final int failed_price_update=0x7f060008;
         public static final int hello=0x7f060002;
         public static final int homeChartTitle=0x7f060016;
@@ -222,8 +223,6 @@ containing a value of this type.
          */
         public static final int moneyText=0x7f070000;
         public static final int priceInfoBlock=0x7f070001;
-        /**         <item name="android:typeface">serif</item>
-         */
         public static final int subText=0x7f070003;
         public static final int subText_Small=0x7f070004;
         /** 		<item name="android:layout_width">fill_parent</item>

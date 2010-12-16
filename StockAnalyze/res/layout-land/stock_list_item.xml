@@ -2,15 +2,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:padding="6dip"
+    android:padding="2dip"
     android:orientation="horizontal" >
-    <ImageView
-        style="@style/logoView"
-        android:id="@+id/iconStockItem" 
-        android:src="@drawable/px_logo" 
-        android:maxHeight="16dip"/>
+<!--    <ImageView-->
+<!--        style="@style/logoView"-->
+<!--        android:id="@+id/iconStockItem" -->
+<!--        android:src="@drawable/px_logo" -->
+<!--        android:maxHeight="16dip"/>-->
     <LinearLayout
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:layout_width="fill_parent"
         android:layout_weight="1"
         android:layout_height="fill_parent"
@@ -30,20 +30,18 @@
     </LinearLayout>
 	<LinearLayout android:id="@+id/pricelayout"
 		style="@style/priceInfoBlock"
-		android:orientation="vertical"
+		android:orientation="horizontal"
 		android:layout_weight="1" >
 		<TextView
 			style="@style/moneyText"
         	android:id="@+id/righttext"
-        	android:layout_width="fill_parent"
-        	android:layout_height="wrap_content"
-        	android:layout_weight="1"
-        	android:gravity="right"
+        	android:layout_weight="6"
+        	android:gravity="center_vertical|right"
         	android:textColor="@color/money_item_text"/>
 	    <TextView
 	        android:id="@+id/righttext2"
-	        android:layout_weight="1"
-	        android:gravity="right"
+	        android:layout_weight="4"
+	        android:gravity="center_vertical|right"
 	        android:textColor="@color/money_item_text"
 			style="@style/subText"/>
 	</LinearLayout>

@@ -4,15 +4,16 @@
 		<item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">wrap_content</item>
 <!--        <item name="android:textColor">#111111</item>-->
-        <item name="android:textSize">14dip</item>
+        <item name="android:textSize">16dip</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:layout_gravity">center_vertical</item>
+<!--        <item name="android:layout_gravity">center_vertical</item>-->
+        <item name="android:padding">2dp</item>
 <!--        <item name="android:typeface">serif</item>-->
 	</style>
 	<style name="priceInfoBlock">
 		<item name="android:layout_height">fill_parent</item>
 		<item name="android:layout_width">fill_parent</item>
-		<item name="android:padding">4dip</item>
+		<item name="android:padding">2dip</item>
 		<item name="android:textColor">#FFFFFF</item>
 		<item name="android:background">@drawable/groupbox_shape</item>
 	</style>
@@ -24,11 +25,10 @@
 	<style name="subText" parent="@android:style/TextAppearance.Small">
 		<item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">wrap_content</item>
-<!--        <item name="android:textColor">#222222</item>-->
         <item name="android:textStyle">italic</item>
         <item name="android:singleLine">true</item>
         <item name="android:ellipsize">marquee</item>
-<!--        <item name="android:typeface">serif</item>-->
+		<item name="android:padding">2dip</item>
 	</style>
 	<style name="subText.Small">
 		<item name="android:textSize">12dip</item>
