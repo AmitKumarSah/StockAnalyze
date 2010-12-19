@@ -85,6 +85,7 @@ public class StockListActivity extends ListActivity {
 	private synchronized void fill() {
 		if (adapter == null) {
 			// this should be done only one-time
+			this.findViewById(R.id.progressStockList).setVisibility(View.VISIBLE);
 			adapter = new StockListAdapter(this, R.layout.stock_list, this.dataManager, "*");	//TODO replace string with filter
 		}
 
