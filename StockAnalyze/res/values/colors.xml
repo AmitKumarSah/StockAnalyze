@@ -8,18 +8,18 @@
 
 <color name="actionbar_separator_color">#DDDDDD</color>
 <!--<color name="actionbar_color">#CED2FF</color>-->
-<color name="actionbar_color">#000000</color>
+<color name="actionbar_color">#080808</color>
 <color name="actionbar_color_start">#121212</color>
 <color name="actionbar_color_end">#393939</color>
 
 <color name="money_item_text">#FFFFFF</color>
 
-<color name="money_item_red_center">#EE1111</color>
-<color name="money_item_red_start">#CC1111</color>
-<color name="money_item_red_end">#FF4242</color>
-<color name="money_item_green_center">#11EE11</color>
-<color name="money_item_green_start">#11CC11</color>
-<color name="money_item_green_end">#42FF42</color>
+<color name="money_item_red_center">#ED3333</color>
+<color name="money_item_red_start">#CB3333</color>
+<color name="money_item_red_end">#FE6262</color>
+<color name="money_item_green_center">#33ED33</color>
+<color name="money_item_green_start">#33CB33</color>
+<color name="money_item_green_end">#62FE62</color>
 <color name="money_item_dark_center">#444444</color>
 <color name="money_item_dark_start">#333333</color>
 <color name="money_item_dark_end">#555555</color>
