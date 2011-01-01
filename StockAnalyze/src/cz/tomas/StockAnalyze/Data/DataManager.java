@@ -61,6 +61,9 @@ public class DataManager implements IStockDataListener {
 		
 		patriaPse.enable(true);
 		patriaPse.addListener(this);
+		
+		ConnectivityManager connectivity = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		boolean backgroundData = connectivity.getBackgroundDataSetting();
 	}
 
 	/*

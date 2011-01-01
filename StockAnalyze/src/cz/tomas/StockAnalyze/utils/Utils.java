@@ -13,6 +13,8 @@ import java.util.TimeZone;
  *
  */
 public class Utils {
+	
+	public static String LOG_TAG = "StockAnalyze";
 
 	/*
 	 * construct calendar that contains only date info from general Calendar object

@@ -97,7 +97,7 @@ class PseCsvDataProvider {
 	private Map<String, CsvDataRow> getDataFromRemoteFile(String remoteFileName)
 			throws IOException {
 		byte[] byteArray = DownloadService.GetInstance().DownloadFromUrl(
-				PSE_DATA_ROOT_URL + remoteFileName);
+				PSE_DATA_ROOT_URL + remoteFileName, true);
 		String data = new String(byteArray, "CP-1250");
 		
 		Map<String, CsvDataRow> rows = this.parser.parse(data);

@@ -110,7 +110,7 @@ public class HomeActivity extends Activity implements OnClickListener, OnKeyList
 			byte[] chartArray = null;
 			Bitmap bmp = null;
 			try {
-				chartArray = DownloadService.GetInstance().DownloadFromUrl(downloadUrl);
+				chartArray = DownloadService.GetInstance().DownloadFromUrl(downloadUrl, false);
 				
 				bmp = BitmapFactory.decodeByteArray(chartArray, 0, chartArray.length);
 
