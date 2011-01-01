@@ -79,6 +79,43 @@ public class Article extends Object {
 		else
 			this.description = description;
 	}
+	
+	/**
+	 * get escaped description - no html symbols
+	 */
+	public String getEscapedDescription() {
+		String desc = this.strippedHtml(this.description);
+		return desc;
+	}
+	
+	/**
+	 * strip an html string from html tags.
+	 * 
+	 * @param html the html string to strip
+	 * @return the stripped string
+	 */
+	private String strippedHtml(String html) {
+		if (html == null) {
+			return null;
+		}
+		html = html.replaceAll("&amp;", "&")
+				.replaceAll("&nbsp;", " ");
+		
+		String pattern = "<(.|\n)*?>";
+
+		html = html.replaceAll(pattern, "");
+		
+//		int pos = 0;
+//		while (pos < html.length()) {
+//			if (html.charAt(pos) == '<') {
+//				int tagEnd = html.indexOf(">", pos);
+//				
+//			}
+//		}
+		
+		return html;
+	}
+	
 	@Override
 	public String toString() {
 		return "Article [articleId=" + articleId + ", feedId=" + feedId

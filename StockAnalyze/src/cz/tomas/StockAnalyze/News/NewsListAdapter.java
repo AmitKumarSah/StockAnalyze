@@ -7,21 +7,15 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-
-import cz.tomas.StockAnalyze.NewsActivity;
 import cz.tomas.StockAnalyze.R;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
-import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -73,11 +67,13 @@ public class NewsListAdapter extends ArrayAdapter<Article> {
 				else
 					Log.d("cz.tomas.StockAnalyze.News.NewsListAdapter", "can't set title text - TextView is null");	
 				if (txtPreview != null) {
-					String description = article.getDescription();
+					String description = article.getEscapedDescription();
 					if (description != null) {
-						if (description.length() > MAX_DESCRIPTION_LENGHT)
+						if (description.length() > MAX_DESCRIPTION_LENGHT) {
 							description = description.substring(0,
 									MAX_DESCRIPTION_LENGHT);
+							description += "...";
+						}
 						txtPreview.setText(description);
 					}
 				}
@@ -116,15 +112,14 @@ public class NewsListAdapter extends ArrayAdapter<Article> {
 		protected List<Article> doInBackground(Void... params) {
 			List<Article> newsItems = new ArrayList<Article>();
 
-			NewsSqlHelper news = new NewsSqlHelper(getContext());
-			RSSHandler rss = new RSSHandler();
+			Rss rss = new Rss(getContext());
 			
 			try {
-				List<Feed> feeds = news.getFeeds();
+				List<Feed> feeds = rss.getFeeds();
 				for (Feed feed : feeds) {
-					news.deleteAricles(feed.getFeedId());
-					rss.updateArticles(getContext(), feed);
-					List<Article> articles = news.getArticles(feed.getFeedId());
+					rss.deleteArticles(feed.getFeedId());
+					rss.fetchArticles(feed);
+					List<Article> articles = rss.getArticles(feed.getFeedId());
 					
 					for (Article a : articles) {
 						newsItems.add(a);

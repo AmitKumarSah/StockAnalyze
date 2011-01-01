@@ -15,6 +15,7 @@ import android.database.sqlite.SQLiteFullException;
 import android.util.Log;
 import cz.tomas.StockAnalyze.Data.DataSqlHelper;
 import cz.tomas.StockAnalyze.Data.StockDataSqlStore;
+import cz.tomas.StockAnalyze.utils.Utils;
 
 public final class NewsSqlHelper extends DataSqlHelper {
 
@@ -26,14 +27,16 @@ public final class NewsSqlHelper extends DataSqlHelper {
 	private static final String SOURCE_AKCIE_NAME = "Akcie.cz";
 	private static final String SOURCE_AKCIE_COUNTRY = "cz";
 	
-	public NewsSqlHelper(Context context) {
+	NewsSqlHelper(Context context) {
 		super(context);
 
 		// insert default data
 		try {
 			if (this.getFeeds().size() == 0) {
 				Log.d("cz.tomas.StockAnalyze.News.NewsSqlHelper", "Inserting default rss feed source...");
-				if (! this.insertFeed(SOURCE_CYRRUS_NAME, new URL(SOURCE_CYRRUS), SOURCE_CYRRUS_COUNTRY))
+//				if (! this.insertFeed(SOURCE_CYRRUS_NAME, new URL(SOURCE_CYRRUS), SOURCE_CYRRUS_COUNTRY))
+//					throw new SQLException("The feed record wasn't inserted.");
+				if (! this.insertFeed(SOURCE_AKCIE_NAME, new URL(SOURCE_AKCIE), SOURCE_AKCIE_COUNTRY))
 					throw new SQLException("The feed record wasn't inserted.");
 			}
 		} catch (MalformedURLException e) {
@@ -83,7 +86,7 @@ public final class NewsSqlHelper extends DataSqlHelper {
 		return result;
 	}
 
-	public boolean deleteAricles(Long feedId) throws SQLException {
+	public boolean deleteArticles(Long feedId) throws SQLException {
 		return (this.getWritableDatabase().delete(ARTICLES_TABLE_NAME,
 				"feed_id=" + feedId.toString(), null) > 0);
 	}
@@ -125,17 +128,19 @@ public final class NewsSqlHelper extends DataSqlHelper {
 					"article_id", "feed_id", "title", "description", "url", "date" }, "feed_id="
 					+ feedId.toString(), null, null, null, null);
 
-			c.moveToFirst();
-			do {
-				Article article = new Article();
-				article.setArticleId(c.getLong(0));
-				article.setFeedId(c.getLong(1));
-				article.setTitle(c.getString(2));
-				article.setDescription(c.getString(3));
-				article.setUrl(new URL(c.getString(4)));
-				article.setDate(Long.parseLong(c.getString(5)));
-				articles.add(article);
-			} while (c.moveToNext());
+			if (c.moveToFirst())
+				do {
+					Article article = new Article();
+					article.setArticleId(c.getLong(0));
+					article.setFeedId(c.getLong(1));
+					article.setTitle(c.getString(2));
+					article.setDescription(c.getString(3));
+					article.setUrl(new URL(c.getString(4)));
+					article.setDate(Long.parseLong(c.getString(5)));
+					articles.add(article);
+				} while (c.moveToNext());
+			else
+				Log.d(Utils.LOG_TAG, "no articles present in feed " + String.valueOf(feedId));
 		} catch (SQLException e) {
 			Log.e("NewsSqlHelper", e.toString());
 		} catch (MalformedURLException e) {
