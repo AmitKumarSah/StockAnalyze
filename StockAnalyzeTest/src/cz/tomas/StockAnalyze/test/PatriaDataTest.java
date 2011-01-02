@@ -1,29 +1,32 @@
 package cz.tomas.StockAnalyze.test;
 
-import static org.junit.Assert.*;
-
-import java.net.URI;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.TimeZone;
 
-import org.junit.Before;
-import org.junit.Test;
+import android.test.AndroidTestCase;
 
 import cz.tomas.StockAnalyze.Data.PsePatriaData.PsePatriaDataItem;
 import cz.tomas.StockAnalyze.Data.PsePatriaData.PsePatriaXmlParser;
 
-public class PatriaDataTest {
+public class PatriaDataTest extends AndroidTestCase {
 
 	PsePatriaXmlParser parser;
 	List<PsePatriaDataItem> expectedItems;
 	
-	@Before
+
+	final String ADDRESS = "http://tomas-vondracek.net/Data/upload/test/ExamplePatriaData.xml";
+	
+	public PatriaDataTest() {
+		super();
+	}
+
+	@Override
 	public void setUp() throws Exception {
-		this.parser = new PsePatriaXmlParser("http://www.patria.cz/dataexport/VistaGadget.ashx?guid=D88B6094-E9C7-11DF-A5A1-05E4DED72085");
-		URL url = new URL("file://ExamplPatriaData.xml");
+		//this.parser = new PsePatriaXmlParser("http://www.patria.cz/dataexport/VistaGadget.ashx?guid=D88B6094-E9C7-11DF-A5A1-05E4DED72085");
+		this.parser = new PsePatriaXmlParser(ADDRESS);
+		//URL url = new URL("file://data/ExamplPatriaData.xml");
 		//this.parser = new PsePatriaXmlParser(url.toString());
 		this.expectedItems = new ArrayList<PsePatriaDataItem>();
 		
@@ -54,6 +57,7 @@ public class PatriaDataTest {
 	}
 
 	/**
+	 * local helper method to create expected items
 	 * @param link
 	 * @param value
 	 * @param change
@@ -69,8 +73,19 @@ public class PatriaDataTest {
 		
 		return item;
 	}
+	
+	@Override
+	protected void tearDown() throws Exception {
+		// TODO Auto-generated method stub
+		super.tearDown();
+		this.parser = null;
+	}
 
-	@Test
+	public void testPreconditions() {
+        assertNotNull(this.expectedItems);
+        assertNotNull(this.parser);
+    }
+
 	public void testParse() {
 		List<PsePatriaDataItem> actualItems = null;
 		try {
@@ -88,7 +103,6 @@ public class PatriaDataTest {
 		}
 	}
 	
-	@Test
 	public void testParseConf() {
 		try {
 			List<PsePatriaDataItem> actualItems = this.parser.parse();

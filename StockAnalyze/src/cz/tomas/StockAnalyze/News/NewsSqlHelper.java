@@ -23,7 +23,8 @@ public final class NewsSqlHelper extends DataSqlHelper {
 	private static final String SOURCE_CYRRUS_NAME = "Cyrrus";
 	private static final String SOURCE_CYRRUS_COUNTRY = "cz";
 	
-	private static final String SOURCE_AKCIE = "http://www.akcie.cz/rss/novinky-a-zpravy.xml";
+	//private static final String SOURCE_AKCIE = "http://www.akcie.cz/rss/novinky-a-zpravy.xml";http://www.akcie.cz/rss/zpravy2.xml
+	private static final String SOURCE_AKCIE = "http://www.akcie.cz/rss/zpravy2.xml";
 	private static final String SOURCE_AKCIE_NAME = "Akcie.cz";
 	private static final String SOURCE_AKCIE_COUNTRY = "cz";
 	

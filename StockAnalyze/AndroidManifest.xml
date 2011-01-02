@@ -3,7 +3,7 @@
 	package="cz.tomas.StockAnalyze" android:versionCode="1"
 	android:versionName="1.0">
 	<application android:icon="@drawable/ic_launcher" android:label="@string/app_name"
-		android:debuggable="true" android:theme="@style/themeLight" >
+		android:debuggable="true" android:theme="@style/themeLight" android:allowBackup="true">
 		<activity android:name=".StockAnalyze" android:label="@string/app_name">
 			<intent-filter>
 				<category android:name="android.intent.category.LAUNCHER" />
@@ -21,12 +21,17 @@
 		<activity android:name="StockSearchActivity"></activity>
 		<activity android:name="StockDetailActivity"></activity>
 		<activity android:name="NewsActivity"></activity>
-	</application>
+	<receiver android:enabled="true" android:name="AppBroadcastReceiver" android:permission="android.permission.ACCESS_NETWORK_STATE">
+		<intent-filter>
+			<action android:name="android.net.conn.BACKGROUND_DATA_SETTING_CHANGED"/>
+		</intent-filter>
+	</receiver>
+</application>
 	<uses-sdk android:minSdkVersion="7" />
 
 	<uses-permission android:name="android.permission.INTERNET"></uses-permission>
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
 <!--	<uses-permission android:name="android.permission.READ_PHONE_STATE"></uses-permission>-->
-	<uses-permission android:name="android.permission.EXTERNAL_STORAGE"></uses-permission>
+<!--	<uses-permission android:name="android.permission.EXTERNAL_STORAGE"></uses-permission>-->
 
 </manifest> 

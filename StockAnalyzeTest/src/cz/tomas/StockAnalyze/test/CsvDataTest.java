@@ -2,19 +2,21 @@ package cz.tomas.StockAnalyze.test;
 
 import java.io.*;
 
-import cz.tomas.StockAnalyze.Data.PseCsvData.CsvDataRow;
-import junit.framework.TestCase;
+import android.test.AndroidTestCase;
 
-public class CsvDataTest extends TestCase {
+import cz.tomas.StockAnalyze.Data.PseCsvData.CsvDataRow;
+
+public class CsvDataTest extends AndroidTestCase {
 	String row;
 	String content;
 
+	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 
 		row = "\"US4824702009\",\"KITD              \",\"BAAKITDG\",\"2010/09/24\",206.00         ,.59      ,204.80         ,163.50         ,290.00         ,3753         ,767451.80          ,\"2010/09/24\",\"3\",\"2\",\"A\"";
 
-		File file = new File("ExampleData.csv");
+		File file = new File("data/ExampleData.csv");
 		FileInputStream fis = null;
 		BufferedInputStream bis = null;
 		DataInputStream dis = null;
