@@ -4,6 +4,7 @@
 package cz.tomas.StockAnalyze.News;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DateFormat;
@@ -25,6 +26,8 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import android.content.Context;
 import android.util.Log;
+import android.util.Xml;
+import android.util.Xml.Encoding;
 
 /**
  * @author tomas
@@ -187,8 +190,9 @@ public class RSSHandler extends DefaultHandler {
 	/**
 	 * get all articles from given feed
 	 * @param feed feed to get articles from
+	 * @throws Exception
 	 */
-	public void updateArticles(Feed feed) {
+	public void updateArticles(Feed feed) throws Exception {
 		try {
 			targetFlag = TARGET_ARTICLES;
 			currentFeed = feed;
@@ -196,32 +200,41 @@ public class RSSHandler extends DefaultHandler {
 			SAXParserFactory spf = SAXParserFactory.newInstance();
 			SAXParser sp = spf.newSAXParser();
 			
+			
 			XMLReader xr = sp.getXMLReader();
 			xr.setContentHandler(this);
-			//InputSource source = new InputSource(currentFeed.getUrl().openStream());
-			InputSource source = new InputSource(currentFeed.getUrl().openStream());
-			Log.d("news encoding", feed.getTitle() + " - encoding: " + source.getEncoding());
+			InputStream stream = null;
+			try {
+				stream = currentFeed.getUrl().openStream();
+				InputSource source = new InputSource(stream);
+				Log.d("news encoding", feed.getTitle() + " - encoding: " + source.getEncoding());
 
-			// if unkown encondig, try to guess
-			if (source.getEncoding() == null && feed.getCountryCode().equals("cz"))
-				source.setEncoding("ISO-8859-1");
-			if (source.getEncoding() == null)
-				source.setEncoding("UTF-8");
-			
-			Log.d("news encoding", feed.getTitle() + " - encoding: " + source.getEncoding());
-			
-			//after parser finishes his work, date will be saved to db
-			xr.parse(source);
+				// if unknown encondig, try to guess
+				if (source.getEncoding() == null && feed.getCountryCode().equals("cz"))
+					source.setEncoding("ISO-8859-1");
+				else if (source.getEncoding() == null)
+					source.setEncoding("UTF-8");
+				
+				// after parser finishes his work, data will be saved to db
+				xr.parse(source);
+			} finally {
+				if (stream != null)
+					try {
+						stream.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+			}
 
 		} catch (IOException e) {
 			Log.e("cz.tomas.StockAnalyze.News.RssHandler", e.toString());
-			e.printStackTrace();
+			throw e;
 		} catch (SAXException e) {
 			Log.e("cz.tomas.StockAnalyze.News.RssHandler", e.toString());
-			e.printStackTrace();
+			throw e;
 		} catch (ParserConfigurationException e) {
 			Log.e("cz.tomas.StockAnalyze.News.RssHandler", e.toString());
-			e.printStackTrace();
+			throw e;
 		}
 	}
 

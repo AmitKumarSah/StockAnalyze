@@ -135,7 +135,7 @@ public class DownloadService {
 	/*
 	 * open http connection to InputStream
 	 * 
-	 * stream must be closed manualy
+	 * stream must be closed manually
 	 */
 	public InputStream OpenHttpConnection(String urlString, boolean compress) throws IOException {
 		InputStream in = null;

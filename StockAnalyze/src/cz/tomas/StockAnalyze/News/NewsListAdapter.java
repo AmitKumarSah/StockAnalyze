@@ -98,6 +98,7 @@ public class NewsListAdapter extends ArrayAdapter<Article> {
 	
 	private class NewsItemsTask extends AsyncTask<Void, Integer, List<Article>> {
 		View view;
+		Exception ex;
 		
 		@Override
 		protected void onPreExecute() {
@@ -131,6 +132,7 @@ public class NewsListAdapter extends ArrayAdapter<Article> {
 					message = "Failed to get news articles!";
 				Log.d("cz.tomas.StockAnalyze.News.NewsListAdapter", message);
 				e.printStackTrace();
+				this.ex = e;
 			} finally {
 				rss.done();
 				//news.close();
@@ -150,8 +152,12 @@ public class NewsListAdapter extends ArrayAdapter<Article> {
 				notifyDataSetChanged();
 			}
 			
-			if (result.size() == 0)
-				Toast.makeText(getContext(), R.string.FailedGetNews, Toast.LENGTH_LONG).show();
+			if (result.size() == 0) {
+				String message = getContext().getString(R.string.FailedGetNews);
+				if (this.ex != null && this.ex.getMessage() != null)
+					message += (": " + this.ex.getMessage());
+				Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+			}
 			try {
 				((Activity) getContext()).findViewById(R.id.progressNews).setVisibility(View.GONE);
 			} catch (Exception e) {

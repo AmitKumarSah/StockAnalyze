@@ -14,14 +14,16 @@ import android.content.Context;
  *
  */
 public class Rss {
-	RSSHandler handler;
+	//RSSHandler handler;
+	XmlFeedPullParseHandler handler;
 	NewsSqlHelper sqlHelper;
 
 	/*
 	 * constructor, Context is required to connect to database
 	 */
 	public Rss(Context context) {
-		this.handler = new RSSHandler(context);
+		//this.handler = new RSSHandler(context);
+		this.handler = new XmlFeedPullParseHandler(context);
 		this.sqlHelper = this.handler.getDbHelper();
 	}
 	
@@ -49,8 +51,8 @@ public class Rss {
 	/*
 	 * download articles from given feed
 	 */
-	public void fetchArticles(Feed feed) {
-		this.handler.updateArticles(feed);
+	public void fetchArticles(Feed feed) throws Exception {
+		this.handler.fetchArticles(feed);
 	}
 	
 	/*

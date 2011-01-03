@@ -110,25 +110,25 @@ public class RssTest extends AndroidTestCase {
 	/*
 	 * test to get articles from akcie rss channel
 	 */
-	public void testGetArticles1() {
+	public void testGetArticles1() throws Exception {
 		this.getArticles("test_feed1", this.dataUrl1, "cz", 15);
 	}
 	
 	/*
 	 * test to get articles from patria.cz rss channel
 	 */
-	public void testGetArticles2() {
+	public void testGetArticles2() throws Exception {
 		this.getArticles("test_feed2", this.dataUrl2, "cz", 50);
 	}
 	
 	/*
 	 * test to get articles from cyrrus.cz rss channel
 	 */
-	public void testGetArticles3() {
+	public void testGetArticles3() throws Exception {
 		this.getArticles("test_feed3", this.dataUrl3, "cz", 10);
 	}
 	
-	public void getArticles(String feedName, URL dataUrl, String countryCode, int expectedArticleCount) {
+	public void getArticles(String feedName, URL dataUrl, String countryCode, int expectedArticleCount) throws Exception {
 		this.handler.insertFeed(feedName, dataUrl, countryCode);
 		
 		List<Feed> feeds = handler.getFeeds();

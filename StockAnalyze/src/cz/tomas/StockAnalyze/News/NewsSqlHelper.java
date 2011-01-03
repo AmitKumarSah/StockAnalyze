@@ -19,12 +19,12 @@ import cz.tomas.StockAnalyze.utils.Utils;
 
 public final class NewsSqlHelper extends DataSqlHelper {
 
-	private static final String SOURCE_CYRRUS = "http://www.cyrrus.cz/rss/cs";
-	private static final String SOURCE_CYRRUS_NAME = "Cyrrus";
-	private static final String SOURCE_CYRRUS_COUNTRY = "cz";
+//	private static final String SOURCE_CYRRUS = "http://www.cyrrus.cz/rss/cs";
+//	private static final String SOURCE_CYRRUS_NAME = "Cyrrus";
+//	private static final String SOURCE_CYRRUS_COUNTRY = "cz";
 	
-	//private static final String SOURCE_AKCIE = "http://www.akcie.cz/rss/novinky-a-zpravy.xml";http://www.akcie.cz/rss/zpravy2.xml
-	private static final String SOURCE_AKCIE = "http://www.akcie.cz/rss/zpravy2.xml";
+	private static final String SOURCE_AKCIE = "http://www.akcie.cz/rss/novinky-a-zpravy.xml";
+	//private static final String SOURCE_AKCIE = "http://www.akcie.cz/rss/zpravy2.xml";
 	private static final String SOURCE_AKCIE_NAME = "Akcie.cz";
 	private static final String SOURCE_AKCIE_COUNTRY = "cz";
 	
@@ -34,7 +34,7 @@ public final class NewsSqlHelper extends DataSqlHelper {
 		// insert default data
 		try {
 			if (this.getFeeds().size() == 0) {
-				Log.d("cz.tomas.StockAnalyze.News.NewsSqlHelper", "Inserting default rss feed source...");
+				Log.d("cz.tomas.StockAnalyze.News.NewsSqlHelper", "Inserting default rss feed source..." + SOURCE_AKCIE_NAME);
 //				if (! this.insertFeed(SOURCE_CYRRUS_NAME, new URL(SOURCE_CYRRUS), SOURCE_CYRRUS_COUNTRY))
 //					throw new SQLException("The feed record wasn't inserted.");
 				if (! this.insertFeed(SOURCE_AKCIE_NAME, new URL(SOURCE_AKCIE), SOURCE_AKCIE_COUNTRY))

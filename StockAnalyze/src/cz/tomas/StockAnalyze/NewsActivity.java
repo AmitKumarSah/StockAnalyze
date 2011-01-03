@@ -53,7 +53,7 @@ public class NewsActivity extends ListActivity {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long rowId) {
 				Article article = (Article) getListView().getItemAtPosition(position);
 				
-				if (article != null) {
+				if (article != null && article.getUrl() != null) {
 					Uri uri = Uri.parse(article.getUrl().toString());
 					Intent browserIntent = new Intent("android.intent.action.VIEW", uri);
 					startActivity(browserIntent);
