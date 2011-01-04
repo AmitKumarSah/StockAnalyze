@@ -24,7 +24,7 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
-import cz.tomas.StockAnalyze.Data.DownloadService;
+import cz.tomas.StockAnalyze.utils.DownloadService;
 
 import android.content.Context;
 import android.util.Log;

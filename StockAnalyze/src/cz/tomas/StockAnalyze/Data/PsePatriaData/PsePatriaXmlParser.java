@@ -21,7 +21,7 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import cz.tomas.StockAnalyze.Data.DownloadService;
+import cz.tomas.StockAnalyze.utils.DownloadService;
 
 
 /**

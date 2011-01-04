@@ -15,12 +15,12 @@ import java.util.Map;
 import java.util.Set;
 
 import cz.tomas.StockAnalyze.Data.DataProviderAdviser;
-import cz.tomas.StockAnalyze.Data.DownloadService;
 import cz.tomas.StockAnalyze.Data.IStockDataProvider;
 import cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
+import cz.tomas.StockAnalyze.utils.DownloadService;
 
 import android.util.Log;
 

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package cz.tomas.StockAnalyze.Data;
+package cz.tomas.StockAnalyze.utils;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -12,7 +12,6 @@ import java.util.zip.GZIPInputStream;
 
 import org.apache.http.util.ByteArrayBuffer;
 
-import cz.tomas.StockAnalyze.utils.Utils;
 
 import android.util.Log;
 

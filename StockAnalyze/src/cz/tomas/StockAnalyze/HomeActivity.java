@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Iterator;
 
-import cz.tomas.StockAnalyze.Data.DownloadService;
 import cz.tomas.StockAnalyze.ui.widgets.HomeBlockView;
+import cz.tomas.StockAnalyze.utils.DownloadService;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
