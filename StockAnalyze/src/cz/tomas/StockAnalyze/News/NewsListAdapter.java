@@ -43,8 +43,20 @@ public class NewsListAdapter extends ArrayAdapter<Article> {
 		this.vi = (LayoutInflater)this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.newsItems = new ArrayList<Article>();
 
+		getNewsData();
+	}
+
+	private void getNewsData() {
 		task = new NewsItemsTask();
 		task.execute();
+		task = null;
+	}
+	
+	/*
+	 * fetch new data for rss feeds
+	 */
+	public void refresh() {
+		this.getNewsData();
 	}
 	
 	@Override

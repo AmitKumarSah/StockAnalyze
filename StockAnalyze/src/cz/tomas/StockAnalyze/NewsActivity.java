@@ -40,7 +40,7 @@ public class NewsActivity extends ListActivity {
 	private NewsSqlHelper news;
 	private ProgressDialog progressDialog;
 	
-	private static ArrayAdapter<Article> adapter;
+	private static NewsListAdapter adapter;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -88,9 +88,10 @@ public class NewsActivity extends ListActivity {
 	    // Handle item selection
 	    switch (item.getItemId()) {
 	    case R.id.menu_stock_list_refresh:
-	    	this.setListAdapter(null);
-	    	this.findViewById(R.id.progressNews).setVisibility(View.VISIBLE);
-	    	this.fill();
+	    	//this.setListAdapter(null);
+	    	//this.findViewById(R.id.progressNews).setVisibility(View.VISIBLE);
+	    	
+	    	NewsActivity.adapter.refresh();
 	        return true;
 	    case R.id.menu_stock_list_settings:
 	        return true;
