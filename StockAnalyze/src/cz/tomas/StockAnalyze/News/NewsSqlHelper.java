@@ -152,4 +152,10 @@ public final class NewsSqlHelper extends DataSqlHelper {
 		}
 		return articles;
 	}
+
+	public void insertArticles(long feedId, List<Article> articles) {
+		for (Article article : articles) {
+			this.insertArticle(feedId, article.getTitle(), article.getUrl(), article.getDescription(), article.getDate());
+		}
+	}
 }

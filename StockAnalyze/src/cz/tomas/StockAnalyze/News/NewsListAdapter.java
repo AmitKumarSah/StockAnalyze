@@ -165,9 +165,14 @@ public class NewsListAdapter extends ArrayAdapter<Article> {
 			}
 			
 			if (result.size() == 0) {
-				String message = getContext().getString(R.string.FailedGetNews);
-				if (this.ex != null && this.ex.getMessage() != null)
+				String message = "";
+				
+				if (this.ex != null && this.ex.getMessage() != null) {
+					message = getContext().getString(R.string.FailedGetNews);
 					message += (": " + this.ex.getMessage());
+				}
+				else
+					message = getContext().getString(R.string.NoNews);
 				Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
 			}
 			try {

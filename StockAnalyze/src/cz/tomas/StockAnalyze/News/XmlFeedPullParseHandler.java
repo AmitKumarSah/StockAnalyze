@@ -35,11 +35,11 @@ import android.util.Xml;
  * based on http://www.ibm.com/developerworks/opensource/library/x-android/#list10
  */
 public class XmlFeedPullParseHandler {
-	private static final String ITEM = null;
-	private static final String LINK = null;
-	private static final String DESCRIPTION = null;
-	private static final String PUB_DATE = null;
-	private static final String TITLE = null;
+	private static final String ITEM = "item";
+	private static final String LINK = "link";
+	private static final String DESCRIPTION = "description";
+	private static final String PUB_DATE = "pubDate";
+	private static final String TITLE = "title";
 	private static final String CHANNEL = "channel";
 	
 	// Used to define what elements we are currently in
@@ -69,19 +69,96 @@ public class XmlFeedPullParseHandler {
 	private NewsSqlHelper dbHelper = null;
 
 	// e.g. "Thu, 4 Nov 2010 16:00:13 +0100"
-	final DateFormat frm = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH);
+	//final static DateFormat frm = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH);
+	final static DateFormat frm = new SimpleDateFormat("dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH);
+	// 04 Jan 2011 13:31:00 +0100
+	//final static DateFormat frm = new SimpleDateFormat("dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH);
 	
 	XmlFeedPullParseHandler(Context context) {
 		super();
 		
 		this.dbHelper = new NewsSqlHelper(context);
 	}
+	public XmlFeedPullParseHandler() {
+		super();
+	}
 	
 	NewsSqlHelper getDbHelper() {
 		return dbHelper;
 	}
+	
+	private boolean inContent() {
+		return this.inDescription || this.inLink || this.inPubDate || this.inTitle;
+	}
     
-    public void parse(Feed feed) throws XmlPullParserException {
+	/*
+	 * open connection to feed, download and parse an rss xml file and create Articles
+	 */
+	 public List<Article> parse(Feed feed) throws XmlPullParserException {
+         	List<Article> messages = null;
+	        XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+	        factory.setNamespaceAware(true);
+	        
+	        XmlPullParser parser = factory.newPullParser();
+	        InputStream stream = null;
+	        
+	        try {
+	        	stream = DownloadService.GetInstance().OpenHttpConnection(feed.getUrl().toString(), true);
+	        	if (feed.getCountryCode().equalsIgnoreCase("cz"))
+	        		parser.setInput(stream, "windows-1250");
+	        	else
+	        		parser.setInput(stream, null);			// auto-detect the encoding from the stream
+	            int eventType = parser.getEventType();
+	            boolean done = false;
+	    
+	            Article currentMessage = null;
+	            while (eventType != XmlPullParser.END_DOCUMENT && !done){
+	                String name = null;
+	                switch (eventType){
+	                    case XmlPullParser.START_DOCUMENT:
+	                    	messages = new ArrayList<Article>();
+	                        break;
+	                    case XmlPullParser.START_TAG:
+	                        name = parser.getName();
+	                        if (name.equalsIgnoreCase(ITEM)){
+	                            currentMessage = new Article();
+	                        } else if (currentMessage != null){
+	                            if (name.equalsIgnoreCase(LINK)){
+	                                currentMessage.setUrl(new URL(parser.nextText()));
+	                            } else if (name.equalsIgnoreCase(DESCRIPTION)){
+	                                currentMessage.setDescription(parser.nextText());
+	                            } else if (name.equalsIgnoreCase(PUB_DATE)){
+	                                currentMessage.setDate(XmlFeedPullParseHandler.frm.parse(parser.nextText()).getTime());
+	                            } else if (name.equalsIgnoreCase(TITLE)){
+	                                currentMessage.setTitle(parser.nextText());
+	                            }    
+	                        }
+	                        break;
+	                    case XmlPullParser.END_TAG:
+	                        name = parser.getName();
+	                        if (name.equalsIgnoreCase(ITEM) && currentMessage != null){
+	                            messages.add(currentMessage);
+	                        } else if (name.equalsIgnoreCase(CHANNEL)){
+	                            done = true;
+	                        }
+	                        break;
+	                }
+	                eventType = parser.next();
+	            }
+	        } catch (Exception e) {
+	            throw new RuntimeException(e);
+	        } finally {
+	        	if (stream != null)
+					try {
+						stream.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+	        }
+			return messages;
+	    }
+	
+    public void parseAndSave(Feed feed) throws XmlPullParserException {
         XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
         factory.setNamespaceAware(true);
         XmlPullParser parser = factory.newPullParser();
@@ -103,6 +180,11 @@ public class XmlFeedPullParseHandler {
                     case XmlPullParser.START_TAG:
                         currentTagName = parser.getName();
                         this.startElement(null, currentTagName, null, null);
+                    	if (inContent()) {
+	                    	String text = parser.nextText();
+	                    	if (text != null)
+	                    		this.characters(text.toCharArray(), 0, text.length());
+                    	}
                         break;
                     case XmlPullParser.END_TAG:
                     	currentTagName = parser.getName();
@@ -112,8 +194,10 @@ public class XmlFeedPullParseHandler {
                         }
                         break;
                     case XmlPullParser.TEXT:
-                    	String text = parser.getText();
-                    	this.characters(text.toCharArray(), 0, text.length());
+//                    	if (inContent()) {
+//	                    	String text = parser.getText();
+//	                    	this.characters(text.toCharArray(), 0, text.length());
+//                    	}
                     	break;
                 }
                 if (! done)
@@ -165,7 +249,7 @@ public class XmlFeedPullParseHandler {
 			// TODO country code
 			Boolean result = dbHelper.insertFeed(currentFeed.getTitle(), currentFeed.getUrl(), "cz");
 			if (! result)
-				throw new SAXException();
+				throw new RuntimeException("failed to insert feed");
 		}
 
 		// Check if looking for article, and if article is complete
@@ -173,6 +257,7 @@ public class XmlFeedPullParseHandler {
 				&& currentArticle.getTitle() != null) {
 			dbHelper.insertArticle(currentFeed.getFeedId(),
 					currentArticle.getTitle(), currentArticle.getUrl(), currentArticle.getDescription(), currentArticle.getDate());
+			
 			currentArticle.setTitle(null);
 			currentArticle.setUrl(null);
 			currentArticle.setDescription(null);
@@ -180,7 +265,7 @@ public class XmlFeedPullParseHandler {
 			// Lets check if we've hit our limit on number of articles
 			articlesAdded++;
 			if (articlesAdded > ARTICLES_LIMIT)
-				throw new SAXException();
+				throw new RuntimeException("too many articles");
 		}
 
 	}
@@ -206,7 +291,7 @@ public class XmlFeedPullParseHandler {
 					Calendar date = Calendar.getInstance();
 					try {
 						String strDate = String.valueOf(ch);
-						Date d = this.frm.parse(strDate);
+						Date d = XmlFeedPullParseHandler.frm.parse(strDate);
 						date.setTimeInMillis(d.getTime());
 					} catch (ParseException e) {
 						Log.d("cz.tomas.StockAnalyze.RSSHandler", "Failed to parse news item date! " + e.getMessage());
@@ -219,11 +304,15 @@ public class XmlFeedPullParseHandler {
 		}
 
 	}
-	public void fetchArticles(Feed feed) throws XmlPullParserException {
+	public void updateArticles(Feed feed) throws XmlPullParserException {
 		this.currentFeed = feed;
 		targetFlag = TARGET_ARTICLES;
 		
-		this.parse(feed);
+		this.parseAndSave(feed);
+	}
+	
+	public List<Article> fetchArticles(Feed feed) throws XmlPullParserException {
+		return this.parse(feed);
 	}
 
 	/*

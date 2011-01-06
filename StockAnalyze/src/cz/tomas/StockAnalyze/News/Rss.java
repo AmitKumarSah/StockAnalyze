@@ -49,10 +49,19 @@ public class Rss {
 	}
 	
 	/*
-	 * download articles from given feed
+	 * download and save articles from given feed to database
+	 */
+	public void updateArticles(Feed feed) throws Exception {
+		this.handler.updateArticles(feed);
+	}
+	
+	/*
+	 * download and save articles from given feed to database
 	 */
 	public void fetchArticles(Feed feed) throws Exception {
-		this.handler.fetchArticles(feed);
+		List<Article> articles = this.handler.fetchArticles(feed);
+		
+		this.sqlHelper.insertArticles(feed.getFeedId(), articles);
 	}
 	
 	/*

@@ -42,7 +42,7 @@ public class HomeActivity extends Activity implements OnClickListener, OnKeyList
 				view.setOnKeyListener(this);
 			}
 		}
-		Debug.startMethodTracing();
+		//Debug.startMethodTracing();
 		
 //		ImageView chart = (ImageView) this.findViewById(R.id.home_chart);
 //		
@@ -71,7 +71,7 @@ public class HomeActivity extends Activity implements OnClickListener, OnKeyList
 	protected void onStop() {
 		super.onStop();
 		
-		Debug.stopMethodTracing();
+		//Debug.stopMethodTracing();
 	}
 
 

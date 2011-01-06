@@ -32,6 +32,7 @@ import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetDataException;
  */
 public class PsePatriaDataAdapter implements IStockDataProvider {
 
+	// TODO get rid of this
 	private final class TimedUpdateTask extends TimerTask {
 		@Override
 		public void run() {
