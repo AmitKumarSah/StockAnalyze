@@ -13,6 +13,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Debug;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
@@ -41,6 +42,7 @@ public class HomeActivity extends Activity implements OnClickListener, OnKeyList
 				view.setOnKeyListener(this);
 			}
 		}
+		Debug.startMethodTracing();
 		
 //		ImageView chart = (ImageView) this.findViewById(R.id.home_chart);
 //		
@@ -62,6 +64,17 @@ public class HomeActivity extends Activity implements OnClickListener, OnKeyList
 		ChartUpdateTask task = new ChartUpdateTask();
 		task.execute((Void[])null);
 	}
+	
+	
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		
+		Debug.stopMethodTracing();
+	}
+
+
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {

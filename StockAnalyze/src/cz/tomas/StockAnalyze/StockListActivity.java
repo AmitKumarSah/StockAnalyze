@@ -14,6 +14,7 @@ import android.content.res.Resources.NotFoundException;
 import android.database.DataSetObserver;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Debug;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -48,6 +49,7 @@ public class StockListActivity extends ListActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		//Debug.startMethodTracing();
 		
 		this.dataManager = DataManager.getInstance(this);
 		
@@ -102,6 +104,13 @@ public class StockListActivity extends ListActivity {
 			this.showDialog(NO_INTERNET);
 
 		this.fill();
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		
+		//Debug.stopMethodTracing();
 	}
 	
 	@Override
