@@ -1,4 +1,4 @@
-package cz.tomas.StockAnalyze.test;
+package cz.tomas.StockAnalyze.test.rss;
 
 import java.net.MalformedURLException;
 import java.net.URL;

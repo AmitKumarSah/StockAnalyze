@@ -185,24 +185,25 @@ containing a value of this type.
     }
     public static final class string {
         public static final int FailedGetNews=0x7f06000f;
-        public static final int InvalidData=0x7f060010;
+        public static final int InvalidData=0x7f060011;
         public static final int LabelDetailMax=0x7f06000c;
         public static final int LabelDetailMin=0x7f06000b;
         public static final int LabelDetailVolume=0x7f06000d;
         public static final int NoInternet=0x7f06000a;
+        public static final int NoNews=0x7f060010;
         public static final int NoRefresh=0x7f060007;
         public static final int NoStockSelected=0x7f06000e;
         public static final int SearchTextView=0x7f060004;
-        public static final int Statistics=0x7f060011;
+        public static final int Statistics=0x7f060012;
         public static final int app_name=0x7f060003;
-        public static final int disclaimer=0x7f060017;
+        public static final int disclaimer=0x7f060018;
         public static final int failed_price_update=0x7f060008;
         public static final int hello=0x7f060002;
-        public static final int homeChartTitle=0x7f060016;
-        public static final int homeCurrencies=0x7f060014;
-        public static final int homeMyPortfolio=0x7f060015;
-        public static final int homeNews=0x7f060013;
-        public static final int homeStockList=0x7f060012;
+        public static final int homeChartTitle=0x7f060017;
+        public static final int homeCurrencies=0x7f060015;
+        public static final int homeMyPortfolio=0x7f060016;
+        public static final int homeNews=0x7f060014;
+        public static final int homeStockList=0x7f060013;
         public static final int loading=0x7f060009;
         public static final int refresh=0x7f060000;
         public static final int settings=0x7f060001;
