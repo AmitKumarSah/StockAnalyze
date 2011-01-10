@@ -3,20 +3,14 @@
  */
 package cz.tomas.StockAnalyze;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
 import android.app.TabActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Resources.NotFoundException;
-import android.database.DataSetObserver;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Debug;
-import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,10 +18,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.Toast;
 import cz.tomas.StockAnalyze.Data.DataManager;
-import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.StockList.StockListAdapter;
 

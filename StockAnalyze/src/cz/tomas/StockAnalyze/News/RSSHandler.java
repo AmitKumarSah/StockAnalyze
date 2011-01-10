@@ -24,6 +24,8 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
+import cz.tomas.StockAnalyze.utils.FormattingUtils;
+
 import android.content.Context;
 import android.util.Log;
 import android.util.Xml;
@@ -62,7 +64,7 @@ public class RSSHandler extends DefaultHandler {
 	private NewsSqlHelper dbHelper = null;
 
 	// e.g. "Thu, 4 Nov 2010 16:00:13 +0100"
-	DateFormat frm = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH);
+	//DateFormat frm = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH);
 	
 	RSSHandler(Context context) {
 		super();
@@ -150,7 +152,7 @@ public class RSSHandler extends DefaultHandler {
 					Calendar date = Calendar.getInstance();
 					try {
 						String strDate = String.valueOf(ch);
-						Date d = this.frm.parse(strDate);
+						Date d = FormattingUtils.parse(strDate);
 						date.setTimeInMillis(d.getTime());
 					} catch (ParseException e) {
 						Log.d("cz.tomas.StockAnalyze.RSSHandler", "Failed to parse news item date! " + e.getMessage());

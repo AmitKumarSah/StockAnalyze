@@ -28,15 +28,21 @@ import cz.tomas.StockAnalyze.utils.DownloadService;
  * @author tomas
  *
  */
-public class PsePatriaXmlParser {
+public final class PsePatriaXmlParser {
 	
 	String url;
 	boolean isClosePhase;
 	int xmlRefreshInterval;	//minutes
 	Calendar date;
-	
+
+	final TimeZone tz = TimeZone.getTimeZone("Europe/Prague");
+
+	SimpleDateFormat format; 
 	public PsePatriaXmlParser(String url) {
 		this.url = url;
+		
+		format = (SimpleDateFormat) DateFormat.getDateTimeInstance();
+		format.applyPattern("yyyy-MM-dd'T'HH:mm:ss");
 	}
 	
 	/**
@@ -115,12 +121,8 @@ public class PsePatriaXmlParser {
 		this.isClosePhase = phaseNode.getNodeValue().equals("CLOSE");
 
 		try {
-			SimpleDateFormat format = (SimpleDateFormat) DateFormat.getDateTimeInstance();
-			format.applyPattern("yyyy-MM-dd'T'HH:mm:ss");
-
 			this.date = Calendar.getInstance();
-			this.date.setTime(format.parse(dateNode.getNodeValue()));
-			TimeZone tz = TimeZone.getTimeZone("Europe/Prague");
+			this.date.setTime(this.format.parse(dateNode.getNodeValue()));
 			this.date.setTimeZone(tz);
 			
 		} catch (Exception e) {

@@ -25,6 +25,7 @@ import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
 import cz.tomas.StockAnalyze.utils.DownloadService;
+import cz.tomas.StockAnalyze.utils.FormattingUtils;
 
 import android.content.Context;
 import android.util.Log;
@@ -67,12 +68,6 @@ public class XmlFeedPullParseHandler {
 	private int targetFlag;
 
 	private NewsSqlHelper dbHelper = null;
-
-	// e.g. "Thu, 4 Nov 2010 16:00:13 +0100"
-	//final static DateFormat frm = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH);
-	final static DateFormat frm = new SimpleDateFormat("dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH);
-	// 04 Jan 2011 13:31:00 +0100
-	//final static DateFormat frm = new SimpleDateFormat("dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH);
 	
 	XmlFeedPullParseHandler(Context context) {
 		super();
@@ -128,7 +123,7 @@ public class XmlFeedPullParseHandler {
 	                            } else if (name.equalsIgnoreCase(DESCRIPTION)){
 	                                currentMessage.setDescription(parser.nextText());
 	                            } else if (name.equalsIgnoreCase(PUB_DATE)){
-	                                currentMessage.setDate(XmlFeedPullParseHandler.frm.parse(parser.nextText()).getTime());
+	                            	currentMessage.setDate(FormattingUtils.parse(parser.nextText()).getTime());
 	                            } else if (name.equalsIgnoreCase(TITLE)){
 	                                currentMessage.setTitle(parser.nextText());
 	                            }    
@@ -143,7 +138,12 @@ public class XmlFeedPullParseHandler {
 	                        }
 	                        break;
 	                }
-	                eventType = parser.next();
+	                if (! done)
+						try {
+							eventType = parser.next();
+						} catch (Exception e) {
+							throw new RuntimeException(e);
+						}
 	            }
 	        } catch (Exception e) {
 	            throw new RuntimeException(e);
@@ -291,7 +291,7 @@ public class XmlFeedPullParseHandler {
 					Calendar date = Calendar.getInstance();
 					try {
 						String strDate = String.valueOf(ch);
-						Date d = XmlFeedPullParseHandler.frm.parse(strDate);
+						Date d = FormattingUtils.parse(strDate);
 						date.setTimeInMillis(d.getTime());
 					} catch (ParseException e) {
 						Log.d("cz.tomas.StockAnalyze.RSSHandler", "Failed to parse news item date! " + e.getMessage());

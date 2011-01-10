@@ -7,31 +7,28 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Currency;
-import java.util.Formatter;
-import java.util.Locale;
 
-import cz.tomas.StockAnalyze.Data.DataManager;
-import cz.tomas.StockAnalyze.Data.Model.DayData;
-import cz.tomas.StockAnalyze.Data.Model.Market;
-import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import android.app.Activity;
 import android.app.TabActivity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.TabHost.OnTabChangeListener;
+import cz.tomas.StockAnalyze.Data.DataManager;
+import cz.tomas.StockAnalyze.Data.Model.DayData;
+import cz.tomas.StockAnalyze.Data.Model.Market;
+import cz.tomas.StockAnalyze.Data.Model.StockItem;
+import cz.tomas.StockAnalyze.utils.FormattingUtils;
 
 /**
  * @author tomas
  *
  */
-public class StockDetailActivity extends Activity {
+public final class StockDetailActivity extends Activity {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -114,13 +111,9 @@ public class StockDetailActivity extends Activity {
 		StockItem stockItem = manager.getStockItem(stockId, market);
 		DayData data = manager.getLastValue(stockItem);
 		
-		NumberFormat priceFormat = DecimalFormat.getCurrencyInstance();
-		// TODO indeces don't have currency
-		priceFormat.setCurrency(stockItem.getMarket().getCurrency());
-		NumberFormat percentFormat = DecimalFormat.getNumberInstance();
-		percentFormat.setMaximumFractionDigits(2);
-		NumberFormat volumeFormat = DecimalFormat.getNumberInstance();
-		volumeFormat.setGroupingUsed(true);
+		NumberFormat priceFormat = FormattingUtils.getPriceFormat(stockItem.getMarket().getCurrency());
+		NumberFormat percentFormat = FormattingUtils.getPercentFormat();
+		NumberFormat volumeFormat = FormattingUtils.getVolumeFormat();
 
 		if (stockItem == null)
 			throw new NullPointerException("No such stock has been found!");
@@ -130,14 +123,10 @@ public class StockDetailActivity extends Activity {
 		if (txtHeader != null)
 			txtHeader.setText(stockItem.getTicker() + " - " + stockId);
 		if (txtDate != null) {
-			DateFormat formatter = null;
 			Calendar cal = Calendar.getInstance();
 			cal.setTimeInMillis(data.getLastUpdate());
-			if (cal.get(Calendar.HOUR_OF_DAY) != 0)
-				formatter = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.MEDIUM);
-			else
-				formatter = DateFormat.getDateInstance(DateFormat.LONG);
-			txtDate.setText(formatter.format(cal.getTime()));
+			
+			txtDate.setText(FormattingUtils.formatStockDate(cal));
 		}
 		if (txtVolume != null) {
 			String strVolume = priceFormat.format(data.getVolume());
