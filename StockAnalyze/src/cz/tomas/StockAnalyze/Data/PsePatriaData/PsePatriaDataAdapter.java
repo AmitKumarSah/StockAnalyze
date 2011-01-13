@@ -24,6 +24,7 @@ import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetDataException;
+import cz.tomas.StockAnalyze.utils.Utils;
 
 /**
  * @author tomas
@@ -38,6 +39,15 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 		public void run() {
 			if (enabled)
 				try {
+					try {
+						for (IStockDataListener listener : eventListeners) {
+							listener.OnStockDataUpdateBegin(PsePatriaDataAdapter.this);
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+
+						Log.d(Utils.LOG_TAG, "OnStockDataUpdateBegin failed!");
+					}
 					if (provider.refresh()) {
 						// if refresh proceeded and the market is open, fire the event
 						for (IStockDataListener listener : eventListeners) {
@@ -46,7 +56,7 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
-					Log.d("PsePatriaDataProvider", "Regular update failed!");
+					Log.d(Utils.LOG_TAG, "Regular update failed!");
 				}
 		}
 	}

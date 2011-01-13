@@ -30,4 +30,5 @@
 	<string name="homeChartTitle">Market Chart:</string>
 	<string name="disclaimer">Upozornění: Všechny informace poskytované aplikací jsou poskytovány zdarma a neslouží v žádném případě jako konkrétní investiční či obchodní doporučení. Využití těchto informací je výhradně věc odpovědnosti a uvážení uživatele, stejně tak jako rozhodnutí obchodovat. Provozovatel aplikace není zodpovědný za konkrétní rozhodnutí jednotlivých uživatelů. Provozovatel není zodpovědný za nefunkčnost stránek, ani chyby v datech. Veškeré zdroje jsou pouze informační. Provozovatel aplikace ani jednotliví autoři nejsou registrovaným brokerem či investičním poradcem ani makléřem. 
 Nikdy se nepouštějte do obchodů, jejichž podstatě plně nerozumíte. Obchodování a investování s finančními instrumenty je vysoce rizikové.</string>
+	<string name="dataUpdating">Updating data</string>
 </resources>

@@ -6,9 +6,10 @@ package cz.tomas.StockAnalyze.Data;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Iterator;
 import java.util.List;
 
+import cz.tomas.StockAnalyze.NotificationSupervisor;
+import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.IStockDataProvider;
 import cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener;
 import cz.tomas.StockAnalyze.Data.Interfaces.IUpdateDateChangedListener;
@@ -19,10 +20,12 @@ import cz.tomas.StockAnalyze.Data.PseCsvData.PseCsvDataAdapter;
 import cz.tomas.StockAnalyze.Data.PsePatriaData.PsePatriaDataAdapter;
 import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetDataException;
 
+import android.app.NotificationManager;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
+import android.widget.RemoteViews;
 
 /**
  * @author tomas
@@ -61,9 +64,11 @@ public class DataManager implements IStockDataListener {
 		
 		patriaPse.enable(true);
 		patriaPse.addListener(this);
+		patriaPse.addListener(new NotificationSupervisor(context));
 		
 		ConnectivityManager connectivity = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 		boolean backgroundData = connectivity.getBackgroundDataSetting();
+		// TODO
 	}
 
 	/*
@@ -186,7 +191,6 @@ public class DataManager implements IStockDataListener {
 
 	@Override
 	public void OnStockDataUpdateBegin(IStockDataProvider sender) {
-		// TODO Auto-generated method stub
-		
+
 	}
 }
