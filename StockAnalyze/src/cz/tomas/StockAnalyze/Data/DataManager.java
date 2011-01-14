@@ -184,7 +184,9 @@ public class DataManager implements IStockDataListener {
 	public void OnStockDataUpdated(IStockDataProvider sender) {
 		Log.d("cz.tomas.StockAnalyze.Data.DataManger", "received stock data update event from " + sender.getId());
 		for (StockItem item : sender.getAvailableStockList()) {
-			this.sqlStore.insertDayData(item, sender.getLastData(item.getTicker()));
+			DayData data = sender.getLastData(item.getTicker());
+			//if (data.getPrice() != 0)
+				this.sqlStore.insertDayData(item, data);
 		}
 		this.fireUpdateStockDataListenerUpdate(sender);
 	}

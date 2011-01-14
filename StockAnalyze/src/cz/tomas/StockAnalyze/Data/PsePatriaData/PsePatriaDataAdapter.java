@@ -15,6 +15,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Map.Entry;
 
+import android.os.Handler;
 import android.util.Log;
 
 import cz.tomas.StockAnalyze.Data.DataProviderAdviser;
@@ -34,7 +35,7 @@ import cz.tomas.StockAnalyze.utils.Utils;
 public class PsePatriaDataAdapter implements IStockDataProvider {
 
 	// TODO get rid of this
-	private final class TimedUpdateTask extends TimerTask {
+	private final class TimedUpdateTask implements Runnable {
 		@Override
 		public void run() {
 			if (enabled)
@@ -48,6 +49,7 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 
 						Log.d(Utils.LOG_TAG, "OnStockDataUpdateBegin failed!");
 					}
+					// the market could be closed, so we don't neccesarly get updated data
 					if (provider.refresh()) {
 						// if refresh proceeded and the market is open, fire the event
 						for (IStockDataListener listener : eventListeners) {
@@ -58,14 +60,16 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 					e.printStackTrace();
 					Log.d(Utils.LOG_TAG, "Regular update failed!");
 				}
+				// Schedule next update
+				PsePatriaDataAdapter.this.updateHandler.postDelayed(PsePatriaDataAdapter.this.updateTask, refreshInterval);
 		}
 	}
 
 	PsePatriaDataProvider provider;
 	/*
-	 * time interval between refreshes - in miliseconds
+	 * time interval between refreshes - in milliseconds
 	 */
-	long refreshInterval = 1000 * 60 * 10;
+	long refreshInterval = 1000 * 60 * 1;		//Milliseconds
 
 	Timer timer;
 	boolean enabled;
@@ -81,6 +85,7 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 	Market market;
 	
 	TimedUpdateTask updateTask;
+	Handler updateHandler;
 	
 	public PsePatriaDataAdapter() {
 		this.provider = new PsePatriaDataProvider();
@@ -107,8 +112,11 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 
 		this.eventListeners = new ArrayList<IStockDataListener>();
 		this.updateTask = new TimedUpdateTask();
-		this.timer = new Timer();
-	    this.timer.scheduleAtFixedRate(this.updateTask, 100, refreshInterval);
+//		this.timer = new Timer();
+//	    this.timer.schedule(this.updateTask, 100, refreshInterval);
+	    
+	    this.updateHandler = new Handler();
+	    this.updateHandler.postDelayed(this.updateTask, refreshInterval);
 	}
 	
 	/* 
@@ -234,6 +242,9 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 	@Override
 	public void enable(boolean enabled) {
 		this.enabled = enabled;
+		this.updateHandler.removeCallbacks(this.updateTask);
+		if (enabled)
+			this.updateHandler.postDelayed(this.updateTask, this.refreshInterval);
 	}
 
 }

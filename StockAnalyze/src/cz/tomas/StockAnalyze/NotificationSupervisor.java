@@ -60,7 +60,8 @@ public class NotificationSupervisor implements IStockDataListener {
 		contentView.setTextViewText(R.id.notification_subtext, this.context.getText(R.string.app_name));
 		
 		Notification notification = new Notification(R.drawable.ic_launcher, this.updateBeginMessage, System.currentTimeMillis());
-		notification.defaults |= Notification.DEFAULT_SOUND;
+		//notification.defaults |= Notification.DEFAULT_SOUND;
+		notification.flags |= Notification.FLAG_AUTO_CANCEL;
 		notification.contentView = contentView;
 		
 		// set intent to launch when the notification is tapped
