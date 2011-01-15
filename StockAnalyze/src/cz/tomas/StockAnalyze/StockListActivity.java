@@ -12,11 +12,14 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Toast;
 import cz.tomas.StockAnalyze.Data.DataManager;
@@ -47,11 +50,13 @@ public class StockListActivity extends ListActivity {
 		
 		this.setContentView(R.layout.stock_list);
 		this.getListView().setTextFilterEnabled(true);
+		this.registerForContextMenu(this.getListView());
 
 		this.getListView().setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long rowId) {
 				StockItem stock = (StockItem) StockListActivity.this.getListView().getItemAtPosition(position);
+				// old ui uses tabhost, new one doesn't
 				if (stock != null && StockListActivity.this.getParent() instanceof TabActivity) {
 					// set currently selected ticker
 					
@@ -65,13 +70,10 @@ public class StockListActivity extends ListActivity {
 						Log.d("cz.tomas.StockAnalyze.StockListActivity", "Failed to get TabActivity");
 				}
 				else if (stock != null) {
-					Intent intent = new Intent();
-					intent.putExtra("stock_id", stock.getId());
-					intent.putExtra("market_id", stock.getMarket());
-					intent.setClass(StockListActivity.this, StockDetailActivity.class);
-					startActivity(intent);
+					goToStockDetail(stock);
 				}
 			}
+
 		});
 		
 	}
@@ -105,6 +107,20 @@ public class StockListActivity extends ListActivity {
 		//Debug.stopMethodTracing();
 	}
 	
+	/**
+	 * Switch to StockDetailActivity with stock item selected
+	 * @param stock
+	 */
+	private void goToStockDetail(StockItem stock) {
+		if (stock == null)
+			throw new RuntimeException("goToStockDetail: Stock item can't be null!");
+		Intent intent = new Intent();
+		intent.putExtra("stock_id", stock.getId());
+		intent.putExtra("market_id", stock.getMarket());
+		intent.setClass(StockListActivity.this, StockDetailActivity.class);
+		startActivity(intent);
+	}
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 	    MenuInflater inflater = getMenuInflater();
@@ -112,6 +128,47 @@ public class StockListActivity extends ListActivity {
 	    return true;
 	}
 	
+	
+	/* stock
+	 * context menu for stock item
+	 * @see android.app.Activity#onContextItemSelected(android.view.MenuItem)
+	 */
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		
+		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+		StockItem stockItem = (StockItem) this.getListAdapter().getItem(info.position);
+		
+		if (stockItem == null)
+			return true;
+		
+		switch (item.getItemId()) {
+			case R.id.stock_item_add_to_portfolio:
+				// TODO start proper activity
+				return true;
+			case R.id.stock_item_favourite:
+				// TODO mark as favourite
+				return true;
+			case R.id.stock_item_view:
+				this.goToStockDetail(stockItem);
+				return true;
+			default:
+				return super.onContextItemSelected(item);
+		}
+	}
+
+	/* 
+	 * context menu for all stock items in list view
+	 * @see android.app.Activity#onCreateContextMenu(android.view.ContextMenu, android.view.View, android.view.ContextMenu.ContextMenuInfo)
+	 */
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+			ContextMenuInfo menuInfo) {
+		super.onCreateContextMenu(menu, v, menuInfo);
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.stock_item_context_menu, menu);
+	}
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    // Handle item selection
