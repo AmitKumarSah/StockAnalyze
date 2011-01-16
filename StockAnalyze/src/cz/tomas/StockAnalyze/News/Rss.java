@@ -56,12 +56,23 @@ public class Rss {
 	}
 	
 	/*
-	 * download and save articles from given feed to database
+	 * download and save new articles from given feed to database
 	 */
 	public void fetchArticles(Feed feed) throws Exception {
-		List<Article> articles = this.handler.fetchArticles(feed);
+		List<Article> downloadedArticles = this.handler.fetchArticles(feed);
+		List<Article> presentArticles = this.getArticles(feed.getFeedId());
 		
-		this.sqlHelper.insertArticles(feed.getFeedId(), articles);
+		// prevent duplicities
+		for (Article article1 : presentArticles) {
+			for (int i = 0; i < downloadedArticles.size(); i++) {
+				Article article2 = downloadedArticles.get(i);
+				if (article1.getTitle().equals(article2.getTitle())) {
+					downloadedArticles.remove(i);
+				}
+			}
+		}
+		
+		this.sqlHelper.insertArticles(feed.getFeedId(), downloadedArticles);
 	}
 	
 	/*
@@ -69,6 +80,13 @@ public class Rss {
 	 */
 	public List<Article> getArticles(long feedId) {
 		return this.sqlHelper.getArticles(feedId);
+	}
+	 
+	/*
+	 * get articles from given feed, limited by limit
+	 */
+	public List<Article> getArticles(long feedId, int limit) {
+		return this.sqlHelper.getArticles(feedId, limit);
 	}
 
 	/*

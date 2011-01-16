@@ -130,7 +130,7 @@ public class NewsListAdapter extends ArrayAdapter<Article> {
 			try {
 				List<Feed> feeds = rss.getFeeds();
 				for (Feed feed : feeds) {
-					rss.deleteArticles(feed.getFeedId());
+					//rss.deleteArticles(feed.getFeedId());
 					rss.fetchArticles(feed);
 					List<Article> articles = rss.getArticles(feed.getFeedId());
 					

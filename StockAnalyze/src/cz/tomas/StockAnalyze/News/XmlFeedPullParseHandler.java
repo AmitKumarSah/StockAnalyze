@@ -304,6 +304,10 @@ public class XmlFeedPullParseHandler {
 		}
 
 	}
+	
+	/*
+	 * parse and save articles from xml
+	 */
 	public void updateArticles(Feed feed) throws XmlPullParserException {
 		this.currentFeed = feed;
 		targetFlag = TARGET_ARTICLES;
@@ -311,6 +315,9 @@ public class XmlFeedPullParseHandler {
 		this.parseAndSave(feed);
 	}
 	
+	/*
+	 * download feed xml, parse it to articles and return the list with articles
+	 */
 	public List<Article> fetchArticles(Feed feed) throws XmlPullParserException {
 		return this.parse(feed);
 	}

@@ -28,6 +28,8 @@ public final class NewsSqlHelper extends DataSqlHelper {
 	private static final String SOURCE_AKCIE_NAME = "Akcie.cz";
 	private static final String SOURCE_AKCIE_COUNTRY = "cz";
 	
+	private static final int DEFAULT_ARTICLE_LIMIT = 15;
+	
 	NewsSqlHelper(Context context) {
 		super(context);
 
@@ -121,13 +123,26 @@ public final class NewsSqlHelper extends DataSqlHelper {
 		return feeds;
 	}
 
+	/*
+	 * read all articles from database that belongs to the feed
+	 * @returns list of articles, if no articles were found, list would be empty 
+	 */
 	public List<Article> getArticles(Long feedId) {
+		return this.getArticles(feedId, DEFAULT_ARTICLE_LIMIT);
+	}
+	
+	/*
+	 * read articles limited by limit from database that belongs to the feed
+	 * @returns list of articles limited by limit, 
+	 * if no articles were found, list would be empty 
+	 */
+	public List<Article> getArticles(Long feedId, int limit) {
 		ArrayList<Article> articles = new ArrayList<Article>();
 		Cursor c = null;
 		try {
 			c = this.getWritableDatabase().query(ARTICLES_TABLE_NAME, new String[] {
 					"article_id", "feed_id", "title", "description", "url", "date" }, "feed_id="
-					+ feedId.toString(), null, null, null, null);
+					+ feedId.toString(), null, null, null, null, String.valueOf(limit));
 
 			if (c.moveToFirst())
 				do {
@@ -142,10 +157,8 @@ public final class NewsSqlHelper extends DataSqlHelper {
 				} while (c.moveToNext());
 			else
 				Log.d(Utils.LOG_TAG, "no articles present in feed " + String.valueOf(feedId));
-		} catch (SQLException e) {
-			Log.e("NewsSqlHelper", e.toString());
-		} catch (MalformedURLException e) {
-			Log.e("NewsSqlHelper", e.toString());
+		} catch (Exception e) {
+			Log.e(Utils.LOG_TAG, e.toString());
 		} finally {
 			if (c != null)
 				c.close();
