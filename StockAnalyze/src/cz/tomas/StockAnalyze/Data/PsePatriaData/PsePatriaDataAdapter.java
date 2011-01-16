@@ -69,7 +69,7 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 	/*
 	 * time interval between refreshes - in milliseconds
 	 */
-	long refreshInterval = 1000 * 60 * 1;		//Milliseconds
+	long refreshInterval = 1000 * 60 * 10;		//Milliseconds
 
 	Timer timer;
 	boolean enabled;

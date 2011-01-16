@@ -142,8 +142,8 @@ containing a value of this type.
         public static final int lblDetailMin=0x7f090025;
         public static final int lblDetailVolume=0x7f09002b;
         public static final int listFoundItems=0x7f090038;
-        public static final int menu_stock_list_refresh=0x7f09003a;
-        public static final int menu_stock_list_settings=0x7f090039;
+        public static final int menu_stock_list_refresh=0x7f09003d;
+        public static final int menu_stock_list_settings=0x7f09003c;
         public static final int notification_image=0x7f090006;
         public static final int notification_subtext=0x7f090008;
         public static final int notification_text=0x7f090007;
@@ -152,6 +152,9 @@ containing a value of this type.
         public static final int progressStockList=0x7f09002f;
         public static final int righttext=0x7f090035;
         public static final int righttext2=0x7f090036;
+        public static final int stock_item_add_to_portfolio=0x7f09003a;
+        public static final int stock_item_favourite=0x7f09003b;
+        public static final int stock_item_view=0x7f090039;
         public static final int tableDetailData=0x7f090023;
         public static final int tableDetailRow02=0x7f090027;
         public static final int tableDetailRow03=0x7f09002a;
@@ -185,35 +188,39 @@ containing a value of this type.
         public static final int stock_search=0x7f03000b;
     }
     public static final class menu {
-        public static final int stock_list_menu=0x7f080000;
+        public static final int stock_item_context_menu=0x7f080000;
+        public static final int stock_list_menu=0x7f080001;
     }
     public static final class string {
-        public static final int FailedGetNews=0x7f06000f;
-        public static final int InvalidData=0x7f060011;
-        public static final int LabelDetailMax=0x7f06000c;
-        public static final int LabelDetailMin=0x7f06000b;
-        public static final int LabelDetailVolume=0x7f06000d;
-        public static final int NoInternet=0x7f06000a;
-        public static final int NoNews=0x7f060010;
-        public static final int NoRefresh=0x7f060007;
-        public static final int NoStockSelected=0x7f06000e;
-        public static final int SearchTextView=0x7f060004;
-        public static final int Statistics=0x7f060012;
-        public static final int app_name=0x7f060003;
-        public static final int dataUpdating=0x7f060019;
-        public static final int disclaimer=0x7f060018;
-        public static final int failed_price_update=0x7f060008;
-        public static final int hello=0x7f060002;
-        public static final int homeChartTitle=0x7f060017;
-        public static final int homeCurrencies=0x7f060015;
-        public static final int homeMyPortfolio=0x7f060016;
-        public static final int homeNews=0x7f060014;
-        public static final int homeStockList=0x7f060013;
-        public static final int loading=0x7f060009;
-        public static final int refresh=0x7f060000;
-        public static final int settings=0x7f060001;
-        public static final int update_fail=0x7f060006;
-        public static final int update_succes=0x7f060005;
+        public static final int FailedGetNews=0x7f060012;
+        public static final int InvalidData=0x7f060014;
+        public static final int LabelDetailMax=0x7f06000f;
+        public static final int LabelDetailMin=0x7f06000e;
+        public static final int LabelDetailVolume=0x7f060010;
+        public static final int NoInternet=0x7f06000d;
+        public static final int NoNews=0x7f060013;
+        public static final int NoRefresh=0x7f06000a;
+        public static final int NoStockSelected=0x7f060011;
+        public static final int SearchTextView=0x7f060007;
+        public static final int Statistics=0x7f060015;
+        public static final int addStockItemToFavourite=0x7f060000;
+        public static final int addStockItemToPortfolio=0x7f060001;
+        public static final int app_name=0x7f060006;
+        public static final int dataUpdating=0x7f06001c;
+        public static final int disclaimer=0x7f06001b;
+        public static final int failed_price_update=0x7f06000b;
+        public static final int hello=0x7f060005;
+        public static final int homeChartTitle=0x7f06001a;
+        public static final int homeCurrencies=0x7f060018;
+        public static final int homeMyPortfolio=0x7f060019;
+        public static final int homeNews=0x7f060017;
+        public static final int homeStockList=0x7f060016;
+        public static final int loading=0x7f06000c;
+        public static final int refresh=0x7f060003;
+        public static final int settings=0x7f060004;
+        public static final int stockItemView=0x7f060002;
+        public static final int update_fail=0x7f060009;
+        public static final int update_succes=0x7f060008;
     }
     public static final class style {
         public static final int actionBar=0x7f070009;
