@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+  xmlns:android="http://schemas.android.com/apk/res/android">
+<item android:title="@string/stockItemView" android:visible="true" android:enabled="true" android:id="@+id/stock_item_view"></item>
+<item android:title="@string/addStockItemToPortfolio" android:id="@+id/stock_item_add_to_portfolio"></item>
+<item android:title="@string/addStockItemToFavourite" android:visible="true" android:enabled="true" android:id="@+id/stock_item_favourite"></item>
+</menu>
