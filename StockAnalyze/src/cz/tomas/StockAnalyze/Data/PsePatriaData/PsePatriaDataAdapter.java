@@ -116,7 +116,8 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 //	    this.timer.schedule(this.updateTask, 100, refreshInterval);
 	    
 	    this.updateHandler = new Handler();
-	    this.updateHandler.postDelayed(this.updateTask, refreshInterval);
+	    
+	    this.updateHandler.postDelayed(this.updateTask, 0);
 	}
 	
 	/* 

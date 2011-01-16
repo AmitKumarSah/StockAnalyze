@@ -39,23 +39,26 @@ import android.widget.Toast;
 
 public class StockListAdapter extends ArrayAdapter<StockItem> {
 	 
-	ProgressDialog progressDialog = null;
+	private ProgressDialog progressDialog = null;
 	protected DataManager dataManager;
-	LayoutInflater vi; 
+	private LayoutInflater vi; 
 	
-	Map<StockItem, DayData> datas;
+	private Map<StockItem, DayData> datas;
+	private StockComparator comparator;
 	
-	Boolean showIcons = true;
+	private Boolean showIcons = true;
 	
 	public StockListAdapter(final Context context, int textViewResourceId, final DataManager dataManager, final String filter) {
 		super(context, textViewResourceId);
 		this.dataManager = dataManager;
+		this.comparator = new StockComparator(StockCompareTypes.Volume, dataManager);
 
 		this.datas = new HashMap<StockItem, DayData>();
         this.vi = (LayoutInflater)	this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-//        final StockListTask task = new StockListTask();
-//        task.execute(filter);
+        // HACK initial update (temporary)
+        final StockListTask task = new StockListTask();
+        task.execute(filter);
         
         this.dataManager.addStockDataListener(new IStockDataListener() {
 			
@@ -205,7 +208,7 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
         	try {
 				items = StockListAdapter.this.dataManager.search(params[0], MarketFactory.getMarket("cz"));
 
-            	Collections.sort(items, new StockComparator(StockCompareTypes.Volume, dataManager));
+            	Collections.sort(items, comparator);
             	
 			} catch (Exception e) {
 				String message = "Failed to get stock list. ";
