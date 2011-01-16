@@ -16,7 +16,7 @@ public class PatriaDataTest extends AndroidTestCase {
 	List<PsePatriaDataItem> expectedItems;
 	
 
-	final String ADDRESS = "http://tomas-vondracek.net/Data/upload/test/ExamplePatriaData.xml";
+	private final String ADDRESS = "http://tomas-vondracek.net/Data/upload/test/ExamplePatriaData.xml";
 	
 	public PatriaDataTest() {
 		super();
@@ -103,6 +103,9 @@ public class PatriaDataTest extends AndroidTestCase {
 		}
 	}
 	
+	/*
+	 * test xml conf part - containing market phase and date
+	 */
 	public void testParseConf() {
 		try {
 			List<PsePatriaDataItem> actualItems = this.parser.parse();
@@ -117,14 +120,16 @@ public class PatriaDataTest extends AndroidTestCase {
 		
 		Calendar cal = Calendar.getInstance();
 		cal.set(Calendar.YEAR, 2010);
-		cal.set(Calendar.MONTH, 11);
+		cal.set(Calendar.MONTH, Calendar.NOVEMBER);
 		cal.set(Calendar.DAY_OF_MONTH, 5);
 		cal.set(Calendar.HOUR, 0);
 		cal.set(Calendar.MINUTE, 0);
 		cal.set(Calendar.SECOND, 0);
+		cal.set(Calendar.MILLISECOND, 0);
 		
-		assertEquals(cal.getTimeInMillis(), cal.getTimeInMillis());
+		Calendar actual = this.parser.getDate();
+		assertEquals(cal.getTimeInMillis(), actual.getTimeInMillis());
 		TimeZone tz = TimeZone.getTimeZone("Europe/Prague");
-		assertEquals(tz, cal.getTimeZone());
+		assertEquals(tz.getID(), actual.getTimeZone().getID());
 	}
 }

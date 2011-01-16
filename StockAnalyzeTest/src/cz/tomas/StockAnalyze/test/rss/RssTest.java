@@ -18,19 +18,32 @@ public class RssTest extends AndroidTestCase {
 	URL dataUrl1;
 	URL dataUrl2;
 	URL dataUrl3;
-	//RSSHandler handler;
-	Rss handler;
+	
+	/*
+	 * xml with 12 articles
+	 */
+	URL mergeUrl1;
+	/*
+	 * same as mergeUrl1 but with 3 more articles
+	 */
+	URL mergeUrl2;
+	
+	Rss rss;
 	
 	public RssTest() {
-		//super("cz.tomas.StockAnalyze", NewsActivity.class);
 		String root = "http://tomas-vondracek.net/Data/upload/test/";
 		String xml1 = "akcie_cz_rss.xml";
 		String xml2 = "patria_cz_rss.xml";
 		String xml3 = "cyrrus_cz_rss.xml";
+		
+		String xmlMerge1 = "akcie_cz_rss2.xml";
+		String xmlMerge2 = "akcie_cz_rss3.xml";
 		try {
 			this.dataUrl1 = new URL(root + xml1);
 			this.dataUrl2 = new URL(root + xml2);
 			this.dataUrl3 = new URL(root + xml3);
+			this.mergeUrl1 = new URL(root + xmlMerge1);
+			this.mergeUrl2 = new URL(root + xmlMerge2);
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -42,23 +55,20 @@ public class RssTest extends AndroidTestCase {
         super.setUp();
         //this.context = this.getActivity();
         this.context = new IsolatedContext(new MockContentResolver(), getContext());
-//        File file = new File("data/akcie_cz_rss.xml");
-//        this.dataUrl = file.toURL();
-		//dataUrl = new URL("file://data/akcie_cz_rss.xml");
-		handler = new Rss(this.context);
+		rss = new Rss(this.context);
 		
 		// delete all already existing feeds
-		List<Feed> feeds = handler.getFeeds();
+		List<Feed> feeds = rss.getFeeds();
 		for (Feed feed : feeds) {
-			handler.deleteArticles(feed.getFeedId());
-			handler.deleteFeed(feed.getFeedId());
+			rss.deleteArticles(feed.getFeedId());
+			rss.deleteFeed(feed.getFeedId());
 		}
     }
     
     @Override
 	protected void tearDown() throws Exception {
-    	if (this.handler != null)
-    		this.handler.done();
+    	if (this.rss != null)
+    		this.rss.done();
     	
 		super.tearDown();
 	}
@@ -67,7 +77,7 @@ public class RssTest extends AndroidTestCase {
         assertNotNull(this.context);
         assertNotNull(this.dataUrl1);
         assertNotNull(this.dataUrl2);
-        assertNotNull(this.handler);
+        assertNotNull(this.rss);
     }
 	
 	/*
@@ -91,12 +101,12 @@ public class RssTest extends AndroidTestCase {
 	}
 	
 	private void createFeed(URL dataUrl) throws MalformedURLException {
-		List<Feed> feeds = handler.getFeeds();
+		List<Feed> feeds = rss.getFeeds();
 		assertEquals("initial feed count doesn't match", 0, feeds.size());
 		//this.handler.createFeed(dataUrl);
-		this.handler.insertFeed("test_feed", dataUrl, "cz");
+		this.rss.insertFeed("test_feed", dataUrl, "cz");
 		
-		feeds = handler.getFeeds();
+		feeds = rss.getFeeds();
 		
 		assertEquals("feed count after creating feed doesn't match", 1, feeds.size());
 		
@@ -129,14 +139,14 @@ public class RssTest extends AndroidTestCase {
 	}
 	
 	public void getArticles(String feedName, URL dataUrl, String countryCode, int expectedArticleCount) throws Exception {
-		this.handler.insertFeed(feedName, dataUrl, countryCode);
+		this.rss.insertFeed(feedName, dataUrl, countryCode);
 		
-		List<Feed> feeds = handler.getFeeds();
+		List<Feed> feeds = rss.getFeeds();
 		
 		if (feeds.size() > 0) {
 			Feed feed = feeds.get(feeds.size() - 1);
-			handler.fetchArticles(feed);
-			List<Article> articles = handler.getArticles(feed.getFeedId());
+			rss.fetchArticles(feed);
+			List<Article> articles = rss.getArticles(feed.getFeedId(), 50);
 			
 			assertEquals(expectedArticleCount, articles.size());
 
@@ -145,5 +155,44 @@ public class RssTest extends AndroidTestCase {
 		}
 		else
 			assertTrue("no feed to get articles from", false);
+	}
+	
+	/*
+	 * add articles to db from first url - 12 articles,
+	 * then add articles from second url (using one feed),
+	 * there are the same 12 articles plus 3 other
+	 * check whether at finish there is 15 articles
+	 */
+	public void testMergeArticles() throws Exception {
+		// create test feed from test server with 12 articles
+		this.rss.insertFeed("test_merge_feed1", this.mergeUrl1, "cz");
+		Feed feed = this.rss.getFeeds().get(0);
+		long feedId = feed.getFeedId();
+		this.rss.fetchArticles(feed);
+		assertEquals(12, this.rss.getArticles(feedId).size());
+		// now we have some articles in db, 
+		// change feed url to download some more articles - 15 but 12 of them is common
+		feed.setUrl(this.mergeUrl2);
+		this.rss.fetchArticles(feed);
+		assertEquals(12 + 3, this.rss.getArticles(feedId).size());
+	}
+	
+	/*
+	 * add articles from one url and then from second url,
+	 * at both are different articles
+	 */
+	public void testMergeArticlesNewOnly() throws Exception {
+		// create test feed from test server with 12 articles
+		this.rss.insertFeed("test_merge_feed1", this.dataUrl1, "cz");
+		Feed feed = this.rss.getFeeds().get(0);
+		long feedId = feed.getFeedId();
+		this.rss.fetchArticles(feed);
+		assertEquals(15, this.rss.getArticles(feedId).size(), 30);
+		// now we have some articles in db, 
+		// change feed url to download some more articles and check their count
+		feed.setUrl(this.mergeUrl1);
+		this.rss.fetchArticles(feed);
+		
+		assertEquals(15 + 12, this.rss.getArticles(feedId).size(), 30);
 	}
 }
