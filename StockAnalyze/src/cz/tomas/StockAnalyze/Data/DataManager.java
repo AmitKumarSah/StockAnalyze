@@ -33,12 +33,14 @@ import android.widget.RemoteViews;
  */
 public class DataManager implements IStockDataListener {
 		
-	StockDataSqlStore sqlStore;
+	private StockDataSqlStore sqlStore;
 	
-	List<IUpdateDateChangedListener> updateDateChangedListeners;
-	List<IStockDataListener> updateStockDataListeners;
+	private ConnectivityManager connectivityManager = null;
 	
-	Context context;
+	private List<IUpdateDateChangedListener> updateDateChangedListeners;
+	private List<IStockDataListener> updateStockDataListeners;
+	
+	private Context context;
 	private static DataManager instance;
 	
 	public static DataManager getInstance(Context context) {
@@ -66,8 +68,13 @@ public class DataManager implements IStockDataListener {
 		patriaPse.addListener(this);
 		patriaPse.addListener(new NotificationSupervisor(context));
 		
-		ConnectivityManager connectivity = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-		boolean backgroundData = connectivity.getBackgroundDataSetting();
+		try {
+			ConnectivityManager connectivity = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+			boolean backgroundData = connectivity.getBackgroundDataSetting();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		// TODO
 	}
 
@@ -125,7 +132,8 @@ public class DataManager implements IStockDataListener {
 		
 		data = this.sqlStore.getDayData(now, item);
 		// we still can be without data from db - so we need to download it
-		if (data == null) {
+		// of try to search for older from database
+		if (data == null && this.isOnline(this.context)) {
 			try {
 				IStockDataProvider provider = DataProviderFactory.getDataProvider(item.getTicker());
 				if (provider != null) {
@@ -142,13 +150,21 @@ public class DataManager implements IStockDataListener {
 				this.sqlStore.insertDayData(item, data);
 			}
 		}
+		else {
+			data = this.sqlStore.getLastAvailableDayData(item);
+		}
 		return data;
 	}	
 
 	public boolean isOnline(Context context) {
-		ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo info = cm.getActiveNetworkInfo();
-		return info != null && info.isConnectedOrConnecting();
+		try {
+			if (this.connectivityManager == null)
+				this.connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+			NetworkInfo info = this.connectivityManager.getActiveNetworkInfo();
+			return info != null && info.isConnectedOrConnecting();
+		} catch (Exception e) {
+			return false;
+		}
 	}
 
 	public boolean refresh() throws Exception {

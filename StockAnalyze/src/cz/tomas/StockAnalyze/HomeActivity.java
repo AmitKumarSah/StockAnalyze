@@ -44,23 +44,6 @@ public class HomeActivity extends Activity implements OnClickListener, OnKeyList
 		}
 		//Debug.startMethodTracing();
 		
-//		ImageView chart = (ImageView) this.findViewById(R.id.home_chart);
-//		
-//		String downloadUrl = "http://www.pse.cz/generated/a_indexy/X1_R.GIF";
-//		byte[] chartArray = null;
-//		try {
-//			chartArray = DownloadService.GetInstance().DownloadFromUrl(downloadUrl);
-//			
-//			Bitmap bmp = BitmapFactory.decodeByteArray(chartArray, 0, chartArray.length);
-//			//chart.setImageURI(Uri.parse("http://www.pse.cz/generated/a_indexy/X1_R.GIF"));
-//			chart.setImageBitmap(bmp);
-//			chart.setBackgroundDrawable(null);
-//			chart.setMinimumHeight(100);
-//			chart.setMinimumWidth(100);
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
 		ChartUpdateTask task = new ChartUpdateTask();
 		task.execute((Void[])null);
 	}

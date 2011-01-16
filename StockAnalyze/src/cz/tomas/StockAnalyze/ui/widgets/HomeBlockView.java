@@ -23,7 +23,12 @@ import android.widget.TextView;
 public class HomeBlockView extends RelativeLayout {
 
 	String target;
+
+	private LayoutInflater inflater = null;
 	
+	/*
+	 * get target to invoke from this block
+	 */
 	public String getTarget() {
 		return target;
 	}
@@ -31,9 +36,10 @@ public class HomeBlockView extends RelativeLayout {
 
 	public HomeBlockView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-
-		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        inflater.inflate(R.layout.home_block_item, this);
+		
+		if (this.inflater == null)
+			this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        this.inflater.inflate(R.layout.home_block_item, this);
         
         try {
 			this.init(context, attrs);
@@ -43,7 +49,9 @@ public class HomeBlockView extends RelativeLayout {
 		}
 	}
 
-	
+	/*
+	 * read attributes from xml layout file for this view
+	 */
 	private void init(Context context, AttributeSet attrs) {
 		TextView textView = (TextView) this.findViewById(R.id.homeBlockItemTextView);
 		ImageView image = (ImageView) this

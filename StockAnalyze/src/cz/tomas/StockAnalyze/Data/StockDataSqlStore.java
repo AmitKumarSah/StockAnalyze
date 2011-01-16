@@ -300,4 +300,51 @@ public class StockDataSqlStore extends DataSqlHelper {
 		return data;
 	}
 
+	/*
+	 * get day data item from stock_day_data table
+	 * for given stock item and day in year represented by Calendar.
+	 * returns null if nothing is found
+	 */
+	public DayData getLastAvailableDayData(StockItem item) {
+		DayData data = null;
+
+		try {
+			//Calendar cal = Utils.createDateOnlyCalendar(calendar);
+			//long milliseconds =  cal.getTimeInMillis();
+			SQLiteDatabase db = this.getWritableDatabase();
+			Cursor c = null;
+			try {
+				c = db.query(DAY_DATA_TABLE_NAME, new String[] {
+						"price", "change", "year_max", "year_min", "date", "volume", "id", "last_update" }, 
+						"stock_id=?", new String[] { item.getId() }, null, null, "date");
+
+				if (c.moveToFirst()) {
+					float price = c.getFloat(0);
+					float change = c.getFloat(1);
+					float max = c.getFloat(2);
+					float min = c.getFloat(3);
+					long millisecs = c.getLong(4);
+					float volume = c.getFloat(5);
+					long id = c.getLong(6);
+					long lastUpdate = c.getLong(7);
+					
+					Date date = new Date(millisecs);
+					data = new DayData(price, change, date, volume, max, min, lastUpdate, id);
+				}
+			} catch (SQLException e) {
+				Log.e("StockDataSqlStore", e.toString());
+			} finally {
+				if (c != null)
+					c.close();
+			}
+		} catch (SQLException e) {
+			Log.d("StockDataSqlStore", "failed to get data." + e.getMessage());
+			e.printStackTrace();
+		} finally {
+			this.close();
+		}
+		
+		return data;
+	}
+
 }
