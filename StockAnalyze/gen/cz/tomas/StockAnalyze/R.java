@@ -206,6 +206,7 @@ containing a value of this type.
         public static final int addStockItemToFavourite=0x7f060000;
         public static final int addStockItemToPortfolio=0x7f060001;
         public static final int app_name=0x7f060006;
+        public static final int dataUpdated=0x7f06001d;
         public static final int dataUpdating=0x7f06001c;
         public static final int disclaimer=0x7f06001b;
         public static final int failed_price_update=0x7f06000b;

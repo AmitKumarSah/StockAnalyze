@@ -8,9 +8,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.util.Log;
 import cz.tomas.StockAnalyze.NotificationSupervisor;
-import cz.tomas.StockAnalyze.R;
-import cz.tomas.StockAnalyze.Data.IStockDataProvider;
 import cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener;
 import cz.tomas.StockAnalyze.Data.Interfaces.IUpdateDateChangedListener;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
@@ -19,13 +21,6 @@ import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.Data.PseCsvData.PseCsvDataAdapter;
 import cz.tomas.StockAnalyze.Data.PsePatriaData.PsePatriaDataAdapter;
 import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetDataException;
-
-import android.app.NotificationManager;
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.util.Log;
-import android.widget.RemoteViews;
 
 /**
  * @author tomas

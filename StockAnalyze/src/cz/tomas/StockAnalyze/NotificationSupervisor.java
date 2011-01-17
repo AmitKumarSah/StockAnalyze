@@ -3,6 +3,8 @@
  */
 package cz.tomas.StockAnalyze;
 
+import java.util.Calendar;
+
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -12,6 +14,7 @@ import android.widget.RemoteViews;
 
 import cz.tomas.StockAnalyze.Data.IStockDataProvider;
 import cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener;
+import cz.tomas.StockAnalyze.utils.FormattingUtils;
 
 /**
  * @author tomas
@@ -23,23 +26,35 @@ public class NotificationSupervisor implements IStockDataListener {
 	private NotificationManager notificationManager;
 	private StringBuilder stringBuilder;
 	private CharSequence updateBeginMessage;
+	private CharSequence updateFinishedMessage;
+	private RemoteViews currentNotificationView;
+	private Notification notification;
 	
-	private static final int UPDATE_BEGIN_ID = 1;
+	private static final int UPDATE_DATA_ID = 1;
 	
 	public NotificationSupervisor(Context context) {
 		this.context = context;
 		this.notificationManager = (NotificationManager) this.context.getSystemService(Context.NOTIFICATION_SERVICE);
 		this.stringBuilder = new StringBuilder();
 		this.updateBeginMessage = this.context.getText(R.string.dataUpdating);
+		this.updateFinishedMessage = this.context.getText(R.string.dataUpdated);
 	}
 
-	/* (non-Javadoc)
+	/* 
+	 * update existing notification
 	 * @see cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener#OnStockDataUpdated(cz.tomas.StockAnalyze.Data.IStockDataProvider)
 	 */
 	@Override
 	public void OnStockDataUpdated(IStockDataProvider sender) {
-		// TODO Auto-generated method stub
-
+		if (this.currentNotificationView != null) {
+			this.stringBuilder.setLength(0);
+			this.stringBuilder.append(this.updateFinishedMessage);
+			this.stringBuilder.append(": ");
+			this.stringBuilder.append(FormattingUtils.formatStockDate(Calendar.getInstance()));
+			
+			this.currentNotificationView.setTextViewText(R.id.notification_text, this.stringBuilder.toString());
+			this.notificationManager.notify(UPDATE_DATA_ID, this.notification);
+		}
 	}
 
 	/* 
@@ -50,26 +65,27 @@ public class NotificationSupervisor implements IStockDataListener {
 	public void OnStockDataUpdateBegin(IStockDataProvider sender) {
 		if (sender == null)
 			return;
-		RemoteViews contentView = new RemoteViews(this.context.getPackageName(), R.layout.custom_update_notification_layout);
-		contentView.setImageViewResource(R.id.notification_image, R.drawable.ic_launcher);
+		if (this.currentNotificationView == null)
+			this.currentNotificationView = new RemoteViews(this.context.getPackageName(), R.layout.custom_update_notification_layout);
+		this.currentNotificationView.setImageViewResource(R.id.notification_image, R.drawable.ic_launcher);
 		this.stringBuilder.setLength(0);
 		this.stringBuilder.append(this.updateBeginMessage);
 		this.stringBuilder.append(" from ").append(sender.getDescriptiveName());
 		
-		contentView.setTextViewText(R.id.notification_text, this.stringBuilder.toString());
-		contentView.setTextViewText(R.id.notification_subtext, this.context.getText(R.string.app_name));
+		this.currentNotificationView.setTextViewText(R.id.notification_text, this.stringBuilder.toString());
+		this.currentNotificationView.setTextViewText(R.id.notification_subtext, this.context.getText(R.string.app_name));
 		
-		Notification notification = new Notification(R.drawable.ic_launcher, this.updateBeginMessage, System.currentTimeMillis());
+		this.notification = new Notification(R.drawable.ic_launcher, this.updateBeginMessage, System.currentTimeMillis());
 		//notification.defaults |= Notification.DEFAULT_SOUND;
-		notification.flags |= Notification.FLAG_AUTO_CANCEL;
-		notification.contentView = contentView;
+		this.notification.flags |= Notification.FLAG_AUTO_CANCEL;
+		this.notification.contentView = this.currentNotificationView;
 		
 		// set intent to launch when the notification is tapped
 		Intent notificationIntent = new Intent(this.context, StockListActivity.class);
 		PendingIntent contentIntent = PendingIntent.getActivity(this.context, 0, notificationIntent, 0);
-		notification.contentIntent = contentIntent;
+		this.notification.contentIntent = contentIntent;
 		
-		notificationManager.notify(UPDATE_BEGIN_ID, notification);
+		notificationManager.notify(UPDATE_DATA_ID, this.notification);
 
 	}
 
