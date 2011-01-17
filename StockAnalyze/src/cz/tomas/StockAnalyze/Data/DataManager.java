@@ -150,7 +150,7 @@ public class DataManager implements IStockDataListener {
 				this.sqlStore.insertDayData(item, data);
 			}
 		}
-		else {
+		else if (data == null) {
 			data = this.sqlStore.getLastAvailableDayData(item);
 		}
 		return data;
@@ -201,7 +201,7 @@ public class DataManager implements IStockDataListener {
 		Log.d("cz.tomas.StockAnalyze.Data.DataManger", "received stock data update event from " + sender.getId());
 		for (StockItem item : sender.getAvailableStockList()) {
 			DayData data = sender.getLastData(item.getTicker());
-			//if (data.getPrice() != 0)
+			if (data.getPrice() != 0)
 				this.sqlStore.insertDayData(item, data);
 		}
 		this.fireUpdateStockDataListenerUpdate(sender);

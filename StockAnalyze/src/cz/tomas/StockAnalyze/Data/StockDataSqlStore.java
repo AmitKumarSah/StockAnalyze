@@ -318,7 +318,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 						"price", "change", "year_max", "year_min", "date", "volume", "id", "last_update" }, 
 						"stock_id=?", new String[] { item.getId() }, null, null, "date");
 
-				if (c.moveToFirst()) {
+				if (c.moveToLast()) {
 					float price = c.getFloat(0);
 					float change = c.getFloat(1);
 					float max = c.getFloat(2);
