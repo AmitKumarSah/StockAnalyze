@@ -28,7 +28,7 @@ public final class NewsSqlHelper extends DataSqlHelper {
 	private static final String SOURCE_AKCIE_NAME = "Akcie.cz";
 	private static final String SOURCE_AKCIE_COUNTRY = "cz";
 	
-	private static final int DEFAULT_ARTICLE_LIMIT = 15;
+	private static final int DEFAULT_ARTICLE_LIMIT = 20;
 	
 	NewsSqlHelper(Context context) {
 		super(context);
@@ -142,9 +142,9 @@ public final class NewsSqlHelper extends DataSqlHelper {
 		try {
 			c = this.getWritableDatabase().query(ARTICLES_TABLE_NAME, new String[] {
 					"article_id", "feed_id", "title", "description", "url", "date" }, "feed_id="
-					+ feedId.toString(), null, null, null, null, String.valueOf(limit));
+					+ feedId.toString(), null, null, null, "date", String.valueOf(limit));
 
-			if (c.moveToFirst())
+			if (c.moveToLast())
 				do {
 					Article article = new Article();
 					article.setArticleId(c.getLong(0));
@@ -154,7 +154,7 @@ public final class NewsSqlHelper extends DataSqlHelper {
 					article.setUrl(new URL(c.getString(4)));
 					article.setDate(Long.parseLong(c.getString(5)));
 					articles.add(article);
-				} while (c.moveToNext());
+				} while (c.moveToPrevious());
 			else
 				Log.d(Utils.LOG_TAG, "no articles present in feed " + String.valueOf(feedId));
 		} catch (Exception e) {

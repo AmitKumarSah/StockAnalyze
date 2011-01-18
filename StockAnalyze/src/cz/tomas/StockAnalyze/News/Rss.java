@@ -4,7 +4,10 @@
 package cz.tomas.StockAnalyze.News;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
+
+import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetNewsException;
 
 import android.content.Context;
 
@@ -58,21 +61,34 @@ public class Rss {
 	/*
 	 * download and save new articles from given feed to database
 	 */
-	public void fetchArticles(Feed feed) throws Exception {
-		List<Article> downloadedArticles = this.handler.fetchArticles(feed);
+	public List<Article> fetchArticles(Feed feed) throws FailedToGetNewsException {
+		List<Article> downloadedArticles = null;
+		try {
+			downloadedArticles = this.handler.fetchArticles(feed);
+		} catch (Exception e) {
+			e.printStackTrace();
+			String message = "failed to download updated news: ";
+			if (e.getMessage() != null)
+				message += e.getMessage();
+			throw new FailedToGetNewsException(message, e);
+		}
 		List<Article> presentArticles = this.getArticles(feed.getFeedId());
 		
 		// prevent duplicities
+		int downloadedCount = downloadedArticles.size();
 		for (Article article1 : presentArticles) {
 			for (int i = 0; i < downloadedArticles.size(); i++) {
 				Article article2 = downloadedArticles.get(i);
 				if (article1.getTitle().equals(article2.getTitle())) {
 					downloadedArticles.remove(i);
+					i--;
 				}
 			}
 		}
 		
 		this.sqlHelper.insertArticles(feed.getFeedId(), downloadedArticles);
+		presentArticles.addAll(downloadedArticles);
+		return presentArticles;
 	}
 	
 	/*
