@@ -1,6 +1,21 @@
 StockAnalyze for Android
 
-Tool to watch and analyze stock trends and technical indicators.
+Application to monitore and analyze stock data as well as your portfolio.
+
+Feature highlights:
+	lucid summary of stock prices
+	continous data update
+	stock data and statistics
+	market news
+	interactive charts (in development)
+	portfolio management (in development)
+	currencies converter (in development)
+	custom stock alarms (in development)
+
+CZ edition is aimed to Prague Stock Exchange
+
+Project page at github: 
+https://github.com/tomas-vondracek/StockAnalyze
 
 By Tomas Vondracek
 tomas.vondracek@gmail.com
