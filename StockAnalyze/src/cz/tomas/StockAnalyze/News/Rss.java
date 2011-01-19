@@ -79,16 +79,17 @@ public class Rss {
 		for (Article article1 : presentArticles) {
 			for (int i = 0; i < downloadedArticles.size(); i++) {
 				Article article2 = downloadedArticles.get(i);
-				if (article1.getTitle().equals(article2.getTitle())) {
+				if (article1.getDate() == article2.getDate()) {
 					downloadedArticles.remove(i);
-					i--;
+					break;
 				}
 			}
 		}
 		
 		this.sqlHelper.insertArticles(feed.getFeedId(), downloadedArticles);
-		presentArticles.addAll(downloadedArticles);
-		return presentArticles;
+		
+		downloadedArticles.addAll(presentArticles);
+		return downloadedArticles;
 	}
 	
 	/*

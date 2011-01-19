@@ -179,7 +179,7 @@ public class RssTest extends AndroidTestCase {
 	
 	/*
 	 * add articles from one url and then from second url,
-	 * at both are different articles
+	 * on both urls are different articles
 	 */
 	public void testMergeArticlesNewOnly() throws Exception {
 		// create test feed from test server with 12 articles
@@ -194,5 +194,47 @@ public class RssTest extends AndroidTestCase {
 		this.rss.fetchArticles(feed);
 		
 		assertEquals(15 + 12, this.rss.getArticles(feedId).size(), 30);
+	}
+	
+	/*
+	 * get articles and check order
+	 */
+	public void testOrder() {
+		// create test feed from test server with 12 articles
+		this.rss.insertFeed("test_merge_feed1", this.dataUrl1, "cz");
+		Feed feed = this.rss.getFeeds().get(0);
+		long feedId = feed.getFeedId();
+		List<Article> articles = this.rss.fetchArticles(feed);
+		this.checkArticlesOrder(articles);
+	}
+	
+	/*
+	 * merge articles and check their order by date
+	 */
+	public void testMergeOrder() {
+		// create test feed from test server with 12 articles
+		this.rss.insertFeed("test_merge_feed1", this.dataUrl1, "cz");
+		Feed feed = this.rss.getFeeds().get(0);
+		long feedId = feed.getFeedId();
+		List<Article> articles = this.rss.fetchArticles(feed);
+		checkArticlesOrder(articles);
+		
+		// change feed url to download some more articles and check their order
+		feed.setUrl(this.mergeUrl1);
+		articles = this.rss.fetchArticles(feed);
+		checkArticlesOrder(articles);
+	}
+	
+	private void checkArticlesOrder(List<Article> articles) {
+		Article previousArticle = null;
+		for (Article article : articles) {
+			if (previousArticle != null) {
+				long prevDate = previousArticle.getDate();
+				long currentDate = article.getDate();
+				
+				assertTrue(currentDate < prevDate);
+			}
+			previousArticle = article;
+		}
 	}
 }

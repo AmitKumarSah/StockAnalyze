@@ -30,7 +30,9 @@ public class NewsListAdapter extends ArrayAdapter<Article> {
 	
 	LayoutInflater vi; 
 	NewsItemsTask task;
-	private final int MAX_DESCRIPTION_LENGHT = 100; 
+	private final int MAX_DESCRIPTION_LENGHT = 100;
+	
+	private final int DEFAULT_NEWS_LIMIT = 20;
 	
 	/**
 	 * @param context
@@ -130,9 +132,7 @@ public class NewsListAdapter extends ArrayAdapter<Article> {
 			try {
 				List<Feed> feeds = rss.getFeeds();
 				for (Feed feed : feeds) {
-					//rss.deleteArticles(feed.getFeedId());
 					List<Article> articles = rss.fetchArticles(feed);
-					//List<Article> articles = rss.getArticles(feed.getFeedId());
 					
 					for (Article a : articles) {
 						newsItems.add(a);
@@ -158,10 +158,10 @@ public class NewsListAdapter extends ArrayAdapter<Article> {
 
 		protected void onPostExecute(List<Article> result) {
 			//newsItems.addAll(result);
-			for (int i = 0; i < result.size(); i++) {
+			for (int i = 0; i < result.size() && i < DEFAULT_NEWS_LIMIT; i++) {
 				add(result.get(i));
-				notifyDataSetChanged();
 			}
+			notifyDataSetChanged();
 			
 			if (result.size() == 0) {
 				String message = "";
