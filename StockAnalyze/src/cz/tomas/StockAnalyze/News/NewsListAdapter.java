@@ -158,6 +158,7 @@ public class NewsListAdapter extends ArrayAdapter<Article> {
 
 		protected void onPostExecute(List<Article> result) {
 			//newsItems.addAll(result);
+			clear();
 			for (int i = 0; i < result.size() && i < DEFAULT_NEWS_LIMIT; i++) {
 				add(result.get(i));
 			}

@@ -54,12 +54,14 @@ public class Rss {
 	/*
 	 * download and save articles from given feed to database
 	 */
+	@Deprecated
 	public void updateArticles(Feed feed) throws Exception {
 		this.handler.updateArticles(feed);
 	}
 	
 	/*
 	 * download and save new articles from given feed to database
+	 * @returns list of merged articles - downloaded + already present in database
 	 */
 	public List<Article> fetchArticles(Feed feed) throws FailedToGetNewsException {
 		List<Article> downloadedArticles = null;
@@ -75,25 +77,28 @@ public class Rss {
 		List<Article> presentArticles = this.getArticles(feed.getFeedId());
 		
 		// prevent duplicities
-		int downloadedCount = downloadedArticles.size();
-		for (Article article1 : presentArticles) {
-			for (int i = 0; i < downloadedArticles.size(); i++) {
-				Article article2 = downloadedArticles.get(i);
-				if (article1.getDate() == article2.getDate()) {
-					downloadedArticles.remove(i);
-					break;
+		//int downloadedCount = downloadedArticles.size();
+		if (downloadedArticles.size() > 0)
+			for (Article article1 : presentArticles) {
+				for (int i = 0; i < downloadedArticles.size(); i++) {
+					Article article2 = downloadedArticles.get(i);
+					if (article1.getDate() == article2.getDate() &&
+							article1.getUrl().equals(article2.getUrl())) {
+						downloadedArticles.remove(i);
+						break;
+					}
 				}
 			}
-		}
 		
-		this.sqlHelper.insertArticles(feed.getFeedId(), downloadedArticles);
+		if (downloadedArticles.size() > 0)
+			this.sqlHelper.insertArticles(feed.getFeedId(), downloadedArticles);
 		
 		downloadedArticles.addAll(presentArticles);
 		return downloadedArticles;
 	}
 	
 	/*
-	 * get all articles from given feed
+	 * get all articles from given feed that are stored in database
 	 */
 	public List<Article> getArticles(long feedId) {
 		return this.sqlHelper.getArticles(feedId);

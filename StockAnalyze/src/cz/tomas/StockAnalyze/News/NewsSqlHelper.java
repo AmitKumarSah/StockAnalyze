@@ -142,9 +142,9 @@ public final class NewsSqlHelper extends DataSqlHelper {
 		try {
 			c = this.getWritableDatabase().query(ARTICLES_TABLE_NAME, new String[] {
 					"article_id", "feed_id", "title", "description", "url", "date" }, "feed_id="
-					+ feedId.toString(), null, null, null, "date", String.valueOf(limit));
+					+ feedId.toString(), null, null, null, "date DESC", String.valueOf(limit));
 
-			if (c.moveToLast())
+			if (c.moveToFirst())
 				do {
 					Article article = new Article();
 					article.setArticleId(c.getLong(0));
@@ -154,7 +154,7 @@ public final class NewsSqlHelper extends DataSqlHelper {
 					article.setUrl(new URL(c.getString(4)));
 					article.setDate(Long.parseLong(c.getString(5)));
 					articles.add(article);
-				} while (c.moveToPrevious());
+				} while (c.moveToNext());
 			else
 				Log.d(Utils.LOG_TAG, "no articles present in feed " + String.valueOf(feedId));
 		} catch (Exception e) {
