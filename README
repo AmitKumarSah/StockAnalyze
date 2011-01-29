@@ -1,6 +1,7 @@
 StockAnalyze for Android
 
-Application to monitore and analyze stock data as well as your portfolio.
+Application to monitore and analyze stock data as well as your portfolio. 
+Current stage: ALPHA
 
 Feature highlights:
 	lucid summary of stock prices
@@ -16,6 +17,9 @@ CZ edition is aimed to Prague Stock Exchange
 
 Project page at github: 
 https://github.com/tomas-vondracek/StockAnalyze
+
+For more info go to:
+http://tomas-vondracek.net/stockanalyze.aspx
 
 By Tomas Vondracek
 tomas.vondracek@gmail.com
