@@ -57,6 +57,9 @@ public final class NewsSqlHelper extends DataSqlHelper {
 		
 	}
 	
+	/*
+	 * insert new feed to db
+	 */
 	public boolean insertFeed(String title, URL url, String countryCode) throws SQLException {
 		ContentValues values = new ContentValues();
 		values.put("title", title);
@@ -66,11 +69,17 @@ public final class NewsSqlHelper extends DataSqlHelper {
 		return (super.getWritableDatabase().insert(FEEDS_TABLE_NAME, null, values) > 0);
 	}
 
+	/*
+	 * delete rss feed from db
+	 */
 	public boolean deleteFeed(Long feedId) throws SQLException {
 		return (super.getWritableDatabase().delete(FEEDS_TABLE_NAME,
 				"feed_id=" + feedId.toString(), null) > 0);
 	}
 
+	/*
+	 * insert one article to db
+	 */
 	public boolean insertArticle(Long feedId, String title, URL url,
 			String description, long date) throws SQLException {
 		ContentValues values = new ContentValues();
@@ -81,19 +90,21 @@ public final class NewsSqlHelper extends DataSqlHelper {
 		values.put("date", date);
 		
 		SQLiteDatabase db = this.getWritableDatabase();
-		db.beginTransaction();
 		Boolean result = (db.insert(ARTICLES_TABLE_NAME, null, values) > 0);
-		if (result)
-			db.setTransactionSuccessful();
-		db.endTransaction();
 		return result;
 	}
 
+	/*
+	 * delete articles from given feed
+	 */
 	public boolean deleteArticles(Long feedId) throws SQLException {
 		return (this.getWritableDatabase().delete(ARTICLES_TABLE_NAME,
 				"feed_id=" + feedId.toString(), null) > 0);
 	}
 
+	/*
+	 * get all feeds
+	 */
 	public List<Feed> getFeeds() {
 		ArrayList<Feed> feeds = new ArrayList<Feed>();
 		Cursor c = null;
@@ -166,9 +177,18 @@ public final class NewsSqlHelper extends DataSqlHelper {
 		return articles;
 	}
 
+	/*
+	 * insert articles to the feed in transaction
+	 */
 	public void insertArticles(long feedId, List<Article> articles) {
-		for (Article article : articles) {
-			this.insertArticle(feedId, article.getTitle(), article.getUrl(), article.getDescription(), article.getDate());
+		this.getWritableDatabase().beginTransaction();
+		try {
+			for (Article article : articles) {
+				this.insertArticle(feedId, article.getTitle(), article.getUrl(), article.getDescription(), article.getDate());
+			}
+			this.getWritableDatabase().setTransactionSuccessful();
+		} finally {
+			this.getWritableDatabase().endTransaction();
 		}
 	}
 }

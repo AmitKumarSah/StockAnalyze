@@ -21,6 +21,7 @@
 		<activity android:name="StockSearchActivity"></activity>
 		<activity android:name="StockDetailActivity"></activity>
 		<activity android:name="PortfolioActivity"></activity>
+		<activity android:name=".Portfolio.AddPortfolioItemActivity"></activity>
 		<activity android:name="NewsActivity"></activity>
 	<receiver android:enabled="true" android:name="AppBroadcastReceiver" android:permission="android.permission.ACCESS_NETWORK_STATE">
 		<intent-filter>
@@ -28,6 +29,7 @@
 			<action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
 		</intent-filter>
 	</receiver>
+
 </application>
 	<uses-sdk android:minSdkVersion="7" />
 

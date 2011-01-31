@@ -24,6 +24,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Toast;
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
+import cz.tomas.StockAnalyze.Portfolio.AddPortfolioItemActivity;
 import cz.tomas.StockAnalyze.StockList.StockListAdapter;
 
 /**
@@ -144,7 +145,11 @@ public class StockListActivity extends ListActivity {
 		
 		switch (item.getItemId()) {
 			case R.id.stock_item_add_to_portfolio:
-				// TODO start proper activity
+				Intent intent = new Intent();
+				intent.putExtra("stock_id", stockItem.getId());
+				intent.putExtra("market_id", stockItem.getMarket());
+				intent.setClass(this, AddPortfolioItemActivity.class);
+				startActivity(intent);
 				return true;
 			case R.id.stock_item_favourite:
 				// TODO mark as favourite

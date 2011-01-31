@@ -35,4 +35,11 @@
 Nikdy se nepouštějte do obchodů, jejichž podstatě plně nerozumíte. Obchodování a investování s finančními instrumenty je vysoce rizikové.</string>
 	<string name="dataUpdating">Updating data</string>
 	<string name="dataUpdated">Updated data</string>
+	<string name="portfolioTickerLabel">Stock Ticker</string>
+	<string name="portfolioCountLabel">Count</string>
+	<string name="portfolioPriceLabel">Price per Stock</string>
+	<string name="portfolioMarketLabel">Market</string>
+	<string name="portfolioDefaultStockCount">100</string>
+	<string name="portfolioValidationMessage">Fill all fields with correct values</string>
+	<string name="portfolioFailedToAdd">Failed to add stock to your portfolio!</string>
 </resources>

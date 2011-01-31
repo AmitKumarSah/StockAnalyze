@@ -6,18 +6,21 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+/*
+ * initialize database - create all tables we need 
+ */
 public class DataSqlHelper extends SQLiteOpenHelper {
 		
 		private final String DATABASE_NAME = "cz.tomas.StockAnalyze.Data";
 		
-		private final static int DATABASE_VERSION_NUMBER = 6;
+		private final static int DATABASE_VERSION_NUMBER = 8;
 		
 		private final static String DATABASE_FILE_NAME = "cz.tomas.StockAnalyze.Data.db";
 		
 		protected static final String STOCK_TABLE_NAME = "stock_item";
 		protected static final String DAY_DATA_TABLE_NAME = "stock_day_data";
 		protected static final String INTRADAY_DATA_TABLE_NAME = "stock_intraday_data";
-		protected static final String USER_STOCK_TABLE_NAME = "user_stocks";
+		protected static final String PORTFOLIO_TABLE_NAME = "portfolio_item";
 		
 		private static final String STOCK_TABLE_CREATE =
 	         "CREATE TABLE " + STOCK_TABLE_NAME + " (" +
@@ -50,11 +53,19 @@ public class DataSqlHelper extends SQLiteOpenHelper {
 	         "FOREIGN KEY(stock_id) REFERENCES " + STOCK_TABLE_NAME + "(id)" +
 	         ");";
 
-		private static final String USER_STOCK_TABLE_CRETE = 
-			"CREATE TABLE " + USER_STOCK_TABLE_NAME + " (" +
+		private static final String PORTFOLIO_TABLE_CREATE = 
+			"CREATE TABLE " + PORTFOLIO_TABLE_NAME + " (" +
 	         "id integer PRIMARY KEY AUTOINCREMENT," +
 	         "stock_id varchar(50)," +
-	         "tag varchar(20)," +
+	         "buy_date integer not null," +
+	         "sell_date integer," +
+	         "count integer not null," +
+	         "buy_price real not null," +
+	         "sell_price real not null," +
+	         "buy_fee real," +
+	         "sell_fee real," +
+	         "name varchar(20)," +
+	         "market_id varchar(50)," +
 	         "FOREIGN KEY(stock_id) REFERENCES " + STOCK_TABLE_NAME + "(id)" +
 	         ");";
 		
@@ -83,8 +94,8 @@ public class DataSqlHelper extends SQLiteOpenHelper {
 				db.execSQL(DAY_DATA_TABLE_CREATE);
 				Log.d("DataSqlHelper", "creating intraday data table!");
 				db.execSQL(INTRADAY_DATA_TABLE_CREATE);
-				Log.d("DataSqlHelper", "creating user stock table!");
-				db.execSQL(USER_STOCK_TABLE_CRETE);
+				Log.d("DataSqlHelper", "creating portfolio table!");
+				db.execSQL(PORTFOLIO_TABLE_CREATE);
 				
 				Log.d("DataSqlHelper", "creating Feeds table!");
 				db.execSQL(CREATE_TABLE_FEEDS);
@@ -103,7 +114,7 @@ public class DataSqlHelper extends SQLiteOpenHelper {
 			db.execSQL(TABLE_DROP + INTRADAY_DATA_TABLE_NAME);
 			db.execSQL(TABLE_DROP + DAY_DATA_TABLE_NAME);
 			db.execSQL(TABLE_DROP + STOCK_TABLE_NAME);
-			db.execSQL(TABLE_DROP + USER_STOCK_TABLE_NAME);
+			db.execSQL(TABLE_DROP + PORTFOLIO_TABLE_NAME);
 			db.execSQL(TABLE_DROP + ARTICLES_TABLE_NAME);
 			db.execSQL(TABLE_DROP + FEEDS_TABLE_NAME);
 			onCreate(db);

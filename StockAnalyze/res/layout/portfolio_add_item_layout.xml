@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:layout_margin="5dp"
+	android:padding="5dp"
+	android:stretchColumns="1">
+
+	<TableRow>
+		<TextView android:id="@+id/TextView01" 
+			android:text="@string/portfolioTickerLabel" 
+			style="@style/tableItem">
+		</TextView>
+		<EditText android:id="@+id/portfolioAddTicker"
+			style="@style/tableItem" 
+			android:text="@+id/EditText01">
+		</EditText>
+	</TableRow>
+	<TableRow>
+		<TextView android:id="@+id/TextView04"
+			android:text="@string/portfolioMarketLabel" 
+			style="@style/tableItem">
+		</TextView>
+		<EditText android:id="@+id/portfolioAddMarket" 
+			android:editable="false" 
+			android:text="@+id/TextView05"
+			style="@style/tableItem">
+		</EditText>
+	</TableRow>
+	<TableRow>
+		<TextView android:id="@+id/TextView02" 
+			android:text="@string/portfolioCountLabel" 
+			style="@style/tableItem" >
+		</TextView>
+		<EditText android:id="@+id/portfolioAddCount"
+			style="@style/tableItem" 
+			android:inputType="numberDecimal"
+			android:text="@string/portfolioDefaultStockCount">
+		</EditText>
+	</TableRow>
+	<TableRow>
+		<TextView android:id="@+id/TextView03" 
+			android:text="@string/portfolioPriceLabel" 
+			style="@style/tableItem">
+		</TextView>
+		<EditText android:id="@+id/portfolioAddPrice" 
+			style="@style/tableItem"
+			android:inputType="number">
+		</EditText>
+	</TableRow>
+	<TableRow>
+		<Button android:id="@+id/portfolioAddButton"
+			android:layout_column="1"
+			style="@style/tableItem"
+			android:text="@string/addStockItemToPortfolio"
+			android:layout_marginTop="8dip"/>
+		</TableRow>
+</TableLayout>
