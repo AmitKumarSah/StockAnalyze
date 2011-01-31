@@ -118,8 +118,8 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 	 * @param stock stock to access data to write to view
 	 */
 	private void fillView(View v, StockItem stock) {
-		TextView txtTicker = (TextView) v.findViewById(R.id.toptext);
-        TextView txtName = (TextView) v.findViewById(R.id.bottomtext);
+		TextView txtTicker = (TextView) v.findViewById(R.id.bottomtext);
+        TextView txtName = (TextView) v.findViewById(R.id.toptext);
         TextView txtPrice = (TextView) v.findViewById(R.id.righttext);
         TextView txtChange = (TextView) v.findViewById(R.id.righttext2);
         View priceGroupView = v.findViewById(R.id.pricelayout);
