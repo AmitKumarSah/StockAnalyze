@@ -109,12 +109,6 @@ public class RssTest extends AndroidTestCase {
 		feeds = rss.getFeeds();
 		
 		assertEquals("feed count after creating feed doesn't match", 1, feeds.size());
-		
-//		// delete added feed
-//		if (feeds.size() > 1) {
-//			long feedId = feeds.get(feeds.size() - 1).getFeedId();
-//			handler.getDbHelper().deleteFeed(feedId);
-//		}
 	}
 	
 	/*
@@ -149,9 +143,6 @@ public class RssTest extends AndroidTestCase {
 			List<Article> articles = rss.getArticles(feed.getFeedId(), 50);
 			
 			assertEquals(expectedArticleCount, articles.size());
-
-//			long feedId = feeds.get(feeds.size() - 1).getFeedId();
-//			handler.getDbHelper().deleteFeed(feedId);
 		}
 		else
 			assertTrue("no feed to get articles from", false);
@@ -167,14 +158,14 @@ public class RssTest extends AndroidTestCase {
 		// create test feed from test server with 12 articles
 		this.rss.insertFeed("test_merge_feed1", this.mergeUrl1, "cz");
 		Feed feed = this.rss.getFeeds().get(0);
-		long feedId = feed.getFeedId();
-		this.rss.fetchArticles(feed);
-		assertEquals(12, this.rss.getArticles(feedId).size());
+		//long feedId = feed.getFeedId();
+		List<Article> articles = this.rss.fetchArticles(feed);
+		assertEquals(12, articles.size());
 		// now we have some articles in db, 
 		// change feed url to download some more articles - 15 but 12 of them is common
 		feed.setUrl(this.mergeUrl2);
-		this.rss.fetchArticles(feed);
-		assertEquals(12 + 3, this.rss.getArticles(feedId).size());
+		articles = this.rss.fetchArticles(feed);
+		assertEquals(12 + 3, articles.size());
 	}
 	
 	/*
@@ -203,7 +194,6 @@ public class RssTest extends AndroidTestCase {
 		// create test feed from test server with 12 articles
 		this.rss.insertFeed("test_merge_feed1", this.dataUrl1, "cz");
 		Feed feed = this.rss.getFeeds().get(0);
-		long feedId = feed.getFeedId();
 		List<Article> articles = this.rss.fetchArticles(feed);
 		this.checkArticlesOrder(articles);
 	}
@@ -236,5 +226,21 @@ public class RssTest extends AndroidTestCase {
 			}
 			previousArticle = article;
 		}
+	}
+	
+	/*
+	 * test if merged articles would get stored in database,
+	 * it uses the same articles as in testMergeArticles() test
+	 */
+	public void testInsertMergedArticles() {
+		this.rss.insertFeed("test_merge_feed1", this.mergeUrl1, "cz");
+		Feed feed = this.rss.getFeeds().get(0);
+		this.rss.fetchArticles(feed);
+		feed.setUrl(this.mergeUrl2);
+		this.rss.fetchArticles(feed);
+		
+		// get all articles from database
+		List<Article> articles = this.rss.getArticles(feed.getFeedId());
+		assertEquals(15, articles.size());
 	}
 }
