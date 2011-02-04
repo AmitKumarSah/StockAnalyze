@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="addStockItemToFavourite">Add to my Favourites</string>
-    <string name="addStockItemToPortfolio">Add to my Portfolio</string>
+    <string name="addStockItemToFavourite">Add to My Favourites</string>
+    <string name="addStockItemToPortfolio">Add to My Portfolio</string>
     <string name="stockItemView">View Detail</string>
     <string name="refresh">Refresh</string>
     <string name="settings">Settings</string>

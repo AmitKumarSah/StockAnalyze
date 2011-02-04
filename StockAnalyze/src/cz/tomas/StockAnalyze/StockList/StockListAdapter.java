@@ -40,7 +40,7 @@ import android.widget.Toast;
 public class StockListAdapter extends ArrayAdapter<StockItem> {
 	 
 	private ProgressDialog progressDialog = null;
-	protected DataManager dataManager;
+	private DataManager dataManager;
 	private LayoutInflater vi; 
 	
 	private Map<StockItem, DayData> datas;
@@ -51,7 +51,7 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 	public StockListAdapter(final Context context, int textViewResourceId, final DataManager dataManager, final String filter) {
 		super(context, textViewResourceId);
 		this.dataManager = dataManager;
-		this.comparator = new StockComparator(StockCompareTypes.Volume, dataManager);
+		this.comparator = new StockComparator(StockCompareTypes.Name, dataManager);
 
 		this.datas = new HashMap<StockItem, DayData>();
         this.vi = (LayoutInflater)	this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -185,7 +185,7 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 	}
 	
 	/*
-	 * this task load all stocks from datamanger and notify the ListView,
+	 * this task load all stocks from datamanager and notify the ListView,
 	 * it also takes care about the progress view
 	 */
 	class StockListTask extends AsyncTask<String, Integer, List<StockItem>> {

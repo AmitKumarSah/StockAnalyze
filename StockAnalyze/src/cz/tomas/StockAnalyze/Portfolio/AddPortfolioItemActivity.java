@@ -6,6 +6,7 @@ package cz.tomas.StockAnalyze.Portfolio;
 import java.sql.SQLException;
 import java.util.Calendar;
 
+import cz.tomas.StockAnalyze.PortfolioActivity;
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.Model.Market;
@@ -79,6 +80,9 @@ public final class AddPortfolioItemActivity extends Activity {
 								float price = Float.parseFloat(priceView.getText().toString());
 								
 								addPortfolioItem(stockId, count, price, "default", market.getId());
+								
+								Intent intent = new Intent(AddPortfolioItemActivity.this, PortfolioActivity.class);
+								AddPortfolioItemActivity.this.startActivity(intent);
 							} catch (NumberFormatException e) {
 								e.printStackTrace();
 								Log.d(Utils.LOG_TAG, "failed to parse data from add portfolio layout");

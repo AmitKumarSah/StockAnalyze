@@ -102,13 +102,16 @@ public class DataManager implements IStockDataListener {
 		return results;
 	}
 	
+	public StockItem getStockItem(String id) throws NullPointerException {
+		return getStockItem(id, null);
+	}
 	public StockItem getStockItem(String id, Market market) throws NullPointerException {
-		IStockDataProvider provider = DataProviderFactory.getDataProvider(market);
-		List<StockItem> stocks = provider.getAvailableStockList();
-		
 		StockItem item = this.sqlStore.getStockItem(id);
 		
-		if (item == null) {
+		if (item == null && market != null) {
+			IStockDataProvider provider = DataProviderFactory.getDataProvider(market);
+			List<StockItem> stocks = provider.getAvailableStockList();
+			
 			for (int i = 0; i < stocks.size(); i++) {
 				if (stocks.get(i).getId().equals(id)) {
 					item = stocks.get(i);
@@ -117,6 +120,13 @@ public class DataManager implements IStockDataListener {
 			}
 		}
 		return item; 
+	}
+	
+	public DayData getLastOfflineValue(String stockId) {
+
+		Calendar now = Calendar.getInstance();
+		DayData data = this.sqlStore.getDayData(now, stockId);
+		return data;
 	}
 	
 	/*

@@ -67,10 +67,14 @@ public class PortfolioSqlHelper extends DataSqlHelper {
 		}
 	}
 
+	public List<PortfolioItem> getPortfolioItems() {
+		return this.getPortfolioItems(null);
+	}
+	
 	/*
 	 * get all portfolio items in database
 	 */
-	public List<PortfolioItem> getPortfolioItems() {
+	public List<PortfolioItem> getPortfolioItems(String groupBy) {
 		List<PortfolioItem> items = new ArrayList<PortfolioItem>();
 		Cursor c = null;
 		SQLiteDatabase db = null;
@@ -79,7 +83,7 @@ public class PortfolioSqlHelper extends DataSqlHelper {
 			
 			c = db.query(PORTFOLIO_TABLE_NAME, new String [] {"stock_id", "count", "buy_price", "sell_price",
 					"buy_date", "sell_date", "name", "buy_fee", "sell_fee", "market_id", "id" },
-					null, null, null, null, null);
+					null, null, groupBy, null, null);
 			if (c.moveToFirst())
 				do {
 					String stockId = c.getString(0);
