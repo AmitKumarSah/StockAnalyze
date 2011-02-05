@@ -29,11 +29,16 @@ public class Portfolio {
 		this.sqlHelper.addPortfolioItem(item);
 	}
 	
+	public List<PortfolioItem> getGroupedPortfolioItems() {
+		return this.sqlHelper.getGroupedPortfolioItems();
+	}
+	
 	public List<PortfolioItem> getPortfolioItems() {
 		return this.sqlHelper.getPortfolioItems();
 	}
 	
 	public void removeFromPortfolio(int id) {
-		
+		if (id != -1)
+			this.sqlHelper.removeItem(id);
 	}
 }

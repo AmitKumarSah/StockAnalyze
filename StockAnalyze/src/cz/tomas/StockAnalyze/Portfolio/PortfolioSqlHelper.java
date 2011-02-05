@@ -67,14 +67,49 @@ public class PortfolioSqlHelper extends DataSqlHelper {
 		}
 	}
 
-	public List<PortfolioItem> getPortfolioItems() {
-		return this.getPortfolioItems(null);
+	/*
+	 * get portfolio items grouped by stock id - sums up positions
+	 */
+	public List<PortfolioItem> getGroupedPortfolioItems() {
+		List<PortfolioItem> items = new ArrayList<PortfolioItem>();
+		Cursor c = null;
+		SQLiteDatabase db = null;
+		try {
+			db = this.getWritableDatabase();
+			
+			c = db.query(PORTFOLIO_TABLE_NAME, new String [] {"stock_id", "SUM(count)", "AVG(buy_price)", "AVG(sell_price)",
+					"buy_date", "sell_date", "name", "SUM(buy_fee)", "SUM(sell_fee)", "market_id", "id" },
+					null, null, "stock_id", null, "buy_date");
+			if (c.moveToFirst())
+				do {
+					String stockId = c.getString(0);
+					int count = c.getInt(1);
+					float buyPrice = c.getFloat(2);
+					float sellPrice = c.getFloat(3);
+					long buyDate = c.getLong(4);
+					long sellDate = c.getLong(5);
+					String name = c.getString(6);
+					float buyFee = c.getFloat(7);
+					float sellFee = c.getFloat(8);
+					String marketId = c.getString(9);
+					int id = c.getInt(10);
+					PortfolioItem item = new PortfolioItem(id, stockId, name, count, buyPrice, sellPrice, 
+							buyDate, sellDate, buyFee, sellFee, marketId);
+					items.add(item);
+				} while(c.moveToNext());
+		} finally {
+			if (c != null)
+				c.close();
+			if (db != null)
+				db.close();
+		}
+		return items;
 	}
 	
 	/*
 	 * get all portfolio items in database
 	 */
-	public List<PortfolioItem> getPortfolioItems(String groupBy) {
+	public List<PortfolioItem> getPortfolioItems() {
 		List<PortfolioItem> items = new ArrayList<PortfolioItem>();
 		Cursor c = null;
 		SQLiteDatabase db = null;
@@ -83,7 +118,7 @@ public class PortfolioSqlHelper extends DataSqlHelper {
 			
 			c = db.query(PORTFOLIO_TABLE_NAME, new String [] {"stock_id", "count", "buy_price", "sell_price",
 					"buy_date", "sell_date", "name", "buy_fee", "sell_fee", "market_id", "id" },
-					null, null, groupBy, null, null);
+					null, null, null, null, null);
 			if (c.moveToFirst())
 				do {
 					String stockId = c.getString(0);
@@ -109,6 +144,12 @@ public class PortfolioSqlHelper extends DataSqlHelper {
 		}
 		return items;
 		
+	}
+
+	public void removeItem(int id) {
+		SQLiteDatabase db = null;
+		db = this.getWritableDatabase();
+		db.delete(PORTFOLIO_TABLE_NAME, "id=?", new String[] { String.valueOf(id) });
 	}
 
 }

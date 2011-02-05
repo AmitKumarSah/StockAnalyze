@@ -62,6 +62,14 @@ public class PortfolioItem {
 		this.buyFee = buyFee;
 		this.sellFee = sellFee;
 	}
+	
+	/*
+	 * id from database, 
+	 * in case this item wasn't created from database, it is -1
+	 */
+	public int getId() {
+		return this.id;
+	}
 
 	/**
 	 * id of market where to stock was bought
