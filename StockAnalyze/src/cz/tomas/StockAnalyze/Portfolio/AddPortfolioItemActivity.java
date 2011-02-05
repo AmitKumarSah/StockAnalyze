@@ -20,6 +20,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,6 +52,7 @@ public final class AddPortfolioItemActivity extends Activity {
 			final TextView priceView = (TextView) this.findViewById(R.id.portfolioAddPrice);
 			final TextView countView = (TextView) this.findViewById(R.id.portfolioAddCount);
 			final Button addButton = (Button) this.findViewById(R.id.portfolioAddButton);
+			final Spinner dealSpinner = (Spinner) this.findViewById(R.id.portfolioAddSpinnerDeal);
 			
 			if (marketView != null && market != null)
 				marketView.setText(market.getName());
@@ -78,6 +80,8 @@ public final class AddPortfolioItemActivity extends Activity {
 							try {
 								int count = Integer.parseInt(countView.getText().toString());
 								float price = Float.parseFloat(priceView.getText().toString());
+								if (((String) dealSpinner.getSelectedItem()).equalsIgnoreCase("sell"))
+									price = -price;
 								
 								addPortfolioItem(stockId, count, price, "default", market.getId());
 								

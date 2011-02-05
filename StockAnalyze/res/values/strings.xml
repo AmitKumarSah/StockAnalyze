@@ -42,4 +42,9 @@ Nikdy se nepouštějte do obchodů, jejichž podstatě plně nerozumíte. Obchod
 	<string name="portfolioDefaultStockCount">100</string>
 	<string name="portfolioValidationMessage">Fill all fields with correct values</string>
 	<string name="portfolioFailedToAdd">Failed to add stock to your portfolio!</string>
+	<string name="portfolioDealPrompt">Deal</string>
+    <string-array name="portfolioDealArray">
+        <item>Buy</item>
+        <item>Sell</item>
+    </string-array>
 </resources>

@@ -7,6 +7,19 @@
 	android:stretchColumns="1">
 
 	<TableRow>
+		<TextView android:id="@+id/TextViewPortfolioDeal" 
+			android:text="@string/portfolioDealPrompt" 
+			style="@style/tableItem">
+		</TextView>
+		
+		<Spinner android:id="@+id/portfolioAddSpinnerDeal" 
+			style="@style/tableItem"
+			android:prompt="@string/portfolioDealPrompt"
+			android:entries="@array/portfolioDealArray">
+		</Spinner>
+	
+</TableRow>
+	<TableRow>
 		<TextView android:id="@+id/TextView01" 
 			android:text="@string/portfolioTickerLabel" 
 			style="@style/tableItem">

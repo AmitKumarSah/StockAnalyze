@@ -119,7 +119,7 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 	private class PortfolioListTask extends AsyncTask<String, Integer, List<PortfolioItem>> {
 
 		private final Portfolio portfolio = new Portfolio(getContext());
-		Exception ex;
+		private Exception ex;
 		
 		@Override
 		protected List<PortfolioItem> doInBackground(String... arg0) {
