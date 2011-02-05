@@ -311,10 +311,19 @@ public class StockDataSqlStore extends DataSqlHelper {
 
 	/*
 	 * get day data item from stock_day_data table
-	 * for given stock item and day in year represented by Calendar.
+	 * for given stock.
 	 * returns null if nothing is found
 	 */
 	public DayData getLastAvailableDayData(StockItem item) {
+		return this.getLastAvailableDayData(item.getId());
+	}
+	
+	/*
+	 * get day data item from stock_day_data table
+	 * for given stock.
+	 * returns null if nothing is found
+	 */
+	public DayData getLastAvailableDayData(String stockId) {
 		DayData data = null;
 
 		try {
@@ -325,7 +334,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 			try {
 				c = db.query(DAY_DATA_TABLE_NAME, new String[] {
 						"price", "change", "year_max", "year_min", "date", "volume", "id", "last_update" }, 
-						"stock_id=?", new String[] { item.getId() }, null, null, "date");
+						"stock_id=?", new String[] { stockId }, null, null, "date");
 
 				if (c.moveToLast()) {
 					float price = c.getFloat(0);

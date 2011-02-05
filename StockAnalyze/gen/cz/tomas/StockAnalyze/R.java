@@ -8,6 +8,9 @@
 package cz.tomas.StockAnalyze;
 
 public final class R {
+    public static final class array {
+        public static final int portfolioDealArray=0x7f070000;
+    }
     public static final class attr {
         /** <p>Must be an integer value, such as "<code>100</code>".
 <p>This may also be a reference to a resource (in the form
@@ -110,78 +113,80 @@ containing a value of this type.
         public static final int px_logo=0x7f02001b;
     }
     public static final class id {
-        public static final int ChartView=0x7f090038;
-        public static final int DetailLinear=0x7f090025;
-        public static final int DetailLinearSummary=0x7f090028;
-        public static final int EditText01=0x7f09001c;
-        public static final int LinearLayout01=0x7f090016;
-        public static final int SearchEditText=0x7f090041;
-        public static final int TableDetailRow01=0x7f09002e;
-        public static final int TextView01=0x7f09001a;
-        public static final int TextView02=0x7f090020;
-        public static final int TextView03=0x7f090022;
-        public static final int TextView04=0x7f09001d;
-        public static final int TextView05=0x7f09001f;
-        public static final int actionHomeButton=0x7f090000;
-        public static final int actionHorizontalSeparator=0x7f090005;
-        public static final int actionSearchButton=0x7f090004;
-        public static final int actionTitle=0x7f090002;
-        public static final int actionbar_sep1=0x7f090001;
-        public static final int actionbar_sep2=0x7f090003;
-        public static final int bottomtext=0x7f09003d;
-        public static final int detail_label_chart=0x7f090037;
-        public static final int homeActionBar=0x7f09000b;
-        public static final int homeBlockCurrencies=0x7f09000f;
-        public static final int homeBlockItemImage=0x7f090009;
-        public static final int homeBlockItemTextView=0x7f09000a;
-        public static final int homeBlockNews=0x7f09000e;
-        public static final int homeBlockPortfolio=0x7f090010;
-        public static final int homeBlockStockList=0x7f09000d;
-        public static final int homeBlockTable=0x7f09000c;
-        public static final int homeSeparator1=0x7f090011;
-        public static final int home_chart=0x7f090013;
-        public static final int home_chart_title=0x7f090012;
-        public static final int iconStockItem=0x7f09003b;
-        public static final int label_stats=0x7f09002c;
-        public static final int lblDetailMax=0x7f090032;
-        public static final int lblDetailMin=0x7f09002f;
-        public static final int lblDetailVolume=0x7f090035;
-        public static final int listFoundItems=0x7f090042;
-        public static final int menu_stock_list_refresh=0x7f090047;
-        public static final int menu_stock_list_settings=0x7f090046;
-        public static final int notification_image=0x7f090006;
-        public static final int notification_subtext=0x7f090008;
-        public static final int notification_text=0x7f090007;
-        public static final int portfolioAddButton=0x7f090024;
-        public static final int portfolioAddCount=0x7f090021;
-        public static final int portfolioAddMarket=0x7f09001e;
-        public static final int portfolioAddPrice=0x7f090023;
-        public static final int portfolioAddTicker=0x7f09001b;
-        public static final int pricelayout=0x7f09003e;
-        public static final int progressNews=0x7f090014;
-        public static final int progressStockList=0x7f090039;
-        public static final int righttext=0x7f09003f;
-        public static final int righttext2=0x7f090040;
-        public static final int stock_item_add_to_portfolio=0x7f090044;
-        public static final int stock_item_favourite=0x7f090045;
-        public static final int stock_item_view=0x7f090043;
-        public static final int tableDetailData=0x7f09002d;
-        public static final int tableDetailRow02=0x7f090031;
-        public static final int tableDetailRow03=0x7f090034;
-        public static final int toptext=0x7f09003c;
-        public static final int txtDetailChange=0x7f09002b;
-        public static final int txtDetailClosingPrice=0x7f09002a;
-        public static final int txtDetailDate=0x7f090026;
-        public static final int txtDetailHeader=0x7f090027;
-        public static final int txtDetailMax=0x7f090033;
-        public static final int txtDetailMin=0x7f090030;
-        public static final int txtDetailName=0x7f090029;
-        public static final int txtDetailVolume=0x7f090036;
-        public static final int txtNewsItemBottomInfo=0x7f090019;
-        public static final int txtNewsItemContentPreview=0x7f090018;
-        public static final int txtNewsItemTitle=0x7f090017;
-        public static final int txtStockListDivider=0x7f09003a;
-        public static final int viewReadMark=0x7f090015;
+        public static final int ChartView=0x7f0a003a;
+        public static final int DetailLinear=0x7f0a0027;
+        public static final int DetailLinearSummary=0x7f0a002a;
+        public static final int EditText01=0x7f0a001e;
+        public static final int LinearLayout01=0x7f0a0016;
+        public static final int SearchEditText=0x7f0a0043;
+        public static final int TableDetailRow01=0x7f0a0030;
+        public static final int TextView01=0x7f0a001c;
+        public static final int TextView02=0x7f0a0022;
+        public static final int TextView03=0x7f0a0024;
+        public static final int TextView04=0x7f0a001f;
+        public static final int TextView05=0x7f0a0021;
+        public static final int TextViewPortfolioDeal=0x7f0a001a;
+        public static final int actionHomeButton=0x7f0a0000;
+        public static final int actionHorizontalSeparator=0x7f0a0005;
+        public static final int actionSearchButton=0x7f0a0004;
+        public static final int actionTitle=0x7f0a0002;
+        public static final int actionbar_sep1=0x7f0a0001;
+        public static final int actionbar_sep2=0x7f0a0003;
+        public static final int bottomtext=0x7f0a003f;
+        public static final int detail_label_chart=0x7f0a0039;
+        public static final int homeActionBar=0x7f0a000b;
+        public static final int homeBlockCurrencies=0x7f0a000f;
+        public static final int homeBlockItemImage=0x7f0a0009;
+        public static final int homeBlockItemTextView=0x7f0a000a;
+        public static final int homeBlockNews=0x7f0a000e;
+        public static final int homeBlockPortfolio=0x7f0a0010;
+        public static final int homeBlockStockList=0x7f0a000d;
+        public static final int homeBlockTable=0x7f0a000c;
+        public static final int homeSeparator1=0x7f0a0011;
+        public static final int home_chart=0x7f0a0013;
+        public static final int home_chart_title=0x7f0a0012;
+        public static final int iconStockItem=0x7f0a003d;
+        public static final int label_stats=0x7f0a002e;
+        public static final int lblDetailMax=0x7f0a0034;
+        public static final int lblDetailMin=0x7f0a0031;
+        public static final int lblDetailVolume=0x7f0a0037;
+        public static final int listFoundItems=0x7f0a0044;
+        public static final int menu_stock_list_refresh=0x7f0a0049;
+        public static final int menu_stock_list_settings=0x7f0a0048;
+        public static final int notification_image=0x7f0a0006;
+        public static final int notification_subtext=0x7f0a0008;
+        public static final int notification_text=0x7f0a0007;
+        public static final int portfolioAddButton=0x7f0a0026;
+        public static final int portfolioAddCount=0x7f0a0023;
+        public static final int portfolioAddMarket=0x7f0a0020;
+        public static final int portfolioAddPrice=0x7f0a0025;
+        public static final int portfolioAddSpinnerDeal=0x7f0a001b;
+        public static final int portfolioAddTicker=0x7f0a001d;
+        public static final int pricelayout=0x7f0a0040;
+        public static final int progressNews=0x7f0a0014;
+        public static final int progressStockList=0x7f0a003b;
+        public static final int righttext=0x7f0a0041;
+        public static final int righttext2=0x7f0a0042;
+        public static final int stock_item_add_to_portfolio=0x7f0a0046;
+        public static final int stock_item_favourite=0x7f0a0047;
+        public static final int stock_item_view=0x7f0a0045;
+        public static final int tableDetailData=0x7f0a002f;
+        public static final int tableDetailRow02=0x7f0a0033;
+        public static final int tableDetailRow03=0x7f0a0036;
+        public static final int toptext=0x7f0a003e;
+        public static final int txtDetailChange=0x7f0a002d;
+        public static final int txtDetailClosingPrice=0x7f0a002c;
+        public static final int txtDetailDate=0x7f0a0028;
+        public static final int txtDetailHeader=0x7f0a0029;
+        public static final int txtDetailMax=0x7f0a0035;
+        public static final int txtDetailMin=0x7f0a0032;
+        public static final int txtDetailName=0x7f0a002b;
+        public static final int txtDetailVolume=0x7f0a0038;
+        public static final int txtNewsItemBottomInfo=0x7f0a0019;
+        public static final int txtNewsItemContentPreview=0x7f0a0018;
+        public static final int txtNewsItemTitle=0x7f0a0017;
+        public static final int txtStockListDivider=0x7f0a003c;
+        public static final int viewReadMark=0x7f0a0015;
     }
     public static final class layout {
         public static final int actionbar_layout=0x7f030000;
@@ -199,8 +204,8 @@ containing a value of this type.
         public static final int stock_search=0x7f03000c;
     }
     public static final class menu {
-        public static final int stock_item_context_menu=0x7f080000;
-        public static final int stock_list_menu=0x7f080001;
+        public static final int stock_item_context_menu=0x7f090000;
+        public static final int stock_list_menu=0x7f090001;
     }
     public static final class string {
         public static final int FailedGetNews=0x7f060012;
@@ -229,6 +234,7 @@ containing a value of this type.
         public static final int homeStockList=0x7f060016;
         public static final int loading=0x7f06000c;
         public static final int portfolioCountLabel=0x7f06001f;
+        public static final int portfolioDealPrompt=0x7f060025;
         public static final int portfolioDefaultStockCount=0x7f060022;
         public static final int portfolioFailedToAdd=0x7f060024;
         public static final int portfolioMarketLabel=0x7f060021;
@@ -242,29 +248,29 @@ containing a value of this type.
         public static final int update_succes=0x7f060008;
     }
     public static final class style {
-        public static final int actionBar=0x7f070009;
-        public static final int actionBar_ImageButton=0x7f07000b;
+        public static final int actionBar=0x7f080009;
+        public static final int actionBar_ImageButton=0x7f08000b;
         /**         <item name="android:textSize">14sip</item>
          */
-        public static final int actionBar_title_text=0x7f07000a;
-        public static final int groupboxBody=0x7f070006;
-        public static final int groupboxHeader=0x7f070007;
-        public static final int homeBlock=0x7f070008;
-        public static final int logoView=0x7f070005;
+        public static final int actionBar_title_text=0x7f08000a;
+        public static final int groupboxBody=0x7f080006;
+        public static final int groupboxHeader=0x7f080007;
+        public static final int homeBlock=0x7f080008;
+        public static final int logoView=0x7f080005;
         /**         <item name="android:typeface">serif</item>
          */
-        public static final int moneyText=0x7f070000;
-        public static final int priceInfoBlock=0x7f070001;
-        public static final int subText=0x7f070003;
-        public static final int subText_Small=0x7f070004;
+        public static final int moneyText=0x7f080000;
+        public static final int priceInfoBlock=0x7f080001;
+        public static final int subText=0x7f080003;
+        public static final int subText_Small=0x7f080004;
         /**      	<item name="android:layout_margin">2dip</item>
          */
-        public static final int tableItem=0x7f07000c;
+        public static final int tableItem=0x7f08000c;
         /** 		<item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">wrap_content</item>
          */
-        public static final int themeLight=0x7f07000d;
-        public static final int titleText=0x7f070002;
+        public static final int themeLight=0x7f08000d;
+        public static final int titleText=0x7f080002;
     }
     public static final class styleable {
         /** Attributes that can be used with a HomeBlockItemAtts.

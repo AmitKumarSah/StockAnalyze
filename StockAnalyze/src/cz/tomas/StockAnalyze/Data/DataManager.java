@@ -123,9 +123,7 @@ public class DataManager implements IStockDataListener {
 	}
 	
 	public DayData getLastOfflineValue(String stockId) {
-
-		Calendar now = Calendar.getInstance();
-		DayData data = this.sqlStore.getDayData(now, stockId);
+		DayData data = this.sqlStore.getLastAvailableDayData(stockId);
 		return data;
 	}
 	
@@ -137,7 +135,6 @@ public class DataManager implements IStockDataListener {
 		float val = -1;
 		DayData data = null;
 		Calendar now = Calendar.getInstance();
-		//if (this.sqlStore.checkForData(item, now))
 		
 		data = this.sqlStore.getDayData(now, item);
 		// we still can be without data from db - so we need to download it
@@ -160,7 +157,7 @@ public class DataManager implements IStockDataListener {
 			}
 		}
 		else if (data == null) {
-			data = this.sqlStore.getLastAvailableDayData(item);
+			data = this.getLastOfflineValue(item.getId());
 		}
 		return data;
 	}	
