@@ -86,6 +86,7 @@ public final class AddPortfolioItemActivity extends Activity {
 								addPortfolioItem(stockId, count, price, "default", market.getId());
 								
 								Intent intent = new Intent(AddPortfolioItemActivity.this, PortfolioActivity.class);
+								intent.putExtra("refresh", true);
 								AddPortfolioItemActivity.this.startActivity(intent);
 							} catch (NumberFormatException e) {
 								e.printStackTrace();

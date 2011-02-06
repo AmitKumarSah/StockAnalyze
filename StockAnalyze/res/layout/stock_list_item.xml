@@ -9,20 +9,21 @@
         android:visibility="visible"
         android:id="@+id/iconStockItem" 
         android:src="@drawable/px_logo" 
-        android:maxHeight="8dip" />
+        android:maxHeight="8dip" 
+        android:layout_gravity="left"/>
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_weight="1"
         android:layout_height="fill_parent"
-        android:gravity="center_vertical">
+        android:layout_gravity="left">
         <TextView
             android:id="@+id/toptext"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="50"
             android:singleLine="true"
-            android:gravity="center_vertical"/>
+            android:layout_gravity="center_vertical"/>
         <TextView
             android:id="@+id/bottomtext"
             style="@style/subText.Small"
@@ -32,18 +33,20 @@
 	<LinearLayout android:id="@+id/pricelayout"
 		style="@style/priceInfoBlock"
 		android:orientation="vertical"
-		android:layout_weight="1" >
+		android:layout_weight="1"
+		android:layout_gravity="right" >
 		<TextView
 			style="@style/moneyText"
         	android:id="@+id/righttext"
         	android:layout_width="fill_parent"
         	android:layout_height="wrap_content"
         	android:layout_weight="1"
-        	android:gravity="right"
+        	android:layout_gravity="right"
         	android:textColor="@color/money_item_text"/>
 	    <TextView
 	        android:id="@+id/righttext2"
 	        android:layout_weight="1"
+	        android:layout_gravity="right"
 	        android:gravity="right"
 	        android:textColor="@color/money_item_text"
 			style="@style/subText.Small"/>

@@ -3,20 +3,11 @@
  */
 package cz.tomas.StockAnalyze.Portfolio;
 
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import cz.tomas.StockAnalyze.R;
-import cz.tomas.StockAnalyze.Data.DataManager;
-import cz.tomas.StockAnalyze.Data.MarketFactory;
-import cz.tomas.StockAnalyze.Data.Model.DayData;
-import cz.tomas.StockAnalyze.Data.Model.PortfolioItem;
-import cz.tomas.StockAnalyze.Data.Model.StockItem;
-import cz.tomas.StockAnalyze.StockList.StockComparator;
-import cz.tomas.StockAnalyze.StockList.StockCompareTypes;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -26,6 +17,12 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
+import cz.tomas.StockAnalyze.R;
+import cz.tomas.StockAnalyze.Data.DataManager;
+import cz.tomas.StockAnalyze.Data.Model.DayData;
+import cz.tomas.StockAnalyze.Data.Model.PortfolioItem;
+import cz.tomas.StockAnalyze.Data.Model.StockItem;
+import cz.tomas.StockAnalyze.utils.FormattingUtils;
 
 /**
  * @author tomas
@@ -37,18 +34,22 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 	private LayoutInflater vi; 
 	
 	private Map<PortfolioItem, DayData> datas;
-	private StockComparator comparator;
+	//private StockComparator comparator;
 	
 	public PortfolioListAdapter(Context context, int textViewResourceId, final DataManager dataManager) {
 		super(context, textViewResourceId);
 		
 		this.dataManager = dataManager;
-		this.comparator = new StockComparator(StockCompareTypes.Name, dataManager);
+		//this.comparator = new StockComparator(StockCompareTypes.Name, dataManager);
 
 		this.datas = new HashMap<PortfolioItem, DayData>();
         this.vi = (LayoutInflater)	this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        PortfolioListTask task = new PortfolioListTask();
+        this.refresh();
+	}
+	
+	public void refresh() {
+		PortfolioListTask task = new PortfolioListTask();
         task.execute();
 	}
 
@@ -59,26 +60,34 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View v = convertView;
 		 if (v == null) {
-			 v = vi.inflate(R.layout.stock_list_item, null);
+			 v = vi.inflate(R.layout.portfolio_list_item, null);
 	     }
-		 View iconView = v.findViewById(R.id.iconStockItem);
-        
-    	 if (iconView != null)
-    		 iconView.setVisibility(View.GONE);
 	        
         PortfolioItem item = this.getItem(position);
         fillView(v, item);
         return v;
 	}
 
-	private void fillView(View v, PortfolioItem item) {
-		TextView txtTicker = (TextView) v.findViewById(R.id.bottomtext);
-        TextView txtName = (TextView) v.findViewById(R.id.toptext);
-        TextView txtPrice = (TextView) v.findViewById(R.id.righttext);
-        TextView txtChange = (TextView) v.findViewById(R.id.righttext2);
-        View priceGroupView = v.findViewById(R.id.pricelayout);
+	private void fillView(View v, PortfolioItem portfolioItem) {
+		TextView txtTicker = (TextView) v.findViewById(R.id.portfolioStockTicker);
+        TextView txtName = (TextView) v.findViewById(R.id.portfolioStockName);
+        TextView txtPrice = (TextView) v.findViewById(R.id.portfolioCurrentStockPrice);
+        TextView txtChange = (TextView) v.findViewById(R.id.portfolioCurrentStockChange);
+        View priceGroupView = v.findViewById(R.id.portfolioPricelayout);
+        View portfolioGroupView = v.findViewById(R.id.portfolioValueLayout);
+        TextView txtPortfolioValue = (TextView) v.findViewById(R.id.portfolioCurrentValue);
+        TextView txtPortfolioValueChange = (TextView) v.findViewById(R.id.portfolioValueChange);
         
-        StockItem stock = this.dataManager.getStockItem(item.getStockId());
+        StockItem stock = this.dataManager.getStockItem(portfolioItem.getStockId());
+    	DayData data = null;
+    	try {
+			data = this.datas.get(portfolioItem);
+		} catch (Exception e) {
+			if (e.getMessage() != null) {
+				Log.d("StockListAdapter", e.getMessage());
+			}
+		}
+    	
         if (stock == null)
         	return;
         if (txtName != null) 
@@ -86,19 +95,9 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
         if(txtTicker != null)
         	txtTicker.setText(stock.getTicker());
         if(txtPrice != null && txtChange != null) {
-        	DayData data = null;
-			try {
-				data = this.datas.get(item);
-			} catch (Exception e) {
-				txtPrice.setText("Fail");
-				if (e.getMessage() != null) {
-					Log.d("StockListAdapter", e.getMessage());
-				}
-			}
         	if (data != null) {
 				txtPrice.setText(String.valueOf(data.getPrice()));
-				NumberFormat percentFormat = DecimalFormat.getNumberInstance();
-				percentFormat.setMaximumFractionDigits(2);
+				NumberFormat percentFormat = FormattingUtils.getPercentFormat();
 				String strChange = percentFormat.format(data.getChange());
 				String strAbsChange = percentFormat.format(data.getAbsChange());
 				txtChange.setText(String.format("%s (%s%%)", strAbsChange, strChange));
@@ -113,6 +112,29 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 				else if (priceGroupView != null) {
 					priceGroupView.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.groupbox_dark_shape));
 				}
+			} else {
+				txtPrice.setText("Fail");
+			}
+        }
+        if (txtPortfolioValue != null && txtPortfolioValueChange != null && data != null) {
+        	float currentValue = portfolioItem.getStockCount()  * data.getPrice();
+        	float startValue = portfolioItem.getStartValue();
+        	float change = ((currentValue / startValue) * 100) - 100;
+        	NumberFormat percentFormat = FormattingUtils.getPercentFormat();
+        	String strAbsChange = percentFormat.format(currentValue - startValue);
+        	String strChange = percentFormat.format(change);
+        	
+        	txtPortfolioValueChange.setText(String.format("%s (%s%%)", strAbsChange, strChange));
+        	txtPortfolioValue.setText(String.valueOf(currentValue));
+        	// set background drawable according to positive/negative portfolio value change
+			if (change > 0 && portfolioGroupView != null) {
+				portfolioGroupView.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.groupbox_green_shape));
+			}
+			else if (change < 0 && portfolioGroupView != null) {
+				portfolioGroupView.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.groupbox_red_shape));
+			}
+			else if (portfolioGroupView != null) {
+				portfolioGroupView.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.groupbox_dark_shape));
 			}
         }
 	}
@@ -126,7 +148,7 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 
 			List<PortfolioItem> items = null;
 			try {
-				items = this.portfolio.getPortfolioItems();
+				items = this.portfolio.getGroupedPortfolioItems();
 			} catch (Exception e) {
 				e.printStackTrace();
 				this.ex = e;

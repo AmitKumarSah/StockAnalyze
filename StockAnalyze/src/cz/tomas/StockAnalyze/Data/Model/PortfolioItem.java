@@ -180,6 +180,13 @@ public class PortfolioItem {
 				+ buyPrice + ", sellPrice=" + sellPrice + ", buyDate="
 				+ buyDate + ", sellDate=" + sellDate + "]";
 	}
+
+	/*
+	 * count * buy price
+	 */
+	public float getStartValue() {
+		return this.stockCount * this.buyPrice;
+	}
 	
 	
 }

@@ -31,10 +31,9 @@ public class PortfolioActivity extends ListActivity {
 		this.getListView().setTextFilterEnabled(true);
 		
 		this.dataManager = DataManager.getInstance(this);
-		this.fill();
+		boolean refresh = this.getIntent().getBooleanExtra("refresh", false);
+		this.fill(refresh);
 	}
-	
-	
 
 	/* 
 	 * @see android.app.Activity#onResume()
@@ -43,7 +42,7 @@ public class PortfolioActivity extends ListActivity {
 	protected void onResume() {
 		super.onResume();
 		
-		this.fill();
+		this.fill(false);
 	}
 
 
@@ -57,13 +56,16 @@ public class PortfolioActivity extends ListActivity {
 		super.onDestroy();
 	}
 
-	private synchronized void fill() {
+	private synchronized void fill(boolean refresh) {
 		if (adapter == null) {
 			// this should be done only one-time
 			//this.findViewById(R.id.progressStockList).setVisibility(View.VISIBLE);
 			adapter = new PortfolioListAdapter(this, R.layout.stock_list, this.dataManager);
 		}
 
+		if (refresh)
+			adapter.refresh();
+		
 		// in case of resuming when adapter is initialized but not set to list view
 		if (this.getListAdapter() == null) 
 			this.setListAdapter(adapter);

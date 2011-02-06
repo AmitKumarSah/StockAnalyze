@@ -84,6 +84,7 @@ public class StockListActivity extends ListActivity {
 			// this should be done only one-time
 			this.findViewById(R.id.progressStockList).setVisibility(View.VISIBLE);
 			adapter = new StockListAdapter(this, R.layout.stock_list, this.dataManager, "*");	//TODO replace string with filter
+			adapter.showIcons(false);
 		}
 
 		// in case of resuming when adapter is initialized but not set to list view

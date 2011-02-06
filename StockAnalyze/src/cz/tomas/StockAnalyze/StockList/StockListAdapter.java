@@ -3,26 +3,14 @@
  */
 package cz.tomas.StockAnalyze.StockList;
 
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import cz.tomas.StockAnalyze.R;
-import cz.tomas.StockAnalyze.Data.DataManager;
-import cz.tomas.StockAnalyze.Data.IStockDataProvider;
-import cz.tomas.StockAnalyze.Data.MarketFactory;
-import cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener;
-import cz.tomas.StockAnalyze.Data.Model.DayData;
-import cz.tomas.StockAnalyze.Data.Model.StockItem;
-
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -31,6 +19,14 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
+import cz.tomas.StockAnalyze.R;
+import cz.tomas.StockAnalyze.Data.DataManager;
+import cz.tomas.StockAnalyze.Data.IStockDataProvider;
+import cz.tomas.StockAnalyze.Data.MarketFactory;
+import cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener;
+import cz.tomas.StockAnalyze.Data.Model.DayData;
+import cz.tomas.StockAnalyze.Data.Model.StockItem;
+import cz.tomas.StockAnalyze.utils.FormattingUtils;
 
 /**
  * @author tomas
@@ -39,7 +35,6 @@ import android.widget.Toast;
 
 public class StockListAdapter extends ArrayAdapter<StockItem> {
 	 
-	private ProgressDialog progressDialog = null;
 	private DataManager dataManager;
 	private LayoutInflater vi; 
 	
@@ -141,8 +136,7 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 			}
         	if (data != null) {
 				txtPrice.setText(String.valueOf(data.getPrice()));
-				NumberFormat percentFormat = DecimalFormat.getNumberInstance();
-				percentFormat.setMaximumFractionDigits(2);
+				NumberFormat percentFormat = FormattingUtils.getPercentFormat();
 				String strChange = percentFormat.format(data.getChange());
 				String strAbsChange = percentFormat.format(data.getAbsChange());
 				txtChange.setText(String.format("%s (%s%%)", strAbsChange, strChange));

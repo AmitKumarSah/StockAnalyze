@@ -150,6 +150,7 @@ public class PortfolioSqlHelper extends DataSqlHelper {
 		SQLiteDatabase db = null;
 		db = this.getWritableDatabase();
 		db.delete(PORTFOLIO_TABLE_NAME, "id=?", new String[] { String.valueOf(id) });
+		db.close();
 	}
 
 }
