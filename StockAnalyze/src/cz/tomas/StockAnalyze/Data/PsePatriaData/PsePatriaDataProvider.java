@@ -3,22 +3,11 @@
  */
 package cz.tomas.StockAnalyze.Data.PsePatriaData;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
 import java.util.Map;
-import java.util.TimerTask;
-import java.util.Map.Entry;
-import java.util.Timer;
+
+import cz.tomas.StockAnalyze.utils.Utils;
 
 import android.util.Log;
-
-import cz.tomas.StockAnalyze.Data.IStockDataProvider;
-import cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener;
-import cz.tomas.StockAnalyze.Data.Model.DayData;
-import cz.tomas.StockAnalyze.Data.Model.StockItem;
 
 /**
  * @author tomas
@@ -26,7 +15,8 @@ import cz.tomas.StockAnalyze.Data.Model.StockItem;
  */
 public class PsePatriaDataProvider {
 
-	PsePatriaDataMarketItem currentMarketData;
+	private PsePatriaDataMarketItem currentMarketData;
+	private boolean isClosedInternal = false;
 	
 	public PsePatriaDataProvider() {
 		this.currentMarketData = new PsePatriaDataMarketItem();
@@ -50,8 +40,16 @@ public class PsePatriaDataProvider {
 		return stocks;
 	}
 
+	/*
+	 * download new data, if market is closed, only once the refresh returns true, 
+	 * next attempts of refresh on will return false until the market is open again 
+	 */
 	public boolean refresh() throws Exception {
 		this.currentMarketData.update();
-		return true;// ! this.currentMarketData.isClosePhase();
+		boolean retValue = ! this.currentMarketData.isClosePhase() || ! this.isClosedInternal;
+		this.isClosedInternal = this.currentMarketData.isClosePhase();
+		
+		Log.d(Utils.LOG_TAG, "refresh performed on Patria data provider with result: " + retValue);
+		return retValue;
 	}
 }

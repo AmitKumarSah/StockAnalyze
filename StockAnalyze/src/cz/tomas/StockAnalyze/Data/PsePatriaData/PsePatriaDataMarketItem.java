@@ -59,6 +59,7 @@ public class PsePatriaDataMarketItem {
 	private void createMarketData() throws Exception {
 		List<PsePatriaDataItem> items = null;
 		try {
+			// download and parse xml file
 			items = this.xmlParser.parse();
 		} catch (Exception e) {
 			String message = "Failed to process patria data xml! ";
@@ -69,8 +70,8 @@ public class PsePatriaDataMarketItem {
 			throw e;
 		}
 		
-		//this.lastUpdate = Calendar.getInstance().getTimeInMillis();
 		this.lastUpdate = this.xmlParser.getDate().getTimeInMillis();
+		this.isClosePhase = this.xmlParser.isClosePhase();
 		
 		for (PsePatriaDataItem item : items) {
 			String name = item.getName();

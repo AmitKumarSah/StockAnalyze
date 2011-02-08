@@ -30,14 +30,14 @@ import cz.tomas.StockAnalyze.utils.DownloadService;
  */
 public final class PsePatriaXmlParser {
 	
-	String url;
-	boolean isClosePhase;
-	int xmlRefreshInterval;	//minutes
-	Calendar date;
+	private String url;
+	private boolean isClosePhase;
+	private int xmlRefreshInterval;	//minutes
+	private Calendar date;
 
-	final TimeZone tz = TimeZone.getTimeZone("Europe/Prague");
+	private final TimeZone tz = TimeZone.getTimeZone("Europe/Prague");
 
-	SimpleDateFormat format; 
+	private SimpleDateFormat format; 
 	public PsePatriaXmlParser(String url) {
 		this.url = url;
 		
@@ -118,7 +118,7 @@ public final class PsePatriaXmlParser {
 		Node dateNode = attributes.getNamedItem("Date");
 		
 		this.xmlRefreshInterval = Integer.valueOf(refreshNode.getNodeValue());
-		this.isClosePhase = phaseNode.getNodeValue().equals("CLOSE");
+		this.isClosePhase = phaseNode.getNodeValue().equalsIgnoreCase("CLOSE");
 
 		try {
 			this.date = Calendar.getInstance();

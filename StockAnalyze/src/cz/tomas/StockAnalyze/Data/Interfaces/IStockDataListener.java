@@ -5,4 +5,5 @@ import cz.tomas.StockAnalyze.Data.IStockDataProvider;
 public interface IStockDataListener {
 	void OnStockDataUpdated(IStockDataProvider sender);
 	void OnStockDataUpdateBegin(IStockDataProvider sender);
+	void OnStockDataNoUpdate(IStockDataProvider sender);
 }

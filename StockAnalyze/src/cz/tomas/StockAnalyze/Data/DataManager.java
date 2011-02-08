@@ -105,7 +105,7 @@ public class DataManager implements IStockDataListener {
 	public StockItem getStockItem(String id) throws NullPointerException {
 		return getStockItem(id, null);
 	}
-	public StockItem getStockItem(String id, Market market) throws NullPointerException {
+	public synchronized StockItem getStockItem(String id, Market market) throws NullPointerException {
 		StockItem item = this.sqlStore.getStockItem(id);
 		
 		if (item == null && market != null) {
@@ -122,7 +122,7 @@ public class DataManager implements IStockDataListener {
 		return item; 
 	}
 	
-	public DayData getLastOfflineValue(String stockId) {
+	public synchronized DayData getLastOfflineValue(String stockId) {
 		DayData data = this.sqlStore.getLastAvailableDayData(stockId);
 		return data;
 	}
@@ -131,7 +131,7 @@ public class DataManager implements IStockDataListener {
 	 * get last data for stock item,
 	 * check in db for todays data, try to download new one or ceck in db for older one  
 	 */
-	public DayData getLastValue(StockItem item) throws IOException, NullPointerException {
+	public synchronized DayData getLastValue(StockItem item) throws IOException, NullPointerException {
 		float val = -1;
 		DayData data = null;
 		Calendar now = Calendar.getInstance();
@@ -173,7 +173,7 @@ public class DataManager implements IStockDataListener {
 		}
 	}
 
-	public boolean refresh() throws Exception {
+	public synchronized boolean refresh() throws Exception {
 		boolean result = DataProviderFactory.refreshAll();
 
 		if (result) {
@@ -215,6 +215,10 @@ public class DataManager implements IStockDataListener {
 
 	@Override
 	public void OnStockDataUpdateBegin(IStockDataProvider sender) {
+
+	}
+	@Override
+	public void OnStockDataNoUpdate(IStockDataProvider sender) {
 
 	}
 }

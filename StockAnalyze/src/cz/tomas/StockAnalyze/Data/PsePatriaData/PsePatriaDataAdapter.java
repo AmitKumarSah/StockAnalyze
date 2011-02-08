@@ -49,11 +49,15 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 
 						Log.d(Utils.LOG_TAG, "OnStockDataUpdateBegin failed!");
 					}
-					// the market could be closed, so we don't neccesarly get updated data
+					// the market could be closed, so we don't neccessarly get updated data
 					if (provider.refresh()) {
 						// if refresh proceeded and the market is open, fire the event
 						for (IStockDataListener listener : eventListeners) {
 							listener.OnStockDataUpdated(PsePatriaDataAdapter.this);
+						}
+					} else {
+						for (IStockDataListener listener : eventListeners) {
+							listener.OnStockDataNoUpdate(PsePatriaDataAdapter.this);
 						}
 					}
 				} catch (Exception e) {
@@ -126,25 +130,24 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 	 */
 	@Override
 	public DayData getLastData(String ticker) throws FailedToGetDataException {
-		PsePatriaDataItem stockItem;
+		PsePatriaDataItem dataItem;
 		try {
-			stockItem = this.provider.getLastData(ticker);
+			dataItem = this.provider.getLastData(ticker);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new FailedToGetDataException(e);
 		}
 		DayData data = null;
-		if (stockItem != null) {
+		if (dataItem != null) {
 			Date date = new Date(this.provider.getLastUpdateTime());
-			data = new DayData(stockItem.getValue(), stockItem.getPercentableChange(), date, 0, 0, 0, date.getTime());
+			data = new DayData(dataItem.getValue(), dataItem.getPercentableChange(), date, 0, 0, 0, date.getTime());
 		}
 		return data;
 	}
 
 	/* 
 	 * get (historical) data from specific day
-	 * NOT supported for this data provider
+	 * NOT supported for this data provider!
 	 * @see cz.tomas.StockAnalyze.Data.IStockDataProvider#getDayData(java.lang.String, java.util.Calendar)
 	 */
 	@Override

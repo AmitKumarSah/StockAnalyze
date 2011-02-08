@@ -27,6 +27,7 @@ public class NotificationSupervisor implements IStockDataListener {
 	private StringBuilder stringBuilder;
 	private CharSequence updateBeginMessage;
 	private CharSequence updateFinishedMessage;
+	private CharSequence noUpdateMessage;
 	private RemoteViews currentNotificationView;
 	private Notification notification;
 	
@@ -38,6 +39,7 @@ public class NotificationSupervisor implements IStockDataListener {
 		this.stringBuilder = new StringBuilder();
 		this.updateBeginMessage = this.context.getText(R.string.dataUpdating);
 		this.updateFinishedMessage = this.context.getText(R.string.dataUpdated);
+		this.noUpdateMessage = this.context.getText(R.string.noDataUpdated);
 	}
 
 	/* 
@@ -87,6 +89,19 @@ public class NotificationSupervisor implements IStockDataListener {
 		
 		notificationManager.notify(UPDATE_DATA_ID, this.notification);
 
+	}
+
+	@Override
+	public void OnStockDataNoUpdate(IStockDataProvider sender) {
+		if (this.currentNotificationView != null) {
+			this.stringBuilder.setLength(0);
+			this.stringBuilder.append(this.noUpdateMessage);
+			this.stringBuilder.append(": ");
+			this.stringBuilder.append(FormattingUtils.formatStockDate(Calendar.getInstance()));
+			
+			this.currentNotificationView.setTextViewText(R.id.notification_text, this.stringBuilder.toString());
+			this.notificationManager.notify(UPDATE_DATA_ID, this.notification);
+		}
 	}
 
 }

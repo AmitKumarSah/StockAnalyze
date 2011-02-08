@@ -71,8 +71,12 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 			
 			@Override
 			public void OnStockDataUpdateBegin(IStockDataProvider sender) {
-				// TODO Auto-generated method stub
 				
+			}
+
+			@Override
+			public void OnStockDataNoUpdate(IStockDataProvider sender) {
+
 			}
 		});
 	}
