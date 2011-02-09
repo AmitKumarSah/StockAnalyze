@@ -8,7 +8,9 @@ import cz.tomas.StockAnalyze.Portfolio.PortfolioListAdapter;
 import cz.tomas.StockAnalyze.StockList.StockListAdapter;
 import android.app.Activity;
 import android.app.ListActivity;
+import android.content.Context;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 
 /**
@@ -32,6 +34,14 @@ public class PortfolioActivity extends ListActivity {
 		
 		this.dataManager = DataManager.getInstance(this);
 		boolean refresh = this.getIntent().getBooleanExtra("refresh", false);
+		
+		LayoutInflater vi = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+		View headerView = vi.inflate(R.layout.portfolio_list_header, null);
+		View footerView = vi.inflate(R.layout.portfolio_list_footer, null);
+		this.getListView().addHeaderView(headerView, null, false);
+		this.getListView().addFooterView(footerView, null, false);
+		
 		this.fill(refresh);
 	}
 
@@ -67,7 +77,8 @@ public class PortfolioActivity extends ListActivity {
 			adapter.refresh();
 		
 		// in case of resuming when adapter is initialized but not set to list view
-		if (this.getListAdapter() == null) 
+		if (this.getListAdapter() == null) {
 			this.setListAdapter(adapter);
+		}
 	}
 }

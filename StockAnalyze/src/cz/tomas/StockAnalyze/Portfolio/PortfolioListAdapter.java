@@ -4,6 +4,7 @@
 package cz.tomas.StockAnalyze.Portfolio;
 
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,10 +24,12 @@ import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.PortfolioItem;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
+import cz.tomas.StockAnalyze.utils.Utils;
 
 /**
  * @author tomas
  *
+ * adapter for portfolio items list in PortfolioActivity
  */
 public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 	
@@ -34,6 +37,7 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 	private LayoutInflater vi; 
 	
 	private Map<PortfolioItem, DayData> datas;
+	private List<PortfolioItem> portfolioItems;
 	//private StockComparator comparator;
 	
 	public PortfolioListAdapter(Context context, int textViewResourceId, final DataManager dataManager) {
@@ -43,7 +47,9 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 		//this.comparator = new StockComparator(StockCompareTypes.Name, dataManager);
 
 		this.datas = new HashMap<PortfolioItem, DayData>();
-        this.vi = (LayoutInflater)	this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		this.portfolioItems = new ArrayList<PortfolioItem>();
+		
+        this.vi = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         this.refresh();
 	}
@@ -53,30 +59,88 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
         task.execute();
 	}
 
+	/* 
+	 * PortfolioItems + header + footer
+	 * @see android.widget.ArrayAdapter#getCount()
+	 */
+	@Override
+	public int getCount() {
+		return this.portfolioItems.size();
+	}
+
+	/* 
+	 * internal list with portfolio items,
+	 * it is filled from PortfolioTask
+	 * @see android.widget.ArrayAdapter#add(java.lang.Object)
+	 */
+	@Override
+	public void add(PortfolioItem portfolioItem) {
+		this.portfolioItems.add(portfolioItem);
+	}
+
+	/* 
+	 * @see android.widget.ArrayAdapter#getItem(int)
+	 */
+	@Override
+	public PortfolioItem getItem(int position) {
+		return this.portfolioItems.get(position);
+	}
+	
+	
+
+//	/* (non-Javadoc)
+//	 * @see android.widget.ArrayAdapter#getItemId(int)
+//	 */
+//	@Override
+//	public long getItemId(int position) {
+//		// TODO Auto-generated method stub
+//		return super.getItemId(position);
+//	}
+
 	/* (non-Javadoc)
+	 * @see android.widget.ArrayAdapter#clear()
+	 */
+	@Override
+	public void clear() {
+		this.portfolioItems.clear();
+	}
+
+	/* 
+	 * get view: header for first position
+	 * footer for last position
+	 * portfolio items for rest
 	 * @see android.widget.ArrayAdapter#getView(int, android.view.View, android.view.ViewGroup)
 	 */
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		View v = convertView;
-		 if (v == null) {
-			 v = vi.inflate(R.layout.portfolio_list_item, null);
-	     }
-	        
-        PortfolioItem item = this.getItem(position);
-        fillView(v, item);
-        return v;
+		PortfolioItemViewHolder holder;
+		if (convertView == null) {
+			convertView = vi.inflate(R.layout.portfolio_list_item, null);
+			holder = new PortfolioItemViewHolder();
+			holder.txtTicker = (TextView) convertView.findViewById(R.id.portfolioStockTicker);
+			holder.txtName = (TextView) convertView.findViewById(R.id.portfolioStockName);
+			holder.txtPrice = (TextView) convertView.findViewById(R.id.portfolioCurrentStockPrice);
+			holder.txtChange = (TextView) convertView.findViewById(R.id.portfolioCurrentStockChange);
+			holder.priceGroupView = convertView.findViewById(R.id.portfolioPricelayout);
+			holder.portfolioGroupView = convertView.findViewById(R.id.portfolioValueLayout);
+			holder.txtPortfolioValue = (TextView) convertView.findViewById(R.id.portfolioCurrentValue);
+			holder.txtPortfolioValueChange = (TextView) convertView.findViewById(R.id.portfolioValueChange);
+			convertView.setTag(holder);
+		} else {
+			holder = (PortfolioItemViewHolder) convertView.getTag();
+		}
+			
+		PortfolioItem item = this.getItem(position);
+		fillView(convertView, item, holder);
+		
+        return convertView;
 	}
 
-	private void fillView(View v, PortfolioItem portfolioItem) {
-		TextView txtTicker = (TextView) v.findViewById(R.id.portfolioStockTicker);
-        TextView txtName = (TextView) v.findViewById(R.id.portfolioStockName);
-        TextView txtPrice = (TextView) v.findViewById(R.id.portfolioCurrentStockPrice);
-        TextView txtChange = (TextView) v.findViewById(R.id.portfolioCurrentStockChange);
-        View priceGroupView = v.findViewById(R.id.portfolioPricelayout);
-        View portfolioGroupView = v.findViewById(R.id.portfolioValueLayout);
-        TextView txtPortfolioValue = (TextView) v.findViewById(R.id.portfolioCurrentValue);
-        TextView txtPortfolioValueChange = (TextView) v.findViewById(R.id.portfolioValueChange);
+	private void fillView(View v, PortfolioItem portfolioItem, PortfolioItemViewHolder holder) {
+		if (portfolioItem == null) {
+			Log.d(Utils.LOG_TAG, "portfolio item is null in fillView");
+			return;
+		}
         
         StockItem stock = this.dataManager.getStockItem(portfolioItem.getStockId());
     	DayData data = null;
@@ -90,33 +154,33 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
     	
         if (stock == null)
         	return;
-        if (txtName != null) 
-        	txtName.setText(stock.getName());
-        if(txtTicker != null)
-        	txtTicker.setText(stock.getTicker());
-        if(txtPrice != null && txtChange != null) {
+        if (holder.txtName != null) 
+        	holder.txtName.setText(stock.getName());
+        if(holder.txtTicker != null)
+        	holder.txtTicker.setText(stock.getTicker());
+        if(holder.txtPrice != null && holder.txtChange != null) {
         	if (data != null) {
-				txtPrice.setText(String.valueOf(data.getPrice()));
+        		holder.txtPrice.setText(String.valueOf(data.getPrice()));
 				NumberFormat percentFormat = FormattingUtils.getPercentFormat();
 				String strChange = percentFormat.format(data.getChange());
 				String strAbsChange = percentFormat.format(data.getAbsChange());
-				txtChange.setText(String.format("%s (%s%%)", strAbsChange, strChange));
+				holder.txtChange.setText(String.format("%s (%s%%)", strAbsChange, strChange));
 				
 				// set background drawable according to positive/negative price change
-				if (data.getChange() > 0 && priceGroupView != null) {
-					priceGroupView.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.groupbox_green_shape));
+				if (data.getChange() > 0 && holder.priceGroupView != null) {
+					holder.priceGroupView.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.groupbox_green_shape));
 				}
-				else if (data.getChange() < 0 && priceGroupView != null) {
-					priceGroupView.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.groupbox_red_shape));
+				else if (data.getChange() < 0 && holder.priceGroupView != null) {
+					holder.priceGroupView.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.groupbox_red_shape));
 				}
-				else if (priceGroupView != null) {
-					priceGroupView.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.groupbox_dark_shape));
+				else if (holder.priceGroupView != null) {
+					holder.priceGroupView.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.groupbox_dark_shape));
 				}
 			} else {
-				txtPrice.setText("Fail");
+				holder.txtPrice.setText("Fail");
 			}
         }
-        if (txtPortfolioValue != null && txtPortfolioValueChange != null && data != null) {
+        if (holder.txtPortfolioValue != null && holder.txtPortfolioValueChange != null && data != null) {
         	float currentValue = portfolioItem.getStockCount()  * data.getPrice();
         	float startValue = portfolioItem.getStartValue();
         	float change = ((currentValue / startValue) * 100) - 100;
@@ -124,20 +188,25 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
         	String strAbsChange = percentFormat.format(currentValue - startValue);
         	String strChange = percentFormat.format(change);
         	
-        	txtPortfolioValueChange.setText(String.format("%s (%s%%)", strAbsChange, strChange));
-        	txtPortfolioValue.setText(String.valueOf(currentValue));
+        	holder.txtPortfolioValueChange.setText(String.format("%s (%s%%)", strAbsChange, strChange));
+        	holder.txtPortfolioValue.setText(String.valueOf(currentValue));
         	// set background drawable according to positive/negative portfolio value change
-			if (change > 0 && portfolioGroupView != null) {
-				portfolioGroupView.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.groupbox_green_shape));
+			if (change > 0 && holder.portfolioGroupView != null) {
+				holder.portfolioGroupView.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.groupbox_green_shape));
 			}
-			else if (change < 0 && portfolioGroupView != null) {
-				portfolioGroupView.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.groupbox_red_shape));
+			else if (change < 0 && holder.portfolioGroupView != null) {
+				holder.portfolioGroupView.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.groupbox_red_shape));
 			}
-			else if (portfolioGroupView != null) {
-				portfolioGroupView.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.groupbox_dark_shape));
+			else if (holder.portfolioGroupView != null) {
+				holder.portfolioGroupView.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.groupbox_dark_shape));
 			}
         }
 	}
+	
+	/*
+	 * task that loads portfolio items from db 
+	 * and add the to the collection of PortfolioListAdapter
+	 */
 	private class PortfolioListTask extends AsyncTask<String, Integer, List<PortfolioItem>> {
 
 		private final Portfolio portfolio = new Portfolio(getContext());
@@ -201,11 +270,21 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 		 */
 		@Override
 		protected void onPreExecute() {
-			// TODO Auto-generated method stub
 			super.onPreExecute();
 		}
 		
 		
 	}
 	
+	private static class PortfolioItemViewHolder {
+		TextView txtTicker;
+        TextView txtName;
+        TextView txtPrice;
+        TextView txtChange;
+        View priceGroupView;
+        View portfolioGroupView;
+        TextView txtPortfolioValue;
+        TextView txtPortfolioValueChange;
+        
+	}
 }

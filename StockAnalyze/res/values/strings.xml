@@ -49,4 +49,7 @@ Nikdy se nepouštějte do obchodů, jejichž podstatě plně nerozumíte. Obchod
         <item>Buy</item>
         <item>Sell</item>
     </string-array>
+    <string name="portfolioListHeader1">Stock Name\nTicker</string>
+    <string name="portfolioListHeader2">Total Value\nChange</string>
+    <string name="portfolioListHeader3">Stock Price\nChange</string>
 </resources>

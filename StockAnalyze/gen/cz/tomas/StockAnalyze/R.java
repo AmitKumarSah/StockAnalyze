@@ -205,12 +205,14 @@ containing a value of this type.
         public static final int news_layout=0x7f030005;
         public static final int news_list_item=0x7f030006;
         public static final int portfolio_add_item_layout=0x7f030007;
-        public static final int portfolio_list_item=0x7f030008;
-        public static final int stock_detail=0x7f030009;
-        public static final int stock_list=0x7f03000a;
-        public static final int stock_list_divider=0x7f03000b;
-        public static final int stock_list_item=0x7f03000c;
-        public static final int stock_search=0x7f03000d;
+        public static final int portfolio_list_footer=0x7f030008;
+        public static final int portfolio_list_header=0x7f030009;
+        public static final int portfolio_list_item=0x7f03000a;
+        public static final int stock_detail=0x7f03000b;
+        public static final int stock_list=0x7f03000c;
+        public static final int stock_list_divider=0x7f03000d;
+        public static final int stock_list_item=0x7f03000e;
+        public static final int stock_search=0x7f03000f;
     }
     public static final class menu {
         public static final int stock_item_context_menu=0x7f090000;
@@ -247,6 +249,9 @@ containing a value of this type.
         public static final int portfolioDealPrompt=0x7f060026;
         public static final int portfolioDefaultStockCount=0x7f060023;
         public static final int portfolioFailedToAdd=0x7f060025;
+        public static final int portfolioListHeader1=0x7f060027;
+        public static final int portfolioListHeader2=0x7f060028;
+        public static final int portfolioListHeader3=0x7f060029;
         public static final int portfolioMarketLabel=0x7f060022;
         public static final int portfolioPriceLabel=0x7f060021;
         public static final int portfolioTickerLabel=0x7f06001f;
@@ -258,14 +263,15 @@ containing a value of this type.
         public static final int update_succes=0x7f060008;
     }
     public static final class style {
-        public static final int actionBar=0x7f080009;
-        public static final int actionBar_ImageButton=0x7f08000b;
+        public static final int actionBar=0x7f08000a;
+        public static final int actionBar_ImageButton=0x7f08000c;
         /**         <item name="android:textSize">14sip</item>
          */
-        public static final int actionBar_title_text=0x7f08000a;
-        public static final int groupboxBody=0x7f080006;
-        public static final int groupboxHeader=0x7f080007;
-        public static final int homeBlock=0x7f080008;
+        public static final int actionBar_title_text=0x7f08000b;
+        public static final int groupboxBody=0x7f080007;
+        public static final int groupboxHeader=0x7f080008;
+        public static final int homeBlock=0x7f080009;
+        public static final int listHeader=0x7f080006;
         public static final int logoView=0x7f080005;
         /**         <item name="android:typeface">serif</item>
          */
@@ -275,11 +281,11 @@ containing a value of this type.
         public static final int subText_Small=0x7f080004;
         /**      	<item name="android:layout_margin">2dip</item>
          */
-        public static final int tableItem=0x7f08000c;
+        public static final int tableItem=0x7f08000d;
         /** 		<item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">wrap_content</item>
          */
-        public static final int themeLight=0x7f08000d;
+        public static final int themeLight=0x7f08000e;
         public static final int titleText=0x7f080002;
     }
     public static final class styleable {
