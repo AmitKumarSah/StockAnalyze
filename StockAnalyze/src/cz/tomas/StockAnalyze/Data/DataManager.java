@@ -102,6 +102,13 @@ public class DataManager implements IStockDataListener {
 		return results;
 	}
 	
+	/*
+	 * get all stock items from database for given Market instance
+	 */
+	public synchronized List<StockItem> getStockItems(Market market) {
+		return this.sqlStore.getStockItems(market);
+	}
+	
 	public StockItem getStockItem(String id) throws NullPointerException {
 		return getStockItem(id, null);
 	}

@@ -51,6 +51,9 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 		this.datas = new HashMap<StockItem, DayData>();
         this.vi = (LayoutInflater)	this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
+        OfflineStockListTask offlineTask = new OfflineStockListTask();
+        offlineTask.execute((Void[])null);
+
         // HACK initial update (temporary)
         final StockListTask task = new StockListTask();
         task.execute(filter);
@@ -182,11 +185,44 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 		this.showIcons = show;
 	}
 	
+	private class OfflineStockListTask extends AsyncTask<Void, Integer, List<StockItem>> {
+
+		@Override
+		protected List<StockItem> doInBackground(Void... params) {
+			List<StockItem> items = dataManager.getStockItems(null);
+			for (StockItem stockItem : items) {
+				DayData data = dataManager.getLastOfflineValue(stockItem.getId());
+				datas.put(stockItem, data);
+			}
+			Collections.sort(items, comparator);
+			return items;
+		}
+
+		/* (non-Javadoc)
+		 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
+		 */
+		@Override
+		protected void onPostExecute(List<StockItem> result) {
+			super.onPostExecute(result);
+			if (result == null || result.size() == 0)
+				Toast.makeText(getContext(), R.string.noOfflineData, Toast.LENGTH_LONG).show();
+			else {
+				clear();
+	        	for (int i = 0; i < result.size(); i++) {
+	        		add(result.get(i));
+				}
+			}
+	    	notifyDataSetChanged();
+		}
+		
+		
+	}
+	
 	/*
 	 * this task load all stocks from datamanager and notify the ListView,
 	 * it also takes care about the progress view
 	 */
-	class StockListTask extends AsyncTask<String, Integer, List<StockItem>> {
+	private class StockListTask extends AsyncTask<String, Integer, List<StockItem>> {
 
 		@Override
 		protected void onPreExecute() {

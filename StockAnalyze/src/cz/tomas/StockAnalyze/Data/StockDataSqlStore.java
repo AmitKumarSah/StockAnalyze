@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 import cz.tomas.StockAnalyze.Data.Model.DayData;
+import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.News.Article;
 import cz.tomas.StockAnalyze.utils.Utils;
@@ -148,7 +149,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 			db.insert(STOCK_TABLE_NAME, null, values);
 			//db.execSQL("INSERT INTO " + StockDataSqlStore.STOCK_TABLE_NAME + " values('"+ ticker + "', date('now'), " + data.getPrice() + ");");
 		} catch (SQLException e) {
-			Log.d("StockDataSqlStore", "failed to insert data." + e.getMessage());
+			Log.d(Utils.LOG_TAG, "failed to insert data." + e.getMessage());
 			e.printStackTrace();
 		} finally {
 			this.close();
@@ -164,7 +165,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 				updateDateData(item, newdata, currentData);
 				return;
 			}
-			Log.d("StockDataSqlStore", "inserting day data for " + item.getTicker() + " to db");
+			Log.d(Utils.LOG_TAG, "inserting day data for " + item.getTicker() + " to db");
 			if (! this.checkForStock(item))
 				this.insertStockItem(item);
 			SQLiteDatabase db = this.getWritableDatabase();
@@ -185,7 +186,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 			String message =  "Failed to INSERT stock item.";
 			if (e.getMessage() != null)
 				 message += e.getMessage();
-			Log.d("StockDataSqlStore", message);
+			Log.d(Utils.LOG_TAG, message);
 			e.printStackTrace();
 		} finally {
 			this.close();
@@ -197,7 +198,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 			SQLiteDatabase db = this.getWritableDatabase();
 			ContentValues values = new ContentValues();
 
-			Log.d("StockDataSqlStore", "updating day data for " + item.getTicker() + " to db");
+			Log.d(Utils.LOG_TAG, "updating day data for " + item.getTicker() + " to db");
 			values.put("date" ,Utils.createDateOnlyCalendar(newData.getDate()).getTimeInMillis());
 			values.put("last_update", newData.getLastUpdate());
 			values.put("price", newData.getPrice());
@@ -209,13 +210,48 @@ public class StockDataSqlStore extends DataSqlHelper {
 			String message =  "Failed to UPDATE stock item.";
 			if (e.getMessage() != null)
 				 message += e.getMessage();
-			Log.d("StockDataSqlStore", message);
+			Log.d(Utils.LOG_TAG, message);
 			e.printStackTrace();
 		} finally {
 			this.close();
 		}
 	}
 
+
+	public List<StockItem> getStockItems(Market market) {
+		List<StockItem> items = new ArrayList<StockItem>();
+		try {
+			SQLiteDatabase db = this.getWritableDatabase();
+			Cursor c = null;
+			try {
+				c = db.query(STOCK_TABLE_NAME, new String[] { "id", "ticker", "name" }, null, null, null, null, null);
+				if (c.moveToFirst()) {
+					do {
+						String id = c.getString(0);
+						String ticker = c.getString(1);
+						String name = c.getString(2);
+						// FIXME market table
+						StockItem item = new StockItem(ticker, id, name, MarketFactory.getMarket("cz"));
+						items.add(item);
+					} while (c.moveToNext());
+				}
+				
+			} catch (SQLException e) {
+				Log.e(Utils.LOG_TAG, e.toString());
+			} finally {
+				// close cursor
+				if (c != null)
+					c.close();
+			}
+		} catch (SQLException e) {
+			Log.d(Utils.LOG_TAG, "failed to get stock item." + e.getMessage());
+			e.printStackTrace();
+		} finally {
+			this.close();
+		}
+		
+		return items;
+	}
 
 	/*
 	 * get stock item by id from database
@@ -237,14 +273,14 @@ public class StockDataSqlStore extends DataSqlHelper {
 				}
 				
 			} catch (SQLException e) {
-				Log.e("StockDataSqlStore", e.toString());
+				Log.e(Utils.LOG_TAG, e.toString());
 			} finally {
 				// close cursor
 				if (c != null)
 					c.close();
 			}
 		} catch (SQLException e) {
-			Log.d("StockDataSqlStore", "failed to get stock item." + e.getMessage());
+			Log.d(Utils.LOG_TAG, "failed to get stock item." + e.getMessage());
 			e.printStackTrace();
 		} finally {
 			this.close();
@@ -294,13 +330,13 @@ public class StockDataSqlStore extends DataSqlHelper {
 					data = new DayData(price, change, date, volume, max, min, lastUpdate, id);
 				}
 			} catch (SQLException e) {
-				Log.e("StockDataSqlStore", e.toString());
+				Log.e(Utils.LOG_TAG, e.toString());
 			} finally {
 				if (c != null)
 					c.close();
 			}
 		} catch (SQLException e) {
-			Log.d("StockDataSqlStore", "failed to get data." + e.getMessage());
+			Log.d(Utils.LOG_TAG, "failed to get data." + e.getMessage());
 			e.printStackTrace();
 		} finally {
 			this.close();
@@ -350,13 +386,13 @@ public class StockDataSqlStore extends DataSqlHelper {
 					data = new DayData(price, change, date, volume, max, min, lastUpdate, id);
 				}
 			} catch (SQLException e) {
-				Log.e("StockDataSqlStore", e.toString());
+				Log.e(Utils.LOG_TAG, e.toString());
 			} finally {
 				if (c != null)
 					c.close();
 			}
 		} catch (SQLException e) {
-			Log.d("StockDataSqlStore", "failed to get data." + e.getMessage());
+			Log.d(Utils.LOG_TAG, "failed to get data." + e.getMessage());
 			e.printStackTrace();
 		} finally {
 			this.close();
@@ -364,5 +400,4 @@ public class StockDataSqlStore extends DataSqlHelper {
 		
 		return data;
 	}
-
 }
