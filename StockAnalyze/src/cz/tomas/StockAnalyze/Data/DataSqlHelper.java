@@ -13,7 +13,7 @@ public class DataSqlHelper extends SQLiteOpenHelper {
 		
 		private final String DATABASE_NAME = "cz.tomas.StockAnalyze.Data";
 		
-		private final static int DATABASE_VERSION_NUMBER = 8;
+		private final static int DATABASE_VERSION_NUMBER = 10;
 		
 		private final static String DATABASE_FILE_NAME = "cz.tomas.StockAnalyze.Data.db";
 		
@@ -26,6 +26,7 @@ public class DataSqlHelper extends SQLiteOpenHelper {
 	         "CREATE TABLE " + STOCK_TABLE_NAME + " (" +
 	         "id varchar(50) PRIMARY KEY," +
 	         "ticker varchar(10) not null, " +
+	         "is_favourite integer, " +
 	         "name TEXT);";
 		
 		private static final String INTRADAY_DATA_TABLE_CREATE = 

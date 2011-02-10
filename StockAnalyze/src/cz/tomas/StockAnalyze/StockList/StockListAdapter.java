@@ -102,11 +102,11 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
         if (v == null) {
             v = vi.inflate(R.layout.stock_list_item, null);
         }
-        View iconView = v.findViewById(R.id.iconStockItem);
-        if (! this.showIcons) {
-        	 if (iconView != null)
-        		 iconView.setVisibility(View.GONE);
-        }
+//        View iconView = v.findViewById(R.id.iconStockItem);
+//        if (! this.showIcons) {
+//        	 if (iconView != null)
+//        		 iconView.setVisibility(View.GONE);
+//        }
         
         StockItem stock = this.getItem(position);
         fillView(v, stock);

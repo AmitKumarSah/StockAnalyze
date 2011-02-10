@@ -32,8 +32,8 @@ public class StockComparator implements Comparator<StockItem> {
 		if (this.type != StockCompareTypes.Name 
 			&& this.type != StockCompareTypes.Ticker ) {
 			try {
-				data1 = this.dataManager.getLastValue(stock1);
-				data2 = this.dataManager.getLastValue(stock2);
+				data1 = this.dataManager.getLastOfflineValue(stock1.getId());
+				data2 = this.dataManager.getLastOfflineValue(stock2.getId());
 			} catch (Exception e) {
 				e.printStackTrace();
 				return 0;
