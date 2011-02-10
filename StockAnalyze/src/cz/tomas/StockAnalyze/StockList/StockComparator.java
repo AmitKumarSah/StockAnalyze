@@ -29,14 +29,16 @@ public class StockComparator implements Comparator<StockItem> {
 		int result = 0;
 		DayData data1 = null;
 		DayData data2 = null;
-		try {
-		 	data1 = this.dataManager.getLastValue(stock1);
-			data2 = this.dataManager.getLastValue(stock2);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return 0;
-		} 
-		
+		if (this.type != StockCompareTypes.Name 
+			&& this.type != StockCompareTypes.Ticker ) {
+			try {
+				data1 = this.dataManager.getLastValue(stock1);
+				data2 = this.dataManager.getLastValue(stock2);
+			} catch (Exception e) {
+				e.printStackTrace();
+				return 0;
+			}
+		}
 		switch (this.type) {
 		case Change:
 			result = (data1.getChange() < data2.getChange() ? 1 : -1);
