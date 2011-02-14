@@ -38,11 +38,13 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 	
 	private Map<PortfolioItem, DayData> datas;
 	private List<PortfolioItem> portfolioItems;
+	private Portfolio portfolio = null;
 	//private StockComparator comparator;
 	
-	public PortfolioListAdapter(Context context, int textViewResourceId, final DataManager dataManager) {
+	public PortfolioListAdapter(Context context, int textViewResourceId, final DataManager dataManager, Portfolio portfolio) {
 		super(context, textViewResourceId);
 		
+		this.portfolio = portfolio;
 		this.dataManager = dataManager;
 		//this.comparator = new StockComparator(StockCompareTypes.Name, dataManager);
 
@@ -88,14 +90,13 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 	
 	
 
-//	/* (non-Javadoc)
-//	 * @see android.widget.ArrayAdapter#getItemId(int)
-//	 */
-//	@Override
-//	public long getItemId(int position) {
-//		// TODO Auto-generated method stub
-//		return super.getItemId(position);
-//	}
+	/* (non-Javadoc)
+	 * @see android.widget.ArrayAdapter#getItemId(int)
+	 */
+	@Override
+	public long getItemId(int position) {
+		return super.getItemId(position);
+	}
 
 	/* (non-Javadoc)
 	 * @see android.widget.ArrayAdapter#clear()
@@ -208,8 +209,6 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 	 * and add the to the collection of PortfolioListAdapter
 	 */
 	private class PortfolioListTask extends AsyncTask<String, Integer, List<PortfolioItem>> {
-
-		private final Portfolio portfolio = new Portfolio(getContext());
 		private Exception ex;
 		
 		@Override
@@ -217,7 +216,7 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 
 			List<PortfolioItem> items = null;
 			try {
-				items = this.portfolio.getGroupedPortfolioItems();
+				items = portfolio.getGroupedPortfolioItems();
 			} catch (Exception e) {
 				e.printStackTrace();
 				this.ex = e;

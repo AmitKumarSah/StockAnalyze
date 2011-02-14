@@ -27,6 +27,7 @@ import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.Portfolio.AddPortfolioItemActivity;
 import cz.tomas.StockAnalyze.StockList.StockListAdapter;
+import cz.tomas.StockAnalyze.utils.NavUtils;
 
 /**
  * @author tomas
@@ -72,7 +73,7 @@ public class StockListActivity extends ListActivity {
 						Log.d("cz.tomas.StockAnalyze.StockListActivity", "Failed to get TabActivity");
 				}
 				else if (stock != null) {
-					goToStockDetail(stock);
+					NavUtils.goToStockDetail(stock, StockListActivity.this);
 				}
 			}
 
@@ -80,7 +81,7 @@ public class StockListActivity extends ListActivity {
 		
 	}
 
-	private synchronized void fill() {
+	private void fill() {
 		if (adapter == null) {
 			// this should be done only one-time
 			this.findViewById(R.id.progressStockList).setVisibility(View.VISIBLE);
@@ -108,20 +109,6 @@ public class StockListActivity extends ListActivity {
 		super.onStop();
 		
 		//Debug.stopMethodTracing();
-	}
-	
-	/**
-	 * Switch to StockDetailActivity with stock item selected
-	 * @param stock
-	 */
-	private void goToStockDetail(StockItem stock) {
-		if (stock == null)
-			throw new RuntimeException("goToStockDetail: Stock item can't be null!");
-		Intent intent = new Intent();
-		intent.putExtra("stock_id", stock.getId());
-		intent.putExtra("market_id", stock.getMarket());
-		intent.setClass(StockListActivity.this, StockDetailActivity.class);
-		startActivity(intent);
 	}
 	
 	@Override
@@ -157,7 +144,7 @@ public class StockListActivity extends ListActivity {
 				// TODO mark as favourite
 				return true;
 			case R.id.stock_item_view:
-				this.goToStockDetail(stockItem);
+				NavUtils.goToStockDetail(stockItem, this);
 				return true;
 			default:
 				return super.onContextItemSelected(item);

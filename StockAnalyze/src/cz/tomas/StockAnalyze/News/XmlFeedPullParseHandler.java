@@ -5,18 +5,13 @@ package cz.tomas.StockAnalyze.News;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -24,12 +19,10 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
-import cz.tomas.StockAnalyze.utils.DownloadService;
-import cz.tomas.StockAnalyze.utils.FormattingUtils;
-
 import android.content.Context;
 import android.util.Log;
-import android.util.Xml;
+import cz.tomas.StockAnalyze.utils.DownloadService;
+import cz.tomas.StockAnalyze.utils.FormattingUtils;
 
 /*
  * rss xml pull parser with data storing to database

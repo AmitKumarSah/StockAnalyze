@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="portfolioContextMenuSubtract"></string>
+    <string name="portfolioContextMenuAddMore">Add More</string>
+    <string name="portfolioContextMenuRemove">Remove</string>
+    <string name="portfolioContextMenuStockDetail">View Stock Detail</string>
+    <string name="PortfolioContextViewDetail">Portfolio Detail</string>
     <string name="addStockItemToFavourite">Add to My Favourites</string>
     <string name="addStockItemToPortfolio">Add to My Portfolio</string>
     <string name="stockItemView">View Detail</string>

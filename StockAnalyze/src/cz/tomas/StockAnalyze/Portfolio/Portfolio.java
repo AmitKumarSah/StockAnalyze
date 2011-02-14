@@ -37,6 +37,16 @@ public class Portfolio {
 		return this.sqlHelper.getPortfolioItems();
 	}
 	
+	/*
+	 * remove all records records from given stock from db
+	 */
+	public void removeFromPortfolio(String stockId) {
+		throw new RuntimeException("thi is not yet implemented");
+	}
+	
+	/*
+	 * remove one record from db
+	 */
 	public void removeFromPortfolio(int id) {
 		if (id != -1)
 			this.sqlHelper.removeItem(id);
