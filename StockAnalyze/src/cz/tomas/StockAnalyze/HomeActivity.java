@@ -24,6 +24,10 @@ import android.widget.Toast;
 
 public class HomeActivity extends Activity implements OnClickListener, OnKeyListener {
 
+	private static Bitmap chartBitmap;
+	private static long chartLastUpdate;
+	private static long chartUpdateInterval = 1000 * 60 * 10;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -43,9 +47,15 @@ public class HomeActivity extends Activity implements OnClickListener, OnKeyList
 			}
 		}
 		//Debug.startMethodTracing();
-		
-		ChartUpdateTask task = new ChartUpdateTask();
-		task.execute((Void[])null);
+		// if chart bitmap is null or too old, refresh it
+		if (this.chartBitmap == null || (System.currentTimeMillis() - this.chartLastUpdate) > this.chartUpdateInterval) {
+			ChartUpdateTask task = new ChartUpdateTask();
+			task.execute((Void[])null);
+		}
+		else {
+			ImageView chart = (ImageView) findViewById(R.id.home_chart);
+			chart.setImageBitmap(this.chartBitmap);
+		}
 	}
 	
 	
@@ -121,6 +131,8 @@ public class HomeActivity extends Activity implements OnClickListener, OnKeyList
 			super.onPostExecute(result);
 			ImageView chart = (ImageView) findViewById(R.id.home_chart);
 			chart.setImageBitmap(result);
+			chartBitmap = result;
+			chartLastUpdate = System.currentTimeMillis();
 		}
 		
 	}
