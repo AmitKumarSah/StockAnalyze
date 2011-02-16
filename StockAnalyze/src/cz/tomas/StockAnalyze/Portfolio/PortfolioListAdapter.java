@@ -22,6 +22,7 @@ import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.PortfolioItem;
+import cz.tomas.StockAnalyze.Data.Model.PortfolioSum;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
@@ -37,19 +38,22 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 	private LayoutInflater vi; 
 	
 	private Map<PortfolioItem, DayData> datas;
-	private List<PortfolioItem> portfolioItems;
+	//private List<PortfolioItem> portfolioItems;
 	private Portfolio portfolio = null;
-	//private StockComparator comparator;
+	private List<IPortfolioListener> portfolioListeners;
+	
+	private PortfolioSum portfolioSummary;
 	
 	public PortfolioListAdapter(Context context, int textViewResourceId, final DataManager dataManager, Portfolio portfolio) {
 		super(context, textViewResourceId);
 		
 		this.portfolio = portfolio;
 		this.dataManager = dataManager;
-		//this.comparator = new StockComparator(StockCompareTypes.Name, dataManager);
 
 		this.datas = new HashMap<PortfolioItem, DayData>();
-		this.portfolioItems = new ArrayList<PortfolioItem>();
+		this.setNotifyOnChange(false);
+		//this.portfolioItems = new ArrayList<PortfolioItem>();
+		this.portfolioListeners = new ArrayList<PortfolioListAdapter.IPortfolioListener>();
 		
         this.vi = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -60,51 +64,55 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 		PortfolioListTask task = new PortfolioListTask();
         task.execute();
 	}
-
-	/* 
-	 * PortfolioItems + header + footer
-	 * @see android.widget.ArrayAdapter#getCount()
-	 */
-	@Override
-	public int getCount() {
-		return this.portfolioItems.size();
-	}
-
-	/* 
-	 * internal list with portfolio items,
-	 * it is filled from PortfolioTask
-	 * @see android.widget.ArrayAdapter#add(java.lang.Object)
-	 */
-	@Override
-	public void add(PortfolioItem portfolioItem) {
-		this.portfolioItems.add(portfolioItem);
-	}
-
-	/* 
-	 * @see android.widget.ArrayAdapter#getItem(int)
-	 */
-	@Override
-	public PortfolioItem getItem(int position) {
-		return this.portfolioItems.get(position);
-	}
 	
-	
-
-	/* (non-Javadoc)
-	 * @see android.widget.ArrayAdapter#getItemId(int)
-	 */
-	@Override
-	public long getItemId(int position) {
-		return super.getItemId(position);
+	public void addPortfolioListener(IPortfolioListener listener) {
+		this.portfolioListeners.add(listener);
 	}
 
-	/* (non-Javadoc)
-	 * @see android.widget.ArrayAdapter#clear()
-	 */
-	@Override
-	public void clear() {
-		this.portfolioItems.clear();
-	}
+//	/* 
+//	 * PortfolioItems + header + footer
+//	 * @see android.widget.ArrayAdapter#getCount()
+//	 */
+//	@Override
+//	public int getCount() {
+//		return this.portfolioItems.size();
+//	}
+//
+//	/* 
+//	 * internal list with portfolio items,
+//	 * it is filled from PortfolioTask
+//	 * @see android.widget.ArrayAdapter#add(java.lang.Object)
+//	 */
+//	@Override
+//	public void add(PortfolioItem portfolioItem) {
+//		this.portfolioItems.add(portfolioItem);
+//	}
+//
+//	/* 
+//	 * @see android.widget.ArrayAdapter#getItem(int)
+//	 */
+//	@Override
+//	public PortfolioItem getItem(int position) {
+//		return this.portfolioItems.get(position);
+//	}
+//	
+//	
+//
+//	/* (non-Javadoc)
+//	 * @see android.widget.ArrayAdapter#getItemId(int)
+//	 */
+//	@Override
+//	public long getItemId(int position) {
+//		return super.getItemId(position);
+//	}
+//
+//	/* (non-Javadoc)
+//	 * @see android.widget.ArrayAdapter#clear()
+//	 */
+//	@Override
+//	public void clear() {
+//		this.portfolioItems.clear();
+//	}
 
 	/* 
 	 * get view: header for first position
@@ -209,7 +217,10 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 	 * and add the to the collection of PortfolioListAdapter
 	 */
 	private class PortfolioListTask extends AsyncTask<String, Integer, List<PortfolioItem>> {
+		
 		private Exception ex;
+		private float totalValueSum;
+		private float totalChangeSum;
 		
 		@Override
 		protected List<PortfolioItem> doInBackground(String... arg0) {
@@ -228,6 +239,10 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 					for (PortfolioItem portfolioItem : items) {
 						DayData dayData = dataManager.getLastOfflineValue(portfolioItem.getStockId());
 						datas.put(portfolioItem, dayData);
+						
+						float itemValue = portfolioItem.getStockCount() * dayData.getPrice();
+						totalValueSum += itemValue;
+						totalChangeSum += itemValue - portfolioItem.getStartValue();
 					}
 				}
 			} catch (Exception e) {
@@ -255,24 +270,21 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 				Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
 				return;
 			}
+			float totalPercChange = (totalChangeSum / totalValueSum)*100;
+			portfolioSummary = new PortfolioSum(this.totalValueSum, this.totalChangeSum, totalPercChange);
 			clear();
 			
+			// add portfolio items to the adapter list
 			for (PortfolioItem item : result) {
 				add(item);
 			}
 			
+			// populate the portfolio summary
+			for (IPortfolioListener listener : portfolioListeners) {
+				listener.onPortfolioCalculated(portfolioSummary);
+			}
 			notifyDataSetChanged();
 		}
-
-		/* (non-Javadoc)
-		 * @see android.os.AsyncTask#onPreExecute()
-		 */
-		@Override
-		protected void onPreExecute() {
-			super.onPreExecute();
-		}
-		
-		
 	}
 	
 	private static class PortfolioItemViewHolder {
@@ -285,5 +297,9 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
         TextView txtPortfolioValue;
         TextView txtPortfolioValueChange;
         
+	}
+	
+	public interface IPortfolioListener {
+		void onPortfolioCalculated(PortfolioSum portfolioSummary);
 	}
 }

@@ -50,6 +50,7 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 
 		this.datas = new HashMap<StockItem, DayData>();
         this.vi = (LayoutInflater)	this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        this.setNotifyOnChange(false);
 
         OfflineStockListTask offlineTask = new OfflineStockListTask();
         offlineTask.execute((Void[])null);

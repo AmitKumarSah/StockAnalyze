@@ -13,6 +13,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import cz.tomas.StockAnalyze.Data.DataSqlHelper;
 import cz.tomas.StockAnalyze.Data.Model.PortfolioItem;
+import cz.tomas.StockAnalyze.Data.Model.PortfolioSum;
 
 /*
  * 

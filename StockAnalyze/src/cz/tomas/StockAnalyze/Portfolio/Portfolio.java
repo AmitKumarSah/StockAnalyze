@@ -4,9 +4,14 @@
 package cz.tomas.StockAnalyze.Portfolio;
 
 import java.sql.SQLException;
+import java.text.NumberFormat;
 import java.util.List;
 
+import cz.tomas.StockAnalyze.Data.DataManager;
+import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.PortfolioItem;
+import cz.tomas.StockAnalyze.Data.Model.PortfolioSum;
+import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import android.content.Context;
 
 /**
@@ -17,9 +22,11 @@ import android.content.Context;
 public class Portfolio {
 
 	private PortfolioSqlHelper sqlHelper;
+	private DataManager dataManager;
 	
 	public Portfolio(Context context) {
 		this.sqlHelper = new PortfolioSqlHelper(context);
+		this.dataManager = DataManager.getInstance(context);
 	}
 	
 	/*
@@ -41,7 +48,7 @@ public class Portfolio {
 	 * remove all records records from given stock from db
 	 */
 	public void removeFromPortfolio(String stockId) {
-		throw new RuntimeException("thi is not yet implemented");
+		throw new RuntimeException("this is not yet implemented");
 	}
 	
 	/*

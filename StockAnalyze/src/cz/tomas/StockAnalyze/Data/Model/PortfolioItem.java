@@ -6,6 +6,7 @@ package cz.tomas.StockAnalyze.Data.Model;
 /**
  * represents one portfolio item -
  * particular stock bought at particular price in particular number of pieces
+ * 
  * @author tomas
  *
  */

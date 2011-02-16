@@ -161,9 +161,10 @@ public class DataManager implements IStockDataListener {
 			}
 			if (val > 0) {
 				this.sqlStore.insertDayData(item, data);
-			}
+			} else 
+				data = null;
 		}
-		else if (data == null) {
+		if (data == null) {
 			data = this.getLastOfflineValue(item.getId());
 		}
 		return data;
@@ -217,6 +218,7 @@ public class DataManager implements IStockDataListener {
 			if (data.getPrice() != 0)
 				this.sqlStore.insertDayData(item, data);
 		}
+		this.fireUpdateDateChanged(Calendar.getInstance().getTimeInMillis());
 		this.fireUpdateStockDataListenerUpdate(sender);
 	}
 
