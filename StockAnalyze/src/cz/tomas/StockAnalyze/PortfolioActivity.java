@@ -41,6 +41,8 @@ public class PortfolioActivity extends ListActivity {
 	private Portfolio portfolio;
 	private static PortfolioSum portfolioSummary;
 	private static PortfolioListAdapter adapter;
+	private static View headerView;
+	private static View footerView;
 	
 	/* (non-Javadoc)
 	 * @see android.app.Activity#onCreate(android.os.Bundle)
@@ -66,8 +68,10 @@ public class PortfolioActivity extends ListActivity {
 		
 		LayoutInflater vi = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-		View headerView = vi.inflate(R.layout.portfolio_list_header, null);
-		View footerView = vi.inflate(R.layout.portfolio_list_footer, null);
+		if (headerView == null)
+			headerView = vi.inflate(R.layout.portfolio_list_header, null);
+		if (footerView == null)
+			footerView = vi.inflate(R.layout.portfolio_list_footer, null);
 		this.getListView().addHeaderView(headerView, null, false);
 		this.getListView().addFooterView(footerView, null, false);
 
@@ -116,8 +120,8 @@ public class PortfolioActivity extends ListActivity {
 		if (refresh) {
 			adapter.refresh();
 		}
-		if (portfolioSummary != null)
-			this.fillPortfolioSummary(portfolioSummary);
+//		if (portfolioSummary != null)
+//			this.fillPortfolioSummary(portfolioSummary);
 		// in case of resuming when adapter is initialized but not set to list view
 		if (this.getListAdapter() == null) {
 			this.setListAdapter(adapter);

@@ -161,15 +161,23 @@ public class DataManager implements IStockDataListener {
 			}
 			if (val > 0) {
 				this.sqlStore.insertDayData(item, data);
-			} else 
-				data = null;
+			}
 		}
-		if (data == null) {
+		if (data == null ) {
 			data = this.getLastOfflineValue(item.getId());
+		} else if (data.getPrice() == 0) {
+			// this is special case when the data is dowloaded, but the price is no valid,
+			// so we take old data's price and set it to the output DayData object
+			DayData oldData = this.getLastOfflineValue(item.getId());
+			data = new DayData(oldData.getPrice(), data.getChange(), data.getDate(), data.getVolume(), data.getYearMaximum(), data.getYearMinimum(),
+					data.getLastUpdate(), data.getId());
 		}
 		return data;
 	}	
 
+	/*
+	 * ask ConnectivityManager if the device is connected
+	 */
 	public boolean isOnline(Context context) {
 		try {
 			if (this.connectivityManager == null)
@@ -181,6 +189,9 @@ public class DataManager implements IStockDataListener {
 		}
 	}
 
+	/*
+	 * refresh all enabled data providers
+	 */
 	public synchronized boolean refresh() throws Exception {
 		boolean result = DataProviderFactory.refreshAll();
 

@@ -20,12 +20,10 @@
 		<TextView android:id="@+id/txtPortfolioFooterSumValue"
 			style="@style/moneyText"
 			android:layout_alignParentLeft="true"
-			android:layout_alignParentTop="true"
-			android:text="-" >
+			android:layout_alignParentTop="true">
 		</TextView>
 		<TextView android:id="@+id/txtPortfolioFooterSumChange"
 			style="@style/moneyText"
-			android:text="-"
 			android:layout_alignParentLeft="true"
 			android:layout_toRightOf="@+id/TextView01"
 			android:layout_below="@+id/txtPortfolioFooterSumValue">
