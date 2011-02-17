@@ -83,8 +83,12 @@ public class HomeActivity extends Activity implements OnClickListener, OnKeyList
 
 	@Override
 	public boolean onKey(View v, int keyCode, KeyEvent event) {
-		startChildActivity(v);
-		return true;
+		if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
+			startChildActivity(v);
+			return true;
+		}
+		else
+			return false;
 	}
 	
 	/**

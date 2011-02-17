@@ -136,7 +136,7 @@ public class DataManager implements IStockDataListener {
 	
 	/*
 	 * get last data for stock item,
-	 * check in db for todays data, try to download new one or ceck in db for older one  
+	 * check in db for todays data, try to download new one or check in db for older one  
 	 */
 	public synchronized DayData getLastValue(StockItem item) throws IOException, NullPointerException {
 		float val = -1;

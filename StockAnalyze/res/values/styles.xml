@@ -77,6 +77,8 @@
 <!--    	<item name="android:layout_gravity">center</item>-->
     	<item name="android:background">@drawable/home_block_shape_selector</item>
     	<item name="android:focusable">true</item>
+    	<item name="android:clickable">true</item>
+    	<item name="android:enabled">true</item>
     </style>
     <style name="actionBar">
 		<item name="android:layout_width">fill_parent</item>
