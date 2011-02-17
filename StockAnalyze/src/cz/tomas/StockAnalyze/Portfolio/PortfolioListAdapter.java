@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.DataManager;
+import cz.tomas.StockAnalyze.Data.Interfaces.IListAdapterListener;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.PortfolioItem;
 import cz.tomas.StockAnalyze.Data.Model.PortfolioSum;
@@ -40,7 +41,7 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 	private Map<PortfolioItem, DayData> datas;
 	//private List<PortfolioItem> portfolioItems;
 	private Portfolio portfolio = null;
-	private List<IPortfolioListener> portfolioListeners;
+	private List<IListAdapterListener<PortfolioSum>> portfolioListeners;
 	
 	private PortfolioSum portfolioSummary;
 	
@@ -53,7 +54,7 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 		this.datas = new HashMap<PortfolioItem, DayData>();
 		this.setNotifyOnChange(false);
 		//this.portfolioItems = new ArrayList<PortfolioItem>();
-		this.portfolioListeners = new ArrayList<PortfolioListAdapter.IPortfolioListener>();
+		this.portfolioListeners = new ArrayList<IListAdapterListener<PortfolioSum>>();
 		
         this.vi = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -65,7 +66,7 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
         task.execute();
 	}
 	
-	public void addPortfolioListener(IPortfolioListener listener) {
+	public void addPortfolioListener(IListAdapterListener<PortfolioSum> listener) {
 		this.portfolioListeners.add(listener);
 	}
 
@@ -223,6 +224,14 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 		private float totalChangeSum;
 		
 		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+			for (IListAdapterListener<?> listener : portfolioListeners) {
+				listener.onListLoading();
+			}
+		}
+
+		@Override
 		protected List<PortfolioItem> doInBackground(String... arg0) {
 
 			List<PortfolioItem> items = null;
@@ -282,8 +291,8 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 			}
 			
 			// populate the portfolio summary
-			for (IPortfolioListener listener : portfolioListeners) {
-				listener.onPortfolioCalculated(portfolioSummary);
+			for (IListAdapterListener<PortfolioSum> listener : portfolioListeners) {
+				listener.onListLoaded(portfolioSummary);
 			}
 			notifyDataSetChanged();
 		}
@@ -299,9 +308,5 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
         TextView txtPortfolioValue;
         TextView txtPortfolioValueChange;
         
-	}
-	
-	public interface IPortfolioListener {
-		void onPortfolioCalculated(PortfolioSum portfolioSummary);
 	}
 }

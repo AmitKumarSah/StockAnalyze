@@ -22,8 +22,10 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 import cz.tomas.StockAnalyze.Data.DataManager;
+import cz.tomas.StockAnalyze.Data.Interfaces.IListAdapterListener;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.Portfolio.AddPortfolioItemActivity;
 import cz.tomas.StockAnalyze.StockList.StockListAdapter;
@@ -40,6 +42,7 @@ public class StockListActivity extends ListActivity {
 	static final int NO_INTERNET = 2;
 	
 	DataManager dataManager;
+	ProgressBar progressBar;
 	
 	static StockListAdapter adapter;
 	
@@ -54,6 +57,8 @@ public class StockListActivity extends ListActivity {
 		this.setContentView(R.layout.stock_list);
 		this.getListView().setTextFilterEnabled(true);
 		this.registerForContextMenu(this.getListView());
+		
+		this.progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
 		this.getListView().setOnItemClickListener(new OnItemClickListener() {
 			@Override
@@ -83,9 +88,24 @@ public class StockListActivity extends ListActivity {
 
 	private void fill() {
 		if (adapter == null) {
+			if (progressBar != null)
+				progressBar.setVisibility(View.VISIBLE);
 			// this should be done only one-time
-			this.findViewById(R.id.progressStockList).setVisibility(View.VISIBLE);
 			adapter = new StockListAdapter(this, R.layout.stock_list, this.dataManager, "*");	//TODO replace string with filter
+			adapter.addListAdapterListener( new IListAdapterListener<Object>() {
+				
+				@Override
+				public void onListLoading() {
+					if (progressBar != null)
+						progressBar.setVisibility(View.VISIBLE);
+				}
+				
+				@Override
+				public void onListLoaded(Object data) {
+					if (progressBar != null)
+						progressBar.setVisibility(View.GONE);
+				}
+			});
 			adapter.showIcons(false);
 		}
 

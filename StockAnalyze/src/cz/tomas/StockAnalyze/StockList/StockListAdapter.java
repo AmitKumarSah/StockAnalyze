@@ -4,6 +4,7 @@
 package cz.tomas.StockAnalyze.StockList;
 
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -23,8 +24,10 @@ import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.IStockDataProvider;
 import cz.tomas.StockAnalyze.Data.MarketFactory;
+import cz.tomas.StockAnalyze.Data.Interfaces.IListAdapterListener;
 import cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
+import cz.tomas.StockAnalyze.Data.Model.PortfolioSum;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
 
@@ -40,6 +43,7 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 	
 	private Map<StockItem, DayData> datas;
 	private StockComparator comparator;
+	private List<IListAdapterListener<Object>> listeners;
 	
 	private Boolean showIcons = true;
 	
@@ -47,6 +51,7 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 		super(context, textViewResourceId);
 		this.dataManager = dataManager;
 		this.comparator = new StockComparator(StockCompareTypes.Name, dataManager);
+		this.listeners = new ArrayList<IListAdapterListener<Object>>();
 
 		this.datas = new HashMap<StockItem, DayData>();
         this.vi = (LayoutInflater)	this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -186,6 +191,10 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 		this.showIcons = show;
 	}
 	
+	public void addListAdapterListener(IListAdapterListener<Object> listener) {
+		this.listeners.add(listener);
+	}
+	
 	private class OfflineStockListTask extends AsyncTask<Void, Integer, List<StockItem>> {
 
 		@Override
@@ -220,7 +229,7 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 	}
 	
 	/*
-	 * this task load all stocks from datamanager and notify the ListView,
+	 * this task load all stocks from DataManager and notify the ListView,
 	 * it also takes care about the progress view
 	 */
 	private class StockListTask extends AsyncTask<String, Integer, List<StockItem>> {
@@ -228,10 +237,8 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
-	    	try {
-				((Activity) getContext()).findViewById(R.id.progressStockList).setVisibility(View.VISIBLE);
-			} catch (Exception e) {
-				Log.d("cz.tomas.StockAnalyze.News.NewsListAdapter", "failed to show progess bar! " + e.getMessage());
+			for (IListAdapterListener<Object> listener : listeners) {
+				listener.onListLoading();
 			}
 		}
 
@@ -287,10 +294,8 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 				}
 			}
 	    	notifyDataSetChanged();
-	    	try {
-				((Activity) getContext()).findViewById(R.id.progressStockList).setVisibility(View.GONE);
-			} catch (Exception e) {
-				Log.d("cz.tomas.StockAnalyze.News.NewsListAdapter", "failed to dissmis progess bar! " + e.getMessage());
+			for (IListAdapterListener<Object> listener : listeners) {
+				listener.onListLoaded(null);
 			}
 		}
 

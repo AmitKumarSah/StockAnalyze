@@ -119,7 +119,7 @@ containing a value of this type.
         public static final int EditText01=0x7f0a001e;
         public static final int LinearLayout01=0x7f0a0016;
         public static final int RelativeLayout01=0x7f0a0027;
-        public static final int SearchEditText=0x7f0a004d;
+        public static final int SearchEditText=0x7f0a004c;
         public static final int TableDetailRow01=0x7f0a003b;
         public static final int TextView01=0x7f0a001c;
         public static final int TextView02=0x7f0a0022;
@@ -128,12 +128,11 @@ containing a value of this type.
         public static final int TextView05=0x7f0a0021;
         public static final int TextViewPortfolioDeal=0x7f0a001a;
         public static final int actionHomeButton=0x7f0a0000;
-        public static final int actionHorizontalSeparator=0x7f0a0005;
         public static final int actionSearchButton=0x7f0a0004;
         public static final int actionTitle=0x7f0a0002;
         public static final int actionbar_sep1=0x7f0a0001;
-        public static final int actionbar_sep2=0x7f0a0003;
-        public static final int bottomtext=0x7f0a0049;
+        public static final int actionbar_sep2=0x7f0a0005;
+        public static final int bottomtext=0x7f0a0048;
         public static final int detail_label_chart=0x7f0a0044;
         public static final int homeActionBar=0x7f0a000b;
         public static final int homeBlockCurrencies=0x7f0a000f;
@@ -150,9 +149,11 @@ containing a value of this type.
         public static final int lblDetailMax=0x7f0a003f;
         public static final int lblDetailMin=0x7f0a003c;
         public static final int lblDetailVolume=0x7f0a0042;
-        public static final int listFoundItems=0x7f0a004e;
-        public static final int menu_stock_list_refresh=0x7f0a0058;
-        public static final int menu_stock_list_settings=0x7f0a0057;
+        public static final int listFoundItems=0x7f0a004d;
+        public static final int menu_portfolio_refresh=0x7f0a0054;
+        public static final int menu_portfolio_settings=0x7f0a0053;
+        public static final int menu_stock_list_refresh=0x7f0a0059;
+        public static final int menu_stock_list_settings=0x7f0a0058;
         public static final int notification_image=0x7f0a0006;
         public static final int notification_subtext=0x7f0a0008;
         public static final int notification_text=0x7f0a0007;
@@ -170,23 +171,23 @@ containing a value of this type.
         public static final int portfolioStockTicker=0x7f0a002b;
         public static final int portfolioValueChange=0x7f0a002e;
         public static final int portfolioValueLayout=0x7f0a002c;
-        public static final int portfolio_item_context_menu_add_more=0x7f0a0052;
-        public static final int portfolio_item_context_menu_detail=0x7f0a004f;
-        public static final int portfolio_item_context_menu_remove=0x7f0a0051;
-        public static final int portfolio_item_context_menu_stock_detail=0x7f0a0050;
-        public static final int portfolio_item_context_menu_subtract=0x7f0a0053;
-        public static final int pricelayout=0x7f0a004a;
+        public static final int portfolio_item_context_menu_add_more=0x7f0a0051;
+        public static final int portfolio_item_context_menu_detail=0x7f0a004e;
+        public static final int portfolio_item_context_menu_remove=0x7f0a0050;
+        public static final int portfolio_item_context_menu_stock_detail=0x7f0a004f;
+        public static final int portfolio_item_context_menu_subtract=0x7f0a0052;
+        public static final int pricelayout=0x7f0a0049;
+        public static final int progressBar=0x7f0a0003;
         public static final int progressNews=0x7f0a0014;
-        public static final int progressStockList=0x7f0a0046;
-        public static final int righttext=0x7f0a004b;
-        public static final int righttext2=0x7f0a004c;
-        public static final int stock_item_add_to_portfolio=0x7f0a0055;
-        public static final int stock_item_favourite=0x7f0a0056;
-        public static final int stock_item_view=0x7f0a0054;
+        public static final int righttext=0x7f0a004a;
+        public static final int righttext2=0x7f0a004b;
+        public static final int stock_item_add_to_portfolio=0x7f0a0056;
+        public static final int stock_item_favourite=0x7f0a0057;
+        public static final int stock_item_view=0x7f0a0055;
         public static final int tableDetailData=0x7f0a003a;
         public static final int tableDetailRow02=0x7f0a003e;
         public static final int tableDetailRow03=0x7f0a0041;
-        public static final int toptext=0x7f0a0048;
+        public static final int toptext=0x7f0a0047;
         public static final int txtDetailChange=0x7f0a0038;
         public static final int txtDetailClosingPrice=0x7f0a0037;
         public static final int txtDetailDate=0x7f0a0033;
@@ -200,7 +201,7 @@ containing a value of this type.
         public static final int txtNewsItemTitle=0x7f0a0017;
         public static final int txtPortfolioFooterSumChange=0x7f0a0029;
         public static final int txtPortfolioFooterSumValue=0x7f0a0028;
-        public static final int txtStockListDivider=0x7f0a0047;
+        public static final int txtStockListDivider=0x7f0a0046;
         public static final int viewReadMark=0x7f0a0015;
     }
     public static final class layout {
@@ -223,8 +224,9 @@ containing a value of this type.
     }
     public static final class menu {
         public static final int portfolio_item_context_menu=0x7f090000;
-        public static final int stock_item_context_menu=0x7f090001;
-        public static final int stock_list_menu=0x7f090002;
+        public static final int portfolio_menu=0x7f090001;
+        public static final int stock_item_context_menu=0x7f090002;
+        public static final int stock_list_menu=0x7f090003;
     }
     public static final class string {
         public static final int FailedGetNews=0x7f060018;

@@ -17,16 +17,16 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import cz.tomas.StockAnalyze.Data.DataManager;
+import cz.tomas.StockAnalyze.Data.Interfaces.IListAdapterListener;
 import cz.tomas.StockAnalyze.Data.Interfaces.IUpdateDateChangedListener;
 import cz.tomas.StockAnalyze.Data.Model.PortfolioItem;
 import cz.tomas.StockAnalyze.Data.Model.PortfolioSum;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.Portfolio.Portfolio;
 import cz.tomas.StockAnalyze.Portfolio.PortfolioListAdapter;
-import cz.tomas.StockAnalyze.Portfolio.PortfolioListAdapter.IPortfolioListener;
-import cz.tomas.StockAnalyze.StockListActivity.RefreshTask;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
@@ -40,14 +40,16 @@ import cz.tomas.StockAnalyze.utils.Utils;
 public class PortfolioActivity extends ListActivity {
 
 	private DataManager dataManager;
-	private Portfolio portfolio;
-	private static PortfolioSum portfolioSummary;
+	private static Portfolio portfolio;
+	//private static PortfolioSum portfolioSummary;
 	private static PortfolioListAdapter adapter;
 	private static View headerView;
 	private static View footerView;
 	private static boolean isDirty;
 	
-	/* (non-Javadoc)
+	private ProgressBar progressBar;
+	
+	/* 
 	 * @see android.app.Activity#onCreate(android.os.Bundle)
 	 */
 	@Override
@@ -71,6 +73,7 @@ public class PortfolioActivity extends ListActivity {
 		isDirty |= this.getIntent().getBooleanExtra("refresh", false);
 		
 		LayoutInflater vi = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		this.progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
 		if (headerView == null)
 			headerView = vi.inflate(R.layout.portfolio_list_header, null);
@@ -79,7 +82,8 @@ public class PortfolioActivity extends ListActivity {
 		this.getListView().addHeaderView(headerView, null, false);
 		this.getListView().addFooterView(footerView, null, false);
 
-		this.portfolio = new Portfolio(this);
+		if (portfolio == null)
+			portfolio = new Portfolio(this);
 		this.fill();
 	}
 
@@ -94,8 +98,6 @@ public class PortfolioActivity extends ListActivity {
 		this.fill();
 	}
 
-
-
 	/* (non-Javadoc)
 	 * @see android.app.Activity#onDestroy()
 	 */
@@ -108,16 +110,24 @@ public class PortfolioActivity extends ListActivity {
 	private void fill() {
 		if (adapter == null) {
 			// this should be done only one-time
-			//this.findViewById(R.id.progressStockList).setVisibility(View.VISIBLE);
+			if (progressBar != null)
+				progressBar.setVisibility(View.VISIBLE);
 			adapter = new PortfolioListAdapter(this, R.layout.stock_list, this.dataManager, this.portfolio);
-			adapter.addPortfolioListener(new IPortfolioListener() {
-				
+			adapter.addPortfolioListener(new IListAdapterListener<PortfolioSum>() {
+
 				@Override
-				public void onPortfolioCalculated(PortfolioSum portfolioSummary) {
-					PortfolioActivity.portfolioSummary = portfolioSummary;
+				public void onListLoading() {					
+					if (progressBar != null)
+						progressBar.setVisibility(View.VISIBLE);
+				}
+
+				@Override
+				public void onListLoaded(PortfolioSum portfolioSummary) {
 					Log.d(Utils.LOG_TAG, "Updating portfolio summary");
 					fillPortfolioSummary(portfolioSummary);
-					//fill(false);
+					
+					if (progressBar != null)
+						progressBar.setVisibility(View.GONE);					
 				}
 			});
 		}
