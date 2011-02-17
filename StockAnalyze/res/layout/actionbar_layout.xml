@@ -24,9 +24,15 @@
 			style="@style/actionBar.title_text"
         	android:layout_alignWithParentIfMissing="true"
 			android:layout_toRightOf="@+id/actionbar_sep1"
-			android:layout_toLeftOf="@+id/actionbar_sep2"
+			android:layout_toLeftOf="@+id/progressBar"
 	        android:layout_alignParentTop="true"
 	        android:layout_alignParentBottom="true" />
+       <ProgressBar android:id="@+id/progressBar" 
+       		android:layout_width="wrap_content" 
+		    android:layout_height="wrap_content"
+		    android:indeterminate="true"
+		 	android:layout_gravity="center_vertical|center_horizontal"
+		 	android:visibility="gone" />
 		<ImageView android:id="@+id/actionbar_sep2"
 	       android:layout_width="1px"
 	       android:layout_height="fill_parent"
@@ -41,12 +47,12 @@
 			android:layout_alignParentRight="true"
 	        android:layout_alignParentTop="true"
 	        android:layout_alignParentBottom="true"/>
-		<ImageView android:id="@+id/actionHorizontalSeparator" 
-			android:layout_width="fill_parent" 
-			android:layout_height="1dip"
-			android:layout_below="@+id/actionTitle"
-			android:layout_alignParentBottom="true"
-			android:background="@color/separator_color" />
+<!--		<ImageView android:id="@+id/actionHorizontalSeparator" -->
+<!--			android:layout_width="fill_parent" -->
+<!--			android:layout_height="1dip"-->
+<!--			android:layout_below="@+id/actionTitle"-->
+<!--			android:layout_alignParentBottom="true"-->
+<!--			android:background="@color/separator_color" />-->
 	</RelativeLayout>
 <!--</LinearLayout>-->
 </merge>

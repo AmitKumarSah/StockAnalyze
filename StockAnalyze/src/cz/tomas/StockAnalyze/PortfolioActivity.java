@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,6 +26,7 @@ import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.Portfolio.Portfolio;
 import cz.tomas.StockAnalyze.Portfolio.PortfolioListAdapter;
 import cz.tomas.StockAnalyze.Portfolio.PortfolioListAdapter.IPortfolioListener;
+import cz.tomas.StockAnalyze.StockListActivity.RefreshTask;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
@@ -181,6 +183,30 @@ public class PortfolioActivity extends ListActivity {
 		inflater.inflate(R.menu.portfolio_item_context_menu, menu);
 	}
 
+	/*
+	 * create activity's main menu
+	 * @see android.app.Activity#onCreateOptionsMenu(android.view.Menu)
+	 */
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.portfolio_menu, menu);
+	    return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    // Handle item selection
+	    switch (item.getItemId()) {
+	    case R.id.menu_portfolio_refresh:
+	    	this.adapter.refresh();
+	        return true;
+	    case R.id.menu_portfolio_settings:
+	        return true;
+	    default:
+	        return super.onOptionsItemSelected(item);
+	    }
+	}
 
 	private void fillPortfolioSummary(PortfolioSum portfolioSummary) {
 		TextView txtValueSum = (TextView)findViewById(R.id.txtPortfolioFooterSumValue);
