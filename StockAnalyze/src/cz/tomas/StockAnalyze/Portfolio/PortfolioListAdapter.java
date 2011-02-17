@@ -270,7 +270,9 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 				Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
 				return;
 			}
-			float totalPercChange = (totalChangeSum / totalValueSum)*100;
+			float totalPercChange = 0;
+			if (totalValueSum > 0)
+				totalPercChange = (totalChangeSum / totalValueSum)*100;
 			portfolioSummary = new PortfolioSum(this.totalValueSum, this.totalChangeSum, totalPercChange);
 			clear();
 			
