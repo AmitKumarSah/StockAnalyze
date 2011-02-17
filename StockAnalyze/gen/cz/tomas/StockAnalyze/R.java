@@ -139,8 +139,8 @@ containing a value of this type.
         public static final int homeBlockCurrencies=0x7f0a000f;
         public static final int homeBlockItemImage=0x7f0a0009;
         public static final int homeBlockItemTextView=0x7f0a000a;
-        public static final int homeBlockNews=0x7f0a000e;
-        public static final int homeBlockPortfolio=0x7f0a0010;
+        public static final int homeBlockNews=0x7f0a0010;
+        public static final int homeBlockPortfolio=0x7f0a000e;
         public static final int homeBlockStockList=0x7f0a000d;
         public static final int homeBlockTable=0x7f0a000c;
         public static final int homeSeparator1=0x7f0a0011;

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent" 
+	android:layout_height="fill_parent"
+	android:orientation="vertical">
+	
+	<cz.tomas.StockAnalyze.ui.widgets.ActionBar
+		android:id="@+id/homeActionBar"
+		android:layout_width="fill_parent" 
+		android:layout_height="wrap_content" />
+		<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+			android:layout_width="fill_parent" 
+			android:layout_height="fill_parent">
+		<TableLayout android:id="@+id/homeBlockTable"
+			xmlns:block="http://schemas.android.com/apk/res/cz.tomas.StockAnalyze"
+			android:layout_below="@id/homeActionBar"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent"
+			android:stretchColumns="*" >
+			<TableRow>
+				<cz.tomas.StockAnalyze.ui.widgets.HomeBlockView
+					android:id="@+id/homeBlockStockList"
+					style="@style/homeBlock"
+					block:textId="@string/homeStockList" 
+					block:imageId="@drawable/ic_launcher_list"
+					block:target="cz.tomas.StockAnalyze.StockListActivity"/>
+				<cz.tomas.StockAnalyze.ui.widgets.HomeBlockView 
+					android:id="@+id/homeBlockPortfolio"
+					style="@style/homeBlock"
+					block:textId="@string/homeMyPortfolio"
+					block:imageId="@drawable/ic_business" 
+					block:target="cz.tomas.StockAnalyze.PortfolioActivity"/>
+				<cz.tomas.StockAnalyze.ui.widgets.HomeBlockView
+					android:id="@+id/homeBlockCurrencies"
+					style="@style/homeBlock"
+					block:textId="@string/homeCurrencies" 
+					block:imageId="@drawable/ic_globe"
+					block:target="cz.tomas.StockAnalyze.CurrenciesActivity"/>
+				<cz.tomas.StockAnalyze.ui.widgets.HomeBlockView 
+					android:id="@+id/homeBlockNews"
+					style="@style/homeBlock"
+					block:textId="@string/homeNews"
+					block:imageId="@drawable/ic_rss_simple" 
+					block:target="cz.tomas.StockAnalyze.NewsActivity"/>
+			</TableRow>
+				<View android:id="@+id/homeSeparator1" 
+					android:layout_width="fill_parent" 
+					android:layout_height="1dip"
+					android:layout_below="@id/actionTitle"
+					android:layout_alignParentBottom="true"
+					android:background="@color/separator_color"
+					android:layout_margin="10dip" />	
+				<TextView android:id="@+id/home_chart_title"
+					style="@style/titleText"
+					android:text="@string/homeChartTitle"
+					android:layout_width="fill_parent"
+					android:layout_height="wrap_content"/>
+				<ImageView android:id="@+id/home_chart" 
+					style="@style/homeBlock"
+					android:src="@drawable/chart_preview"/>
+		</TableLayout>
+	</ScrollView>
+</LinearLayout>
