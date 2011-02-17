@@ -43,6 +43,7 @@ public class PortfolioActivity extends ListActivity {
 	private static PortfolioListAdapter adapter;
 	private static View headerView;
 	private static View footerView;
+	private static boolean isDirty;
 	
 	/* (non-Javadoc)
 	 * @see android.app.Activity#onCreate(android.os.Bundle)
@@ -60,11 +61,12 @@ public class PortfolioActivity extends ListActivity {
 			@Override
 			public void OnLastUpdateDateChanged(long updateTime) {
 				Log.d(Utils.LOG_TAG, "refreshing portfolio list adapter because of datamanager update");
-				fill(true);
+				//fill(true);
+				isDirty = true;
 			}
 		});
 		
-		boolean refresh = this.getIntent().getBooleanExtra("refresh", false);
+		isDirty |= this.getIntent().getBooleanExtra("refresh", false);
 		
 		LayoutInflater vi = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -76,17 +78,18 @@ public class PortfolioActivity extends ListActivity {
 		this.getListView().addFooterView(footerView, null, false);
 
 		this.portfolio = new Portfolio(this);
-		this.fill(refresh);
+		this.fill();
 	}
 
 	/* 
+	 * check if it is necessary to updated the adapter and listview
 	 * @see android.app.Activity#onResume()
 	 */
 	@Override
 	protected void onResume() {
 		super.onResume();
 		
-		this.fill(false);
+		this.fill();
 	}
 
 
@@ -100,7 +103,7 @@ public class PortfolioActivity extends ListActivity {
 		super.onDestroy();
 	}
 
-	private void fill(boolean refresh) {
+	private void fill() {
 		if (adapter == null) {
 			// this should be done only one-time
 			//this.findViewById(R.id.progressStockList).setVisibility(View.VISIBLE);
@@ -117,8 +120,9 @@ public class PortfolioActivity extends ListActivity {
 			});
 		}
 
-		if (refresh) {
+		if (isDirty) {
 			adapter.refresh();
+			isDirty = false;
 		}
 //		if (portfolioSummary != null)
 //			this.fillPortfolioSummary(portfolioSummary);
