@@ -195,9 +195,9 @@ public class DataManager implements IStockDataListener {
 	public synchronized boolean refresh() throws Exception {
 		boolean result = DataProviderFactory.refreshAll();
 
-		if (result) {
-			fireUpdateDateChanged(Calendar.getInstance().getTimeInMillis());
-		}
+//		if (result) {
+//			fireUpdateDateChanged(Calendar.getInstance().getTimeInMillis());
+//		}
 		return result;
 	}
 	

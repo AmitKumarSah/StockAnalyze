@@ -60,15 +60,6 @@ public class PortfolioActivity extends ListActivity {
 		this.registerForContextMenu(this.getListView());
 		
 		this.dataManager = DataManager.getInstance(this);
-		this.dataManager.addUpdateChangedListener(new IUpdateDateChangedListener() {
-			
-			@Override
-			public void OnLastUpdateDateChanged(long updateTime) {
-				Log.d(Utils.LOG_TAG, "refreshing portfolio list adapter because of datamanager update");
-				//fill(true);
-				isDirty = true;
-			}
-		});
 		
 		isDirty |= this.getIntent().getBooleanExtra("refresh", false);
 		
@@ -112,6 +103,15 @@ public class PortfolioActivity extends ListActivity {
 			// this should be done only one-time
 			if (progressBar != null)
 				progressBar.setVisibility(View.VISIBLE);
+			this.dataManager.addUpdateChangedListener(new IUpdateDateChangedListener() {
+				
+				@Override
+				public void OnLastUpdateDateChanged(long updateTime) {
+					Log.d(Utils.LOG_TAG, "refreshing portfolio list adapter because of datamanager update");
+					//fill(true);
+					isDirty = true;
+				}
+			});
 			adapter = new PortfolioListAdapter(this, R.layout.stock_list, this.dataManager, this.portfolio);
 			adapter.addPortfolioListener(new IListAdapterListener<PortfolioSum>() {
 
