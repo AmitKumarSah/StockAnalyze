@@ -71,6 +71,9 @@ public class DataManager implements IStockDataListener {
 			e.printStackTrace();
 		}
 		// TODO
+		
+		// do immediate update and schedule next one
+		UpdateScheduler.getInstance(context).scheduleNextIntraDayUpdate();
 	}
 
 	/*
@@ -166,11 +169,12 @@ public class DataManager implements IStockDataListener {
 		if (data == null ) {
 			data = this.getLastOfflineValue(item.getId());
 		} else if (data.getPrice() == 0) {
-			// this is special case when the data is dowloaded, but the price is no valid,
+			// this is special case when the data is downloaded, but the price is not valid,
 			// so we take old data's price and set it to the output DayData object
 			DayData oldData = this.getLastOfflineValue(item.getId());
-			data = new DayData(oldData.getPrice(), data.getChange(), data.getDate(), data.getVolume(), data.getYearMaximum(), data.getYearMinimum(),
-					data.getLastUpdate(), data.getId());
+			if (oldData != null)
+				data = new DayData(oldData.getPrice(), data.getChange(), data.getDate(), data.getVolume(), data.getYearMaximum(), data.getYearMinimum(),
+						data.getLastUpdate(), data.getId());
 		}
 		return data;
 	}	

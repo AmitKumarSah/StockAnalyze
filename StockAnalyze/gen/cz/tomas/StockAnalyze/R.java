@@ -247,6 +247,7 @@ containing a value of this type.
         public static final int dataUpdated=0x7f060023;
         public static final int dataUpdating=0x7f060022;
         public static final int disclaimer=0x7f060021;
+        public static final int failedScheduleUpdate=0x7f060031;
         public static final int failed_price_update=0x7f060011;
         public static final int hello=0x7f06000a;
         public static final int homeChartTitle=0x7f060020;

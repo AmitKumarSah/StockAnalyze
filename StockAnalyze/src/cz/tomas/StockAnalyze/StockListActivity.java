@@ -25,6 +25,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 import cz.tomas.StockAnalyze.Data.DataManager;
+import cz.tomas.StockAnalyze.Data.UpdateScheduler;
 import cz.tomas.StockAnalyze.Data.Interfaces.IListAdapterListener;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.Portfolio.AddPortfolioItemActivity;
@@ -188,8 +189,9 @@ public class StockListActivity extends ListActivity {
 	    // Handle item selection
 	    switch (item.getItemId()) {
 	    case R.id.menu_stock_list_refresh:
-	    	RefreshTask task = new RefreshTask();
-	    	task.execute((Void[]) null);
+//	    	RefreshTask task = new RefreshTask();
+//	    	task.execute((Void[]) null);
+	    	UpdateScheduler.getInstance(this).updateImmediatly();
 	        return true;
 	    case R.id.menu_stock_list_settings:
 	        return true;

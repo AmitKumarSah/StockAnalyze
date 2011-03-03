@@ -1,5 +1,6 @@
 package cz.tomas.StockAnalyze.Data;
 
+import cz.tomas.StockAnalyze.utils.Utils;
 import android.content.Context;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -89,29 +90,29 @@ public class DataSqlHelper extends SQLiteOpenHelper {
 		@Override
 		public void onCreate(SQLiteDatabase db) {
 			try {
-				Log.d("DataSqlHelper", "creating stock table!");
+				Log.d(Utils.LOG_TAG, "creating stock table!");
 				db.execSQL(STOCK_TABLE_CREATE);
-				Log.d("DataSqlHelper", "creating day data table!");
+				Log.d(Utils.LOG_TAG, "creating day data table!");
 				db.execSQL(DAY_DATA_TABLE_CREATE);
-				Log.d("DataSqlHelper", "creating intraday data table!");
+				Log.d(Utils.LOG_TAG, "creating intraday data table!");
 				db.execSQL(INTRADAY_DATA_TABLE_CREATE);
-				Log.d("DataSqlHelper", "creating portfolio table!");
+				Log.d(Utils.LOG_TAG, "creating portfolio table!");
 				db.execSQL(PORTFOLIO_TABLE_CREATE);
 				
-				Log.d("DataSqlHelper", "creating Feeds table!");
+				Log.d(Utils.LOG_TAG, "creating Feeds table!");
 				db.execSQL(CREATE_TABLE_FEEDS);
-				Log.d("DataSqlHelper", "creating Articles table!");
+				Log.d(Utils.LOG_TAG, "creating Articles table!");
 				db.execSQL(CREATE_TABLE_ARTICLES);
 				
 			} catch (SQLException e) {
 				e.printStackTrace();
-				Log.d("DataSqlHelper", "Failed to create database!\n" + e.getMessage());
+				Log.d(Utils.LOG_TAG, "Failed to create database!\n" + e.getMessage());
 			}
 		}
 
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-			Log.d("StockDataSqlStore", "droping tables!");
+			Log.d(Utils.LOG_TAG, "droping tables!");
 			db.execSQL(TABLE_DROP + INTRADAY_DATA_TABLE_NAME);
 			db.execSQL(TABLE_DROP + DAY_DATA_TABLE_NAME);
 			db.execSQL(TABLE_DROP + STOCK_TABLE_NAME);

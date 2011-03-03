@@ -27,7 +27,7 @@ public final class MarketFactory {
 	/**
 	 * create czech Market instance if it doesn't already exists 
 	 */
-	private static Market getCzechMarket() {
+	public static Market getCzechMarket() {
 		if (czMarket == null)
 			czMarket = new Market("PSE", "XPRA", "CZK", "Prague Stock Exchange");
 		

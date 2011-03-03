@@ -30,6 +30,7 @@ import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.PortfolioSum;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
+import cz.tomas.StockAnalyze.utils.Utils;
 
 /**
  * @author tomas
@@ -61,9 +62,9 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
         offlineTask.execute((Void[])null);
 
         // HACK initial update (temporary)
-        final StockListTask task = new StockListTask();
-        task.execute(filter);
-        
+//        final StockListTask task = new StockListTask();
+//        task.execute(filter);
+//        
         this.dataManager.addStockDataListener(new IStockDataListener() {
 			
 			@Override
@@ -144,7 +145,7 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 			} catch (Exception e) {
 				txtPrice.setText("Fail");
 				if (e.getMessage() != null) {
-					Log.d("StockListAdapter", e.getMessage());
+					Log.d(Utils.LOG_TAG, e.getMessage());
 				}
 			}
         	if (data != null) {
@@ -256,7 +257,7 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 				String message = "Failed to get stock list. ";
 				if (e.getMessage() != null)
 					message += e.getMessage();
-				Log.d("StockListAdapter", message);
+				Log.d(Utils.LOG_TAG, message);
 				e.printStackTrace();
 			}
 			try {
@@ -272,7 +273,7 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 				String message = "Failed to get stock day data. ";
 				if (e.getMessage() != null)
 					message += e.getMessage();
-				Log.d("StockListAdapter", message);
+				Log.d(Utils.LOG_TAG, message);
 				e.printStackTrace();
 			}
 			return items;

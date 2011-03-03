@@ -65,7 +65,8 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 					Log.d(Utils.LOG_TAG, "Regular update failed!");
 				}
 				// Schedule next update
-				PsePatriaDataAdapter.this.updateHandler.postDelayed(PsePatriaDataAdapter.this.updateTask, refreshInterval);
+				if (PsePatriaDataAdapter.this.updateHandler != null)
+					PsePatriaDataAdapter.this.updateHandler.postDelayed(PsePatriaDataAdapter.this.updateTask, refreshInterval);
 		}
 	}
 
@@ -75,8 +76,8 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 	 */
 	long refreshInterval = 1000 * 60 * 10;		//Milliseconds
 
-	Timer timer;
-	boolean enabled;
+	//Timer timer;
+	private boolean enabled;
 
 	List<IStockDataListener> eventListeners;
 	
@@ -116,12 +117,10 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 
 		this.eventListeners = new ArrayList<IStockDataListener>();
 		this.updateTask = new TimedUpdateTask();
-//		this.timer = new Timer();
-//	    this.timer.schedule(this.updateTask, 100, refreshInterval);
 	    
-	    this.updateHandler = new Handler();
+	    //this.updateHandler = new Handler();
 	    
-	    this.updateHandler.postDelayed(this.updateTask, 0);
+	    //this.updateHandler.postDelayed(this.updateTask, 0);
 	}
 	
 	/* 
@@ -179,7 +178,6 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 		try {
 			stocks = this.provider.getAvailableStockMap();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new FailedToGetDataException(e);
 		}
@@ -246,9 +244,12 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 	@Override
 	public void enable(boolean enabled) {
 		this.enabled = enabled;
-		this.updateHandler.removeCallbacks(this.updateTask);
-		if (enabled)
-			this.updateHandler.postDelayed(this.updateTask, this.refreshInterval);
+		if (this.updateHandler != null) {
+			this.updateHandler.removeCallbacks(this.updateTask);
+			if (enabled)
+				this.updateHandler.postDelayed(this.updateTask,
+						this.refreshInterval);
+		}
 	}
 
 }
