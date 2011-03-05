@@ -6,6 +6,7 @@ package cz.tomas.StockAnalyze.Data;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 
 import android.content.Context;
@@ -21,6 +22,7 @@ import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.Data.PseCsvData.PseCsvDataAdapter;
 import cz.tomas.StockAnalyze.Data.PsePatriaData.PsePatriaDataAdapter;
 import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetDataException;
+import cz.tomas.StockAnalyze.utils.Utils;
 
 /**
  * @author tomas
@@ -73,7 +75,12 @@ public class DataManager implements IStockDataListener {
 		// TODO
 		
 		// do immediate update and schedule next one
-		UpdateScheduler.getInstance(context).scheduleNextIntraDayUpdate();
+		try {
+			UpdateScheduler.getInstance(context).scheduleNextIntraDayUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+			Log.d(Utils.LOG_TAG, "Failed to schedule updates!");
+		}
 	}
 
 	/*
@@ -135,6 +142,14 @@ public class DataManager implements IStockDataListener {
 	public synchronized DayData getLastOfflineValue(String stockId) {
 		DayData data = this.sqlStore.getLastAvailableDayData(stockId);
 		return data;
+	}
+	
+	/*
+	 * Map of StockId: DayData
+	 */
+	public synchronized HashMap<String, DayData> getLastData(List<StockItem> stockItems) {
+		HashMap<String, DayData>  dbData = this.sqlStore.getLastData(stockItems, null);
+		return dbData;
 	}
 	
 	/*
@@ -227,14 +242,19 @@ public class DataManager implements IStockDataListener {
 
 	@Override
 	public void OnStockDataUpdated(IStockDataProvider sender) {
-		Log.d("cz.tomas.StockAnalyze.Data.DataManger", "received stock data update event from " + sender.getId());
-		for (StockItem item : sender.getAvailableStockList()) {
-			DayData data = sender.getLastData(item.getTicker());
-			if (data.getPrice() != 0)
-				this.sqlStore.insertDayData(item, data);
+		Log.d(Utils.LOG_TAG, "received stock data update event from " + sender.getId());
+		this.sqlStore.acquireDb();
+		try {
+			for (StockItem item : sender.getAvailableStockList()) {
+				DayData data = sender.getLastData(item.getTicker());
+				if (data.getPrice() != 0)
+					this.sqlStore.insertDayData(item, data);
+			}
+			this.fireUpdateDateChanged(Calendar.getInstance().getTimeInMillis());
+			this.fireUpdateStockDataListenerUpdate(sender);
+		} finally {
+			this.sqlStore.releaseDb(true);
 		}
-		this.fireUpdateDateChanged(Calendar.getInstance().getTimeInMillis());
-		this.fireUpdateStockDataListenerUpdate(sender);
 	}
 
 	@Override

@@ -28,7 +28,7 @@
 			<action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
 		</intent-filter>
 	</receiver>
-	<receiver android:process=":remote" android:name=".receivers.AlarmReceiver"></receiver>
+	<receiver android:name=".receivers.AlarmReceiver"></receiver>
 
 </application>
 	<uses-sdk android:minSdkVersion="7" />

@@ -3,6 +3,7 @@
  */
 package cz.tomas.StockAnalyze.utils;
 
+import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -43,4 +44,20 @@ public class Utils {
 		return createDateOnlyCalendar(calendar);
 	}
 	
+	/*
+	 * get nearest previous day that was a trading day 
+	 * - it will exclude Saturdays & Sundays
+	 */
+	public static Calendar getLastValidDate(Calendar calendar) {		
+		int dayInMonth = calendar.get(Calendar.DAY_OF_MONTH);
+		int dayInWeek = (7 + calendar.get(Calendar.DAY_OF_WEEK) - Calendar.MONDAY) % 7 + 1;
+		// there are no data for weekends
+		if (dayInWeek > 5) {
+			dayInMonth -= (dayInWeek - 5);	// go back by one or two days
+
+			calendar.set(Calendar.DAY_OF_MONTH, dayInMonth);
+		}
+		
+		return calendar;
+	}
 }

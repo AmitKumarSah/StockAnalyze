@@ -1,5 +1,7 @@
 package cz.tomas.StockAnalyze.Data;
 
+import java.util.concurrent.Semaphore;
+
 import cz.tomas.StockAnalyze.utils.Utils;
 import android.content.Context;
 import android.database.SQLException;
@@ -83,8 +85,18 @@ public class DataSqlHelper extends SQLiteOpenHelper {
 		protected static final String FEEDS_TABLE_NAME = "feeds";
 		protected static final String ARTICLES_TABLE_NAME = "articles";
 		
+		/*
+		 * db counter - only for diag purpose so far
+		 */
+		private static int openCounter = 0;
+		private static Semaphore semaphore;
+		
+		private boolean keepDbOpen = false;
+		private boolean closeDb = false;
+		
 		public DataSqlHelper(Context context) {
 			super(context, DATABASE_FILE_NAME, null, DATABASE_VERSION_NUMBER);
+			this.semaphore = new Semaphore(1);
 		}
 
 		@Override
@@ -122,4 +134,59 @@ public class DataSqlHelper extends SQLiteOpenHelper {
 			onCreate(db);
 		}
 
+
+		@Override
+		public synchronized void close() {
+			if (! keepDbOpen) {
+				Log.d(Utils.LOG_TAG, "Closing database...");
+				super.close();
+			}
+		}
+
+		/*
+		 * calling this method will cause the database connection to be open until 
+		 * releaseDb() will get called
+		 * The purpose of this method is to allow service to access database and not get 
+		 * interrupted - closed - by user interaction in UI.
+		 * This calling won't open the connection.
+		 */
+		public synchronized void acquireDb() {
+			this.keepDbOpen = true;
+			Log.d(Utils.LOG_TAG, "database acquired...");
+		}
+		
+		public synchronized void releaseDb(boolean close) {
+			this.keepDbOpen = false;
+			Log.d(Utils.LOG_TAG, "database released...");
+			
+			if (close)
+				this.close();
+		}
+
+		@Override
+		public synchronized SQLiteDatabase getReadableDatabase() {
+//			try {
+//				DataSqlHelper.semaphore.acquire();
+//			} catch (InterruptedException e) {
+//				e.printStackTrace();
+//				return null;
+//			}
+			openCounter++;
+			Log.d(Utils.LOG_TAG, "db open R request, counter: " + openCounter);
+			return super.getReadableDatabase();
+		}
+
+
+		@Override
+		public synchronized SQLiteDatabase getWritableDatabase() {
+//			try {
+//				DataSqlHelper.semaphore.acquire();
+//			} catch (InterruptedException e) {
+//				e.printStackTrace();
+//				return null;
+//			}
+			openCounter++;
+			Log.d(Utils.LOG_TAG, "db open RW request, counter: " + openCounter);
+			return super.getWritableDatabase();
+		}
 	}

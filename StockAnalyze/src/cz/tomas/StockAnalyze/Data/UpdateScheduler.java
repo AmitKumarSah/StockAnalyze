@@ -7,6 +7,7 @@ import java.util.Calendar;
 
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.receivers.AlarmReceiver;
+import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -25,7 +26,7 @@ public class UpdateScheduler {
 	private Context context;
 	private static UpdateScheduler instance;
 	
-	private final int DEFAULT_REFRESH_INTERVAL = 60 * 15;		//seconds
+	private final int DEFAULT_REFRESH_INTERVAL = 60 * 10;		//seconds
 	private final int REQUEST_CODE = 13215564;
 	
 	public static UpdateScheduler getInstance(Context context) {
@@ -71,7 +72,7 @@ public class UpdateScheduler {
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.SECOND, DEFAULT_REFRESH_INTERVAL);
 		
-		Log.d(Utils.LOG_TAG, "scheduling alarm to " + cal.toString());
+		Log.d(Utils.LOG_TAG, "scheduling alarm to " + FormattingUtils.formatStockDate(cal));
 		
 		Intent intent = new Intent(this.context, AlarmReceiver.class);
 		intent.putExtra("intraday", intraDay);
@@ -79,7 +80,7 @@ public class UpdateScheduler {
 
 		// Get the AlarmManager service
 		AlarmManager am = (AlarmManager) this.context.getSystemService(Context.ALARM_SERVICE);
-		am.set(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), sender);
+		am.set(AlarmManager.RTC, cal.getTimeInMillis(), sender);
 	}
 	
 	class RefreshTask extends AsyncTask<IStockDataProvider, Integer, Boolean> {
@@ -97,7 +98,7 @@ public class UpdateScheduler {
 						throw new NullPointerException("IStockDataProvider is null");
 				} catch (Exception e) {
 					e.printStackTrace();
-					Log.d(Utils.LOG_TAG, "failed refresh for provider");
+					Log.d(Utils.LOG_TAG, "failed to refresh for provider");
 				}
 			return null;
 		}
