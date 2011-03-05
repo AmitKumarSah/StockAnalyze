@@ -12,6 +12,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TimeZone;
 
 import cz.tomas.StockAnalyze.Data.Model.DayData;
@@ -219,8 +221,8 @@ public class StockDataSqlStore extends DataSqlHelper {
 	}
 
 
-	public List<StockItem> getStockItems(Market market) {
-		List<StockItem> items = new ArrayList<StockItem>();
+	public Map<String, StockItem> getStockItems(Market market) {
+		Map<String, StockItem> items = new HashMap<String, StockItem>();
 		try {
 			SQLiteDatabase db = this.getWritableDatabase();
 			Cursor c = null;
@@ -233,7 +235,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 						String name = c.getString(2);
 						// FIXME market table
 						StockItem item = new StockItem(ticker, id, name, MarketFactory.getMarket("cz"));
-						items.add(item);
+						items.put(id, item);
 					} while (c.moveToNext());
 				}
 				
@@ -402,8 +404,8 @@ public class StockDataSqlStore extends DataSqlHelper {
 		return data;
 	}
 
-	public HashMap<String, DayData> getLastData(List<StockItem> stockItems, Market market) {
-		HashMap<String, DayData> dbData = new HashMap<String, DayData>();
+	public HashMap<StockItem, DayData> getLastDataSet(Map<String, StockItem> stockItems, Market market, String orderBy) {
+		HashMap<StockItem, DayData> dbData = new HashMap<StockItem, DayData>();
 		Calendar cal = Utils.createDateOnlyCalendar(Calendar.getInstance());
 		cal = Utils.getLastValidDate(cal);
 		
@@ -414,43 +416,53 @@ public class StockDataSqlStore extends DataSqlHelper {
 			Cursor c = null;
 			try {
 				StringBuilder selectionBuilder = new StringBuilder("(");
-				
-				for (StockItem stockItem : stockItems) {
+				String[] whereArgs = new String[stockItems.size() + 1];
+				int index = 0;
+				//for (int i = 0; i < stockItems.size(); i++) {
+				for (Entry<String, StockItem> stockItem : stockItems.entrySet()) {
 					if (selectionBuilder.length() > 1)
 						selectionBuilder.append(" or ");
-					selectionBuilder.append("stock_id=" + stockItem.getId());
+					selectionBuilder.append("stock_id=?");
+					
+					whereArgs[index] = stockItem.getKey();
+					index++;
 				}
-				//selectionBuilder.append(") and date=" + cal.getTimeInMillis());
-				selectionBuilder.append(")");
+				selectionBuilder.append(") and date=?");
+				whereArgs[whereArgs.length - 1] = String.valueOf(cal.getTimeInMillis());
+				//selectionBuilder.append(")");
 				
 				c = db.query(DAY_DATA_TABLE_NAME, new String[] {
 						"price", "change", "year_max", "year_min", "date", "volume", "id", "last_update", "stock_id" }, 
-						null, null, null, null, null);
+						selectionBuilder.toString(), whereArgs, null, null, orderBy);
 
 				if (c.moveToFirst()) {
-					float price = c.getFloat(0);
-					float change = c.getFloat(1);
-					float max = c.getFloat(2);
-					float min = c.getFloat(3);
-					long millisecs = c.getLong(4);
-					float volume = c.getFloat(5);
-					long id = c.getLong(6);
-					long lastUpdate = c.getLong(7);
-					String stockId = c.getString(8);
-					
-					Date date = new Date(millisecs);
-					DayData data = new DayData(price, change, date, volume, max, min, lastUpdate, id);
-					dbData.put(stockId, data);
+					do {
+						float price = c.getFloat(0);
+						float change = c.getFloat(1);
+						float max = c.getFloat(2);
+						float min = c.getFloat(3);
+						long millisecs = c.getLong(4);
+						float volume = c.getFloat(5);
+						long id = c.getLong(6);
+						long lastUpdate = c.getLong(7);
+						String stockId = c.getString(8);
+						
+						Date date = new Date(millisecs);
+						DayData data = new DayData(price, change, date, volume, max, min, lastUpdate, id);
+						StockItem stock = stockItems.get(stockId);
+						dbData.put(stock, data);
+					} while (c.moveToNext());
 				}
 			} catch (SQLException e) {
-				Log.e(Utils.LOG_TAG, e.toString());
+				Log.e(Utils.LOG_TAG, "sql exception occured", e);
+			} catch (IllegalStateException e) {
+				Log.e(Utils.LOG_TAG, "database is in illegal state!", e);
 			} finally {
 				if (c != null)
 					c.close();
 			}
 		} catch (SQLException e) {
-			Log.d(Utils.LOG_TAG, "failed to get data." + e.getMessage());
-			e.printStackTrace();
+			Log.e(Utils.LOG_TAG, "failed to get data.", e);
 		} finally {
 			this.close();
 		}

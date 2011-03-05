@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -113,28 +114,52 @@ public class DataManager implements IStockDataListener {
 	}
 	
 	/*
-	 * get all stock items from database for given Market instance
+	 * get all stock items from database for given Market
 	 */
-	public synchronized List<StockItem> getStockItems(Market market) {
-		return this.sqlStore.getStockItems(market);
+	public synchronized Map<String, StockItem> getStockItems(Market market) {
+		Map<String, StockItem> items = this.sqlStore.getStockItems(market);
+		if (items == null || items.size() == 0) {
+			items = downloadStockItems(market);
+		}
+		return items;
+	}
+
+	/**
+	 * download stock items using StockProvider
+	 * @param market
+	 * @return
+	 */
+	private Map<String, StockItem> downloadStockItems(Market market) {
+		Map<String, StockItem> items;
+		IStockDataProvider provider = DataProviderFactory.getDataProvider(market);
+		List<StockItem> stocks = provider.getAvailableStockList();
+		
+		items = new HashMap<String, StockItem>();
+		for (StockItem stockItem : stocks) {
+			items.put(stockItem.getId(), stockItem);
+		}
+		return items;
 	}
 	
 	public StockItem getStockItem(String id) throws NullPointerException {
 		return getStockItem(id, null);
 	}
+	
 	public synchronized StockItem getStockItem(String id, Market market) throws NullPointerException {
 		StockItem item = this.sqlStore.getStockItem(id);
 		
-		if (item == null && market != null) {
-			IStockDataProvider provider = DataProviderFactory.getDataProvider(market);
-			List<StockItem> stocks = provider.getAvailableStockList();
-			
-			for (int i = 0; i < stocks.size(); i++) {
-				if (stocks.get(i).getId().equals(id)) {
-					item = stocks.get(i);
-					break;
-				}
-			}
+		if (item == null) {
+			Map<String, StockItem> items = downloadStockItems(market);
+			item = items.get(id);
+//			IStockDataProvider provider = DataProviderFactory.getDataProvider(market);
+//			List<StockItem> stocks = provider.getAvailableStockList();
+//			
+//			for (int i = 0; i < stocks.size(); i++) {
+//				if (stocks.get(i).getId().equals(id)) {
+//					item = stocks.get(i);
+//					break;
+//				}
+//			}
 		}
 		return item; 
 	}
@@ -147,8 +172,8 @@ public class DataManager implements IStockDataListener {
 	/*
 	 * Map of StockId: DayData
 	 */
-	public synchronized HashMap<String, DayData> getLastData(List<StockItem> stockItems) {
-		HashMap<String, DayData>  dbData = this.sqlStore.getLastData(stockItems, null);
+	public synchronized HashMap<StockItem,DayData>  getLastDataSet(Map<String, StockItem> stockItems) {
+		HashMap<StockItem,DayData>  dbData = this.sqlStore.getLastDataSet(stockItems, null, null);
 		return dbData;
 	}
 	

@@ -47,8 +47,6 @@ public class DataManagerTest extends AndroidTestCase {
 		this.dataManager = DataManager.getInstance(context);
 	}
 
-
-
 	public void testPrerequisities() {
 		assertNotNull(this.dataManager);
 		assertNotNull(this.context);
@@ -72,12 +70,13 @@ public class DataManagerTest extends AndroidTestCase {
 	}
 	
 	public void testAllData() {
-		List<StockItem> items = this.dataManager.getStockItems(MarketFactory.getMarket("cz"));
+		Map<String, StockItem> items = this.dataManager.getStockItems(MarketFactory.getMarket("cz"));
 		Calendar cal = Utils.createDateOnlyCalendar(Calendar.getInstance());
-		for (StockItem stockItem : items) {
+		cal = Utils.getLastValidDate(cal);
+		for (StockItem stockItem : items.values()) {
 			sqlStore.insertDayData(stockItem, new DayData(1, 1, cal.getTime(), 1000, 1, 0, cal.getTimeInMillis()));
 		}
-		Map<String, DayData> data = this.dataManager.getLastData(items);
+		Map<StockItem, DayData> data = this.dataManager.getLastDataSet(items);
 		
 		assertEquals(items.size(), data.size());
 	}
