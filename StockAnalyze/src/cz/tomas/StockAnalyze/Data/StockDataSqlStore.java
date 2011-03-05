@@ -10,6 +10,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -399,5 +400,61 @@ public class StockDataSqlStore extends DataSqlHelper {
 		}
 		
 		return data;
+	}
+
+	public HashMap<String, DayData> getLastData(List<StockItem> stockItems, Market market) {
+		HashMap<String, DayData> dbData = new HashMap<String, DayData>();
+		Calendar cal = Utils.createDateOnlyCalendar(Calendar.getInstance());
+		cal = Utils.getLastValidDate(cal);
+		
+		try {
+			//Calendar cal = Utils.createDateOnlyCalendar(calendar);
+			//long milliseconds =  cal.getTimeInMillis();
+			SQLiteDatabase db = this.getWritableDatabase();
+			Cursor c = null;
+			try {
+				StringBuilder selectionBuilder = new StringBuilder("(");
+				
+				for (StockItem stockItem : stockItems) {
+					if (selectionBuilder.length() > 1)
+						selectionBuilder.append(" or ");
+					selectionBuilder.append("stock_id=" + stockItem.getId());
+				}
+				//selectionBuilder.append(") and date=" + cal.getTimeInMillis());
+				selectionBuilder.append(")");
+				
+				c = db.query(DAY_DATA_TABLE_NAME, new String[] {
+						"price", "change", "year_max", "year_min", "date", "volume", "id", "last_update", "stock_id" }, 
+						null, null, null, null, null);
+
+				if (c.moveToFirst()) {
+					float price = c.getFloat(0);
+					float change = c.getFloat(1);
+					float max = c.getFloat(2);
+					float min = c.getFloat(3);
+					long millisecs = c.getLong(4);
+					float volume = c.getFloat(5);
+					long id = c.getLong(6);
+					long lastUpdate = c.getLong(7);
+					String stockId = c.getString(8);
+					
+					Date date = new Date(millisecs);
+					DayData data = new DayData(price, change, date, volume, max, min, lastUpdate, id);
+					dbData.put(stockId, data);
+				}
+			} catch (SQLException e) {
+				Log.e(Utils.LOG_TAG, e.toString());
+			} finally {
+				if (c != null)
+					c.close();
+			}
+		} catch (SQLException e) {
+			Log.d(Utils.LOG_TAG, "failed to get data." + e.getMessage());
+			e.printStackTrace();
+		} finally {
+			this.close();
+		}
+		
+		return dbData;
 	}
 }
