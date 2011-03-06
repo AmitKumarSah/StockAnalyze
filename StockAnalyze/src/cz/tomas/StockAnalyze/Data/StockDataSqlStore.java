@@ -3,32 +3,23 @@
  */
 package cz.tomas.StockAnalyze.Data;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.TimeZone;
 
-import cz.tomas.StockAnalyze.Data.Model.DayData;
-import cz.tomas.StockAnalyze.Data.Model.Market;
-import cz.tomas.StockAnalyze.Data.Model.StockItem;
-import cz.tomas.StockAnalyze.News.Article;
-import cz.tomas.StockAnalyze.utils.Utils;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
-import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.util.Log;
+import cz.tomas.StockAnalyze.Data.Model.DayData;
+import cz.tomas.StockAnalyze.Data.Model.Market;
+import cz.tomas.StockAnalyze.Data.Model.StockItem;
+import cz.tomas.StockAnalyze.utils.Utils;
 
 
 /*
@@ -221,13 +212,14 @@ public class StockDataSqlStore extends DataSqlHelper {
 	}
 
 
-	public Map<String, StockItem> getStockItems(Market market) {
-		Map<String, StockItem> items = new HashMap<String, StockItem>();
+	public Map<String, StockItem> getStockItems(Market market, String orderBy) {
+		// LinkedHashMap preserve order of added items
+		Map<String, StockItem> items = new LinkedHashMap<String, StockItem>();
 		try {
 			SQLiteDatabase db = this.getWritableDatabase();
 			Cursor c = null;
 			try {
-				c = db.query(STOCK_TABLE_NAME, new String[] { "id", "ticker", "name" }, null, null, null, null, null);
+				c = db.query(STOCK_TABLE_NAME, new String[] { "id", "ticker", "name" }, null, null, null, null, orderBy);
 				if (c.moveToFirst()) {
 					do {
 						String id = c.getString(0);

@@ -114,10 +114,11 @@ public class DataManager implements IStockDataListener {
 	}
 	
 	/*
-	 * get all stock items from database for given Market
+	 * get all stock items from database for given Market,
+	 * if stock items weren't found, would try to download them
 	 */
 	public synchronized Map<String, StockItem> getStockItems(Market market) {
-		Map<String, StockItem> items = this.sqlStore.getStockItems(market);
+		Map<String, StockItem> items = this.sqlStore.getStockItems(market, "name");
 		if (items == null || items.size() == 0) {
 			items = downloadStockItems(market);
 		}
@@ -130,6 +131,7 @@ public class DataManager implements IStockDataListener {
 	 * @return
 	 */
 	private Map<String, StockItem> downloadStockItems(Market market) {
+		Log.d(Utils.LOG_TAG, "downloading stock item list");
 		Map<String, StockItem> items;
 		IStockDataProvider provider = DataProviderFactory.getDataProvider(market);
 		List<StockItem> stocks = provider.getAvailableStockList();
@@ -151,15 +153,6 @@ public class DataManager implements IStockDataListener {
 		if (item == null) {
 			Map<String, StockItem> items = downloadStockItems(market);
 			item = items.get(id);
-//			IStockDataProvider provider = DataProviderFactory.getDataProvider(market);
-//			List<StockItem> stocks = provider.getAvailableStockList();
-//			
-//			for (int i = 0; i < stocks.size(); i++) {
-//				if (stocks.get(i).getId().equals(id)) {
-//					item = stocks.get(i);
-//					break;
-//				}
-//			}
 		}
 		return item; 
 	}
