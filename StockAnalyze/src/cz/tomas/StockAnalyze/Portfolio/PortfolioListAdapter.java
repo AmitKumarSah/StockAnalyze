@@ -236,30 +236,39 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 
 			List<PortfolioItem> items = null;
 			try {
-				items = portfolio.getGroupedPortfolioItems();
-			} catch (Exception e) {
-				e.printStackTrace();
-				this.ex = e;
-			}
-			try {
-				if (items != null) {
-					// get day data for each stock and save it
-					datas.clear();
-					for (PortfolioItem portfolioItem : items) {
-						DayData dayData = dataManager.getLastOfflineValue(portfolioItem.getStockId());
-						datas.put(portfolioItem, dayData);
-						
-						float itemValue = portfolioItem.getStockCount() * dayData.getPrice();
-						totalValueSum += itemValue;
-						totalChangeSum += itemValue - portfolioItem.getStartValue();
-					}
+				dataManager.acquireDb(this.getClass().getName());
+				try {
+					items = portfolio.getGroupedPortfolioItems();
+				} catch (Exception e) {
+					Log.e(Utils.LOG_TAG,
+							"failed to get groupped portfolio items", e);
+					this.ex = e;
 				}
-			} catch (Exception e) {
-				String message = "Failed to get stock day data. ";
-				if (e.getMessage() != null)
-					message += e.getMessage();
-				Log.d("StockListAdapter", message);
-				e.printStackTrace();
+				try {
+					if (items != null) {
+						// get day data for each stock and save it
+						datas.clear();
+						for (PortfolioItem portfolioItem : items) {
+							DayData dayData = dataManager
+									.getLastOfflineValue(portfolioItem
+											.getStockId());
+							datas.put(portfolioItem, dayData);
+
+							float itemValue = portfolioItem.getStockCount()
+									* dayData.getPrice();
+							totalValueSum += itemValue;
+							totalChangeSum += itemValue
+									- portfolioItem.getStartValue();
+						}
+					}
+				} catch (Exception e) {
+					String message = "Failed to get stock day data. ";
+					if (e.getMessage() != null)
+						message += e.getMessage();
+					Log.e("StockListAdapter", message, e);
+				}
+			} finally {
+				dataManager.releaseDb(true, this.getClass().getName());
 			}
 			
 			return items;

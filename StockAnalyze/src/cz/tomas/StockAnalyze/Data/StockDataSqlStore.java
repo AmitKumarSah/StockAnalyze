@@ -58,7 +58,6 @@ public class StockDataSqlStore extends DataSqlHelper {
 	private boolean checkForStock(String id) {
 		if (id == null || id.length() == 0)
 			return false;
-
 		boolean result = false;
 		try {
 			SQLiteDatabase db = this.getWritableDatabase();

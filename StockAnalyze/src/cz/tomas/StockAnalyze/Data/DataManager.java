@@ -204,11 +204,24 @@ public class DataManager implements IStockDataListener {
 		} else if (data.getPrice() == 0) {
 			// this is special case when the data is downloaded, but the price is not valid,
 			// so we take old data's price and set it to the output DayData object
-			DayData oldData = this.getLastOfflineValue(item.getId());
-			if (oldData != null)
-				data = new DayData(oldData.getPrice(), data.getChange(), data.getDate(), data.getVolume(), data.getYearMaximum(), data.getYearMinimum(),
-						data.getLastUpdate(), data.getId());
+			data = createDataWithPrice(item, data);
 		}
+		return data;
+	}
+
+	/**
+	 * mix last available offline data with new one, 
+	 * the purpose is to get reasonable data if there is no price
+	 * from data provider 
+	 * @param item stock item to get data for
+	 * @param data data from provider
+	 * @return data from provider with price of last offline data
+	 */
+	private DayData createDataWithPrice(StockItem item, DayData data) {
+		DayData oldData = this.getLastOfflineValue(item.getId());
+		if (oldData != null)
+			data = new DayData(oldData.getPrice(), data.getChange(), data.getDate(), data.getVolume(), data.getYearMaximum(), data.getYearMinimum(),
+					data.getLastUpdate(), data.getId());
 		return data;
 	}	
 
@@ -261,18 +274,27 @@ public class DataManager implements IStockDataListener {
 	@Override
 	public void OnStockDataUpdated(IStockDataProvider sender) {
 		Log.d(Utils.LOG_TAG, "received stock data update event from " + sender.getId());
-		this.sqlStore.acquireDb();
+		this.acquireDb(sender.getId());
 		try {
 			for (StockItem item : sender.getAvailableStockList()) {
 				DayData data = sender.getLastData(item.getTicker());
 				if (data.getPrice() != 0)
-					this.sqlStore.insertDayData(item, data);
+					data = this.createDataWithPrice(item, data);
+				this.sqlStore.insertDayData(item, data);
 			}
 			this.fireUpdateDateChanged(Calendar.getInstance().getTimeInMillis());
 			this.fireUpdateStockDataListenerUpdate(sender);
 		} finally {
-			this.sqlStore.releaseDb(true);
+			this.releaseDb(true, sender.getId());
 		}
+	}
+	
+	public void acquireDb(Object applicant) {
+		this.sqlStore.acquireDb(applicant);
+	}
+	
+	public void releaseDb(boolean close, Object applicant) {
+		this.sqlStore.releaseDb(close, applicant);
 	}
 
 	@Override

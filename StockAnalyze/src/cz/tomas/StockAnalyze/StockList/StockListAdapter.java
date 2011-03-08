@@ -50,6 +50,10 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 	private List<IListAdapterListener<Object>> listeners;
 	
 	private Boolean showIcons = true;
+	
+	/*
+	 * semaphore to synchronize updates to list in StockListTask
+	 */
 	private Semaphore semaphore;
 	
 	public StockListAdapter(final Context context, int textViewResourceId, final DataManager dataManager, final String filter) {
@@ -175,6 +179,8 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 				else if (priceGroupView != null) {
 					priceGroupView.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.groupbox_dark_shape));
 				}
+			} else {
+				txtPrice.setText(R.string.InvalidData);
 			}
         }
 	}
@@ -263,14 +269,12 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 			//List<StockItem> items = null;
 			Map<String, StockItem> items = null;
 			try {
+				Log.d(Utils.LOG_TAG, "adapter's semaphopre waiting queue: " + semaphore.getQueueLength());
 				semaphore.acquire();
+				dataManager.acquireDb(this.getClass().getName());
 				// first, get all stock items we need
 				try {
-					//items = StockListAdapter.this.dataManager.search(params[0], MarketFactory.getMarket("cz"));
 					items = dataManager.getStockItems(null);
-
-					//Collections.sort(items, comparator);
-
 				} catch (Exception e) {
 					String message = "Failed to get stock list. ";
 					if (e.getMessage() != null)
@@ -292,6 +296,7 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 			} catch (InterruptedException e) {
 				Log.e(Utils.LOG_TAG, "semaphore was interrupted", e);
 			} finally {
+				dataManager.releaseDb(true, this.getClass().getName());
 				semaphore.release();
 			}
 			return items;

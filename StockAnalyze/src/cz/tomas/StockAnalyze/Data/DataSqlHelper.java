@@ -88,15 +88,21 @@ public class DataSqlHelper extends SQLiteOpenHelper {
 		/*
 		 * db counter - only for diag purpose so far
 		 */
-		private static int openCounter = 0;
-		private static Semaphore semaphore;
+		private static int acquireCounter = 0;
+		//private static Semaphore semaphore;
 		
-		private boolean keepDbOpen = false;
-		private boolean closeDb = false;
+		private static boolean keepDbOpen = false;
+		
+		/*
+		 * determine deffered db close
+		 * if set to true, in next successful db release, 
+		 * will close the db
+		 */
+		private static boolean closeDb = false;
 		
 		public DataSqlHelper(Context context) {
 			super(context, DATABASE_FILE_NAME, null, DATABASE_VERSION_NUMBER);
-			this.semaphore = new Semaphore(1);
+			//this.semaphore = new Semaphore(1);
 		}
 
 		@Override
@@ -150,43 +156,39 @@ public class DataSqlHelper extends SQLiteOpenHelper {
 		 * interrupted - closed - by user interaction in UI.
 		 * This calling won't open the connection.
 		 */
-		public synchronized void acquireDb() {
-			this.keepDbOpen = true;
-			Log.d(Utils.LOG_TAG, "database acquired...");
+		public synchronized void acquireDb(Object applicant) {
+			keepDbOpen = true;
+			acquireCounter++;
+			Log.d(Utils.LOG_TAG, String.format("database acquired by %s ... %d", applicant.toString(), acquireCounter));
 		}
 		
-		public synchronized void releaseDb(boolean close) {
-			this.keepDbOpen = false;
-			Log.d(Utils.LOG_TAG, "database released...");
+		public synchronized void releaseDb(boolean close, Object applicant) {
+			acquireCounter--;
+			if (acquireCounter == 0){
+				Log.d(Utils.LOG_TAG, "database released by " + applicant.toString());
+				keepDbOpen = false;
+
+				if (close || closeDb) {
+					this.close();
+					closeDb = false;
+				}
+			} else {
+				Log.d(Utils.LOG_TAG, String.format("request from %s: can NOT release db, still acquired... %d", applicant.toString(), acquireCounter));
+				closeDb |= close;
+			}
 			
-			if (close)
-				this.close();
 		}
 
 		@Override
 		public synchronized SQLiteDatabase getReadableDatabase() {
-//			try {
-//				DataSqlHelper.semaphore.acquire();
-//			} catch (InterruptedException e) {
-//				e.printStackTrace();
-//				return null;
-//			}
-			openCounter++;
-			Log.d(Utils.LOG_TAG, "db open R request, counter: " + openCounter);
+			Log.d(Utils.LOG_TAG, "db open R request, counter: ");
 			return super.getReadableDatabase();
 		}
 
 
 		@Override
 		public synchronized SQLiteDatabase getWritableDatabase() {
-//			try {
-//				DataSqlHelper.semaphore.acquire();
-//			} catch (InterruptedException e) {
-//				e.printStackTrace();
-//				return null;
-//			}
-			openCounter++;
-			Log.d(Utils.LOG_TAG, "db open RW request, counter: " + openCounter);
+			//Log.d(Utils.LOG_TAG, "db open RW request, counter: ");
 			return super.getWritableDatabase();
 		}
 	}
