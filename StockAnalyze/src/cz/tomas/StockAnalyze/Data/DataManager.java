@@ -278,7 +278,7 @@ public class DataManager implements IStockDataListener {
 		try {
 			for (StockItem item : sender.getAvailableStockList()) {
 				DayData data = sender.getLastData(item.getTicker());
-				if (data.getPrice() != 0)
+				if (data.getPrice() == 0)
 					data = this.createDataWithPrice(item, data);
 				this.sqlStore.insertDayData(item, data);
 			}
