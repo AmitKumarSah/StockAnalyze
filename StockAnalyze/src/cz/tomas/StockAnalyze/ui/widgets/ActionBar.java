@@ -3,13 +3,13 @@ package cz.tomas.StockAnalyze.ui.widgets;
 import cz.tomas.StockAnalyze.HomeActivity;
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.StockSearchActivity;
+import cz.tomas.StockAnalyze.utils.Utils;
 import android.content.Context;
 import android.content.Intent;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 public class ActionBar extends RelativeLayout {
@@ -33,7 +33,7 @@ public class ActionBar extends RelativeLayout {
 			});
         }
         else
-        	Log.d("ActionBar", "action bar search button not found");
+        	Log.d(Utils.LOG_TAG, "action bar search button not found");
 	
         View homeButton = this.findViewById(R.id.actionHomeButton);
 
@@ -55,6 +55,6 @@ public class ActionBar extends RelativeLayout {
 			});
         }
         else
-        	Log.d("ActionBar", "action bar home button not found");
+        	Log.d(Utils.LOG_TAG, "action bar home button not found");
 	}
 }

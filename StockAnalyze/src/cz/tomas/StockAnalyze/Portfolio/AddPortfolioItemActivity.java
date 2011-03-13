@@ -124,15 +124,19 @@ public final class AddPortfolioItemActivity extends Activity {
 		// construct portfolio item and pass it to Portfolio
 		PortfolioItem item = new PortfolioItem(stockId, portfolioName, count, price, 
 				Calendar.getInstance().getTimeInMillis(), marketId);
+
 		try {
+			dataManager.acquireDb(this.getClass().getName());
 			portfolio.addToPortfolio(item);
 		} catch (SQLException e) {
-			e.printStackTrace();
+			Log.e(Utils.LOG_TAG, "failed to add portoflio item to db", e);
 			String message = this.getText(R.string.portfolioFailedToAdd).toString();
 			if (e.getMessage() != null)
 				message += e.getMessage();
 			
 			Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+		} finally {
+			this.dataManager.releaseDb(true, this.getClass().getName());
 		}
 	}
 	

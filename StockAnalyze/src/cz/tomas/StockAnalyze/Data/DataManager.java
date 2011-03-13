@@ -6,7 +6,9 @@ package cz.tomas.StockAnalyze.Data;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -21,8 +23,12 @@ import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.Data.PseCsvData.PseCsvDataAdapter;
 import cz.tomas.StockAnalyze.Data.PsePatriaData.PsePatriaDataAdapter;
 import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetDataException;
+import cz.tomas.StockAnalyze.utils.Utils;
 
 /**
+ * main class for managing stock data, 
+ * this class is singleton
+ * 
  * @author tomas
  *
  */
@@ -71,6 +77,14 @@ public class DataManager implements IStockDataListener {
 			e.printStackTrace();
 		}
 		// TODO
+		
+		// do immediate update and schedule next one
+		try {
+			UpdateScheduler.getInstance(context).scheduleNextIntraDayUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+			Log.d(Utils.LOG_TAG, "Failed to schedule updates!");
+		}
 	}
 
 	/*
@@ -103,28 +117,45 @@ public class DataManager implements IStockDataListener {
 	}
 	
 	/*
-	 * get all stock items from database for given Market instance
+	 * get all stock items from database for given Market,
+	 * if stock items weren't found, would try to download them
 	 */
-	public synchronized List<StockItem> getStockItems(Market market) {
-		return this.sqlStore.getStockItems(market);
+	public synchronized Map<String, StockItem> getStockItems(Market market) {
+		Map<String, StockItem> items = this.sqlStore.getStockItems(market, "name");
+		if (items == null || items.size() == 0) {
+			items = downloadStockItems(market);
+		}
+		return items;
+	}
+
+	/**
+	 * download stock items using StockProvider
+	 * @param market
+	 * @return
+	 */
+	private Map<String, StockItem> downloadStockItems(Market market) {
+		Log.d(Utils.LOG_TAG, "downloading stock item list");
+		Map<String, StockItem> items;
+		IStockDataProvider provider = DataProviderFactory.getDataProvider(market);
+		List<StockItem> stocks = provider.getAvailableStockList();
+		
+		items = new HashMap<String, StockItem>();
+		for (StockItem stockItem : stocks) {
+			items.put(stockItem.getId(), stockItem);
+		}
+		return items;
 	}
 	
 	public StockItem getStockItem(String id) throws NullPointerException {
 		return getStockItem(id, null);
 	}
+	
 	public synchronized StockItem getStockItem(String id, Market market) throws NullPointerException {
 		StockItem item = this.sqlStore.getStockItem(id);
 		
-		if (item == null && market != null) {
-			IStockDataProvider provider = DataProviderFactory.getDataProvider(market);
-			List<StockItem> stocks = provider.getAvailableStockList();
-			
-			for (int i = 0; i < stocks.size(); i++) {
-				if (stocks.get(i).getId().equals(id)) {
-					item = stocks.get(i);
-					break;
-				}
-			}
+		if (item == null) {
+			Map<String, StockItem> items = downloadStockItems(market);
+			item = items.get(id);
 		}
 		return item; 
 	}
@@ -132,6 +163,14 @@ public class DataManager implements IStockDataListener {
 	public synchronized DayData getLastOfflineValue(String stockId) {
 		DayData data = this.sqlStore.getLastAvailableDayData(stockId);
 		return data;
+	}
+	
+	/*
+	 * Map of StockId: DayData
+	 */
+	public synchronized HashMap<StockItem,DayData>  getLastDataSet(Map<String, StockItem> stockItems) {
+		HashMap<StockItem,DayData>  dbData = this.sqlStore.getLastDataSet(stockItems, null, null);
+		return dbData;
 	}
 	
 	/*
@@ -166,12 +205,26 @@ public class DataManager implements IStockDataListener {
 		if (data == null ) {
 			data = this.getLastOfflineValue(item.getId());
 		} else if (data.getPrice() == 0) {
-			// this is special case when the data is dowloaded, but the price is no valid,
+			// this is special case when the data is downloaded, but the price is not valid,
 			// so we take old data's price and set it to the output DayData object
-			DayData oldData = this.getLastOfflineValue(item.getId());
+			data = createDataWithPrice(item, data);
+		}
+		return data;
+	}
+
+	/**
+	 * mix last available offline data with new one, 
+	 * the purpose is to get reasonable data if there is no price
+	 * from data provider 
+	 * @param item stock item to get data for
+	 * @param data data from provider
+	 * @return data from provider with price of last offline data
+	 */
+	private DayData createDataWithPrice(StockItem item, DayData data) {
+		DayData oldData = this.getLastOfflineValue(item.getId());
+		if (oldData != null)
 			data = new DayData(oldData.getPrice(), data.getChange(), data.getDate(), data.getVolume(), data.getYearMaximum(), data.getYearMinimum(),
 					data.getLastUpdate(), data.getId());
-		}
 		return data;
 	}	
 
@@ -223,14 +276,34 @@ public class DataManager implements IStockDataListener {
 
 	@Override
 	public void OnStockDataUpdated(IStockDataProvider sender) {
-		Log.d("cz.tomas.StockAnalyze.Data.DataManger", "received stock data update event from " + sender.getId());
-		for (StockItem item : sender.getAvailableStockList()) {
-			DayData data = sender.getLastData(item.getTicker());
-			if (data.getPrice() != 0)
+		Log.d(Utils.LOG_TAG, "received stock data update event from " + sender.getId());
+		this.acquireDb(sender.getId());
+		try {
+			for (StockItem item : sender.getAvailableStockList()) {
+				DayData data = sender.getLastData(item.getTicker());
+				if (data.getPrice() == 0)
+					data = this.createDataWithPrice(item, data);
 				this.sqlStore.insertDayData(item, data);
+			}
+			this.fireUpdateDateChanged(Calendar.getInstance().getTimeInMillis());
+			this.fireUpdateStockDataListenerUpdate(sender);
+		} finally {
+			this.releaseDb(true, sender.getId());
 		}
-		this.fireUpdateDateChanged(Calendar.getInstance().getTimeInMillis());
-		this.fireUpdateStockDataListenerUpdate(sender);
+	}
+	
+	/*
+	 * tell the database to not close until method releaseDb is called
+	 */
+	public void acquireDb(Object applicant) {
+		this.sqlStore.acquireDb(applicant);
+	}
+	
+	/*
+	 * release lock created byt acquireDb() calling
+	 */
+	public void releaseDb(boolean close, Object applicant) {
+		this.sqlStore.releaseDb(close, applicant);
 	}
 
 	@Override

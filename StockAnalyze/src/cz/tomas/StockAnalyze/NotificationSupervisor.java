@@ -15,6 +15,7 @@ import android.widget.RemoteViews;
 import cz.tomas.StockAnalyze.Data.IStockDataProvider;
 import cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
+import cz.tomas.StockAnalyze.utils.Utils;
 
 /**
  * @author tomas
@@ -54,8 +55,13 @@ public class NotificationSupervisor implements IStockDataListener {
 			this.stringBuilder.append(": ");
 			this.stringBuilder.append(FormattingUtils.formatStockDate(Calendar.getInstance()));
 			
-			this.currentNotificationView.setTextViewText(R.id.notification_text, this.stringBuilder.toString());
-			this.notificationManager.notify(UPDATE_DATA_ID, this.notification);
+
+			if (this.context.getSharedPreferences(Utils.PREF_NAME, 0).getBoolean(Utils.PREF_PERMANENT_NOTIF, true)) {
+				this.currentNotificationView.setTextViewText(R.id.notification_text, this.stringBuilder.toString());
+				this.notificationManager.notify(UPDATE_DATA_ID, this.notification);
+			} else {
+				this.notificationManager.cancel(UPDATE_DATA_ID);
+			}
 		}
 	}
 
@@ -65,7 +71,9 @@ public class NotificationSupervisor implements IStockDataListener {
 	 */
 	@Override
 	public void OnStockDataUpdateBegin(IStockDataProvider sender) {
-		if (sender == null)
+		boolean enableNotif = this.context.getSharedPreferences(Utils.PREF_NAME, 0).getBoolean(Utils.PREF_UPDATE_NOTIF, true);
+		
+		if (sender == null || enableNotif == false)
 			return;
 		if (this.currentNotificationView == null)
 			this.currentNotificationView = new RemoteViews(this.context.getPackageName(), R.layout.custom_update_notification_layout);
@@ -99,8 +107,12 @@ public class NotificationSupervisor implements IStockDataListener {
 			this.stringBuilder.append(": ");
 			this.stringBuilder.append(FormattingUtils.formatStockDate(Calendar.getInstance()));
 			
-			this.currentNotificationView.setTextViewText(R.id.notification_text, this.stringBuilder.toString());
-			this.notificationManager.notify(UPDATE_DATA_ID, this.notification);
+			if (this.context.getSharedPreferences(Utils.PREF_NAME, 0).getBoolean(Utils.PREF_PERMANENT_NOTIF, true)) {
+				this.currentNotificationView.setTextViewText(R.id.notification_text, this.stringBuilder.toString());
+				this.notificationManager.notify(UPDATE_DATA_ID, this.notification);
+			} else {
+				this.notificationManager.cancel(UPDATE_DATA_ID);
+			}
 		}
 	}
 

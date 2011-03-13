@@ -34,7 +34,7 @@ public class StockListActivityTest extends ActivityInstrumentationTestCase2<Stoc
 		super.setUp();
 		this.activity = this.getActivity();
 		listView = this.activity.getListView();
-		this.progressView = this.activity.findViewById(cz.tomas.StockAnalyze.R.id.progressStockList);
+		this.progressView = this.activity.findViewById(cz.tomas.StockAnalyze.R.id.progressBar);
 	}
 	
 	public void testPreconditions() {

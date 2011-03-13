@@ -1,5 +1,8 @@
 package cz.tomas.StockAnalyze.Data;
 
+import java.util.concurrent.Semaphore;
+
+import cz.tomas.StockAnalyze.utils.Utils;
 import android.content.Context;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -82,36 +85,52 @@ public class DataSqlHelper extends SQLiteOpenHelper {
 		protected static final String FEEDS_TABLE_NAME = "feeds";
 		protected static final String ARTICLES_TABLE_NAME = "articles";
 		
+		/*
+		 * db counter - only for diag purpose so far
+		 */
+		private static int acquireCounter = 0;
+		//private static Semaphore semaphore;
+		
+		private static boolean keepDbOpen = false;
+		
+		/*
+		 * determine deffered db close
+		 * if set to true, in next successful db release, 
+		 * will close the db
+		 */
+		private static boolean closeDb = false;
+		
 		public DataSqlHelper(Context context) {
 			super(context, DATABASE_FILE_NAME, null, DATABASE_VERSION_NUMBER);
+			//this.semaphore = new Semaphore(1);
 		}
 
 		@Override
 		public void onCreate(SQLiteDatabase db) {
 			try {
-				Log.d("DataSqlHelper", "creating stock table!");
+				Log.d(Utils.LOG_TAG, "creating stock table!");
 				db.execSQL(STOCK_TABLE_CREATE);
-				Log.d("DataSqlHelper", "creating day data table!");
+				Log.d(Utils.LOG_TAG, "creating day data table!");
 				db.execSQL(DAY_DATA_TABLE_CREATE);
-				Log.d("DataSqlHelper", "creating intraday data table!");
+				Log.d(Utils.LOG_TAG, "creating intraday data table!");
 				db.execSQL(INTRADAY_DATA_TABLE_CREATE);
-				Log.d("DataSqlHelper", "creating portfolio table!");
+				Log.d(Utils.LOG_TAG, "creating portfolio table!");
 				db.execSQL(PORTFOLIO_TABLE_CREATE);
 				
-				Log.d("DataSqlHelper", "creating Feeds table!");
+				Log.d(Utils.LOG_TAG, "creating Feeds table!");
 				db.execSQL(CREATE_TABLE_FEEDS);
-				Log.d("DataSqlHelper", "creating Articles table!");
+				Log.d(Utils.LOG_TAG, "creating Articles table!");
 				db.execSQL(CREATE_TABLE_ARTICLES);
 				
 			} catch (SQLException e) {
 				e.printStackTrace();
-				Log.d("DataSqlHelper", "Failed to create database!\n" + e.getMessage());
+				Log.d(Utils.LOG_TAG, "Failed to create database!\n" + e.getMessage());
 			}
 		}
 
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-			Log.d("StockDataSqlStore", "droping tables!");
+			Log.d(Utils.LOG_TAG, "droping tables!");
 			db.execSQL(TABLE_DROP + INTRADAY_DATA_TABLE_NAME);
 			db.execSQL(TABLE_DROP + DAY_DATA_TABLE_NAME);
 			db.execSQL(TABLE_DROP + STOCK_TABLE_NAME);
@@ -121,4 +140,59 @@ public class DataSqlHelper extends SQLiteOpenHelper {
 			onCreate(db);
 		}
 
+
+		@Override
+		public synchronized void close() {
+			if (! keepDbOpen) {
+				Log.d(Utils.LOG_TAG, "Closing database...");
+				super.close();
+			}
+		}
+
+		/*
+		 * calling this method will cause the database connection to be open until 
+		 * releaseDb() will get called
+		 * The purpose of this method is to allow service to access database and not get 
+		 * interrupted - closed - by user interaction in UI.
+		 * This calling won't open the connection.
+		 */
+		public synchronized void acquireDb(Object applicant) {
+			keepDbOpen = true;
+			acquireCounter++;
+			if (applicant == null)
+				applicant = "unknown";
+			Log.d(Utils.LOG_TAG, String.format("database acquired by %s ... %d", applicant.toString(), acquireCounter));
+		}
+		
+		public synchronized void releaseDb(boolean close, Object applicant) {
+			acquireCounter--;
+			if (applicant == null)
+				applicant = "unknown";
+			if (acquireCounter == 0){
+				Log.d(Utils.LOG_TAG, "database released by " + applicant.toString());
+				keepDbOpen = false;
+
+				if (close || closeDb) {
+					this.close();
+					closeDb = false;
+				}
+			} else {
+				Log.d(Utils.LOG_TAG, String.format("request from %s: can NOT release db, still acquired... %d", applicant.toString(), acquireCounter));
+				closeDb |= close;
+			}
+			
+		}
+
+		@Override
+		public synchronized SQLiteDatabase getReadableDatabase() {
+			Log.d(Utils.LOG_TAG, "db open R request, counter: ");
+			return super.getReadableDatabase();
+		}
+
+
+		@Override
+		public synchronized SQLiteDatabase getWritableDatabase() {
+			//Log.d(Utils.LOG_TAG, "db open RW request, counter: ");
+			return super.getWritableDatabase();
+		}
 	}

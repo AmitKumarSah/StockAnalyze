@@ -1,7 +1,9 @@
 package cz.tomas.StockAnalyze.utils;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import cz.tomas.StockAnalyze.AppPreferencesActivity;
 import cz.tomas.StockAnalyze.StockDetailActivity;
 import cz.tomas.StockAnalyze.StockListActivity;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
@@ -22,5 +24,10 @@ public class NavUtils {
 		intent.putExtra("market_id", stock.getMarket());
 		intent.setClass(context, StockDetailActivity.class);
 		context.startActivity(intent);
+	}
+	
+	public static void goToSettings(Activity activity) {
+		Intent intent = new Intent(activity, AppPreferencesActivity.class);
+    	activity.startActivity(intent);
 	}
 }

@@ -1,4 +1,4 @@
-package cz.tomas.StockAnalyze;
+package cz.tomas.StockAnalyze.receivers;
 
 import cz.tomas.StockAnalyze.utils.Utils;
 import android.app.ActivityManager;
@@ -8,7 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-public class AppBroadcastReceiver extends BroadcastReceiver {
+public class NetworkBroadcastReceiver extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context context, Intent intent) {

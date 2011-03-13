@@ -25,11 +25,13 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 import cz.tomas.StockAnalyze.Data.DataManager;
+import cz.tomas.StockAnalyze.Data.UpdateScheduler;
 import cz.tomas.StockAnalyze.Data.Interfaces.IListAdapterListener;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.Portfolio.AddPortfolioItemActivity;
 import cz.tomas.StockAnalyze.StockList.StockListAdapter;
 import cz.tomas.StockAnalyze.utils.NavUtils;
+import cz.tomas.StockAnalyze.utils.Utils;
 
 /**
  * @author tomas
@@ -58,7 +60,11 @@ public class StockListActivity extends ListActivity {
 		this.getListView().setTextFilterEnabled(true);
 		this.registerForContextMenu(this.getListView());
 		
-		this.progressBar = (ProgressBar) findViewById(R.id.progressBar);
+		try {
+			this.progressBar = (ProgressBar) findViewById(R.id.progressBar);
+		} catch (Exception e) {
+			Log.e(Utils.LOG_TAG, "failed to find progress bar", e);
+		}
 
 		this.getListView().setOnItemClickListener(new OnItemClickListener() {
 			@Override
@@ -188,10 +194,10 @@ public class StockListActivity extends ListActivity {
 	    // Handle item selection
 	    switch (item.getItemId()) {
 	    case R.id.menu_stock_list_refresh:
-	    	RefreshTask task = new RefreshTask();
-	    	task.execute((Void[]) null);
+	    	UpdateScheduler.getInstance(this).updateImmediatly();
 	        return true;
 	    case R.id.menu_stock_list_settings:
+	    	NavUtils.goToSettings(this);
 	        return true;
 	    default:
 	        return super.onOptionsItemSelected(item);

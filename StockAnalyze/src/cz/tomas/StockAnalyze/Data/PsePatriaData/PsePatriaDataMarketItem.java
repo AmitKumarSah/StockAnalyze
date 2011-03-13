@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import cz.tomas.StockAnalyze.utils.Utils;
+
 import android.util.Log;
 
 /**
@@ -65,7 +67,7 @@ public class PsePatriaDataMarketItem {
 			String message = "Failed to process patria data xml! ";
 			if (e.getMessage() != null)
 				message += e.getMessage();
-			Log.d("PsePatriaDataMarket", message);
+			Log.d(Utils.LOG_TAG, message);
 			e.printStackTrace();
 			throw e;
 		}
@@ -76,7 +78,7 @@ public class PsePatriaDataMarketItem {
 		for (PsePatriaDataItem item : items) {
 			String name = item.getName();
 			if (name == null || ! this.patriaTickerMapping.containsKey(name.toUpperCase())) {
-				Log.d("PsePatriaDataMarket", "Failed to find info about stockItem: " + ( item != null ? item.toString() : "NULL"));
+				Log.d(Utils.LOG_TAG, "Failed to find info about stockItem: " + ( item != null ? item.toString() : "NULL"));
 				continue;
 			}
 			String ticker = this.patriaTickerMapping.get(name.toUpperCase());
@@ -84,7 +86,7 @@ public class PsePatriaDataMarketItem {
 			if (ticker != null)
 				this.stocksData.put(ticker, item);
 			else
-				Log.d("PsePatriaDataMarket", "Failed to find ticker info for stockItem: " + ( item != null ? item.toString() : "NULL"));
+				Log.d(Utils.LOG_TAG, "Failed to find ticker info for stockItem: " + ( item != null ? item.toString() : "NULL"));
 		}
 	}
 	

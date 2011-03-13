@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+	<PreferenceCategory android:title="Notifications">
+		<CheckBoxPreference 
+			android:title="Update Notification"
+			android:defaultValue="true" 
+			android:summary="@string/prefUpdateNotification"
+			android:key="prefUpdateNotification" />
+		<CheckBoxPreference 
+			android:title="Permanent Notification"
+			android:defaultValue="true" 
+			android:summary="@string/prefPermanentNotification"
+			android:key="prefPermanentNotification" />
+	</PreferenceCategory>
+	<PreferenceCategory android:title="Automatic Updates">
+		<CheckBoxPreference 
+			android:title="Background Updates"
+			android:defaultValue="true" 
+			android:summary="@string/prefPermanentNotification"
+			android:key="prefEnableBackgroundUpdate" />
+		<ListPreference
+			android:title="Update Interval"
+			android:summary="@string/prefBackgrounUpdate"
+			android:key="prefUpdateTimeInterval"
+			android:defaultValue="10"
+			android:entries="@array/prefListUpdateIntervalEntries"
+			android:entryValues="@array/prefListUpdateIntervalValues" />
+		</PreferenceCategory>
+</PreferenceScreen>

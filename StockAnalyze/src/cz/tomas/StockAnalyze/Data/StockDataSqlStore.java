@@ -3,29 +3,23 @@
  */
 package cz.tomas.StockAnalyze.Data;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
-import java.util.TimeZone;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
-import cz.tomas.StockAnalyze.Data.Model.DayData;
-import cz.tomas.StockAnalyze.Data.Model.Market;
-import cz.tomas.StockAnalyze.Data.Model.StockItem;
-import cz.tomas.StockAnalyze.News.Article;
-import cz.tomas.StockAnalyze.utils.Utils;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
-import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.util.Log;
+import cz.tomas.StockAnalyze.Data.Model.DayData;
+import cz.tomas.StockAnalyze.Data.Model.Market;
+import cz.tomas.StockAnalyze.Data.Model.StockItem;
+import cz.tomas.StockAnalyze.utils.Utils;
 
 
 /*
@@ -64,7 +58,6 @@ public class StockDataSqlStore extends DataSqlHelper {
 	private boolean checkForStock(String id) {
 		if (id == null || id.length() == 0)
 			return false;
-
 		boolean result = false;
 		try {
 			SQLiteDatabase db = this.getWritableDatabase();
@@ -218,13 +211,14 @@ public class StockDataSqlStore extends DataSqlHelper {
 	}
 
 
-	public List<StockItem> getStockItems(Market market) {
-		List<StockItem> items = new ArrayList<StockItem>();
+	public Map<String, StockItem> getStockItems(Market market, String orderBy) {
+		// LinkedHashMap preserve order of added items
+		Map<String, StockItem> items = new LinkedHashMap<String, StockItem>();
 		try {
 			SQLiteDatabase db = this.getWritableDatabase();
 			Cursor c = null;
 			try {
-				c = db.query(STOCK_TABLE_NAME, new String[] { "id", "ticker", "name" }, null, null, null, null, null);
+				c = db.query(STOCK_TABLE_NAME, new String[] { "id", "ticker", "name" }, null, null, null, null, orderBy);
 				if (c.moveToFirst()) {
 					do {
 						String id = c.getString(0);
@@ -232,7 +226,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 						String name = c.getString(2);
 						// FIXME market table
 						StockItem item = new StockItem(ticker, id, name, MarketFactory.getMarket("cz"));
-						items.add(item);
+						items.put(id, item);
 					} while (c.moveToNext());
 				}
 				
@@ -399,5 +393,71 @@ public class StockDataSqlStore extends DataSqlHelper {
 		}
 		
 		return data;
+	}
+
+	public HashMap<StockItem, DayData> getLastDataSet(Map<String, StockItem> stockItems, Market market, String orderBy) {
+		HashMap<StockItem, DayData> dbData = new HashMap<StockItem, DayData>();
+		Calendar cal = Utils.createDateOnlyCalendar(Calendar.getInstance());
+		cal = Utils.getLastValidDate(cal);
+		
+		try {
+			//Calendar cal = Utils.createDateOnlyCalendar(calendar);
+			//long milliseconds =  cal.getTimeInMillis();
+			SQLiteDatabase db = this.getWritableDatabase();
+			Cursor c = null;
+			try {
+				StringBuilder selectionBuilder = new StringBuilder("(");
+				String[] whereArgs = new String[stockItems.size() + 1];
+				int index = 0;
+				//for (int i = 0; i < stockItems.size(); i++) {
+				for (Entry<String, StockItem> stockItem : stockItems.entrySet()) {
+					if (selectionBuilder.length() > 1)
+						selectionBuilder.append(" or ");
+					selectionBuilder.append("stock_id=?");
+					
+					whereArgs[index] = stockItem.getKey();
+					index++;
+				}
+				selectionBuilder.append(") and date=?");
+				whereArgs[whereArgs.length - 1] = String.valueOf(cal.getTimeInMillis());
+				//selectionBuilder.append(")");
+				
+				c = db.query(DAY_DATA_TABLE_NAME, new String[] {
+						"price", "change", "year_max", "year_min", "date", "volume", "id", "last_update", "stock_id" }, 
+						selectionBuilder.toString(), whereArgs, null, null, orderBy);
+
+				if (c.moveToFirst()) {
+					do {
+						float price = c.getFloat(0);
+						float change = c.getFloat(1);
+						float max = c.getFloat(2);
+						float min = c.getFloat(3);
+						long millisecs = c.getLong(4);
+						float volume = c.getFloat(5);
+						long id = c.getLong(6);
+						long lastUpdate = c.getLong(7);
+						String stockId = c.getString(8);
+						
+						Date date = new Date(millisecs);
+						DayData data = new DayData(price, change, date, volume, max, min, lastUpdate, id);
+						StockItem stock = stockItems.get(stockId);
+						dbData.put(stock, data);
+					} while (c.moveToNext());
+				}
+			} catch (SQLException e) {
+				Log.e(Utils.LOG_TAG, "sql exception occured", e);
+			} catch (IllegalStateException e) {
+				Log.e(Utils.LOG_TAG, "database is in illegal state!", e);
+			} finally {
+				if (c != null)
+					c.close();
+			}
+		} catch (SQLException e) {
+			Log.e(Utils.LOG_TAG, "failed to get data.", e);
+		} finally {
+			this.close();
+		}
+		
+		return dbData;
 	}
 }

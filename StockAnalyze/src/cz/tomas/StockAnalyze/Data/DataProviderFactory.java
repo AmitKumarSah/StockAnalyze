@@ -39,10 +39,19 @@ public class DataProviderFactory {
 	}
 	
 	/*
+	 * get default DataProvider
+	 */
+	public static IStockDataProvider getDataProvider() {
+		return providers.get("PSE_PATRIA");
+	}
+	
+	/*
 	 * get real time data provider for market specified
 	 * if no provider fits the condition, null is returned
 	 */
 	public static IStockDataProvider getDataProvider(Market market) {
+		if (market == null)
+			return getDataProvider();
 		
 		for (Entry<String, IStockDataProvider> provider : providers.entrySet()) {
 			DataProviderAdviser providerAdviser =  provider.getValue().getAdviser();

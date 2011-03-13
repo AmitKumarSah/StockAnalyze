@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="cz.tomas.StockAnalyze" android:versionName="0.9" android:versionCode="2">
+	package="cz.tomas.StockAnalyze" android:versionName="0.9" android:versionCode="4">
 	<application android:icon="@drawable/ic_launcher" android:label="@string/app_name"
-		android:debuggable="true" android:theme="@style/themeLight" android:allowBackup="true">
+		android:debuggable="true" 
+		android:theme="@style/themeLight" 
+		android:allowBackup="true">
 		<activity android:name=".StockAnalyze" android:label="@string/app_name">
 			<intent-filter>
 				<category android:name="android.intent.category.LAUNCHER" />
@@ -20,14 +22,20 @@
 		<activity android:name="StockSearchActivity"></activity>
 		<activity android:name="StockDetailActivity"></activity>
 		<activity android:name="PortfolioActivity"></activity>
-		<activity android:name=".Portfolio.AddPortfolioItemActivity"></activity>
+		<activity android:name=".Portfolio.AddPortfolioItemActivity"
+			android:theme="@style/themeLightTitle"
+			android:label="@string/AddPortfolioItemActivityTitle"></activity>
 		<activity android:name="NewsActivity"></activity>
-	<receiver android:enabled="true" android:name="AppBroadcastReceiver" android:permission="android.permission.ACCESS_NETWORK_STATE">
+		<activity android:name="AppPreferencesActivity" 
+			android:label="@string/AppPreferencesActivityTitle"
+			android:theme="@style/themeLightTitle"></activity>
+	<receiver android:enabled="true" android:permission="android.permission.ACCESS_NETWORK_STATE" android:name=".receivers.NetworkBroadcastReceiver">
 		<intent-filter>
 			<action android:name="android.net.conn.BACKGROUND_DATA_SETTING_CHANGED"/>
 			<action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
 		</intent-filter>
 	</receiver>
+	<receiver android:name=".receivers.AlarmReceiver"></receiver>
 
 </application>
 	<uses-sdk android:minSdkVersion="7" />

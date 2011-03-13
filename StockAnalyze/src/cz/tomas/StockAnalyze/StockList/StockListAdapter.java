@@ -7,8 +7,11 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.Semaphore;
 
 import android.app.Activity;
 import android.content.Context;
@@ -30,6 +33,7 @@ import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.PortfolioSum;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
+import cz.tomas.StockAnalyze.utils.Utils;
 
 /**
  * @author tomas
@@ -41,11 +45,16 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 	private DataManager dataManager;
 	private LayoutInflater vi; 
 	
-	private Map<StockItem, DayData> datas;
+	private Map<StockItem, DayData> dataSet;
 	private StockComparator comparator;
 	private List<IListAdapterListener<Object>> listeners;
 	
 	private Boolean showIcons = true;
+	
+	/*
+	 * semaphore to synchronize updates to list in StockListTask
+	 */
+	private Semaphore semaphore;
 	
 	public StockListAdapter(final Context context, int textViewResourceId, final DataManager dataManager, final String filter) {
 		super(context, textViewResourceId);
@@ -53,17 +62,15 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 		this.comparator = new StockComparator(StockCompareTypes.Name, dataManager);
 		this.listeners = new ArrayList<IListAdapterListener<Object>>();
 
-		this.datas = new HashMap<StockItem, DayData>();
+		this.dataSet = new HashMap<StockItem, DayData>();
         this.vi = (LayoutInflater)	this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.setNotifyOnChange(false);
+        this.semaphore = new Semaphore(1);
 
-        OfflineStockListTask offlineTask = new OfflineStockListTask();
-        offlineTask.execute((Void[])null);
+        //OfflineStockListTask offlineTask = new OfflineStockListTask();
+        //offlineTask.execute((Void[])null);
+        this.refreshList();
 
-        // HACK initial update (temporary)
-        final StockListTask task = new StockListTask();
-        task.execute(filter);
-        
         this.dataManager.addStockDataListener(new IStockDataListener() {
 			
 			@Override
@@ -72,8 +79,7 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 					
 					@Override
 					public void run() {
-						StockListTask task = new StockListTask();
-				        task.execute(filter);
+						refreshList();
 					}
 				});
 			}
@@ -88,6 +94,11 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 
 			}
 		});
+	}
+	
+	private void refreshList() {
+		StockListTask task = new StockListTask();
+        task.execute(null);
 	}
 	
 	@Override
@@ -115,7 +126,11 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 //        }
         
         StockItem stock = this.getItem(position);
-        fillView(v, stock);
+        if (stock != null)
+        	fillView(v, stock);
+        else {
+        	Log.d(Utils.LOG_TAG, "stock is null, cannot create list's view at position " + position);
+        }
 		
         return v;
 	}
@@ -140,11 +155,11 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
         	DayData data = null;
 			try {
 				//data = this.dataManager.getLastValue(stock);
-				data = this.datas.get(stock);
+				data = this.dataSet.get(stock);
 			} catch (Exception e) {
 				txtPrice.setText("Fail");
 				if (e.getMessage() != null) {
-					Log.d("StockListAdapter", e.getMessage());
+					Log.d(Utils.LOG_TAG, e.getMessage());
 				}
 			}
         	if (data != null) {
@@ -164,6 +179,8 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 				else if (priceGroupView != null) {
 					priceGroupView.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.groupbox_dark_shape));
 				}
+			} else {
+				txtPrice.setText(R.string.InvalidData);
 			}
         }
 	}
@@ -184,7 +201,11 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
     }
     
     private Boolean isDivider(int position) {
-    	return this.getItem(position).getName().startsWith("-");
+    	StockItem item = this.getItem(position);
+    	if (item != null)
+    		return item.getName().startsWith("-");
+    	else
+    		return false;
     }
 	
 	public void showIcons(Boolean show) {
@@ -195,44 +216,45 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 		this.listeners.add(listener);
 	}
 	
-	private class OfflineStockListTask extends AsyncTask<Void, Integer, List<StockItem>> {
-
-		@Override
-		protected List<StockItem> doInBackground(Void... params) {
-			List<StockItem> items = dataManager.getStockItems(null);
-			for (StockItem stockItem : items) {
-				DayData data = dataManager.getLastOfflineValue(stockItem.getId());
-				datas.put(stockItem, data);
-			}
-			Collections.sort(items, comparator);
-			return items;
-		}
-
-		/* (non-Javadoc)
-		 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
-		 */
-		@Override
-		protected void onPostExecute(List<StockItem> result) {
-			super.onPostExecute(result);
-			if (result == null || result.size() == 0)
-				Toast.makeText(getContext(), R.string.noOfflineData, Toast.LENGTH_LONG).show();
-			else {
-				clear();
-	        	for (int i = 0; i < result.size(); i++) {
-	        		add(result.get(i));
-				}
-			}
-	    	notifyDataSetChanged();
-		}
-		
-		
-	}
-	
+//	private class OfflineStockListTask extends AsyncTask<Void, Integer, Map<String, StockItem>> {
+//
+//		@Override
+//		protected Map<String, StockItem> doInBackground(Void... params) {
+//			Map<String, StockItem> items = dataManager.getStockItems(null);
+//			dataSet = dataManager.getLastDataSet(items);
+////			for (Entry<String, StockItem> stockItem : items.entrySet()) {
+////				DayData data = dataManager.getLastOfflineValue(stockItem.getKey());
+////				datas.put(stockItem, data);
+////			}
+//			//Collections.sort(items, comparator);
+//			return items;
+//		}
+//
+//		/* (non-Javadoc)
+//		 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
+//		 */
+//		@Override
+//		protected void onPostExecute(Map<String, StockItem> result) {
+//			super.onPostExecute(result);
+//			if (result == null || result.size() == 0)
+//				Toast.makeText(getContext(), R.string.noOfflineData, Toast.LENGTH_LONG).show();
+//			else {
+//				clear();
+//				for (Entry<String, StockItem> entry : result.entrySet()) {
+//					add(entry.getValue());
+//				}
+//			}
+//	    	notifyDataSetChanged();
+//		}
+//		
+//		
+//	}
+//	
 	/*
 	 * this task load all stocks from DataManager and notify the ListView,
 	 * it also takes care about the progress view
 	 */
-	private class StockListTask extends AsyncTask<String, Integer, List<StockItem>> {
+	private class StockListTask extends AsyncTask<String, Integer, Map<String, StockItem>> {
 
 		@Override
 		protected void onPreExecute() {
@@ -243,37 +265,39 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 		}
 
 		@Override
-		protected List<StockItem> doInBackground(String... params) {
-			List<StockItem> items = null;
-			// first, get all stock items we need, according to the search pattern 
-			// that is params[0] in this case
-        	try {
-				items = StockListAdapter.this.dataManager.search(params[0], MarketFactory.getMarket("cz"));
-
-            	Collections.sort(items, comparator);
-            	
-			} catch (Exception e) {
-				String message = "Failed to get stock list. ";
-				if (e.getMessage() != null)
-					message += e.getMessage();
-				Log.d("StockListAdapter", message);
-				e.printStackTrace();
-			}
+		protected Map<String, StockItem> doInBackground(String... params) {
+			//List<StockItem> items = null;
+			Map<String, StockItem> items = null;
 			try {
-				if (items != null) {
-					// get day data for each stock and save it
-					datas.clear();
-					for (StockItem stockItem : items) {
-						DayData dayData = dataManager.getLastValue(stockItem);
-						datas.put(stockItem, dayData);
-					}
+				Log.d(Utils.LOG_TAG, "adapter's semaphopre waiting queue: " + semaphore.getQueueLength());
+				semaphore.acquire();
+				dataManager.acquireDb(this.getClass().getName());
+				// first, get all stock items we need
+				try {
+					items = dataManager.getStockItems(null);
+				} catch (Exception e) {
+					String message = "Failed to get stock list. ";
+					if (e.getMessage() != null)
+						message += e.getMessage();
+					Log.e(Utils.LOG_TAG, message, e);
 				}
-			} catch (Exception e) {
-				String message = "Failed to get stock day data. ";
-				if (e.getMessage() != null)
-					message += e.getMessage();
-				Log.d("StockListAdapter", message);
-				e.printStackTrace();
+				try {
+					if (items != null) {
+						// get day data for each stock and save it
+						dataSet.clear();
+						dataSet = dataManager.getLastDataSet(items);
+					}
+				} catch (Exception e) {
+					String message = "Failed to get stock day data. ";
+					if (e.getMessage() != null)
+						message += e.getMessage();
+					Log.e(Utils.LOG_TAG, message, e);
+				}
+			} catch (InterruptedException e) {
+				Log.e(Utils.LOG_TAG, "semaphore was interrupted", e);
+			} finally {
+				dataManager.releaseDb(true, this.getClass().getName());
+				semaphore.release();
 			}
 			return items;
 		}
@@ -283,14 +307,15 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 		 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
 		 */
 		@Override
-		protected void onPostExecute(List<StockItem> result) {
+		protected void onPostExecute(Map<String, StockItem> result) {
 			super.onPostExecute(result);
 			if (result == null || result.size() == 0)
 				Toast.makeText(getContext(), R.string.update_fail, Toast.LENGTH_LONG).show();
 			else {
 				clear();
-	        	for (int i = 0; i < result.size(); i++) {
-	        		add(result.get(i));
+				
+				for (Entry<String, StockItem> entry : result.entrySet()) {
+					add(entry.getValue());
 				}
 			}
 	    	notifyDataSetChanged();

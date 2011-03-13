@@ -4,8 +4,10 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Iterator;
 
+import cz.tomas.StockAnalyze.Data.UpdateScheduler;
 import cz.tomas.StockAnalyze.ui.widgets.HomeBlockView;
 import cz.tomas.StockAnalyze.utils.DownloadService;
+import cz.tomas.StockAnalyze.utils.NavUtils;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -15,6 +17,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Debug;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -58,21 +62,31 @@ public class HomeActivity extends Activity implements OnClickListener, OnKeyList
 		}
 	}
 	
-	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.app_menu, menu);
+	    return true;
+	}
 
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    // Handle item selection
+	    switch (item.getItemId()) {
+	    case R.id.menu_app_settings:
+	    	NavUtils.goToSettings(this);
+	        return true;
+	    default:
+	        return super.onOptionsItemSelected(item);
+	    }
+	}
+	
 	@Override
 	protected void onStop() {
 		super.onStop();
 		
 		//Debug.stopMethodTracing();
-	}
-
-
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// TODO Auto-generated method stub
-		return super.onOptionsItemSelected(item);
 	}
 
 	@Override
