@@ -55,23 +55,35 @@ containing a value of this type.
     }
     public static final class color {
         /** <color name="actionbar_color">#CED2FF</color>
+ <color name="actionbar_color">#080808</color> 
+ <color name="actionbar_color_start">#121212</color> 
+ <color name="actionbar_color_end">#393939</color> 
+ this is on top of bar 
+ <color name="actionbar_color">#121212</color> 
+ <color name="actionbar_color_start">#121212</color> 
+ <color name="actionbar_color_end">#393939</color> 
          */
         public static final int actionbar_color=0x7f040006;
         public static final int actionbar_color_end=0x7f040008;
         public static final int actionbar_color_start=0x7f040007;
         public static final int actionbar_separator_color=0x7f040005;
         public static final int font_color=0x7f040001;
+        public static final int groubox_header_color_end=0x7f04000a;
+        public static final int groubox_header_color_font=0x7f04000b;
+        /**  this is on top of bar 
+         */
+        public static final int groubox_header_color_start=0x7f040009;
         public static final int list_item_background=0x7f040000;
-        public static final int money_item_dark_center=0x7f040010;
-        public static final int money_item_dark_end=0x7f040012;
-        public static final int money_item_dark_start=0x7f040011;
-        public static final int money_item_green_center=0x7f04000d;
-        public static final int money_item_green_end=0x7f04000f;
-        public static final int money_item_green_start=0x7f04000e;
-        public static final int money_item_red_center=0x7f04000a;
-        public static final int money_item_red_end=0x7f04000c;
-        public static final int money_item_red_start=0x7f04000b;
-        public static final int money_item_text=0x7f040009;
+        public static final int money_item_dark_center=0x7f040013;
+        public static final int money_item_dark_end=0x7f040015;
+        public static final int money_item_dark_start=0x7f040014;
+        public static final int money_item_green_center=0x7f040010;
+        public static final int money_item_green_end=0x7f040012;
+        public static final int money_item_green_start=0x7f040011;
+        public static final int money_item_red_center=0x7f04000d;
+        public static final int money_item_red_end=0x7f04000f;
+        public static final int money_item_red_start=0x7f04000e;
+        public static final int money_item_text=0x7f04000c;
         public static final int news_item_read_color=0x7f040003;
         public static final int news_item_unread_color=0x7f040002;
         public static final int separator_color=0x7f040004;

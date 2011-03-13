@@ -48,7 +48,7 @@
 			</TextView>
 		</LinearLayout>
 		<TextView android:id="@+id/label_stats"
-			android:text="@string/Statistics" 
+			android:text="@string/Statistics"
 			style="@style/groupboxHeader" />
 		<TableLayout android:id="@+id/tableDetailData"
 			style="@style/groupboxBody"
