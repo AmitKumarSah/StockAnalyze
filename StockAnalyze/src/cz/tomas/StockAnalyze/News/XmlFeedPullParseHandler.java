@@ -91,7 +91,7 @@ public class XmlFeedPullParseHandler {
 	        InputStream stream = null;
 	        
 	        try {
-	        	stream = DownloadService.GetInstance().OpenHttpConnection(feed.getUrl().toString(), true);
+	        	stream = DownloadService.GetInstance().openHttpConnection(feed.getUrl().toString(), true);
 	        	if (feed.getCountryCode().equalsIgnoreCase("cz"))
 	        		parser.setInput(stream, "windows-1250");
 	        	else
@@ -157,7 +157,7 @@ public class XmlFeedPullParseHandler {
         XmlPullParser parser = factory.newPullParser();
         InputStream stream = null;
         try {
-        	stream = DownloadService.GetInstance().OpenHttpConnection(feed.getUrl().toString(), true);
+        	stream = DownloadService.GetInstance().openHttpConnection(feed.getUrl().toString(), true);
         	if (feed.getCountryCode().equalsIgnoreCase("cz"))
         		parser.setInput(stream, "windows-1250");
         	else

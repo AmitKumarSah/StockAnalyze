@@ -72,7 +72,7 @@ public final class PsePatriaXmlParser {
 		InputStream stream = null;
 		try {
 			DocumentBuilder builder = factory.newDocumentBuilder();
-			stream = DownloadService.GetInstance().OpenHttpConnection(this.url, true);
+			stream = DownloadService.GetInstance().openHttpConnection(this.url, true);
 			Document doc = builder.parse(stream);
 			
 			Element root = doc.getDocumentElement();
