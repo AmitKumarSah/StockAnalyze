@@ -57,22 +57,22 @@ containing a value of this type.
     }
     public static final class color {
         /** <color name="actionbar_color">#CED2FF</color>
- <color name="actionbar_color">#080808</color> 
- <color name="actionbar_color_start">#121212</color> 
- <color name="actionbar_color_end">#393939</color> 
- this is on top of bar 
- <color name="actionbar_color">#121212</color> 
- <color name="actionbar_color_start">#121212</color> 
- <color name="actionbar_color_end">#393939</color> 
          */
         public static final int actionbar_color=0x7f050006;
+        /**  this is on top of bar 
+         */
         public static final int actionbar_color_end=0x7f050008;
         public static final int actionbar_color_start=0x7f050007;
         public static final int actionbar_separator_color=0x7f050005;
         public static final int font_color=0x7f050001;
         public static final int groubox_header_color_end=0x7f05000a;
         public static final int groubox_header_color_font=0x7f05000b;
-        /**  this is on top of bar 
+        /**  <color name="actionbar_color">#121212</color> 
+ <color name="actionbar_color_start">#121212</color> 
+ <color name="actionbar_color_end">#393939</color> 
+ <color name="actionbar_color">#101040</color> 
+ <color name="actionbar_color_start">#101040</color> 
+ <color name="actionbar_color_end">#203040</color>	this is on top of bar 
          */
         public static final int groubox_header_color_start=0x7f050009;
         public static final int list_item_background=0x7f050000;
@@ -262,7 +262,7 @@ containing a value of this type.
         public static final int Statistics=0x7f07001b;
         public static final int addStockItemToFavourite=0x7f070005;
         public static final int addStockItemToPortfolio=0x7f070006;
-        public static final int appAbout=0x7f070037;
+        public static final int appAbout=0x7f070038;
         public static final int app_name=0x7f07000b;
         public static final int dataUpdated=0x7f070023;
         public static final int dataUpdating=0x7f070022;
@@ -294,8 +294,9 @@ containing a value of this type.
         public static final int portfolioPriceLabel=0x7f070027;
         public static final int portfolioTickerLabel=0x7f070025;
         public static final int portfolioValidationMessage=0x7f07002a;
-        public static final int prefBackgrounUpdate=0x7f070036;
+        public static final int prefBackgroundUpdate=0x7f070036;
         public static final int prefPermanentNotification=0x7f070033;
+        public static final int prefUpdateInterval=0x7f070037;
         public static final int prefUpdateNotification=0x7f070034;
         public static final int refresh=0x7f070008;
         public static final int settings=0x7f070009;

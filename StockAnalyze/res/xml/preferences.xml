@@ -16,11 +16,11 @@
 		<CheckBoxPreference 
 			android:title="Background Updates"
 			android:defaultValue="true" 
-			android:summary="@string/prefPermanentNotification"
+			android:summary="@string/prefBackgroundUpdate"
 			android:key="prefEnableBackgroundUpdate" />
 		<ListPreference
 			android:title="Update Interval"
-			android:summary="@string/prefBackgrounUpdate"
+			android:summary="@string/prefUpdateInterval"
 			android:key="prefUpdateTimeInterval"
 			android:defaultValue="10"
 			android:entries="@array/prefListUpdateIntervalEntries"

@@ -84,7 +84,8 @@ Nikdy se nepouštějte do obchodů, jejichž podstatě plně nerozumíte. Obchod
         <item>720</item>
     </string-array>
     
-    <string name="prefBackgrounUpdate">Enable background data updates.</string>
+    <string name="prefBackgroundUpdate">Enable background data updates.</string>
+    <string name="prefUpdateInterval">Set time interval between updates.</string>
     
     <string name="appAbout">About</string>
 </resources>
