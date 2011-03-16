@@ -397,19 +397,14 @@ public class StockDataSqlStore extends DataSqlHelper {
 
 	public HashMap<StockItem, DayData> getLastDataSet(Map<String, StockItem> stockItems, Market market, String orderBy) {
 		HashMap<StockItem, DayData> dbData = new HashMap<StockItem, DayData>();
-		Calendar cal = Utils.createDateOnlyCalendar(Calendar.getInstance());
-		cal = Utils.getLastValidDate(cal);
 		
 		try {
-			//Calendar cal = Utils.createDateOnlyCalendar(calendar);
-			//long milliseconds =  cal.getTimeInMillis();
 			SQLiteDatabase db = this.getWritableDatabase();
 			Cursor c = null;
 			try {
-				StringBuilder selectionBuilder = new StringBuilder("(");
-				String[] whereArgs = new String[stockItems.size() + 1];
+				StringBuilder selectionBuilder = new StringBuilder();
+				String[] whereArgs = new String[stockItems.size()];
 				int index = 0;
-				//for (int i = 0; i < stockItems.size(); i++) {
 				for (Entry<String, StockItem> stockItem : stockItems.entrySet()) {
 					if (selectionBuilder.length() > 1)
 						selectionBuilder.append(" or ");
@@ -418,14 +413,19 @@ public class StockDataSqlStore extends DataSqlHelper {
 					whereArgs[index] = stockItem.getKey();
 					index++;
 				}
-				selectionBuilder.append(") and date=?");
-				whereArgs[whereArgs.length - 1] = String.valueOf(cal.getTimeInMillis());
-				//selectionBuilder.append(")");
 				
+				// order by given colomn, if any, and by date, so we get last results 
+				if (orderBy != null && orderBy.length() > 0)
+					orderBy += ", date";
+				else
+					orderBy = "date";
+				
+				// data is grouped by stock-id and sorted by date, 
+				// so we get last result for all stock items
 				c = db.query(DAY_DATA_TABLE_NAME, new String[] {
 						"price", "change", "year_max", "year_min", "date", "volume", "id", "last_update", "stock_id" }, 
-						selectionBuilder.toString(), whereArgs, null, null, orderBy);
-
+						selectionBuilder.toString(), whereArgs, "stock_id", null, orderBy, String.valueOf(stockItems.size()));
+				
 				if (c.moveToFirst()) {
 					do {
 						float price = c.getFloat(0);
@@ -447,7 +447,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 			} catch (SQLException e) {
 				Log.e(Utils.LOG_TAG, "sql exception occured", e);
 			} catch (IllegalStateException e) {
-				Log.e(Utils.LOG_TAG, "database is in illegal state!", e);
+				Log.e(Utils.LOG_TAG, "database is in an illegal state!", e);
 			} finally {
 				if (c != null)
 					c.close();
