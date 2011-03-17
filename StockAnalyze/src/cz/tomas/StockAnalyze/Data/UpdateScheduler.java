@@ -13,6 +13,8 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -23,6 +25,8 @@ import android.util.Log;
 public class UpdateScheduler {
 	
 	private Context context;
+	private SharedPreferences preferences;
+	
 	private static UpdateScheduler instance;
 	
 	private final int DEFAULT_REFRESH_INTERVAL = 60 * 10;		//seconds
@@ -36,6 +40,23 @@ public class UpdateScheduler {
 	
 	private UpdateScheduler(Context context) {
 		this.context = context;
+		this.preferences = context.getSharedPreferences(Utils.PREF_NAME, 0);
+		
+		this.preferences.registerOnSharedPreferenceChangeListener(new OnSharedPreferenceChangeListener() {
+			
+			@Override
+			public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+				if (key.equals(Utils.PREF_ENABLE_BACKGROUND_UPDATE)) {
+					if (sharedPreferences.getBoolean(key, true))
+						updateImmediatly();
+					scheduleNextIntraDayUpdate();
+				}
+				else if (key.equals(Utils.PREF_INTERVAL_BACKGROUND_UPDATE)) {
+					scheduleNextIntraDayUpdate();
+				}
+					
+			}
+		});
 	}
 	
 	public void scheduleNextIntraDayUpdate() {
@@ -43,7 +64,9 @@ public class UpdateScheduler {
 	}
 	
 	public void scheduleNextIntraDayUpdate(Market market) {
-		this.scheduleAlarm(true);
+		boolean enabled = this.preferences.getBoolean(Utils.PREF_ENABLE_BACKGROUND_UPDATE, true);
+		if (enabled)
+			this.scheduleAlarm(true);
 	}
 	
 	public void scheduleNextDayUpdate() {
@@ -68,7 +91,8 @@ public class UpdateScheduler {
 	private void scheduleAlarm(boolean intraDay) {
 		// get a Calendar object with current time
 		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.SECOND, DEFAULT_REFRESH_INTERVAL);
+		int seconds = this.preferences.getInt(Utils.PREF_INTERVAL_BACKGROUND_UPDATE, DEFAULT_REFRESH_INTERVAL);
+		cal.add(Calendar.SECOND, seconds);
 		
 		Log.d(Utils.LOG_TAG, "scheduling alarm to " + FormattingUtils.formatStockDate(cal));
 		
