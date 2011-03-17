@@ -88,4 +88,12 @@ Nikdy se nepouštějte do obchodů, jejichž podstatě plně nerozumíte. Obchod
     <string name="prefUpdateInterval">Set time interval between updates.</string>
     
     <string name="appAbout">About</string>
+    
+    <!-- names for activities to display in ActionBar -->
+    <string name="activityStockList">Stock List</string>
+    <string name="activityStockDetail">Stock Detail</string>
+    <string name="activityPortfolio">Portfolio</string>
+    <string name="activityPortfolioDetail">Detail</string>
+    <string name="activityNews">News</string>
+    <string name="activityCurrencies">Currencies</string>
 </resources>

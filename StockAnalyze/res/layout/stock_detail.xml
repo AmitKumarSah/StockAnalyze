@@ -9,9 +9,11 @@
 		xmlns:android="http://schemas.android.com/apk/res/android"
 		android:orientation="vertical">
 		<cz.tomas.StockAnalyze.ui.widgets.ActionBar
+			xmlns:actionBar="http://schemas.android.com/apk/res/cz.tomas.StockAnalyze"
 			android:id="@+id/homeActionBar"
 			android:layout_width="fill_parent" 
-			android:layout_height="wrap_content" />
+			android:layout_height="wrap_content" 
+			actionBar:titleText="@string/activityStockDetail" />
 		<TextView android:id="@+id/txtDetailDate"
 			android:layout_height="wrap_content"
 			android:layout_width="fill_parent" 

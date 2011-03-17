@@ -91,10 +91,16 @@
     </style>
     <style name="actionBar.title_text" parent="titleText">
      	<item name="android:layout_width">wrap_content</item>
-     	<item name="android:layout_height">fill_parent</item>
+     	<item name="android:layout_height">wrap_content</item>
      	<item name="android:text">@string/app_name</item>
 		<item name="android:textColor">#FFFFFF</item>
+		<item name="android:gravity">center_vertical</item>
 <!--        <item name="android:textSize">14sip</item>-->
+    </style>
+     <style name="actionBar.subtitle_text" parent="actionBar.title_text">
+     	<item name="android:textSize">10sp</item>
+		<item name="android:text">@string/dataUpdated</item>
+     	<item name="android:gravity">bottom|left</item>
     </style>
     <style name="actionBar.ImageButton">
 <!--    	<item name="android:layout_height">fill_parent</item>-->

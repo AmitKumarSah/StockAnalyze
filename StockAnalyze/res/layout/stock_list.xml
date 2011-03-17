@@ -4,9 +4,11 @@
          android:layout_width="fill_parent"
          android:layout_height="fill_parent">
 	<cz.tomas.StockAnalyze.ui.widgets.ActionBar
+		xmlns:actionBar="http://schemas.android.com/apk/res/cz.tomas.StockAnalyze"
 		android:id="@+id/homeActionBar"
 		android:layout_width="fill_parent" 
-		android:layout_height="wrap_content" />
+		android:layout_height="wrap_content"
+		actionBar:titleText="@string/activityStockList" />
      <ListView android:id="@id/android:list"
                android:layout_width="fill_parent"
                android:layout_height="fill_parent"

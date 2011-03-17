@@ -22,6 +22,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import cz.tomas.StockAnalyze.utils.DownloadService;
+import cz.tomas.StockAnalyze.utils.Utils;
 
 
 /**
@@ -35,9 +36,8 @@ public final class PsePatriaXmlParser {
 	private int xmlRefreshInterval;	//minutes
 	private Calendar date;
 
-	private final TimeZone tz = TimeZone.getTimeZone("Europe/Prague");
-
-	private SimpleDateFormat format; 
+	private SimpleDateFormat format;
+	
 	public PsePatriaXmlParser(String url) {
 		this.url = url;
 		
@@ -123,7 +123,7 @@ public final class PsePatriaXmlParser {
 		try {
 			this.date = Calendar.getInstance();
 			this.date.setTime(this.format.parse(dateNode.getNodeValue()));
-			this.date.setTimeZone(tz);
+			this.date.setTimeZone(Utils.PRAGUE_TIME_ZONE);
 			
 		} catch (Exception e) {
 			String message = "Failed to process patria data xml configuration tag! ";
