@@ -3,10 +3,13 @@
  */
 package cz.tomas.StockAnalyze.utils;
 
-import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
+
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 
 /**
  * helper class with various helper methods
@@ -15,10 +18,14 @@ import java.util.TimeZone;
  */
 public class Utils {
 	
-	public static String LOG_TAG = "StockAnalyze";
-	public static String PREF_NAME = "StockAnalyzePreferences";
-	public static String PREF_UPDATE_NOTIF = "prefUpdateNotif";
-	public static String PREF_PERMANENT_NOTIF = "prefPermanentNotif";
+	public static final String LOG_TAG = "StockAnalyze";
+	public static final String PREF_NAME = "StockAnalyzePreferences";
+	public static final String PREF_UPDATE_NOTIF = "prefUpdateNotif";
+	public static final String PREF_PERMANENT_NOTIF = "prefPermanentNotif";
+	
+	public static final TimeZone PRAGUE_TIME_ZONE = TimeZone.getTimeZone("Europe/Prague");
+	
+	private static ConnectivityManager connectivityManager;
 
 	/*
 	 * construct calendar that contains only date info from general Calendar object
@@ -62,5 +69,19 @@ public class Utils {
 		}
 		
 		return calendar;
+	}
+	
+	/*
+	 * ask ConnectivityManager if the device is connected
+	 */
+	public static boolean isOnline(Context context) {
+		try {
+			if (connectivityManager == null)
+				connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+			NetworkInfo info = connectivityManager.getActiveNetworkInfo();
+			return info != null && info.isConnectedOrConnecting();
+		} catch (Exception e) {
+			return false;
+		}
 	}
 }

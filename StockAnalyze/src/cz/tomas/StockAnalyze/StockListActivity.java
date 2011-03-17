@@ -124,8 +124,10 @@ public class StockListActivity extends ListActivity {
 	public void onResume() {
 		super.onResume();
 
-		if (!this.dataManager.isOnline(this))
-			this.showDialog(NO_INTERNET);
+		if (! Utils.isOnline(this)) {
+			//this.showDialog(NO_INTERNET);
+			Toast.makeText(this, R.string.NoInternet, Toast.LENGTH_SHORT).show();
+		}
 
 		this.fill();
 	}

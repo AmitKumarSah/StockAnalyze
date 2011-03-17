@@ -55,7 +55,7 @@ public class PortfolioActivity extends ListActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		this.setContentView(R.layout.stock_list);
+		this.setContentView(R.layout.portfolio_list);
 		this.getListView().setTextFilterEnabled(true);
 		this.registerForContextMenu(this.getListView());
 		

@@ -22,7 +22,6 @@ import android.util.Log;
  */
 public class UpdateScheduler {
 	
-	//private DataManager dataManager;
 	private Context context;
 	private static UpdateScheduler instance;
 	
@@ -37,7 +36,6 @@ public class UpdateScheduler {
 	
 	private UpdateScheduler(Context context) {
 		this.context = context;
-		//this.dataManager = DataManager.getInstance(context);
 	}
 	
 	public void scheduleNextIntraDayUpdate() {
@@ -45,22 +43,22 @@ public class UpdateScheduler {
 	}
 	
 	public void scheduleNextIntraDayUpdate(Market market) {
-		IStockDataProvider provider = DataProviderFactory.getRealTimeDataProvider(market);
-		
-		RefreshTask task = new RefreshTask();
-		task.execute(provider);
-		
 		this.scheduleAlarm(true);
 	}
 	
 	public void scheduleNextDayUpdate() {
-		IStockDataProvider provider = DataProviderFactory.getHistoricalDataProvider(MarketFactory.getCzechMarket());
-		
-		RefreshTask task = new RefreshTask();
-		task.execute(provider);
+//		IStockDataProvider provider = DataProviderFactory.getHistoricalDataProvider(MarketFactory.getCzechMarket());
+//		
+//		RefreshTask task = new RefreshTask();
+//		task.execute(provider);
+		// TODO
 	}
 	
 	public void updateImmediatly() {
+		if (! Utils.isOnline(this.context)) {
+			Log.i(Utils.LOG_TAG, "Device is offline, canceling data update");
+			return;
+		}
 		IStockDataProvider provider = DataProviderFactory.getRealTimeDataProvider(MarketFactory.getCzechMarket());
 		
 		RefreshTask task = new RefreshTask();

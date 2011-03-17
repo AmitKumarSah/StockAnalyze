@@ -11,14 +11,21 @@ import android.widget.Toast;
 
 public class AlarmReceiver extends BroadcastReceiver {
 
+	/*
+	 * schedule next update and do an update
+	 * @see android.content.BroadcastReceiver#onReceive(android.content.Context, android.content.Intent)
+	 */
 	@Override
 	public void onReceive(Context context, Intent intent) {
+		boolean intra = intent.getExtras().getBoolean("intraday", true);
+		UpdateScheduler scheduler = UpdateScheduler.getInstance(context);
+		if (intra)
+			scheduler.scheduleNextIntraDayUpdate();
+		else
+			scheduler.scheduleNextDayUpdate();
+		
 		try {
-			boolean intra = intent.getExtras().getBoolean("intraday", true);
-			if (intra)
-				UpdateScheduler.getInstance(context).scheduleNextIntraDayUpdate();
-			else
-				UpdateScheduler.getInstance(context).scheduleNextDayUpdate();
+			scheduler.updateImmediatly();
 		} catch (Exception e) {
 			e.printStackTrace();
 			String message = context.getString(R.string.failedScheduleUpdate);

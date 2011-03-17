@@ -414,7 +414,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 					index++;
 				}
 				
-				// order by given colomn, if any, and by date, so we get last results 
+				// order by given column, if any, and by date, so we get last results 
 				if (orderBy != null && orderBy.length() > 0)
 					orderBy += ", date";
 				else

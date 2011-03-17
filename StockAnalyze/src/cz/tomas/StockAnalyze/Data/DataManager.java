@@ -35,9 +35,7 @@ import cz.tomas.StockAnalyze.utils.Utils;
 public class DataManager implements IStockDataListener {
 		
 	private StockDataSqlStore sqlStore;
-	
-	private ConnectivityManager connectivityManager = null;
-	
+		
 	private List<IUpdateDateChangedListener> updateDateChangedListeners;
 	private List<IStockDataListener> updateStockDataListeners;
 	
@@ -80,6 +78,7 @@ public class DataManager implements IStockDataListener {
 		
 		// do immediate update and schedule next one
 		try {
+			UpdateScheduler.getInstance(context).updateImmediatly();
 			UpdateScheduler.getInstance(context).scheduleNextIntraDayUpdate();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -185,7 +184,7 @@ public class DataManager implements IStockDataListener {
 		data = this.sqlStore.getDayData(now, item);
 		// we still can be without data from db - so we need to download it
 		// of try to search for older from database
-		if (data == null && this.isOnline(this.context)) {
+		if (data == null && Utils.isOnline(this.context)) {
 			try {
 				IStockDataProvider provider = DataProviderFactory.getDataProvider(item.getTicker());
 				if (provider != null) {
@@ -227,20 +226,6 @@ public class DataManager implements IStockDataListener {
 					data.getLastUpdate(), data.getId());
 		return data;
 	}	
-
-	/*
-	 * ask ConnectivityManager if the device is connected
-	 */
-	public boolean isOnline(Context context) {
-		try {
-			if (this.connectivityManager == null)
-				this.connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-			NetworkInfo info = this.connectivityManager.getActiveNetworkInfo();
-			return info != null && info.isConnectedOrConnecting();
-		} catch (Exception e) {
-			return false;
-		}
-	}
 
 	/*
 	 * refresh all enabled data providers
