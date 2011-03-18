@@ -41,6 +41,7 @@
 Nikdy se nepouštějte do obchodů, jejichž podstatě plně nerozumíte. Obchodování a investování s finančními instrumenty je vysoce rizikové.</string>
 	<string name="dataUpdating">Updating data</string>
 	<string name="dataUpdated">Updated data</string>
+	<string name="lastDataUpdated">Last Update Time:</string>
 	<string name="noDataUpdated">No Data Update</string>
 	
 	<string name="portfolioTickerLabel">Stock Ticker</string>
@@ -68,8 +69,8 @@ Nikdy se nepouštějte do obchodů, jejichž podstatě plně nerozumíte. Obchod
     <string name="AppPreferencesActivityTitle">Application Preferences</string>
     
     <string-array name="prefListUpdateIntervalEntries">
-        <item>10 minutes</item>
-        <item>30 minutes</item>
+        <item>10 Minutes</item>
+        <item>30 Minutes</item>
         <item>1 Hour</item>
         <item>2 Hours</item>
         <item>6 Hours</item>

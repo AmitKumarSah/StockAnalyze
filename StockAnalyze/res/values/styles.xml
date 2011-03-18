@@ -99,7 +99,7 @@
     </style>
      <style name="actionBar.subtitle_text" parent="actionBar.title_text">
      	<item name="android:textSize">10sp</item>
-		<item name="android:text">@string/dataUpdated</item>
+		<item name="android:text">@string/lastDataUpdated</item>
      	<item name="android:gravity">bottom|left</item>
     </style>
     <style name="actionBar.ImageButton">

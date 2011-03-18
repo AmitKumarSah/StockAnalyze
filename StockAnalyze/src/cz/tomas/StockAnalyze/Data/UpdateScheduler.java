@@ -29,9 +29,12 @@ public class UpdateScheduler {
 	
 	private static UpdateScheduler instance;
 	
-	private final int DEFAULT_REFRESH_INTERVAL = 60 * 10;		//seconds
+	private final int DEFAULT_REFRESH_INTERVAL = 10;		//minutes
 	private final int REQUEST_CODE = 13215564;
 	
+	/*
+	 * singleton
+	 */
 	public static UpdateScheduler getInstance(Context context) {
 		if (instance == null)
 			instance = new UpdateScheduler(context);
@@ -46,6 +49,7 @@ public class UpdateScheduler {
 			
 			@Override
 			public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+				// if there is change in update preferences, do an update or schedule new one
 				if (key.equals(Utils.PREF_ENABLE_BACKGROUND_UPDATE)) {
 					if (sharedPreferences.getBoolean(key, true))
 						updateImmediatly();
@@ -59,16 +63,27 @@ public class UpdateScheduler {
 		});
 	}
 	
+	/*
+	 * Schedule next update with real time data provider,
+	 * if it is enabled in preferences
+	 */
 	public void scheduleNextIntraDayUpdate() {
 		this.scheduleNextIntraDayUpdate(MarketFactory.getCzechMarket());
 	}
 	
+	/*
+	 * Schedule next update with real time data provider for given market,
+	 * if it is enabled in preferences
+	 */
 	public void scheduleNextIntraDayUpdate(Market market) {
 		boolean enabled = this.preferences.getBoolean(Utils.PREF_ENABLE_BACKGROUND_UPDATE, true);
 		if (enabled)
 			this.scheduleAlarm(true);
 	}
 	
+	/*
+	 * schedule next update with historical data provider
+	 */
 	public void scheduleNextDayUpdate() {
 //		IStockDataProvider provider = DataProviderFactory.getHistoricalDataProvider(MarketFactory.getCzechMarket());
 //		
@@ -77,6 +92,9 @@ public class UpdateScheduler {
 		// TODO
 	}
 	
+	/*
+	 * update real time data immediately
+	 */
 	public void updateImmediatly() {
 		if (! Utils.isOnline(this.context)) {
 			Log.i(Utils.LOG_TAG, "Device is offline, canceling data update");
@@ -88,10 +106,13 @@ public class UpdateScheduler {
 		task.execute(provider);
 	}
 	
+	/*
+	 * schedule next update via Alarm and according to preferences
+	 */
 	private void scheduleAlarm(boolean intraDay) {
 		// get a Calendar object with current time
 		Calendar cal = Calendar.getInstance();
-		int seconds = this.preferences.getInt(Utils.PREF_INTERVAL_BACKGROUND_UPDATE, DEFAULT_REFRESH_INTERVAL);
+		int seconds = this.preferences.getInt(Utils.PREF_INTERVAL_BACKGROUND_UPDATE, DEFAULT_REFRESH_INTERVAL) * 60;
 		cal.add(Calendar.SECOND, seconds);
 		
 		Log.d(Utils.LOG_TAG, "scheduling alarm to " + FormattingUtils.formatStockDate(cal));
@@ -105,6 +126,9 @@ public class UpdateScheduler {
 		am.set(AlarmManager.RTC, cal.getTimeInMillis(), sender);
 	}
 	
+	/*
+	 * do the refresh on given StockDataProvider
+	 */
 	class RefreshTask extends AsyncTask<IStockDataProvider, Integer, Boolean> {
 
 		@Override
@@ -119,8 +143,7 @@ public class UpdateScheduler {
 					else
 						throw new NullPointerException("IStockDataProvider is null");
 				} catch (Exception e) {
-					e.printStackTrace();
-					Log.d(Utils.LOG_TAG, "failed to refresh for provider");
+					Log.e(Utils.LOG_TAG, "failed to refresh for provider", e);
 				}
 			return null;
 		}
