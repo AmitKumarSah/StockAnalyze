@@ -91,6 +91,7 @@ containing a value of this type.
  <color name="actionbar_color_end">#203040</color>	this is on top of bar 
          */
         public static final int groubox_header_color_start=0x7f050009;
+        public static final int home_block_color=0x7f050016;
         public static final int list_item_background=0x7f050000;
         public static final int money_item_dark_center=0x7f050013;
         public static final int money_item_dark_end=0x7f050015;
@@ -128,19 +129,20 @@ containing a value of this type.
         public static final int ic_globe=0x7f02000c;
         public static final int ic_launcher=0x7f02000d;
         public static final int ic_launcher_list=0x7f02000e;
-        public static final int ic_menu_home=0x7f02000f;
-        public static final int ic_menu_refresh=0x7f020010;
-        public static final int ic_menu_settings=0x7f020011;
-        public static final int ic_rss_simple=0x7f020012;
-        public static final int ic_tab_home=0x7f020013;
-        public static final int ic_tab_home_selected=0x7f020014;
-        public static final int ic_tab_home_unselected=0x7f020015;
-        public static final int ic_tab_search=0x7f020016;
-        public static final int ic_tab_search_selected=0x7f020017;
-        public static final int ic_tab_search_unselected=0x7f020018;
-        public static final int icon=0x7f020019;
-        public static final int news_marker_shape=0x7f02001a;
-        public static final int px_logo=0x7f02001b;
+        public static final int ic_menu_about=0x7f02000f;
+        public static final int ic_menu_home=0x7f020010;
+        public static final int ic_menu_refresh=0x7f020011;
+        public static final int ic_menu_settings=0x7f020012;
+        public static final int ic_rss_simple=0x7f020013;
+        public static final int ic_tab_home=0x7f020014;
+        public static final int ic_tab_home_selected=0x7f020015;
+        public static final int ic_tab_home_unselected=0x7f020016;
+        public static final int ic_tab_search=0x7f020017;
+        public static final int ic_tab_search_selected=0x7f020018;
+        public static final int ic_tab_search_unselected=0x7f020019;
+        public static final int icon=0x7f02001a;
+        public static final int news_marker_shape=0x7f02001b;
+        public static final int px_logo=0x7f02001c;
     }
     public static final class id {
         public static final int ChartView=0x7f0b0046;

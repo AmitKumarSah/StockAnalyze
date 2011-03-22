@@ -4,5 +4,5 @@
     <item android:title="@string/settings" 
     android:id="@+id/menu_app_settings"
     android:icon="@drawable/ic_menu_settings"></item>
-    <item android:id="@+id/menu_app_about" android:title="@string/appAbout"/>
+    <item android:id="@+id/menu_app_about" android:title="@string/appAbout" android:icon="@drawable/ic_menu_about"/>
 </menu>
