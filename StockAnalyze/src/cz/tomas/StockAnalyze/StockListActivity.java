@@ -84,7 +84,7 @@ public class StockListActivity extends ListActivity {
 						Log.d("cz.tomas.StockAnalyze.StockListActivity", "Failed to get TabActivity");
 				}
 				else if (stock != null) {
-					NavUtils.goToStockDetail(stock, StockListActivity.this);
+					NavUtils.goToStockDetail(stock, adapter.getDayData(stock), StockListActivity.this);
 				}
 			}
 
@@ -172,7 +172,7 @@ public class StockListActivity extends ListActivity {
 				// TODO mark as favourite
 				return true;
 			case R.id.stock_item_view:
-				NavUtils.goToStockDetail(stockItem, this);
+				NavUtils.goToStockDetail(stockItem, this.adapter.getDayData(stockItem), this);
 				return true;
 			default:
 				return super.onContextItemSelected(item);

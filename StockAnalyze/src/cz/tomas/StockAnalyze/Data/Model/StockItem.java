@@ -1,6 +1,9 @@
 package cz.tomas.StockAnalyze.Data.Model;
 
-public class StockItem {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class StockItem implements Parcelable {
 	/*
 	 * stock ticker
 	 * */
@@ -18,6 +21,15 @@ public class StockItem {
 	 * */
 	Market market;
 	
+	public static final Parcelable.Creator<StockItem> CREATOR = new Parcelable.Creator<StockItem>() {
+		public StockItem createFromParcel(Parcel in) {
+			return new StockItem(in);
+		}
+
+		public StockItem[] newArray(int size) {
+			return new StockItem[size];
+		}
+	};
 
 	public StockItem(String ticker, String id, String name, Market market) {
 		this.ticker = ticker;
@@ -25,6 +37,11 @@ public class StockItem {
 		this.name = name;
 		this.market = market;
 	}
+	
+	public StockItem(Parcel in) {
+		this.readParcel(in);
+	}
+
 	public String getTicker() {
 		return ticker;
 	}
@@ -70,6 +87,26 @@ public class StockItem {
 		} else if (!id.equals(other.id))
 			return false;
 		return true;
+	}
+	
+	@Override
+	public int describeContents() {
+		return 0;
+	}
+	
+	private void readParcel(Parcel in) {
+		this.ticker = in.readString();
+		this.id = in.readString();
+		this.name = in.readString();
+		this.market = (Market) in.readSerializable();
+	}
+	
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeString(this.ticker);
+		dest.writeString(this.id);
+		dest.writeString(this.name);
+		dest.writeSerializable(this.market);
 	}
 	
 	

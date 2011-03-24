@@ -101,6 +101,12 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
         task.execute(null);
 	}
 	
+	public DayData getDayData(StockItem stockItem) {
+		if (this.dataSet != null)
+			return this.dataSet.get(stockItem);
+		return null;
+	}
+	
 	@Override
 	public int getCount() {
 		return super.getCount();
@@ -216,40 +222,6 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 		this.listeners.add(listener);
 	}
 	
-//	private class OfflineStockListTask extends AsyncTask<Void, Integer, Map<String, StockItem>> {
-//
-//		@Override
-//		protected Map<String, StockItem> doInBackground(Void... params) {
-//			Map<String, StockItem> items = dataManager.getStockItems(null);
-//			dataSet = dataManager.getLastDataSet(items);
-////			for (Entry<String, StockItem> stockItem : items.entrySet()) {
-////				DayData data = dataManager.getLastOfflineValue(stockItem.getKey());
-////				datas.put(stockItem, data);
-////			}
-//			//Collections.sort(items, comparator);
-//			return items;
-//		}
-//
-//		/* (non-Javadoc)
-//		 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
-//		 */
-//		@Override
-//		protected void onPostExecute(Map<String, StockItem> result) {
-//			super.onPostExecute(result);
-//			if (result == null || result.size() == 0)
-//				Toast.makeText(getContext(), R.string.noOfflineData, Toast.LENGTH_LONG).show();
-//			else {
-//				clear();
-//				for (Entry<String, StockItem> entry : result.entrySet()) {
-//					add(entry.getValue());
-//				}
-//			}
-//	    	notifyDataSetChanged();
-//		}
-//		
-//		
-//	}
-//	
 	/*
 	 * this task load all stocks from DataManager and notify the ListView,
 	 * it also takes care about the progress view

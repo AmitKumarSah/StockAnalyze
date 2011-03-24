@@ -5,24 +5,39 @@ package cz.tomas.StockAnalyze.Data.Model;
 
 import java.util.Date;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
- * @author tomas
  * class representing one price value for one day of one stock
+ * 
+ * @author tomas
  */
-public class DayData {
-	long id;
+public class DayData implements Parcelable {
+	private long id;
 
-	float price;
-	float change;
-	float absChange;
-	Date date;
-	long lastUpdate;
+	private float price;
+	private float change;
+	private float absChange;
+	private Date date;
+	private long lastUpdate;
 
-	float volume;
-	int tradedPieces;
+	private float volume;
+	private int tradedPieces;
 	
-	float yearMaximum;
-	float yearMinimum;
+	private float yearMaximum;
+	private float yearMinimum;
+	
+	public static final Parcelable.Creator<DayData> CREATOR = new Parcelable.Creator<DayData>() {
+		public DayData createFromParcel(Parcel in) {
+			return new DayData(in);
+		}
+
+		public DayData[] newArray(int size) {
+			return new DayData[size];
+		}
+	};
+	
 	public DayData(float price, float change, Date date, float volume, float yearMax, float yearMin, long updateTime, long id) {
 		this(price, change, date, volume, yearMax, yearMin, updateTime);
 		this.id = id;
@@ -37,6 +52,10 @@ public class DayData {
 		this.lastUpdate = updateTime;
 		
 		this.absChange = this.price * this.change / 100.0f;
+	}
+
+	public DayData(Parcel in) {
+		this.readParcel(in);
 	}
 
 	public long getId() {
@@ -111,5 +130,36 @@ public class DayData {
 		return "DayData [price=" + price + ", change=" + change
 				+ ", absChange=" + absChange + ", date=" + date + ", volume="
 				+ volume + "]";
+	}
+	@Override
+	public int describeContents() {
+		return 0;
+	}
+	
+	private void readParcel(Parcel in) {
+		this.id = in.readLong();
+		this.price = in.readFloat();
+		this.change = in.readFloat();
+		this.absChange = in.readFloat();
+		this.date = new Date(in.readLong());
+		this.lastUpdate = in.readLong();
+		this.volume = in.readFloat();
+		this.tradedPieces = in.readInt();
+		this.yearMaximum = in.readFloat();
+		this.yearMinimum = in.readFloat();
+	}
+	
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeLong(this.id);
+		dest.writeFloat(this.price);
+		dest.writeFloat(this.change);
+		dest.writeFloat(this.absChange);
+		dest.writeLong(this.date.getTime());
+		dest.writeLong(this.lastUpdate);
+		dest.writeFloat(this.volume);
+		dest.writeInt(this.tradedPieces);
+		dest.writeFloat(this.yearMaximum);
+		dest.writeFloat(this.yearMinimum);
 	}
 }

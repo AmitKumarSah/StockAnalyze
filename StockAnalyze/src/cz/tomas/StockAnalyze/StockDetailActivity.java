@@ -23,6 +23,8 @@ import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
+import cz.tomas.StockAnalyze.utils.NavUtils;
+import cz.tomas.StockAnalyze.utils.Utils;
 
 /**
  * @author tomas
@@ -44,17 +46,10 @@ public final class StockDetailActivity extends Activity {
 					try {
 						if (tabId.equals("StockDetail")) {
 							Intent intent = StockDetailActivity.this.getParent().getIntent();
-							if (intent.hasExtra("stock_id") && intent.hasExtra("market_id")) {
-								String id = intent.getExtras().getString("stock_id");
-								Market market = (Market) intent.getExtras().getSerializable("market_id");
-								
-								updateCurrentStock(id, market);
-							}
-							else
-								showWarning();
+							readData(intent);
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
+						Log.e(Utils.LOG_TAG, "failed to get data from intent", e);
 						Toast toast = Toast.makeText(StockDetailActivity.this, R.string.InvalidData, Toast.LENGTH_LONG);
 						if (e.getMessage() != null) {
 							Log.d("StockDetailActivity", e.getMessage());
@@ -67,31 +62,44 @@ public final class StockDetailActivity extends Activity {
 		}
 		else {
 			Intent intent = this.getIntent();
-			if (intent.hasExtra("stock_id") && intent.hasExtra("market_id")) {
-				String id = intent.getExtras().getString("stock_id");
-				Market market = (Market) intent.getExtras().getSerializable("market_id");
-				
-				try {
-					updateCurrentStock(id, market);
-				} catch (Exception e) {
-					e.printStackTrace();
-					Toast toast = Toast.makeText(StockDetailActivity.this, R.string.InvalidData, Toast.LENGTH_LONG);
-					if (e.getMessage() != null) {
-						Log.d("StockDetailActivity", e.getMessage());
-						toast.setText(getString(R.string.InvalidData) + ": " + e.getMessage());
-					}
-					toast.show();
+			try {
+				readData(intent);
+			} catch (Exception e) {
+				Log.e(Utils.LOG_TAG, "failed to get data from intent", e);
+				Toast toast = Toast.makeText(StockDetailActivity.this, R.string.InvalidData, Toast.LENGTH_LONG);
+				if (e.getMessage() != null) {
+					Log.d("StockDetailActivity", e.getMessage());
+					toast.setText(getString(R.string.InvalidData) + ": " + e.getMessage());
 				}
+				toast.show();
 			}
-			else
-				showWarning();
 		}
 	}
 
-	private void updateCurrentStock(final String stockId, Market market) throws NullPointerException, IOException {
-		if (stockId == null || stockId.length() == 0)
-			throw new NullPointerException("StockID must be defined");
-		if (market == null)
+	/**
+	 * read data from intent
+	 * @param intent
+	 * @throws NullPointerException
+	 * @throws IOException
+	 */
+	private void readData(Intent intent) throws NullPointerException,
+			IOException {
+		//if (intent.hasExtra("stock_id") && intent.hasExtra("market_id")) {
+		if (intent.hasExtra(NavUtils.STOCK_ITEM_OBJECT)) {
+			StockItem stockItem = intent.getExtras().getParcelable(NavUtils.STOCK_ITEM_OBJECT);
+			DayData data = intent.getExtras().getParcelable(NavUtils.DAY_DATA_OBJECT);
+			//Market market = (Market) intent.getExtras().getSerializable("market_id");
+			
+			updateCurrentStock(stockItem,data);
+		}
+		else
+			showWarning();
+	}
+
+	private void updateCurrentStock(final StockItem stockItem, DayData data) throws NullPointerException, IOException {
+		if (stockItem == null)
+			throw new NullPointerException("stockItem must be defined");
+		if (stockItem.getMarket() == null)
 			throw new NullPointerException("market must be defined");
 		
 		TextView txtHeader = (TextView) this.findViewById(R.id.txtDetailHeader);
@@ -108,20 +116,20 @@ public final class StockDetailActivity extends Activity {
 		if (txtPrice != null) {
 			txtPrice.setText(R.string.loading);
 		}
-		StockItem stockItem = manager.getStockItem(stockId, market);
-		DayData data = manager.getLastValue(stockItem);
+		if (data == null) {
+			Log.w(Utils.LOG_TAG, "data incoming to detail don't contain DayData. Loading them from db...");
+			data = manager.getLastValue(stockItem);
+		}
 		
 		NumberFormat priceFormat = FormattingUtils.getPriceFormat(stockItem.getMarket().getCurrency());
 		NumberFormat percentFormat = FormattingUtils.getPercentFormat();
 		NumberFormat volumeFormat = FormattingUtils.getVolumeFormat();
 
-		if (stockItem == null)
-			throw new NullPointerException("No such stock has been found!");
 		if (data == null)
 			throw new NullPointerException("Day data is null!");
 		
 		if (txtHeader != null)
-			txtHeader.setText(stockItem.getTicker() + " - " + stockId);
+			txtHeader.setText(stockItem.getTicker() + " - " + stockItem.getId());
 		if (txtDate != null) {
 			Calendar cal = Calendar.getInstance();
 			cal.setTimeInMillis(data.getLastUpdate());
