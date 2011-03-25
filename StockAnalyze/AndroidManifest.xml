@@ -29,6 +29,9 @@
 		<activity android:name="AppPreferencesActivity" 
 			android:label="@string/AppPreferencesActivityTitle"
 			android:theme="@style/themeLightTitle"></activity>
+		<activity android:name="AboutActivity" 
+			android:label="@string/appAbout"
+			android:theme="@style/themeLightTitle"></activity>
 	<receiver android:enabled="true" android:permission="android.permission.ACCESS_NETWORK_STATE" android:name=".receivers.NetworkBroadcastReceiver">
 		<intent-filter>
 			<action android:name="android.net.conn.BACKGROUND_DATA_SETTING_CHANGED"/>

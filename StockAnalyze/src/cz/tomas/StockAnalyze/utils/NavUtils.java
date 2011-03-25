@@ -3,6 +3,7 @@ package cz.tomas.StockAnalyze.utils;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import cz.tomas.StockAnalyze.AboutActivity;
 import cz.tomas.StockAnalyze.AppPreferencesActivity;
 import cz.tomas.StockAnalyze.StockDetailActivity;
 import cz.tomas.StockAnalyze.StockListActivity;
@@ -43,5 +44,10 @@ public class NavUtils {
 	public static void goToSettings(Activity activity) {
 		Intent intent = new Intent(activity, AppPreferencesActivity.class);
     	activity.startActivity(intent);
+	}
+	
+	public static void gotToAbout(Context context) {
+		Intent intent = new Intent(context, AboutActivity.class);
+    	context.startActivity(intent);
 	}
 }

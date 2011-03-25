@@ -77,6 +77,9 @@ public class HomeActivity extends Activity implements OnClickListener, OnKeyList
 	    case R.id.menu_app_settings:
 	    	NavUtils.goToSettings(this);
 	        return true;
+	    case R.id.menu_app_about:
+	    	NavUtils.gotToAbout(this);
+	    	return true;
 	    default:
 	        return super.onOptionsItemSelected(item);
 	    }
