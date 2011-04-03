@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:id="@+id/groupLength">
+	    <item android:id="@+id/chart5days" android:title="@string/chart5days"></item>
+	    <item android:id="@+id/chart10days" android:title="@string/chart10days"></item>
+	    <item android:id="@+id/chartMonth" android:title="@string/chartMonth"></item>
+	    <item android:id="@+id/chart3months" android:title="@string/chart3months"></item>
+	    <item android:id="@+id/chart6months" android:title="@string/chart6months"></item>
+	    <item android:id="@+id/chartYear" android:title="@string/chartYear"></item>
+    </group>
+</menu>

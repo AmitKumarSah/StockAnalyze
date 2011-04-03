@@ -209,7 +209,7 @@ public class PortfolioActivity extends ListActivity {
 	    // Handle item selection
 	    switch (item.getItemId()) {
 	    case R.id.menu_portfolio_refresh:
-	    	this.adapter.refresh();
+	    	PortfolioActivity.adapter.refresh();
 	        return true;
 	    case R.id.menu_portfolio_settings:
 	        return true;

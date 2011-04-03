@@ -15,25 +15,30 @@
 	<ScrollView
 		android:layout_width="fill_parent" 
 		android:layout_height="fill_parent">
-		<LinearLayout android:id="@+id/DetailLinear"
+		<RelativeLayout android:id="@+id/DetailLinear"
 			android:layout_width="fill_parent" 
 			android:layout_height="fill_parent"
-			android:layout_below="@+id/detailActionBar"
-			android:orientation="vertical">
+			xmlns:android="http://schemas.android.com/apk/res/android">
 			<TextView android:id="@+id/txtDetailDate"
 				android:layout_height="wrap_content"
-				android:layout_width="fill_parent" 
+				android:layout_width="fill_parent"
+				android:layout_alignParentTop="true" 
 				android:layout_margin="4dp"/>
-			<TextView android:text="@+id/TextView01" 
+				
+			<TextView
+				android:id="@+id/txtDetailHeader" 
+				android:text="@+id/txtDetailHeader" 
 				style="@style/groupboxHeader"
-				android:id="@+id/txtDetailHeader" />
+				android:layout_below="@+id/txtDetailDate" />
 			<LinearLayout android:id="@+id/DetailLinearSummary"
 				style="@style/groupboxBody"
 				xmlns:android="http://schemas.android.com/apk/res/android"
+				android:layout_below="@+id/txtDetailHeader"
 				android:orientation="vertical">
 				<TextView android:id="@+id/txtDetailName" 
 					android:text="@+id/TextView01"
-					android:layout_height="wrap_content" android:layout_width="fill_parent"
+					android:layout_height="wrap_content" 
+					android:layout_width="fill_parent"
 					android:textStyle="bold"
 					android:gravity="center" 
 					android:textSize="20dp"
@@ -55,11 +60,14 @@
 					android:layout_width="fill_parent">
 				</TextView>
 			</LinearLayout>
-			<TextView android:id="@+id/label_stats"
+			
+			<TextView android:id="@+id/detailLabelStatsHeader"
 				android:text="@string/Statistics"
+				android:layout_below="@+id/DetailLinearSummary"
 				style="@style/groupboxHeader" />
-			<TableLayout android:id="@+id/tableDetailData"
+			<TableLayout android:id="@+id/label_stats"
 				style="@style/groupboxBody"
+				android:layout_below="@+id/detailLabelStatsHeader"
 			 	android:stretchColumns="1"
 				android:shrinkColumns="0">
 				<TableRow android:id="@+id/TableDetailRow01"
@@ -108,15 +116,19 @@
 		
 			<TextView android:id="@+id/detail_label_chart"
 				android:background="@drawable/groupbox_header_shape"
-				android:text="@string/homeChartTitle" 
+				android:text="@string/homeChartTitle"
+				android:layout_below="@+id/label_stats"
 				style="@style/groupboxHeader" />
 
 			<cz.tomas.StockAnalyze.charts.view.CompositeChartView android:id="@+id/stockChartView"
 				style="@style/groupboxBody" 
 				android:layout_width="fill_parent" 
-				android:layout_height="165dp"
+				android:layout_height="fill_parent"
 				android:minHeight="150dp" 
+				android:layout_below="@+id/detail_label_chart"
+				android:layout_alignParentBottom="true"
+				android:layout_marginBottom="2dp"
 				android:visibility="visible"/>
-		</LinearLayout>
+		</RelativeLayout>
 	</ScrollView>
 </LinearLayout>

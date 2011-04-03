@@ -61,6 +61,11 @@
 				<ImageView android:id="@+id/home_chart" 
 					style="@style/homeBlock"
 					android:src="@drawable/chart_preview"/>
+				<cz.tomas.StockAnalyze.charts.view.ChartView android:id="@+id/homeChartView" 
+					style="@style/homeBlock"
+					android:layout_height="fill_parent"
+					android:visibility="gone"
+					android:minHeight="150dp"/>
 			</TableLayout>
 	</ScrollView>
 </LinearLayout>

@@ -23,6 +23,7 @@ import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.Data.PseCsvData.PseCsvDataAdapter;
 import cz.tomas.StockAnalyze.Data.PsePatriaData.PsePatriaDataAdapter;
 import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetDataException;
+import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 
 /**
@@ -118,6 +119,7 @@ public class DataManager implements IStockDataListener {
 	/*
 	 * get all stock items from database for given Market,
 	 * if stock items weren't found, would try to download them
+	 * @returns map stock id vs StockOte,
 	 */
 	public synchronized Map<String, StockItem> getStockItems(Market market) {
 		Map<String, StockItem> items = this.sqlStore.getStockItems(market, "ticker");
@@ -170,6 +172,39 @@ public class DataManager implements IStockDataListener {
 	public synchronized HashMap<StockItem,DayData>  getLastDataSet(Map<String, StockItem> stockItems) {
 		HashMap<StockItem,DayData>  dbData = this.sqlStore.getLastDataSet(stockItems, null, null);
 		return dbData;
+	}
+	
+	public synchronized DayData[] getDayDataSet(StockItem item, Calendar cal, int count, boolean includeToday) throws FailedToGetDataException, IOException {
+		DayData[] dataSet = new DayData[count];
+		
+		Calendar currentCal = Utils.getLastValidDate(cal);
+		if (! includeToday) {
+			currentCal.roll(Calendar.DAY_OF_YEAR, false);
+			currentCal = Utils.getLastValidDate(currentCal);
+		}
+		for (int i = dataSet.length -1; i >= 0; i--) {
+			try {
+				dataSet[i] = this.getDayData(item, currentCal);
+			} catch (Exception e) {
+				Log.e(Utils.LOG_TAG, "failed to get data for " + FormattingUtils.formatStockDate(currentCal), e);
+			}
+			currentCal.roll(Calendar.DAY_OF_YEAR, false);
+			currentCal = Utils.getLastValidDate(currentCal);
+		}
+		
+		return dataSet;
+	}
+	
+	public synchronized DayData getDayData(StockItem item, Calendar cal) throws FailedToGetDataException, IOException {
+		DayData data = this.sqlStore.getDayData(cal, item);
+		// if data is null, we will have to download them
+		if (data == null) {
+			Log.d(Utils.LOG_TAG, "day data for " + FormattingUtils.formatStockDate(cal) + " wasn't found in db, downloading...");
+			IStockDataProvider provider = DataProviderFactory.getHistoricalDataProvider(MarketFactory.getCzechMarket());
+			data = provider.getDayData(item.getTicker(), cal);
+		}
+		
+		return data;
 	}
 	
 	/*

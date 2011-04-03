@@ -189,7 +189,13 @@ class PseCsvDataProvider {
 	public CsvDataRow getDayData(String ticker, Calendar date) throws IOException {
 		String remoteFileName = this.buildRemoteFileName(date);
 		
-		Map<String, CsvDataRow> rows = getDataFromRemoteFile(remoteFileName);
+		Map<String, CsvDataRow> rows = null;
+		try {
+			rows = getDataFromRemoteFile(remoteFileName);
+		} catch (IOException e) {
+			rows = getYesterdayRemoteData();
+		}
+		
 		CsvDataRow row = null;
 		if (rows.containsKey(ticker))
 			row = rows.get(ticker);

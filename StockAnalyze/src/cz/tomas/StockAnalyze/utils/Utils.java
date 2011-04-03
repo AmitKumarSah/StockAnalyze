@@ -57,7 +57,7 @@ public class Utils {
 	}
 	
 	/*
-	 * get nearest previous day that was a trading day 
+	 * get nearest previous day that was a trading day or given day, if it is the trading day
 	 * - it will exclude Saturdays & Sundays
 	 */
 	public static Calendar getLastValidDate(Calendar calendar) {		
