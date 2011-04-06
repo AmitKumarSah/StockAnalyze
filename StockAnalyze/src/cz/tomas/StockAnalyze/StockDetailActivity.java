@@ -97,10 +97,10 @@ public final class StockDetailActivity extends Activity {
 	 */
 	@Override
 	protected void onPause() {
-		if (this.chartTask != null && this.chartTask.getStatus() != Status.FINISHED) {
-			Log.w(Utils.LOG_TAG, "canceling chart update task!");
-			this.chartTask.cancel(true);
-		}
+//		if (this.chartTask != null && this.chartTask.getStatus() != Status.FINISHED) {
+//			Log.w(Utils.LOG_TAG, "canceling chart update task!");
+//			this.chartTask.cancel(true);
+//		}
 		super.onPause();
 	}
 
@@ -309,8 +309,10 @@ public final class StockDetailActivity extends Activity {
 						min = price;
 				}
 
-				chartView.setData(dataPoints, max, min);
-				chartView.setAxisX(xAxisPoints);
+				if (chartView.getVisibility() == View.VISIBLE) {
+					chartView.setData(dataPoints, max, min);
+					chartView.setAxisX(xAxisPoints);
+				}
 			}
 			return null;
 		}

@@ -151,14 +151,14 @@ public class StockDataSqlStore extends DataSqlHelper {
 	
 	public void insertDayData(StockItem item, DayData newdata) {
 		try {
-			Calendar cal = Calendar.getInstance();
+			Calendar cal = Calendar.getInstance(Utils.PRAGUE_TIME_ZONE);
 			cal.setTime(newdata.getDate());
 			DayData currentData = getDayData(cal, item);
 			if (currentData != null) {
 				updateDateData(item, newdata, currentData);
 				return;
 			}
-			Log.d(Utils.LOG_TAG, "inserting day data for " + item.getTicker() + " to db");
+			Log.d(Utils.LOG_TAG, "inserting day data for " + item.getTicker() + " to db (" + newdata.getDate().toString() + ")");
 			if (! this.checkForStock(item))
 				this.insertStockItem(item);
 			SQLiteDatabase db = this.getWritableDatabase();
@@ -170,7 +170,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 			values.put("change", newdata.getChange());
 			values.put("stock_id", item.getId());
 			values.put("year_max", newdata.getYearMaximum());
-			values.put("year_min", newdata.getYearMaximum());
+			values.put("year_min", newdata.getYearMinimum());
 			values.put("volume", newdata.getVolume());
 			
 			db.insert(DAY_DATA_TABLE_NAME, null, values);
@@ -416,15 +416,15 @@ public class StockDataSqlStore extends DataSqlHelper {
 				
 				// order by given column, if any, and by date, so we get last results 
 				if (orderBy != null && orderBy.length() > 0)
-					orderBy += ", date";
+					orderBy += ", date DESC";
 				else
-					orderBy = "date";
+					orderBy = "date DESC";
 				
 				// data is grouped by stock-id and sorted by date, 
 				// so we get last result for all stock items
 				c = db.query(DAY_DATA_TABLE_NAME, new String[] {
 						"price", "change", "year_max", "year_min", "date", "volume", "id", "last_update", "stock_id" }, 
-						selectionBuilder.toString(), whereArgs, "stock_id", null, orderBy, String.valueOf(stockItems.size()));
+						selectionBuilder.toString(), whereArgs, null, null, orderBy, String.valueOf(stockItems.size()));
 				
 				if (c.moveToFirst()) {
 					do {

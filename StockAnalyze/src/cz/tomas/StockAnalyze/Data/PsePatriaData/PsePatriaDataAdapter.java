@@ -34,8 +34,7 @@ import cz.tomas.StockAnalyze.utils.Utils;
  */
 public class PsePatriaDataAdapter implements IStockDataProvider {
 
-	// TODO get rid of this
-	private final class TimedUpdateTask implements Runnable {
+	private final class UpdateTask implements Runnable {
 		@Override
 		public void run() {
 			if (enabled)
@@ -53,7 +52,7 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 					if (provider.refresh()) {
 						// if refresh proceeded and the market is open, fire the event
 						for (IStockDataListener listener : eventListeners) {
-							listener.OnStockDataUpdated(PsePatriaDataAdapter.this);
+							listener.OnStockDataUpdated(PsePatriaDataAdapter.this, null);
 						}
 					} else {
 						for (IStockDataListener listener : eventListeners) {
@@ -89,7 +88,7 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 	
 	Market market;
 	
-	TimedUpdateTask updateTask;
+	UpdateTask updateTask;
 	Handler updateHandler;
 	
 	public PsePatriaDataAdapter() {
@@ -116,7 +115,7 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 		market = new Market("PSE", "XPRA", "CZK", this.getDescriptiveName());
 
 		this.eventListeners = new ArrayList<IStockDataListener>();
-		this.updateTask = new TimedUpdateTask();
+		this.updateTask = new UpdateTask();
 	    
 	    //this.updateHandler = new Handler();
 	    

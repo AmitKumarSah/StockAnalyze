@@ -9,6 +9,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -64,9 +65,14 @@ public class DataManager implements IStockDataListener {
 		this.updateDateChangedListeners = new ArrayList<IUpdateDateChangedListener>();
 		this.updateStockDataListeners = new ArrayList<IStockDataListener>();
 		
+		NotificationSupervisor supervisor = new NotificationSupervisor(context);
 		patriaPse.enable(true);
 		patriaPse.addListener(this);
-		patriaPse.addListener(new NotificationSupervisor(context));
+		patriaPse.addListener(supervisor);
+		
+		pse.enable(true);
+		pse.addListener(this);
+		//pse.addListener(supervisor);
 		
 		try {
 			ConnectivityManager connectivity = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -82,8 +88,7 @@ public class DataManager implements IStockDataListener {
 			UpdateScheduler.getInstance(context).updateImmediatly();
 			UpdateScheduler.getInstance(context).scheduleNextIntraDayUpdate();
 		} catch (Exception e) {
-			e.printStackTrace();
-			Log.d(Utils.LOG_TAG, "Failed to schedule updates!");
+			Log.e(Utils.LOG_TAG, "Failed to schedule updates!", e);
 		}
 	}
 
@@ -167,6 +172,7 @@ public class DataManager implements IStockDataListener {
 	}
 	
 	/*
+	 * get last day data for set of stock items
 	 * Map of StockId: DayData
 	 */
 	public synchronized HashMap<StockItem,DayData>  getLastDataSet(Map<String, StockItem> stockItems) {
@@ -280,9 +286,9 @@ public class DataManager implements IStockDataListener {
 		}
 	}
 	
-	private void fireUpdateStockDataListenerUpdate(IStockDataProvider sender) {
+	private void fireUpdateStockDataListenerUpdate(IStockDataProvider sender, Map<StockItem, DayData> dataMap) {
 		for (IStockDataListener listener : this.updateStockDataListeners) {
-			listener.OnStockDataUpdated(sender);
+			listener.OnStockDataUpdated(sender, dataMap);
 		}
 	}
 
@@ -295,18 +301,24 @@ public class DataManager implements IStockDataListener {
 	}
 
 	@Override
-	public void OnStockDataUpdated(IStockDataProvider sender) {
+	public void OnStockDataUpdated(IStockDataProvider sender, Map<StockItem,DayData> dataMap) {
 		Log.d(Utils.LOG_TAG, "received stock data update event from " + sender.getId());
 		this.acquireDb(sender.getId());
 		try {
-			for (StockItem item : sender.getAvailableStockList()) {
-				DayData data = sender.getLastData(item.getTicker());
-				if (data.getPrice() == 0)
-					data = this.createDataWithPrice(item, data);
-				this.sqlStore.insertDayData(item, data);
+			if (dataMap == null || dataMap.size() == 0) {
+				for (StockItem item : sender.getAvailableStockList()) {
+					DayData data = sender.getLastData(item.getTicker());
+					if (data.getPrice() == 0)
+						data = this.createDataWithPrice(item, data);
+					this.sqlStore.insertDayData(item, data);
+				}
+			} else {
+				for (Entry<StockItem, DayData> entry : dataMap.entrySet()) {
+					this.sqlStore.insertDayData(entry.getKey(), entry.getValue());
+				}
 			}
 			this.fireUpdateDateChanged(Calendar.getInstance().getTimeInMillis());
-			this.fireUpdateStockDataListenerUpdate(sender);
+			this.fireUpdateStockDataListenerUpdate(sender, dataMap);
 		} finally {
 			this.releaseDb(true, sender.getId());
 		}

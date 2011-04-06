@@ -43,7 +43,7 @@ class PseCsvDataProvider {
 	long lasUpdateTime;
 	Market market;
 	
-	Set<IStockDataListener> listeners;
+	IDownloadListener downloadListener;
 	
 	/*
 	 * first key is a date as "yyyy.MM.dd"
@@ -51,6 +51,10 @@ class PseCsvDataProvider {
 	 * */
 	private static Map<String, Map<String, CsvDataRow>> dataCache = new HashMap<String, Map<String,CsvDataRow>>();
 	
+	interface IDownloadListener {
+		void DownloadStart();
+		void DownloadFinished(Map<String, CsvDataRow> data);
+	}
 
 	public PseCsvDataProvider() {
 		this.parser = new PseCsvParser();
@@ -58,11 +62,10 @@ class PseCsvDataProvider {
 		//this.updateTimes = new HashMap<String, Long>();
 		this.lasUpdateTime = 0;
 		market = new Market("PSE", "XPRA", "CZK", this.getDescriptiveName());
-		this.listeners = new HashSet<IStockDataListener>();
 	}
-	
-	public void addListener(IStockDataListener listener) {
-		this.listeners.add(listener);
+
+	void setDownloadListener(IDownloadListener listener) {
+		this.downloadListener = listener;
 	}
 	
 	public Market getMarket() {
@@ -96,26 +99,33 @@ class PseCsvDataProvider {
 	 */
 	private Map<String, CsvDataRow> getDataFromRemoteFile(String remoteFileName)
 			throws IOException {
-		byte[] byteArray = DownloadService.GetInstance().DownloadFromUrl(
-				PSE_DATA_ROOT_URL + remoteFileName, true);
-		String data = new String(byteArray, "CP-1250");
-		
-		Map<String, CsvDataRow> rows = this.parser.parse(data);
-		
+		Map<String, CsvDataRow> rows = null;
+		if (this.downloadListener != null)
+			this.downloadListener.DownloadStart();
+		try {
+			byte[] byteArray = DownloadService.GetInstance().DownloadFromUrl(
+					PSE_DATA_ROOT_URL + remoteFileName, true);
+			String data = new String(byteArray, "CP-1250");
+			
+			rows = this.parser.parse(data);
+			
 //		if (this.updateTimes.containsKey(remoteFileName))
 //			this.updateTimes.remove(remoteFileName);
 //		this.updateTimes.put(remoteFileName, Calendar.getInstance().getTimeInMillis());
-		this.lasUpdateTime = Calendar.getInstance().getTimeInMillis();
-		
+			this.lasUpdateTime = Calendar.getInstance().getTimeInMillis();
+		} finally {
+			if (this.downloadListener != null) {
+				this.downloadListener.DownloadFinished(rows);
+			}
+		}
+
 		return rows;
 	}
 
 	/*
 	 * build a file name according to desired date, this file can be downloaded
 	 * */
-	private String buildRemoteFileName(Calendar calendar) {
-		//Calendar calendar = Calendar.getInstance(new Locale("cs"));
-		
+	private String buildRemoteFileName(Calendar calendar) {		
 		String name = null;
 		NumberFormat format = DecimalFormat.getInstance();
 
@@ -133,6 +143,12 @@ class PseCsvDataProvider {
 			String day = decFormat.format(dayInMonth);
 
 			name = String.format("AK%s%s%s.csv", year, month, day);
+			// if we wanted data from previous year, we would also want to
+			// include year folder in path (see structure of bcpp ftp server)
+			int desiredYear = calendar.get(Calendar.YEAR);
+			if (desiredYear < Calendar.getInstance().get(Calendar.YEAR)) {
+				name = desiredYear + "//" + name;
+			}
 		}
 
 		return name;

@@ -6,15 +6,20 @@ package cz.tomas.StockAnalyze.Data.PseCsvData;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+
+import android.util.Log;
 
 import cz.tomas.StockAnalyze.Data.DataProviderAdviser;
 import cz.tomas.StockAnalyze.Data.IStockDataProvider;
 import cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
+import cz.tomas.StockAnalyze.Data.PseCsvData.PseCsvDataProvider.IDownloadListener;
 import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetDataException;
 import cz.tomas.StockAnalyze.utils.Utils;
 
@@ -25,17 +30,43 @@ import cz.tomas.StockAnalyze.utils.Utils;
 public class PseCsvDataAdapter implements IStockDataProvider {
 
 	private PseCsvDataProvider provider;
+	Set<IStockDataListener> listeners;
 
 	public PseCsvDataAdapter() {
 		this.provider = new PseCsvDataProvider();
+		this.listeners = new HashSet<IStockDataListener>();
+		
+		// adapt events from data provider to IStockDataListener events
+		this.provider.setDownloadListener(new IDownloadListener() {
+			
+			@Override
+			public void DownloadStart() {
+				for (IStockDataListener listener : listeners) {
+					listener.OnStockDataUpdateBegin(PseCsvDataAdapter.this);
+				}
+			}
+			
+			@Override
+			public void DownloadFinished(Map<String, CsvDataRow> rows) {
+				Map<StockItem,DayData> dataMap = new HashMap<StockItem, DayData>();
+				for (CsvDataRow row : rows.values()) {
+					StockItem stockItem = new StockItem(row.ticker, row.code, row.name, provider.getMarket());
+					DayData data = createDayData(row);
+					dataMap.put(stockItem, data);
+				}
+				for (IStockDataListener listener : listeners) {
+					listener.OnStockDataUpdated(PseCsvDataAdapter.this, dataMap);
+				}
+			}
+		});
 	}
 
 	/* (non-Javadoc)
 	 * @see cz.tomas.StockAnalyze.Data.Interfaces.IObservableDataProvider#addListener(cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener)
 	 */
-	@Override
+	@Override	
 	public void addListener(IStockDataListener listener) {
-		this.provider.addListener(listener);
+		this.listeners.add(listener);
 	}
 
 	/* (non-Javadoc)
@@ -47,8 +78,6 @@ public class PseCsvDataAdapter implements IStockDataProvider {
 		try {
 			row = this.provider.getLastData(ticker);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 			throw new FailedToGetDataException(e);
 		}
 		return this.createDayData(row);
@@ -111,10 +140,11 @@ public class PseCsvDataAdapter implements IStockDataProvider {
 	 */
 	@Override
 	public void enable(boolean enabled) {
-		// TODO Auto-generated method stub
-
 	}
 	
+	/*
+	 * convert csv data row to DayData
+	 */
 	private DayData createDayData(CsvDataRow dataRow) {
 		float price, change, volume, yearMinimum, yearMaximum;
 		Date date;
@@ -127,43 +157,43 @@ public class PseCsvDataAdapter implements IStockDataProvider {
 			price = Float.parseFloat(dataRow.getClosePrice());
 		} catch (Exception e) {
 			price = -1;
-			e.printStackTrace();
+			Log.e(Utils.LOG_TAG, "parse error", e);
 		}
 		try {
 			change = Float.parseFloat(dataRow.getChange());
 		} catch (Exception e) {
 			change = 0;
-			e.printStackTrace();
+			Log.e(Utils.LOG_TAG, "parse error", e);
 		}
 		try {
 			date = new Date(Date.parse(dataRow.getDate()));
 		} catch (Exception e) {
 			date = Calendar.getInstance().getTime();
-			e.printStackTrace();
+			Log.e(Utils.LOG_TAG, "parse error", e);
 		}
 		try {
 			volume = Float.parseFloat(dataRow.getDayVolume());
 		} catch (Exception e) {
 			volume = -1;
-			e.printStackTrace();
+			Log.e(Utils.LOG_TAG, "parse error", e);
 		}
 		try {
 			yearMaximum = Float.parseFloat(dataRow.getYearMax());
 		} catch (NumberFormatException e) {
 			yearMaximum = -1;
-			e.printStackTrace();
+			Log.e(Utils.LOG_TAG, "parse error", e);
 		}
 		try {
 			yearMinimum = Float.parseFloat(dataRow.getYearMin());
 		} catch (NumberFormatException e) {
 			yearMinimum = -1;
-			e.printStackTrace();
+			Log.e(Utils.LOG_TAG, "parse error", e);
 		}
 		try {
-			tradedPieces = Integer.parseInt(dataRow.getTradedPieces());
+			tradedPieces = (int) Float.parseFloat(dataRow.getTradedPieces());
 		} catch (NumberFormatException e) {
 			tradedPieces = -1;
-			e.printStackTrace();
+			Log.e(Utils.LOG_TAG, "parse error", e);
 		}
 		return new DayData(price, change, date, volume, yearMaximum, yearMinimum, Utils.createDateOnlyCalendar(date).getTimeInMillis());
 	}

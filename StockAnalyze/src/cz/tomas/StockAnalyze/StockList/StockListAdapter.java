@@ -74,14 +74,15 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
         this.dataManager.addStockDataListener(new IStockDataListener() {
 			
 			@Override
-			public void OnStockDataUpdated(IStockDataProvider sender) {
-				((Activity) context).runOnUiThread(new Runnable() {
-					
-					@Override
-					public void run() {
-						refreshList();
-					}
-				});
+			public void OnStockDataUpdated(IStockDataProvider sender, Map<StockItem, DayData> dataMap) {
+				if (sender.getAdviser().isRealTime())
+					((Activity) context).runOnUiThread(new Runnable() {
+						
+						@Override
+						public void run() {
+							refreshList();
+						}
+					});
 			}
 			
 			@Override
