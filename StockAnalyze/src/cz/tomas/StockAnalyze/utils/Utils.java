@@ -29,6 +29,20 @@ public class Utils {
 	
 	private static ConnectivityManager connectivityManager;
 
+//	private final static String HOLIDAYS = {
+//	        "Den obnovy samostatneho ceskeho statu" => "01.01.",
+//	        "Svatek prace" => "01.05.",
+//	        "Den osvobozeni" => "08.05.",
+//	        "Den slovanskych verozvestu Cyrila a Metodeje" => "05.07.",
+//	        "Den upaleni mistra Jana Husa" => "06.07.",
+//	        "Den ceske statnosti" => "28.09.",
+//	        "Den vzniku samostatneho ceskoslovenskeho statu" => "28.10.",
+//	        "Den boje za svobodu a demokracii" => "17.11.",
+//	        "Stedry den" => "24.12.",
+//	        "1. svatek vanocni" => "25.12.",
+//	        "2. svatek vanocni" => "26.12."
+//	        };
+	
 	/*
 	 * construct calendar that contains only date info from general Calendar object
 	 */

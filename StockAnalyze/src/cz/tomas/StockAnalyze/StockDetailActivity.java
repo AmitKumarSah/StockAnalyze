@@ -40,7 +40,7 @@ public final class StockDetailActivity extends Activity {
 
 	private StockItem stockItem;
 	private DataManager dataManager;
-	private int chartDayCount = 5;
+	private int chartDayCount = 10;
 	private CompositeChartView chartView;
 	private DrawChartTask chartTask;
 	
@@ -124,24 +124,25 @@ public final class StockDetailActivity extends Activity {
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		int dayCount = 0;
+		// day counts are work days only
 		switch (item.getItemId()) {
 		case R.id.chart10days:
 			dayCount = 10;
 			break;
 		case R.id.chart3months:
-			dayCount = 91;
+			dayCount = 63;
 			break;
 		case R.id.chart5days:
 			dayCount = 5;
 			break;
 		case R.id.chart6months:
-			dayCount =  182;
+			dayCount =  126;
 			break;
 		case R.id.chartMonth:
-			dayCount = 30;
+			dayCount = 21;
 			break;
 		case R.id.chartYear:
-			dayCount = 365;
+			dayCount = 252;
 			break;
 		default:
 			break;
