@@ -4,11 +4,14 @@
 package cz.tomas.StockAnalyze.charts.view;
 
 import cz.tomas.StockAnalyze.charts.Utils;
+import cz.tomas.StockAnalyze.charts.interfaces.IChartTextFormatter;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Path;
+import android.graphics.Paint.Align;
+import android.graphics.Typeface;
+import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -17,43 +20,49 @@ import android.view.View;
  * @author tomas
  *
  */
-public class ChartView extends View {
+public class ChartView<T> extends View {
 
 	private float[] data;
 	private float[] preparedData;
+	
+	private T[] axisX;
+	private IChartTextFormatter<T> formatter;
+	
 	private float max;
 	private float min;
 	
 	private Paint paint;
 	private Paint chartPaint;
+	private TextPaint textPaint;
 	
-	// Convert the dps to pixels
-	private final float scale = getContext().getResources().getDisplayMetrics().density;
+	/**
+	 *  Convert the dps to pixels
+	 */
+	private final float SCALE = getContext().getResources().getDisplayMetrics().density;
+	/**
+	 * offset for whole chart (padding)
+	 */
+	private final int OFFSET = 8;
+	
+	/**
+	 * pixels between axis text and axis itself
+	 */
+	private final int AXIS_TEXT_PADDING = 2;
 	
 	public ChartView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		
 		this.paint = new Paint();
-		this.paint.setStrokeWidth(2*scale);
+		this.paint.setStrokeWidth(2*SCALE);
 		this.paint.setColor(Color.BLUE);
 		this.paint.setAntiAlias(true);
 		
 		this.chartPaint = new Paint(this.paint);
 		this.chartPaint.setColor(Color.GREEN);
+		this.textPaint = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
+		this.textPaint.setTypeface(Typeface.DEFAULT_BOLD);
+		this.textPaint.setTextAlign(Align.LEFT);
 	}
-
-	
-	
-//	/* (non-Javadoc)
-//	 * @see android.view.View#onMeasure(int, int)
-//	 */
-//	@Override
-//	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-//		//super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-//		
-//		setMeasuredDimension(widthMeasureSpec, widthMeasureSpec);
-//	}
-
 
 
 	/*
@@ -62,17 +71,42 @@ public class ChartView extends View {
 	@Override
 	protected void onDraw(Canvas canvas) {
 		//super.onDraw(canvas);
-		int offset = (int) (10 * this.scale + 0.5f);
-		float originX = offset;
-		float originY = this.getHeight() - offset;
-		float chartWidth = this.getWidth() - 2 * offset;
-		float chartHeight = this.getHeight() - 2 * offset;
+		int offsetBelowXAxis, offsetNextToYAxis;									// offset caused by text descriptions of axis
+
+		offsetBelowXAxis = calculateXAxisDescriptionOffset();
+		offsetNextToYAxis = calculateYAxisDescriptionOffset();
 		
-		drawAxes(canvas, offset, originX, originY, chartWidth);
+		float originX = OFFSET + offsetNextToYAxis;								// x coord where the chart starts
+		float originY = this.getHeight() - OFFSET - offsetBelowXAxis;			// y coord where the chart starts
+		// originX & originY give us the start point of the chart,
+		// it is the lower left corner
+		
+		float chartWidth = this.getWidth() - 2 * OFFSET - offsetBelowXAxis;
+		float chartHeight = this.getHeight() - 2 * OFFSET - offsetNextToYAxis;
+		
+		drawAxis(canvas, OFFSET, originX, originY, chartWidth);
+		drawAxisDescription(canvas, offsetBelowXAxis, offsetNextToYAxis, chartWidth, chartHeight);
 		
 		if (this.data != null && this.data.length > 1)
-			this.drawData(canvas, offset, originX, originY, chartWidth, chartHeight);
+			this.drawData(canvas, OFFSET, originX, originY, chartWidth, chartHeight);
 	}
+
+	private int calculateYAxisDescriptionOffset() {
+		if (this.data != null && this.data.length > 0) {
+			float startWidth = this.textPaint.measureText(String.valueOf(this.data[0]));
+			float endWidth = this.textPaint.measureText(String.valueOf(this.data[this.data.length - 1]));
+			return (int) (Math.max(startWidth, endWidth) + 0.5f) + AXIS_TEXT_PADDING;
+		}
+		return 4;
+	}
+
+	private int calculateXAxisDescriptionOffset() {
+		if (this.axisX != null && this.axisX.length > 0) {
+			return (int) (2 * this.textPaint.getTextSize() + AXIS_TEXT_PADDING);
+		}
+		return 4;
+	}
+
 
 	private void drawData(Canvas canvas, float offset, float originX,
 			float originY, float chartWidth, float chartHeight) {
@@ -120,7 +154,6 @@ public class ChartView extends View {
 	}
 	float scaleRange(float in, float oldMin, float oldMax, float newMin, float newMax)
 	{
-		//return (in / ((oldMax - oldMin) / (newMax - newMin))) + newMin;
 		return ( ((newMax - newMin) * (in - oldMin)) / (oldMax - oldMin) ) + newMin;
 	}
 	
@@ -136,13 +169,45 @@ public class ChartView extends View {
 	 * @param originY
 	 * @param chartWidth
 	 */
-	private void drawAxes(Canvas canvas, float offset, float originX, float originY, float chartWidth) {
+	private void drawAxis(Canvas canvas, float offset, float originX, float originY, float chartWidth) {
+		// the lines are crossing with overlap = offset/2
 		// draw x axis
-		canvas.drawLine(originX - offset/2, originY, chartWidth, originY, paint);
+		canvas.drawLine(originX - offset/2, originY, chartWidth, originY, this.paint);
 		
-		//canvas.drawLine(originX, originY, chartWidth, 0 + offset, paint);
 		// draw y axis
-		canvas.drawLine(originX, originY + originY/2, originX, 0 + offset, paint);
+		canvas.drawLine(originX, originY + originY/2, originX, 0 + offset, this.paint);
+	}
+
+	private void drawAxisDescription(Canvas canvas, int offsetBelowXAxis, int offsetNextToYAxis, float chartWidth, float chartHeight) {
+		// description next to y axis
+		if (this.data != null && this.data.length > 0) {
+			// bottom text is right above x=0 value to the left of y axis
+			canvas.drawText(String.valueOf(this.min), OFFSET, 
+					this.getHeight() - OFFSET - offsetBelowXAxis, this.textPaint);
+			
+			String lastTickText = String.valueOf(max);
+			canvas.drawText(lastTickText, OFFSET, OFFSET + this.textPaint.getTextSize(),
+					this.textPaint);
+		}
+
+		// description under the x axis
+		if (this.axisX != null && this.axisX.length > 0) {
+			String text = this.getFormattedValue(this.axisX[0]);
+			canvas.drawText(text, OFFSET + offsetNextToYAxis, 
+					this.getHeight() - OFFSET - this.textPaint.getTextSize(), this.textPaint);
+			
+			text = this.getFormattedValue(this.axisX[this.axisX.length - 1]);
+			float textWidth = this.textPaint.measureText(text);
+			canvas.drawText(text, 2*OFFSET + chartWidth - textWidth, 
+					this.getHeight() - OFFSET - this.textPaint.getTextSize(), this.textPaint);
+		}
+	}
+	
+	private String getFormattedValue(T val) {
+		if (this.formatter != null)
+			return this.formatter.formatAxeText(val);
+		else
+			return val.toString();
 	}
 	
 	public void setData(float[] data, float max, float min) {
@@ -157,5 +222,10 @@ public class ChartView extends View {
 			builder.append(String.valueOf(data[i]) + "; ");
 		}
 		Log.d(Utils.LOG_TAG, builder.toString());
+	}
+	
+	public void setAxisX(T[] xAxisPoints, IChartTextFormatter<T> formatter) {
+		this.axisX = xAxisPoints;
+		this.formatter = formatter;
 	}
 }

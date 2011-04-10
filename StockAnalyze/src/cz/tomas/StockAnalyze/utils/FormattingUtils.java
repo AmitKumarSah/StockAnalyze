@@ -114,6 +114,11 @@ public final class FormattingUtils {
 		return result;
 	}
 	
+	public static String formatStockShortDate(Calendar cal) {
+		DateFormat formatter = null;
+		formatter = DateFormat.getDateInstance(DateFormat.SHORT);
+		return formatter.format(cal.getTime());
+	}
 
 	public static String formatStockDate(Calendar cal) {
 		DateFormat formatter = null;

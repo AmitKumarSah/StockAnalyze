@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import android.app.Activity;
 import android.app.TabActivity;
@@ -27,6 +29,7 @@ import android.widget.Toast;
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
+import cz.tomas.StockAnalyze.charts.interfaces.IChartTextFormatter;
 import cz.tomas.StockAnalyze.charts.view.CompositeChartView;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.NavUtils;
@@ -284,25 +287,28 @@ public final class StockDetailActivity extends Activity {
 			}
 			if (dataSet != null) {
 				float[] dataPoints = new float[dataSet.length];
-				Date[] xAxisPoints = new Date[dataSet.length];
+				Long[] xAxisPoints = new Long[dataSet.length];
+				Map<Date, Float> chartData = new LinkedHashMap<Date, Float>();
 				float max = 0;
 				float min = Float.MAX_VALUE;
+				
 				for (int i = 0; i < dataSet.length; i++) {
 					float price = 0;
-					Date time = null;
+					Long time = 0l;
 					if (dataSet[i] != null) {
 						price = dataSet[i].getPrice();
-						time = dataSet[i].getDate();
+						time = dataSet[i].getDate().getTime();
 					} else {
 						Log.w(Utils.LOG_TAG, "day data with index " + i + " are not available");
 						if (i > 0 && dataSet[i-1] != null) {
 							// try to get previous one
 							price = dataSet[i-1].getPrice();
-							time = dataSet[i-1].getDate();
+							time = dataSet[i-1].getDate().getTime();
 						}
 					}
 					dataPoints[i] = price;
 					xAxisPoints[i] = time;
+//					chartData.put(time, price);
 					
 					if (price > max)
 						max = price;
@@ -312,7 +318,16 @@ public final class StockDetailActivity extends Activity {
 
 				if (chartView.getVisibility() == View.VISIBLE) {
 					chartView.setData(dataPoints, max, min);
-					chartView.setAxisX(xAxisPoints);
+					final Calendar cal = Calendar.getInstance();
+					chartView.setAxisX(xAxisPoints, new IChartTextFormatter<Long>() {
+
+						@Override
+						public String formatAxeText(Long val) {
+							cal.setTimeInMillis(val);
+							return FormattingUtils.formatStockShortDate(cal);
+						}
+					});
+//					chartView.setData(chartData, max, min);
 				}
 			}
 			return null;
