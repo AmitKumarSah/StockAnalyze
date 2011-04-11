@@ -36,6 +36,9 @@ class PseCsvDataProvider {
 	private final String PSE_DATA_ROOT_FTP_URL = "ftp://ftp.pse.cz/Results.ak/";
 	private final String PSE_DATA_ROOT_URL = "http://ftp.pse.cz/Results.ak/";
 	
+	//index px history
+	//http://ftp.pse.cz/Info.bas/Cz/PX.csv
+	
 	private final String REMOTE_LAST_DATA_NAME = "ak.csv";
 	
 	PseCsvParser parser;

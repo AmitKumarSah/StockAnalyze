@@ -172,7 +172,7 @@ public class ChartView<T> extends View {
 	private void drawAxis(Canvas canvas, float offset, float originX, float originY, float chartWidth) {
 		// the lines are crossing with overlap = offset/2
 		// draw x axis
-		canvas.drawLine(originX - offset/2, originY, chartWidth, originY, this.paint);
+		canvas.drawLine(originX - offset/2, originY, chartWidth + offset, originY, this.paint);
 		
 		// draw y axis
 		canvas.drawLine(originX, originY + originY/2, originX, 0 + offset, this.paint);

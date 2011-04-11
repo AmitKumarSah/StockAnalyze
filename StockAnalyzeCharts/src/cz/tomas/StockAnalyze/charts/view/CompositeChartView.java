@@ -13,6 +13,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
+import android.view.View;
 import android.widget.RelativeLayout;
 
 /**
@@ -23,6 +24,8 @@ public class CompositeChartView extends RelativeLayout {
 
 	MenuInflater inflater;
 	ChartView chart;
+	View progressBar;
+	View background;
 	
 	public CompositeChartView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -31,11 +34,10 @@ public class CompositeChartView extends RelativeLayout {
 		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.composite_chart_view_layout, this);
 		this.chart = (ChartView) this.findViewById(R.id.chart);
+		this.progressBar = this.findViewById(R.id.chartProgressBar);
+		this.background = this.findViewById(R.id.chartBackground);
 	}
 	
-//	public <T> void setData(Map<T, Float> dataSet, float max, float min) {
-//		
-//	}
 	
 	public void setData(float[] dataSet, float max, float min) {
 		if (this.chart != null)
@@ -49,5 +51,13 @@ public class CompositeChartView extends RelativeLayout {
 			this.chart.setAxisX(xAxisPoints, formatter);
 		else
 			Log.w(Utils.LOG_TAG, "chart in CompositeChartView is null! Can't set axis data.");
+	}
+
+	public void setLoading(boolean loading) {
+		if (this.progressBar != null)
+			this.progressBar.setVisibility(loading ? View.VISIBLE: View.GONE);
+		
+		if (this.background != null)
+			this.background.setVisibility(loading ? View.VISIBLE: View.GONE);
 	}
 }

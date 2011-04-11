@@ -6,8 +6,7 @@ package cz.tomas.StockAnalyze;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 
 import android.app.Activity;
@@ -15,7 +14,6 @@ import android.app.TabActivity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
-import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -46,12 +44,23 @@ public final class StockDetailActivity extends Activity {
 	private int chartDayCount = 10;
 	private CompositeChartView chartView;
 	private DrawChartTask chartTask;
+	private TextView txtChartDescription;
+	private static Map<Integer, Integer> dayCountMap;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+		if (dayCountMap == null) {
+			dayCountMap = new HashMap<Integer, Integer>();
+			dayCountMap.put(5, R.string.chart5days);
+			dayCountMap.put(10, R.string.chart10days);
+			dayCountMap.put(21, R.string.chartMonth);
+			dayCountMap.put(63, R.string.chart3months);
+			dayCountMap.put(126, R.string.chart6months);
+			dayCountMap.put(252, R.string.chartYear);
+		}
 		this.setContentView(R.layout.stock_detail);
+		this.txtChartDescription = (TextView) this.findViewById(R.id.detail_label_chart_description);
 		this.dataManager = DataManager.getInstance(this);
 		this.chartView = (CompositeChartView) findViewById(R.id.stockChartView);
 		this.registerForContextMenu(this.chartView);
@@ -115,11 +124,14 @@ public final class StockDetailActivity extends Activity {
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
+		// in case the task is running, don't create context menu
+		if (this.chartTask != null && this.chartTask.getStatus() == AsyncTask.Status.RUNNING || 
+				this.chartTask.getStatus() == AsyncTask.Status.PENDING)
+			return;
+		
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.chart_context_menu, menu);
 	}
-
-
 
 	/* 
 	 * @see android.app.Activity#onContextItemSelected(android.view.MenuItem)
@@ -271,7 +283,10 @@ public final class StockDetailActivity extends Activity {
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
-			
+			if (txtChartDescription != null)
+				txtChartDescription.setText(R.string.loading);
+			if (chartView != null)
+				chartView.setLoading(true);
 		}
 
 		@Override
@@ -288,7 +303,7 @@ public final class StockDetailActivity extends Activity {
 			if (dataSet != null) {
 				float[] dataPoints = new float[dataSet.length];
 				Long[] xAxisPoints = new Long[dataSet.length];
-				Map<Date, Float> chartData = new LinkedHashMap<Date, Float>();
+				//Map<Date, Float> chartData = new LinkedHashMap<Date, Float>();
 				float max = 0;
 				float min = Float.MAX_VALUE;
 				
@@ -317,7 +332,6 @@ public final class StockDetailActivity extends Activity {
 				}
 
 				if (chartView.getVisibility() == View.VISIBLE) {
-					chartView.setData(dataPoints, max, min);
 					final Calendar cal = Calendar.getInstance();
 					chartView.setAxisX(xAxisPoints, new IChartTextFormatter<Long>() {
 
@@ -327,7 +341,7 @@ public final class StockDetailActivity extends Activity {
 							return FormattingUtils.formatStockShortDate(cal);
 						}
 					});
-//					chartView.setData(chartData, max, min);
+					chartView.setData(dataPoints, max, min);
 				}
 			}
 			return null;
@@ -335,7 +349,12 @@ public final class StockDetailActivity extends Activity {
 
 		@Override
 		protected void onPostExecute(Void result) {
+			int id = dayCountMap.get(chartDayCount);
 			
+			if (txtChartDescription != null)
+				txtChartDescription.setText(getString(id));
+			if (chartView != null)
+				chartView.setLoading(false);
 		}
 		
 	}
