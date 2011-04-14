@@ -81,14 +81,14 @@ public class ChartView<T> extends View {
 		// originX & originY give us the start point of the chart,
 		// it is the lower left corner
 		
-		float chartWidth = this.getWidth() - 2 * OFFSET - offsetBelowXAxis;
-		float chartHeight = this.getHeight() - 2 * OFFSET - offsetNextToYAxis;
+		float chartWidth = this.getWidth() - 2 * OFFSET -offsetNextToYAxis ;
+		float chartHeight = this.getHeight() - 2 * OFFSET - offsetBelowXAxis;
 		
 		drawAxis(canvas, OFFSET, originX, originY, chartWidth);
 		drawAxisDescription(canvas, offsetBelowXAxis, offsetNextToYAxis, chartWidth, chartHeight);
 		
 		if (this.data != null && this.data.length > 1)
-			this.drawData(canvas, OFFSET, originX, originY, chartWidth, chartHeight);
+			this.drawData(canvas, originX, originY, chartWidth, chartHeight);
 	}
 
 	private int calculateYAxisDescriptionOffset() {
@@ -108,7 +108,7 @@ public class ChartView<T> extends View {
 	}
 
 
-	private void drawData(Canvas canvas, float offset, float originX,
+	private void drawData(Canvas canvas, float originX,
 			float originY, float chartWidth, float chartHeight) {
 		
 		float step = chartWidth / this.data.length;
@@ -120,17 +120,17 @@ public class ChartView<T> extends View {
 		
 		// first value
 		points[0] = originX;
-		points[1] = chartHeight - preparedData[0] + offset;
+		points[1] = chartHeight - preparedData[0] + OFFSET;
 		points[2] = originX;
-		points[3] = chartHeight - preparedData[0] + offset;
+		points[3] = chartHeight - preparedData[0] + OFFSET;
 		
 		for (int i = 1; i < data.length; i++) {
 			float value = preparedData[i];
 			
 			points[i * 4] = points[i * 4 - 2];
-			points[i * 4 +1] = points[i * 4 - 1];
+			points[i * 4 + 1] = points[i * 4 - 1];
 			points[i * 4 + 2] = step * i + originX;
-			points[i * 4 + 3] = chartHeight - value + offset;
+			points[i * 4 + 3] = chartHeight - value + OFFSET;
 			
 		}
 		canvas.drawLines(points, chartPaint);

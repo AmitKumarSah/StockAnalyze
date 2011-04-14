@@ -1,23 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge>
-<RelativeLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:id="@+id/composite_chart_view_layout"
-	android:layout_width="fill_parent"
-	android:layout_height="fill_parent"
-	android:layout_alignParentBottom="true"
-	android:layout_alignParentTop="true"
-	android:layout_gravity="fill">
+<merge
+	xmlns:android="http://schemas.android.com/apk/res/android">
 	
 	<cz.tomas.StockAnalyze.charts.view.ChartView
 		android:id="@+id/chart"
 		android:layout_width="fill_parent"
-		android:layout_height="fill_parent" 
-		android:layout_alignParentTop="true"
-		android:layout_alignParentBottom="true"/>
+		android:layout_height="fill_parent"
+		android:layout_gravity="fill"
+		android:minHeight="140dp"/>
+		
+		<!-- gray background and progress bar -->
 	<View android:id="@+id/chartBackground"
 		android:layout_width="fill_parent"
 		android:layout_height="fill_parent"
+		android:layout_gravity="fill"
 		android:visibility="gone"
 		android:background="#66999999" />
     <ProgressBar  
@@ -27,5 +23,4 @@
 	    android:layout_centerHorizontal="true"
 	    android:visibility="gone"
 	    android:layout_width="wrap_content" />
-</RelativeLayout>
 </merge>

@@ -14,7 +14,8 @@
 		
 	<ScrollView
 		android:layout_width="fill_parent" 
-		android:layout_height="fill_parent">
+		android:layout_height="fill_parent"
+		android:fillViewport="true">
 		<LinearLayout android:id="@+id/DetailLinear"
 			android:layout_width="fill_parent" 
 			android:layout_height="fill_parent"
@@ -61,6 +62,7 @@
 			<TableLayout android:id="@+id/tableDetailData"
 				style="@style/groupboxBody"
 			 	android:stretchColumns="1"
+			 	android:minHeight="60dp"
 				android:shrinkColumns="0">
 				<TableRow android:id="@+id/TableDetailRow01"
 					android:layout_width="fill_parent" android:layout_height="fill_parent">
@@ -108,6 +110,7 @@
 		
 			<LinearLayout android:id="@+id/detailChartHeaderContainer"
 				style="@style/groupboxHeader"
+				android:layout_below="@+id/tableDetailData"
 				android:background="@drawable/groupbox_header_shape" >
 				
 				<TextView android:id="@+id/detail_label_chart"
@@ -122,8 +125,9 @@
 			<cz.tomas.StockAnalyze.charts.view.CompositeChartView android:id="@+id/stockChartView"
 				style="@style/groupboxBody" 
 				android:layout_width="fill_parent" 
-				android:layout_height="165dp"
+				android:layout_height="fill_parent"
 				android:minHeight="150dp" 
+				android:layout_marginBottom="2dp"
 				android:visibility="visible"/>
 		</LinearLayout>
 	</ScrollView>

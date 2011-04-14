@@ -3,8 +3,6 @@
  */
 package cz.tomas.StockAnalyze.charts.view;
 
-import java.util.Map;
-
 import cz.tomas.StockAnalyze.charts.R;
 import cz.tomas.StockAnalyze.charts.Utils;
 import cz.tomas.StockAnalyze.charts.interfaces.IChartTextFormatter;

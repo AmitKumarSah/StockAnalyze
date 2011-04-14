@@ -1,29 +1,14 @@
 package cz.tomas.StockAnalyze;
 
 import java.io.IOException;
-import java.net.URI;
 import java.util.Calendar;
-import java.util.Iterator;
 
-import cz.tomas.StockAnalyze.Data.DataManager;
-import cz.tomas.StockAnalyze.Data.MarketFactory;
-import cz.tomas.StockAnalyze.Data.UpdateScheduler;
-import cz.tomas.StockAnalyze.Data.Model.DayData;
-import cz.tomas.StockAnalyze.Data.Model.StockItem;
-import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetDataException;
-import cz.tomas.StockAnalyze.charts.view.ChartView;
-import cz.tomas.StockAnalyze.ui.widgets.HomeBlockView;
-import cz.tomas.StockAnalyze.utils.DownloadService;
-import cz.tomas.StockAnalyze.utils.NavUtils;
-import cz.tomas.StockAnalyze.utils.Utils;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Debug;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -34,6 +19,15 @@ import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
 import android.widget.ImageView;
 import android.widget.Toast;
+import cz.tomas.StockAnalyze.Data.DataManager;
+import cz.tomas.StockAnalyze.Data.MarketFactory;
+import cz.tomas.StockAnalyze.Data.Model.DayData;
+import cz.tomas.StockAnalyze.Data.Model.StockItem;
+import cz.tomas.StockAnalyze.charts.view.ChartView;
+import cz.tomas.StockAnalyze.ui.widgets.HomeBlockView;
+import cz.tomas.StockAnalyze.utils.DownloadService;
+import cz.tomas.StockAnalyze.utils.NavUtils;
+import cz.tomas.StockAnalyze.utils.Utils;
 
 public class HomeActivity extends Activity implements OnClickListener, OnKeyListener {
 
