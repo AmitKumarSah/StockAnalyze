@@ -3,21 +3,20 @@
  */
 package cz.tomas.StockAnalyze;
 
-import java.io.IOException;
-
-import cz.tomas.StockAnalyze.charts.view.CompositeChartView;
-import cz.tomas.StockAnalyze.utils.Utils;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.Toast;
+import cz.tomas.StockAnalyze.charts.view.CompositeChartView;
+import cz.tomas.StockAnalyze.utils.Utils;
 
 /**
+ * activity showing stock chart as the only content 
+ * 
  * @author tomas
  *
  */
@@ -34,10 +33,26 @@ public class StockChartActivity extends ChartActivity {
 		this.setContentView(this.chartView);
 		this.registerForContextMenu(this.chartView);
 		
+		// if we aren't resuming, load day count from intent (first run)
+		if (savedInstanceState == null || !savedInstanceState.containsKey(EXTRA_CHART_DAY_COUNT))
+			this.chartDayCount = this.getIntent().getIntExtra(EXTRA_CHART_DAY_COUNT, 10);
+		
+		this.setChartActivityListener(new IChartActivityListener() {
+			
+			@Override
+			public void onChartUpdateFinish() {
+				updateTitle(false);
+			}
+			
+			@Override
+			public void onChartUpdateBegin() {
+				updateTitle(true);
+			}
+		});
+		
 		try {
 			if (this.readData(this.getIntent())) {
 				this.updateChart();
-				this.updateTitle();
 			}
 		} catch (Exception e) {
 			Log.e(Utils.LOG_TAG, "Failed to load data or update chart.", e);
@@ -50,32 +65,21 @@ public class StockChartActivity extends ChartActivity {
 	}
 
 	
-
-	private void updateTitle() {
+	/**
+	 * build activity title according to content
+	 * @param loading true if chart is just loading
+	 */
+	private void updateTitle(boolean loading) {
 		int id = ChartActivity.DAY_COUNT_MAP.get(this.chartDayCount);
 		String title = this.getString(R.string.activityStockChart);
 		if (this.stockItem != null) {
 			title += ": " + this.stockItem.getTicker();
 		}
 		title += " (" + this.getString(id) + ")";
+		if (loading)
+			title += " - " + this.getString(R.string.loading);
 		this.setTitle(title);
 	}
-	
-	/* 
-	 * @see cz.tomas.StockAnalyze.ChartActivity#readData(android.content.Intent)
-	 */
-	@Override
-	protected boolean readData(Intent intent) throws NullPointerException,
-			IOException {
-		if (super.readData(intent)) {
-			this.chartDayCount = intent.getIntExtra(EXTRA_CHART_DAY_COUNT, 10);
-			
-			return true;
-		}
-		return false;
-	}
-
-
 
 	/* 
 	 * create context menu for chart

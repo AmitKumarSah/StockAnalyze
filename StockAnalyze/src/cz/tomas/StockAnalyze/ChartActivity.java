@@ -17,12 +17,11 @@ import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 import android.app.Activity;
-import android.content.Intent;
+import android.content.Intent;	
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
 
 /**
  * Base class for activities containing chart view,
@@ -33,6 +32,11 @@ import android.widget.TextView;
  */
 public abstract class ChartActivity extends Activity {
 	
+	interface IChartActivityListener {
+		void onChartUpdateBegin();
+		void onChartUpdateFinish();
+	}
+	
 	protected static final String EXTRA_CHART_DAY_COUNT = "cz.tomas.StockAnalyze.chart_day_count";
 	
 	protected StockItem stockItem;
@@ -40,8 +44,11 @@ public abstract class ChartActivity extends Activity {
 	protected int chartDayCount = 10;
 	protected CompositeChartView chartView;
 	protected DrawChartTask chartTask;
-	protected TextView txtChartDescription;
 	protected DayData dayData;
+	
+	private static DayData[] chartDataSet;
+	
+	private IChartActivityListener listener;
 	/**
 	 * string resource ids mapped to day count
 	 */
@@ -63,8 +70,22 @@ public abstract class ChartActivity extends Activity {
 			DAY_COUNT_MAP.put(252, R.string.chartYear);
 		}
 
+		if (savedInstanceState != null) {
+			this.chartDayCount = savedInstanceState.getInt(EXTRA_CHART_DAY_COUNT);
+		}
 		this.dataManager = DataManager.getInstance(this);		
 	}
+
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onSaveInstanceState(android.os.Bundle)
+	 */
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		
+		outState.putInt(EXTRA_CHART_DAY_COUNT, this.chartDayCount);
+	}
+
 
 	/**
 	 * read data from input intent
@@ -138,8 +159,11 @@ public abstract class ChartActivity extends Activity {
 		return dayCount;
 	}
 
-	
-	final protected class DrawChartTask extends AsyncTask<StockItem, Integer, Void> {
+	public void setChartActivityListener(IChartActivityListener listener) {
+		this.listener = listener;
+	}
+
+	final protected class DrawChartTask extends AsyncTask<StockItem, Integer, DayData[]> {
 		
 		/* 
 		 * @see android.os.AsyncTask#onPreExecute()
@@ -147,22 +171,28 @@ public abstract class ChartActivity extends Activity {
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
-			if (txtChartDescription != null)
-				txtChartDescription.setText(R.string.loading);
+			if (listener != null)
+				listener.onChartUpdateBegin();
 			if (chartView != null)
 				chartView.setLoading(true);
 		}
 
 		@Override
-		protected Void doInBackground(StockItem... params) {
+		protected DayData[] doInBackground(StockItem... params) {
 			if (params.length == 0)
 				return null;
 			StockItem stockItem = params[0];
+
 			DayData[] dataSet = null;
-			try {
-				dataSet = dataManager.getDayDataSet(stockItem, Calendar.getInstance(), chartDayCount, true);
-			} catch (Exception e) {
-				Log.e(Utils.LOG_TAG, "failed to get data", e);
+			// either take data from local variable, or load them
+			if (ChartActivity.chartDataSet != null && ChartActivity.chartDataSet.length == chartDayCount)
+				dataSet = ChartActivity.chartDataSet;
+			else {
+				try {
+					dataSet = dataManager.getDayDataSet(stockItem, Calendar.getInstance(), chartDayCount, true);
+				} catch (Exception e) {
+					Log.e(Utils.LOG_TAG, "failed to get data", e);
+				}
 			}
 			if (dataSet != null) {
 				float[] dataPoints = new float[dataSet.length];
@@ -208,19 +238,20 @@ public abstract class ChartActivity extends Activity {
 					chartView.setData(dataPoints, max, min);
 				}
 			}
-			return null;
+			return dataSet;
 		}
 
 		@Override
-		protected void onPostExecute(Void result) {
-			int id = DAY_COUNT_MAP.get(chartDayCount);
-			
-			if (txtChartDescription != null)
-				txtChartDescription.setText(getString(id));
+		protected void onPostExecute(DayData[] result) {
+			chartDataSet = result;		
+			// change ui to show that update is done
 			if (chartView != null)
 				chartView.setLoading(false);
 			else
 				Log.w(Utils.LOG_TAG, "ChartView is null! Can not set data to chart!");
+			
+			if (listener != null)
+				listener.onChartUpdateFinish();
 		}
 		
 	}

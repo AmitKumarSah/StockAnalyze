@@ -26,12 +26,8 @@ import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 import cz.tomas.StockAnalyze.Data.DataManager;
-import cz.tomas.StockAnalyze.Data.Model.DayData;
-import cz.tomas.StockAnalyze.Data.Model.StockItem;
-import cz.tomas.StockAnalyze.charts.interfaces.IChartTextFormatter;
 import cz.tomas.StockAnalyze.charts.view.CompositeChartView;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
-import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 
 /**
@@ -40,6 +36,7 @@ import cz.tomas.StockAnalyze.utils.Utils;
  */
 public final class StockDetailActivity extends ChartActivity {
 
+	private TextView txtChartDescription;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -59,6 +56,22 @@ public final class StockDetailActivity extends ChartActivity {
 			});
 		} else
 			Log.w(Utils.LOG_TAG, "Failed to initialize chart view");
+		
+		this.setChartActivityListener(new IChartActivityListener() {
+			
+			@Override
+			public void onChartUpdateFinish() {
+				int id = DAY_COUNT_MAP.get(chartDayCount);
+				if (txtChartDescription != null)
+					txtChartDescription.setText(getString(id));
+			}
+			
+			@Override
+			public void onChartUpdateBegin() {
+				if (txtChartDescription != null)
+					txtChartDescription.setText(R.string.loading);
+			}
+		});
 		
 		// compatibility
 		if (this.getParent() instanceof TabActivity) {
@@ -232,7 +245,5 @@ public final class StockDetailActivity extends ChartActivity {
 		
 		if (txtName != null)
 			txtName.setText(R.string.NoStockSelected);
-	}
-	
-	
+	}	
 }
