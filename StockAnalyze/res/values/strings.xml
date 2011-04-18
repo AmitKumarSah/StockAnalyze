@@ -100,6 +100,7 @@ Nikdy se nepouštějte do obchodů, jejichž podstatě plně nerozumíte. Obchod
     <string name="activityPortfolioDetail">Detail</string>
     <string name="activityNews">News</string>
     <string name="activityCurrencies">Currencies</string>
+    <string name="activityStockChart">Stock Chart</string>
     <string name="chart5days">1 Week</string>
     <string name="chart10days">2 Weeks</string>
     <string name="chartMonth">1 Month</string>

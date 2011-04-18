@@ -21,6 +21,9 @@
 		<activity android:name="StockListActivity"></activity>
 		<activity android:name="StockSearchActivity"></activity>
 		<activity android:name="StockDetailActivity"></activity>
+		<activity android:name="StockChartActivity"	
+			android:theme="@style/themeLightTitle"
+			android:label="@string/app_name"></activity>
 		<activity android:name="PortfolioActivity"></activity>
 		<activity android:name=".Portfolio.AddPortfolioItemActivity"
 			android:theme="@style/themeLightTitle"
