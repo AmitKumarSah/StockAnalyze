@@ -8,7 +8,9 @@ import cz.tomas.StockAnalyze.charts.interfaces.IChartTextFormatter;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.DashPathEffect;
 import android.graphics.Paint;
+import android.graphics.PathEffect;
 import android.graphics.Paint.Align;
 import android.graphics.Typeface;
 import android.text.TextPaint;
@@ -33,7 +35,10 @@ public class ChartView<T> extends View {
 	
 	private Paint paint;
 	private Paint chartPaint;
+	private Paint gridPaint;
 	private TextPaint textPaint;
+	
+	private boolean disableRedraw = false;
 	
 	/**
 	 *  Convert the dps to pixels
@@ -42,12 +47,15 @@ public class ChartView<T> extends View {
 	/**
 	 * offset for whole chart (padding)
 	 */
-	private final int OFFSET = 8;
+	private final float OFFSET = 8 * SCALE;
 	
 	/**
 	 * pixels between axis text and axis itself
 	 */
 	private final int AXIS_TEXT_PADDING = 2;
+	
+	private final int GRID_HORIZONTAL_LINES = 5;
+	private final int GRID_VERTICAL_LINES = 5;
 	
 	public ChartView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -59,9 +67,21 @@ public class ChartView<T> extends View {
 		
 		this.chartPaint = new Paint(this.paint);
 		this.chartPaint.setColor(Color.GREEN);
+		this.gridPaint = new Paint(this.paint);
+		this.gridPaint.setStrokeWidth(0.4f*SCALE);
+		this.gridPaint.setPathEffect(new DashPathEffect( new float[] {5f,5f}, 5f));
+		
 		this.textPaint = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
 		this.textPaint.setTypeface(Typeface.DEFAULT_BOLD);
 		this.textPaint.setTextAlign(Align.LEFT);
+	}
+
+
+	/**
+	 * @param disableRedraw the disableRedraw to set
+	 */
+	public void setDisableRedraw(boolean disableRedraw) {
+		this.disableRedraw = disableRedraw;
 	}
 
 
@@ -71,6 +91,8 @@ public class ChartView<T> extends View {
 	@Override
 	protected void onDraw(Canvas canvas) {
 		//super.onDraw(canvas);
+		if (this.disableRedraw)
+			return;
 		int offsetBelowXAxis, offsetNextToYAxis;									// offset caused by text descriptions of axis
 
 		offsetBelowXAxis = calculateXAxisDescriptionOffset();
@@ -86,6 +108,7 @@ public class ChartView<T> extends View {
 		
 		drawAxis(canvas, OFFSET, originX, originY, chartWidth);
 		drawAxisDescription(canvas, offsetBelowXAxis, offsetNextToYAxis, chartWidth, chartHeight);
+		drawGrid(canvas,originX, originY, chartWidth, chartHeight);
 		
 		if (this.data != null && this.data.length > 1)
 			this.drawData(canvas, originX, originY, chartWidth, chartHeight);
@@ -108,16 +131,34 @@ public class ChartView<T> extends View {
 	}
 
 
+	private void drawGrid(Canvas canvas, float originX, float originY,
+			float chartWidth, float chartHeight) {
+		float stepY = chartHeight / GRID_HORIZONTAL_LINES;
+		float stepX = chartWidth / GRID_VERTICAL_LINES;
+		
+		// draw horizontal lines
+		for (int i = 1; i < GRID_HORIZONTAL_LINES; i++) {
+			float posY =  originY - stepY * i;
+			canvas.drawLine(originX, posY, originX + chartWidth, posY, this.gridPaint);
+		}
+		
+		// draw vertical lines on x axis
+		for (int i = 1; i < GRID_VERTICAL_LINES; i++) {
+			float posX = originX + stepX * i;
+			canvas.drawLine(posX, originY, posX, originY - chartHeight, this.gridPaint);
+		}
+	}
+
 	private void drawData(Canvas canvas, float originX,
 			float originY, float chartWidth, float chartHeight) {
 		
-		float step = chartWidth / this.data.length;
+		float step = chartWidth / (float) this.data.length;
 		if (this.preparedData == null || this.preparedData.length == 0)
 			this.preparedData = prepareDataValues(chartHeight);
 		// for one line we need 4 points
 		// startX, startY, stopX, stopY
 		float[] points = new float[this.data.length * 4];
-		
+		Log.d(Utils.LOG_TAG, "drawing chart data " + this.data.length + " with step " + step + " in chart width " + chartWidth);
 		// first value
 		points[0] = originX;
 		points[1] = chartHeight - preparedData[0] + OFFSET;
@@ -141,7 +182,7 @@ public class ChartView<T> extends View {
 		float[] preparedData = new float[this.data.length];
 		float heightMaxScale = chartHeight / max;
 		float heightMinScale = chartHeight / min;
-		float minMax = heightMaxScale / heightMinScale;
+		//float minMax = heightMaxScale / heightMinScale;
 		StringBuilder builder = new StringBuilder("Prepared Data: ");
 		
 		for (int i = 0; i < this.data.length; i++) {
