@@ -47,7 +47,7 @@ public class ChartView<T> extends View {
 	/**
 	 * offset for whole chart (padding)
 	 */
-	private final float OFFSET = 8 * SCALE;
+	private final float OFFSET = 12 * SCALE;
 	
 	/**
 	 * pixels between axis text and axis itself
@@ -106,7 +106,7 @@ public class ChartView<T> extends View {
 		float chartWidth = this.getWidth() - 2 * OFFSET -offsetNextToYAxis ;
 		float chartHeight = this.getHeight() - 2 * OFFSET - offsetBelowXAxis;
 		
-		drawAxis(canvas, OFFSET, originX, originY, chartWidth);
+		drawAxis(canvas, originX, originY, chartWidth);
 		drawAxisDescription(canvas, offsetBelowXAxis, offsetNextToYAxis, chartWidth, chartHeight);
 		drawGrid(canvas,originX, originY, chartWidth, chartHeight);
 		
@@ -152,13 +152,14 @@ public class ChartView<T> extends View {
 	private void drawData(Canvas canvas, float originX,
 			float originY, float chartWidth, float chartHeight) {
 		
-		float step = chartWidth / (float) this.data.length;
+		float step = chartWidth / (float) (this.data.length -1);
 		if (this.preparedData == null || this.preparedData.length == 0)
 			this.preparedData = prepareDataValues(chartHeight);
 		// for one line we need 4 points
 		// startX, startY, stopX, stopY
 		float[] points = new float[this.data.length * 4];
-		Log.d(Utils.LOG_TAG, "drawing chart data " + this.data.length + " with step " + step + " in chart width " + chartWidth);
+		Log.d(Utils.LOG_TAG, "drawing chart data " + this.data.length + " with step " + step + " in chart width " + chartWidth + 
+				" from origin " + originX + "; " + originY);
 		// first value
 		points[0] = originX;
 		points[1] = chartHeight - preparedData[0] + OFFSET;
@@ -170,11 +171,13 @@ public class ChartView<T> extends View {
 			
 			points[i * 4] = points[i * 4 - 2];
 			points[i * 4 + 1] = points[i * 4 - 1];
-			points[i * 4 + 2] = step * i + originX;
+			points[i * 4 + 2] = step * (float)i + originX;
 			points[i * 4 + 3] = chartHeight - value + OFFSET;
 			
 		}
 		canvas.drawLines(points, chartPaint);
+
+		Log.d(Utils.LOG_TAG, "finished drawing chart, last point: " + (step*(data.length -1)));
 	}
 
 	private float[] prepareDataValues(float chartHeight) {
@@ -210,13 +213,13 @@ public class ChartView<T> extends View {
 	 * @param originY
 	 * @param chartWidth
 	 */
-	private void drawAxis(Canvas canvas, float offset, float originX, float originY, float chartWidth) {
+	private void drawAxis(Canvas canvas, float originX, float originY, float chartWidth) {
 		// the lines are crossing with overlap = offset/2
 		// draw x axis
-		canvas.drawLine(originX - offset/2, originY, chartWidth + offset, originY, this.paint);
+		canvas.drawLine(OFFSET/2, originY, originX + chartWidth, originY, this.paint);
 		
 		// draw y axis
-		canvas.drawLine(originX, originY + originY/2, originX, 0 + offset, this.paint);
+		canvas.drawLine(originX, this.getHeight() - OFFSET/2, originX, 0 + OFFSET, this.paint);
 	}
 
 	private void drawAxisDescription(Canvas canvas, int offsetBelowXAxis, int offsetNextToYAxis, float chartWidth, float chartHeight) {
