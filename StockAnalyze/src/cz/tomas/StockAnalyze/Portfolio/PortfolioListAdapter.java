@@ -70,51 +70,6 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 		this.portfolioListeners.add(listener);
 	}
 
-//	/* 
-//	 * PortfolioItems + header + footer
-//	 * @see android.widget.ArrayAdapter#getCount()
-//	 */
-//	@Override
-//	public int getCount() {
-//		return this.portfolioItems.size();
-//	}
-//
-//	/* 
-//	 * internal list with portfolio items,
-//	 * it is filled from PortfolioTask
-//	 * @see android.widget.ArrayAdapter#add(java.lang.Object)
-//	 */
-//	@Override
-//	public void add(PortfolioItem portfolioItem) {
-//		this.portfolioItems.add(portfolioItem);
-//	}
-//
-//	/* 
-//	 * @see android.widget.ArrayAdapter#getItem(int)
-//	 */
-//	@Override
-//	public PortfolioItem getItem(int position) {
-//		return this.portfolioItems.get(position);
-//	}
-//	
-//	
-//
-//	/* (non-Javadoc)
-//	 * @see android.widget.ArrayAdapter#getItemId(int)
-//	 */
-//	@Override
-//	public long getItemId(int position) {
-//		return super.getItemId(position);
-//	}
-//
-//	/* (non-Javadoc)
-//	 * @see android.widget.ArrayAdapter#clear()
-//	 */
-//	@Override
-//	public void clear() {
-//		this.portfolioItems.clear();
-//	}
-
 	/* 
 	 * get view: header for first position
 	 * footer for last position

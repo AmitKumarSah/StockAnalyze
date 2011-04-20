@@ -202,8 +202,8 @@ public abstract class ChartActivity extends Activity {
 				float min = Float.MAX_VALUE;
 				
 				for (int i = 0; i < dataSet.length; i++) {
-					float price = 0;
-					Long time = 0l;
+					float price = -1f;
+					Long time = -1l;
 					if (dataSet[i] != null) {
 						price = dataSet[i].getPrice();
 						time = dataSet[i].getDate().getTime();
@@ -215,14 +215,16 @@ public abstract class ChartActivity extends Activity {
 							time = dataSet[i-1].getDate().getTime();
 						}
 					}
-					dataPoints[i] = price;
-					xAxisPoints[i] = time;
-//					chartData.put(time, price);
-					
-					if (price > max)
-						max = price;
-					if (price < min)
-						min = price;
+					if (price >= 0 && time >= 0) {
+						dataPoints[i] = price;
+						xAxisPoints[i] = time;
+						//					chartData.put(time, price);
+
+						if (price > max)
+							max = price;
+						if (price < min)
+							min = price;
+					}
 				}
 
 				if (chartView != null && chartView.getVisibility() == View.VISIBLE) {

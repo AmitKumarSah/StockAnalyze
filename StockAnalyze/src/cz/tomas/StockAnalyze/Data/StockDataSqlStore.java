@@ -15,6 +15,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.provider.ContactsContract.Contacts.Data;
 import android.util.Log;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.Market;
@@ -91,44 +92,6 @@ public class StockDataSqlStore extends DataSqlHelper {
 		
 		return this.checkForStock(id);
 	}
-//	
-//	public boolean checkForData(StockItem item, Calendar cal) {
-//		if (item == null || item.getId() == null)
-//			return false;
-//		boolean result = false;
-//		try {
-//			SQLiteDatabase db = this.getWritableDatabase();
-//			Cursor c = null;
-//			try {
-//				// TODO date!
-//				//c = db.query(DAY_DATA_TABLE_NAME, new String[] { "id" }, "stock_id='"+ item.getId() +"'", null, null, null, null);
-//				c = db.query(DAY_DATA_TABLE_NAME, new String[] { "id", "date" }, "stock_id=?", new String[] { item.getId() }, null, null, null);
-//				if (c.moveToFirst()) {
-//					long time = c.getLong(1);
-//					Calendar calendar = Calendar.getInstance();
-//					calendar.setTimeInMillis(time);
-//					// if date fits to this day, then return true
-//					if (calendar.get(Calendar.DAY_OF_YEAR) == cal.get(Calendar.DAY_OF_YEAR) &&
-//							calendar.get(Calendar.YEAR) == cal.get(Calendar.YEAR))
-//						result = true;
-//				}
-//				
-//			} catch (SQLException e) {
-//				Log.e("StockDataSqlStore", e.toString());
-//				e.printStackTrace();
-//			} finally {
-//				// close cursor
-//				if (c != null)
-//					c.close();
-//			}
-//		} catch (SQLException e) {
-//			Log.d("StockDataSqlStore", "failed to get data." + e.getMessage());
-//			e.printStackTrace();
-//		} finally {
-//			this.close();
-//		}
-//		return result;
-//	}
 	
 	public void insertStockItem(StockItem item) {
 		try {
@@ -140,10 +103,8 @@ public class StockDataSqlStore extends DataSqlHelper {
 			values.put("name", item.getName());
 			
 			db.insert(STOCK_TABLE_NAME, null, values);
-			//db.execSQL("INSERT INTO " + StockDataSqlStore.STOCK_TABLE_NAME + " values('"+ ticker + "', date('now'), " + data.getPrice() + ");");
 		} catch (SQLException e) {
-			Log.d(Utils.LOG_TAG, "failed to insert data." + e.getMessage());
-			e.printStackTrace();
+			Log.e(Utils.LOG_TAG, "failed to insert data.", e);
 		} finally {
 			this.close();
 		}
@@ -174,15 +135,32 @@ public class StockDataSqlStore extends DataSqlHelper {
 			values.put("volume", newdata.getVolume());
 			
 			db.insert(DAY_DATA_TABLE_NAME, null, values);
-			//db.execSQL("INSERT INTO " + StockDataSqlStore.STOCK_TABLE_NAME + " values('"+ ticker + "', date('now'), " + data.getPrice() + ");");
 		} catch (SQLException e) {
 			String message =  "Failed to INSERT stock item.";
 			if (e.getMessage() != null)
 				 message += e.getMessage();
-			Log.d(Utils.LOG_TAG, message);
-			e.printStackTrace();
+			Log.e(Utils.LOG_TAG, message, e);
 		} finally {
 			this.close();
+		}
+	}
+
+	/**
+	 * insert set of data in one transaction
+	 * @param receivedData
+	 */
+	public void insertDayDataSet(Map<StockItem, DayData> receivedData) {
+		SQLiteDatabase db = this.getWritableDatabase();
+		db.beginTransaction();
+		try {
+			for (Entry<StockItem, DayData> entry : receivedData.entrySet()) {
+				this.insertDayData(entry.getKey(), entry.getValue());
+			}
+			db.setTransactionSuccessful();
+		} catch (Exception e) {
+			Log.e(Utils.LOG_TAG, "failed to insert day data from dataset, transaction is going to roll back", e);
+		} finally {
+			db.endTransaction();
 		}
 	}
 	
@@ -196,15 +174,19 @@ public class StockDataSqlStore extends DataSqlHelper {
 			values.put("last_update", newData.getLastUpdate());
 			values.put("price", newData.getPrice());
 			values.put("change", newData.getChange());
-			values.put("volume", newData.getVolume());
+			if (newData.getVolume() > 0)
+				values.put("volume", newData.getVolume());
+			if (newData.getYearMaximum() > 0)
+				values.put("year_max", newData.getYearMaximum());
+			if (newData.getYearMinimum() > 0)
+				values.put("year_min", newData.getYearMinimum());
 			
 			db.update(DAY_DATA_TABLE_NAME, values,"id=?", new String[] { String.valueOf(currentData.getId()) });
 		} catch (Exception e) {
 			String message =  "Failed to UPDATE stock item.";
 			if (e.getMessage() != null)
 				 message += e.getMessage();
-			Log.d(Utils.LOG_TAG, message);
-			e.printStackTrace();
+			Log.e(Utils.LOG_TAG, message, e);
 		} finally {
 			this.close();
 		}
@@ -238,8 +220,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 					c.close();
 			}
 		} catch (SQLException e) {
-			Log.d(Utils.LOG_TAG, "failed to get stock item." + e.getMessage());
-			e.printStackTrace();
+			Log.e(Utils.LOG_TAG, "failed to get stock item.",e);
 		} finally {
 			this.close();
 		}
@@ -386,8 +367,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 					c.close();
 			}
 		} catch (SQLException e) {
-			Log.d(Utils.LOG_TAG, "failed to get data." + e.getMessage());
-			e.printStackTrace();
+			Log.e(Utils.LOG_TAG, "failed to get last available data.", e);
 		} finally {
 			this.close();
 		}

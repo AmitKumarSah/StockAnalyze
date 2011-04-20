@@ -74,13 +74,13 @@ public class DataManager implements IStockDataListener {
 		pse.addListener(this);
 		//pse.addListener(supervisor);
 		
-		try {
-			ConnectivityManager connectivity = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-			boolean backgroundData = connectivity.getBackgroundDataSetting();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			ConnectivityManager connectivity = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+//			boolean backgroundData = connectivity.getBackgroundDataSetting();
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		// TODO
 		
 		// do immediate update and schedule next one
@@ -188,16 +188,21 @@ public class DataManager implements IStockDataListener {
 			currentCal.roll(Calendar.DAY_OF_YEAR, false);
 			currentCal = Utils.getLastValidDate(currentCal);
 		}
-		for (int i = dataSet.length -1; i >= 0; i--) {
-			try {
-				dataSet[i] = this.getDayData(item, currentCal);
-			} catch (Exception e) {
-				Log.e(Utils.LOG_TAG, "failed to get data for " + FormattingUtils.formatStockDate(currentCal), e);
+		this.acquireDb(this);
+		try {
+			for (int i = dataSet.length - 1; i >= 0; i--) {
+				try {
+					dataSet[i] = this.getDayData(item, currentCal);
+				} catch (Exception e) {
+					Log.e(Utils.LOG_TAG, "failed to get data for "
+							+ FormattingUtils.formatStockDate(currentCal), e);
+				}
+				currentCal.roll(Calendar.DAY_OF_YEAR, false);
+				currentCal = Utils.getLastValidDate(currentCal);
 			}
-			currentCal.roll(Calendar.DAY_OF_YEAR, false);
-			currentCal = Utils.getLastValidDate(currentCal);
+		} finally {
+			this.releaseDb(true, this);
 		}
-		
 		return dataSet;
 	}
 	
@@ -306,12 +311,15 @@ public class DataManager implements IStockDataListener {
 		this.acquireDb(sender.getId());
 		try {
 			if (dataMap == null || dataMap.size() == 0) {
+				Map<StockItem, DayData> receivedData = new HashMap<StockItem, DayData>();
 				for (StockItem item : sender.getAvailableStockList()) {
 					DayData data = sender.getLastData(item.getTicker());
 					if (data.getPrice() == 0)
 						data = this.createDataWithPrice(item, data);
-					this.sqlStore.insertDayData(item, data);
+					receivedData.put(item, data);
 				}
+
+				this.sqlStore.insertDayDataSet(receivedData);
 			} else {
 				for (Entry<StockItem, DayData> entry : dataMap.entrySet()) {
 					this.sqlStore.insertDayData(entry.getKey(), entry.getValue());
