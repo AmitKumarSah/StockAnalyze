@@ -177,7 +177,7 @@ public class ChartView<T> extends View {
 		}
 		canvas.drawLines(points, chartPaint);
 
-		Log.d(Utils.LOG_TAG, "finished drawing chart, last point: " + (step*(data.length -1)));
+		//Log.d(Utils.LOG_TAG, "finished drawing chart, last point: " + (step*(data.length -1)));
 	}
 
 	private float[] prepareDataValues(float chartHeight) {

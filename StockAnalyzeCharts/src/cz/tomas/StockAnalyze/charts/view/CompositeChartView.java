@@ -58,7 +58,7 @@ public class CompositeChartView extends RelativeLayout {
 		if (this.background != null)
 			this.background.setVisibility(loading ? View.VISIBLE: View.GONE);
 		
-		if (this.chart == null)
+		if (this.chart != null)
 			this.chart.setDisableRedraw(loading);
 	}
 }
