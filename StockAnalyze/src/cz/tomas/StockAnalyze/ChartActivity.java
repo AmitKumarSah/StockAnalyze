@@ -233,8 +233,11 @@ public abstract class ChartActivity extends Activity {
 
 						@Override
 						public String formatAxeText(Long val) {
-							cal.setTimeInMillis(val);
-							return FormattingUtils.formatStockShortDate(cal);
+							if (val != null) {
+								cal.setTimeInMillis(val);
+								return FormattingUtils.formatStockShortDate(cal);
+							} 
+							return "";
 						}
 					});
 					chartView.setData(dataPoints, max, min);

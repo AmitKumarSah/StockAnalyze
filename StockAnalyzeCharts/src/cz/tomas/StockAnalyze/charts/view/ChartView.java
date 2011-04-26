@@ -183,8 +183,8 @@ public class ChartView<T> extends View {
 	private float[] prepareDataValues(float chartHeight) {
 		Log.d(Utils.LOG_TAG, "preparing chart data..");
 		float[] preparedData = new float[this.data.length];
-		float heightMaxScale = chartHeight / max;
-		float heightMinScale = chartHeight / min;
+//		float heightMaxScale = chartHeight / max;
+//		float heightMinScale = chartHeight / min;
 		//float minMax = heightMaxScale / heightMinScale;
 		StringBuilder builder = new StringBuilder("Prepared Data: ");
 		
