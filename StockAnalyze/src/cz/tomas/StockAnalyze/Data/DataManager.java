@@ -85,8 +85,12 @@ public class DataManager implements IStockDataListener {
 		
 		// do immediate update and schedule next one
 		try {
-			UpdateScheduler.getInstance(context).updateImmediatly();
-			UpdateScheduler.getInstance(context).scheduleNextIntraDayUpdate();
+			UpdateScheduler scheduler = UpdateScheduler.getInstance(context);
+			if (! scheduler.isSchedulerRunnig()) {
+				scheduler.updateImmediatly();
+				scheduler.scheduleNextIntraDayUpdate();
+				scheduler.scheduleNextDayUpdate();
+			}
 		} catch (Exception e) {
 			Log.e(Utils.LOG_TAG, "Failed to schedule updates!", e);
 		}

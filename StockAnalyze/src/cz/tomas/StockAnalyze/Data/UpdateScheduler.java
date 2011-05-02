@@ -33,6 +33,10 @@ public class UpdateScheduler {
 	private final int DEFAULT_REFRESH_INTERVAL = 10;		//minutes
 	private final int REQUEST_CODE = 13215564;
 	
+	private final int DAY_UPDATE_HOUR = 18;
+	
+	private boolean isSchedulerRunnig = false;
+	
 	/*
 	 * singleton
 	 */
@@ -64,6 +68,10 @@ public class UpdateScheduler {
 		});
 	}
 	
+	public boolean isSchedulerRunnig() {
+		return isSchedulerRunnig;
+	}
+
 	/*
 	 * Schedule next update with real time data provider,
 	 * if it is enabled in preferences
@@ -86,11 +94,8 @@ public class UpdateScheduler {
 	 * schedule next update with historical data provider
 	 */
 	public void scheduleNextDayUpdate() {
-//		IStockDataProvider provider = DataProviderFactory.getHistoricalDataProvider(MarketFactory.getCzechMarket());
-//		
-//		RefreshTask task = new RefreshTask();
-//		task.execute(provider);
-		// TODO
+		//if (! this.isDayUpdateScheduled)
+			this.scheduleAlarm(false);
 	}
 	
 	/*
@@ -101,11 +106,12 @@ public class UpdateScheduler {
 			Log.i(Utils.LOG_TAG, "Device is offline, canceling data update");
 			return;
 		}
+		this.isSchedulerRunnig = true;
 		if (!DataManager.isInitialized()) {
 			DataManager.getInstance(this.context);
 		}
 		IStockDataProvider provider = DataProviderFactory.getRealTimeDataProvider(MarketFactory.getCzechMarket());
-		
+
 		RefreshTask task = new RefreshTask();
 		task.execute(provider);
 	}
@@ -115,11 +121,20 @@ public class UpdateScheduler {
 	 */
 	private void scheduleAlarm(boolean intraDay) {
 		// get a Calendar object with current time
-		Calendar cal = Calendar.getInstance();
-		int seconds = this.preferences.getInt(Utils.PREF_INTERVAL_BACKGROUND_UPDATE, DEFAULT_REFRESH_INTERVAL) * 60;
-		cal.add(Calendar.SECOND, seconds);
-		
-		Log.d(Utils.LOG_TAG, "scheduling alarm to " + FormattingUtils.formatStockDate(cal));
+		Calendar cal = Calendar.getInstance(Utils.PRAGUE_TIME_ZONE);
+		if (intraDay) {
+			int seconds = this.preferences.getInt(
+					Utils.PREF_INTERVAL_BACKGROUND_UPDATE,
+					DEFAULT_REFRESH_INTERVAL) * 60;
+			cal.add(Calendar.SECOND, seconds);
+		} else {
+			// set it for tomorrow evening
+			if (cal.get(Calendar.HOUR_OF_DAY) >= DAY_UPDATE_HOUR)
+				cal.add(Calendar.HOUR_OF_DAY, 24);
+			cal.set(Calendar.HOUR_OF_DAY, DAY_UPDATE_HOUR);
+			cal.set(Calendar.MINUTE,1);
+		}
+		Log.d(Utils.LOG_TAG, "SHEDULING " + (intraDay? "intraday" : "day") + " ALARM TO " + FormattingUtils.formatStockDate(cal));
 		
 		Intent intent = new Intent(this.context, AlarmReceiver.class);
 		intent.putExtra("intraday", intraDay);
@@ -149,6 +164,7 @@ public class UpdateScheduler {
 				} catch (Exception e) {
 					Log.e(Utils.LOG_TAG, "failed to refresh for provider", e);
 				}
+			isSchedulerRunnig = false;
 			return null;
 		}
 		
