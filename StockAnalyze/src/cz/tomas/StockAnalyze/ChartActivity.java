@@ -6,7 +6,9 @@ package cz.tomas.StockAnalyze;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
@@ -38,6 +40,7 @@ public abstract class ChartActivity extends Activity {
 	}
 	
 	protected static final String EXTRA_CHART_DAY_COUNT = "cz.tomas.StockAnalyze.chart_day_count";
+	protected static final int MAX_CACHE_SIZE = 4;
 	
 	protected StockItem stockItem;
 	protected DataManager dataManager;
@@ -46,7 +49,7 @@ public abstract class ChartActivity extends Activity {
 	protected DrawChartTask chartTask;
 	protected DayData dayData;
 	
-	private static DayData[] chartDataSet;
+	private final static Map<String, DayData[]> chartCacheDataSet = new LinkedHashMap<String, DayData[]>();
 	
 	private IChartActivityListener listener;
 	/**
@@ -72,6 +75,11 @@ public abstract class ChartActivity extends Activity {
 
 		if (savedInstanceState != null) {
 			this.chartDayCount = savedInstanceState.getInt(EXTRA_CHART_DAY_COUNT);
+		}
+		if (chartCacheDataSet.size() > MAX_CACHE_SIZE) {
+			Log.i(Utils.LOG_TAG, "freeing chart activity cache...");
+			// TODO better mechanism
+			chartCacheDataSet.clear();
 		}
 		this.dataManager = DataManager.getInstance(this);		
 	}
@@ -185,11 +193,19 @@ public abstract class ChartActivity extends Activity {
 
 			DayData[] dataSet = null;
 			// either take data from local variable, or load them
-			if (ChartActivity.chartDataSet != null && ChartActivity.chartDataSet.length == chartDayCount)
-				dataSet = ChartActivity.chartDataSet;
-			else {
+			
+			if (ChartActivity.chartCacheDataSet.containsKey(stockItem.getId()) && 
+					ChartActivity.chartCacheDataSet.get(stockItem.getId()).length == chartDayCount) {
+				dataSet = ChartActivity.chartCacheDataSet.get(stockItem.getId());
+			} else {
 				try {
 					dataSet = dataManager.getDayDataSet(stockItem, Calendar.getInstance(), chartDayCount, true);
+
+					// save loaded data to cache
+					if (ChartActivity.chartCacheDataSet.containsKey(stockItem.getId())) {
+						ChartActivity.chartCacheDataSet.remove(stockItem.getId());
+					}
+					ChartActivity.chartCacheDataSet.put(stockItem.getId(), dataSet);
 				} catch (Exception e) {
 					Log.e(Utils.LOG_TAG, "failed to get data", e);
 				}
@@ -247,8 +263,7 @@ public abstract class ChartActivity extends Activity {
 		}
 
 		@Override
-		protected void onPostExecute(DayData[] result) {
-			chartDataSet = result;		
+		protected void onPostExecute(DayData[] result) {		
 			// change ui to show that update is done
 			if (chartView != null)
 				chartView.setLoading(false);
