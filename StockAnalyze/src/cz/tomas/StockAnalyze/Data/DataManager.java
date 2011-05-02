@@ -91,6 +91,10 @@ public class DataManager implements IStockDataListener {
 			Log.e(Utils.LOG_TAG, "Failed to schedule updates!", e);
 		}
 	}
+	
+	static boolean isInitialized() {
+		return instance != null;
+	}
 
 	/*
 	 * search for stocks with pattern in name or in ticker,

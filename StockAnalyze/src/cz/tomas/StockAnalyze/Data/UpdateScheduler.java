@@ -10,6 +10,7 @@ import cz.tomas.StockAnalyze.receivers.AlarmReceiver;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 import android.app.AlarmManager;
+import android.app.Application;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -99,6 +100,9 @@ public class UpdateScheduler {
 		if (! Utils.isOnline(this.context)) {
 			Log.i(Utils.LOG_TAG, "Device is offline, canceling data update");
 			return;
+		}
+		if (!DataManager.isInitialized()) {
+			DataManager.getInstance(this.context);
 		}
 		IStockDataProvider provider = DataProviderFactory.getRealTimeDataProvider(MarketFactory.getCzechMarket());
 		
