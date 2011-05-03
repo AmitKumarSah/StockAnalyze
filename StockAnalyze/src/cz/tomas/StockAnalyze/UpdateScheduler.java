@@ -92,6 +92,10 @@ public class UpdateScheduler {
 		});
 	}
 	
+	/**
+	 * check whether the scheduler is currently actively updating data
+	 * @return
+	 */
 	boolean isSchedulerRunnig() {
 		return isSchedulerRunning;
 	}

@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent">
+<TableLayout
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent"
 	android:layout_margin="5dp"
@@ -18,7 +21,7 @@
 			android:entries="@array/portfolioDealArray">
 		</Spinner>
 	
-</TableRow>
+	</TableRow>
 	<TableRow>
 		<TextView android:id="@+id/TextView01" 
 			android:text="@string/portfolioTickerLabel" 
@@ -62,10 +65,31 @@
 		</EditText>
 	</TableRow>
 	<TableRow>
+		<TextView android:id="@+id/TextView04" 
+			android:text="@string/portfolioDealFee" 
+			style="@style/tableItem">
+		</TextView>
+		<EditText android:id="@+id/portfolioAddDealFee" 
+			style="@style/tableItem"
+			android:inputType="number">
+		</EditText>
+	</TableRow>
+	<TableRow>
+		<TextView android:id="@+id/TextView05" 
+			android:text="@string/portfolioDealTotalValue" 
+			style="@style/tableItem">
+		</TextView>
+		<TextView android:id="@+id/portfolioAddTotalValue" 
+			style="@style/tableItem"
+			android:inputType="number">
+		</TextView>
+	</TableRow>
+	<TableRow>
 		<Button android:id="@+id/portfolioAddButton"
 			android:layout_column="1"
 			style="@style/tableItem"
 			android:text="@string/addStockItemToPortfolio"
 			android:layout_marginTop="8dip"/>
-		</TableRow>
+	</TableRow>
 </TableLayout>
+</ScrollView>
