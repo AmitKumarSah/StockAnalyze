@@ -1,8 +1,10 @@
 /**
  * 
  */
-package cz.tomas.StockAnalyze;
+package cz.tomas.StockAnalyze.activity;
 
+import cz.tomas.StockAnalyze.R;
+import cz.tomas.StockAnalyze.R.xml;
 import cz.tomas.StockAnalyze.utils.Utils;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;

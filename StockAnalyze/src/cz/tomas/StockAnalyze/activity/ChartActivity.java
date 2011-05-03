@@ -1,7 +1,7 @@
 /**
  * 
  */
-package cz.tomas.StockAnalyze;
+package cz.tomas.StockAnalyze.activity;
 
 import java.io.IOException;
 import java.util.Calendar;
@@ -10,9 +10,12 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
+import cz.tomas.StockAnalyze.R.id;
+import cz.tomas.StockAnalyze.R.string;
 import cz.tomas.StockAnalyze.charts.interfaces.IChartTextFormatter;
 import cz.tomas.StockAnalyze.charts.view.CompositeChartView;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
@@ -77,11 +80,19 @@ public abstract class ChartActivity extends Activity {
 			this.chartDayCount = savedInstanceState.getInt(EXTRA_CHART_DAY_COUNT);
 		}
 		if (chartCacheDataSet.size() > MAX_CACHE_SIZE) {
-			Log.i(Utils.LOG_TAG, "freeing chart activity cache...");
-			// TODO better mechanism
-			chartCacheDataSet.clear();
+			clearCache();
 		}
 		this.dataManager = DataManager.getInstance(this);		
+	}
+
+	/**
+	 * 
+	 */
+	public static void clearCache() {
+		Log.i(Utils.LOG_TAG, "freeing chart activity cache...");
+		// TODO better mechanism
+		if (chartCacheDataSet != null)
+			chartCacheDataSet.clear();
 	}
 
 	/* (non-Javadoc)

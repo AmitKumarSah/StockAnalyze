@@ -2,11 +2,11 @@ package cz.tomas.StockAnalyze.ui.widgets;
 
 import java.util.Calendar;
 
-import cz.tomas.StockAnalyze.HomeActivity;
 import cz.tomas.StockAnalyze.R;
-import cz.tomas.StockAnalyze.StockSearchActivity;
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.Interfaces.IUpdateDateChangedListener;
+import cz.tomas.StockAnalyze.activity.HomeActivity;
+import cz.tomas.StockAnalyze.activity.StockSearchActivity;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 import android.app.Activity;

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package cz.tomas.StockAnalyze;
+package cz.tomas.StockAnalyze.activity;
 
 import java.text.NumberFormat;
 
@@ -19,6 +19,7 @@ import android.view.View;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.Interfaces.IListAdapterListener;
 import cz.tomas.StockAnalyze.Data.Interfaces.IUpdateDateChangedListener;
@@ -27,6 +28,9 @@ import cz.tomas.StockAnalyze.Data.Model.PortfolioSum;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.Portfolio.Portfolio;
 import cz.tomas.StockAnalyze.Portfolio.PortfolioListAdapter;
+import cz.tomas.StockAnalyze.R.id;
+import cz.tomas.StockAnalyze.R.layout;
+import cz.tomas.StockAnalyze.R.menu;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;

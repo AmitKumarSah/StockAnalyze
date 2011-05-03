@@ -6,12 +6,12 @@ package cz.tomas.StockAnalyze.Portfolio;
 import java.sql.SQLException;
 import java.util.Calendar;
 
-import cz.tomas.StockAnalyze.PortfolioActivity;
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.PortfolioItem;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
+import cz.tomas.StockAnalyze.activity.PortfolioActivity;
 import cz.tomas.StockAnalyze.utils.Utils;
 import android.app.Activity;
 import android.content.Intent;

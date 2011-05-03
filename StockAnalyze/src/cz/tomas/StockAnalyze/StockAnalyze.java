@@ -5,6 +5,10 @@ import java.util.Calendar;
 
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.Interfaces.IUpdateDateChangedListener;
+import cz.tomas.StockAnalyze.activity.NewsActivity;
+import cz.tomas.StockAnalyze.activity.StockDetailActivity;
+import cz.tomas.StockAnalyze.activity.StockListActivity;
+import cz.tomas.StockAnalyze.activity.StockSearchActivity;
 import android.app.*;
 import android.content.*;
 import android.content.res.Resources;

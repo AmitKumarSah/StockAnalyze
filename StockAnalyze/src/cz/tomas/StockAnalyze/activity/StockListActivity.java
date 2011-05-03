@@ -1,7 +1,7 @@
 /**
  * 
  */
-package cz.tomas.StockAnalyze;
+package cz.tomas.StockAnalyze.activity;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -24,11 +24,17 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+import cz.tomas.StockAnalyze.Application;
+import cz.tomas.StockAnalyze.R;
+import cz.tomas.StockAnalyze.UpdateScheduler;
 import cz.tomas.StockAnalyze.Data.DataManager;
-import cz.tomas.StockAnalyze.Data.UpdateScheduler;
 import cz.tomas.StockAnalyze.Data.Interfaces.IListAdapterListener;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.Portfolio.AddPortfolioItemActivity;
+import cz.tomas.StockAnalyze.R.id;
+import cz.tomas.StockAnalyze.R.layout;
+import cz.tomas.StockAnalyze.R.menu;
+import cz.tomas.StockAnalyze.R.string;
 import cz.tomas.StockAnalyze.StockList.StockListAdapter;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
@@ -196,7 +202,8 @@ public class StockListActivity extends ListActivity {
 	    // Handle item selection
 	    switch (item.getItemId()) {
 	    case R.id.menu_stock_list_refresh:
-	    	UpdateScheduler.getInstance(this).updateImmediatly();
+	    	UpdateScheduler scheduler = (UpdateScheduler) this.getSystemService(Application.UPDATE_SCHEDULER_SERVICE);
+	    	scheduler.updateImmediatly();
 	        return true;
 	    case R.id.menu_stock_list_settings:
 	    	NavUtils.goToSettings(this);

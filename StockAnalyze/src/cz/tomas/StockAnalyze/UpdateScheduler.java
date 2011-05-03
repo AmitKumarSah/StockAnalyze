@@ -1,10 +1,14 @@
 /**
  * 
  */
-package cz.tomas.StockAnalyze.Data;
+package cz.tomas.StockAnalyze;
 
 import java.util.Calendar;
 
+import cz.tomas.StockAnalyze.Data.DataManager;
+import cz.tomas.StockAnalyze.Data.DataProviderFactory;
+import cz.tomas.StockAnalyze.Data.IStockDataProvider;
+import cz.tomas.StockAnalyze.Data.MarketFactory;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.receivers.AlarmReceiver;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
@@ -28,7 +32,7 @@ public class UpdateScheduler {
 	private Context context;
 	private SharedPreferences preferences;
 	
-	private static UpdateScheduler instance;
+	//private static UpdateScheduler instance;
 	
 	private final int DEFAULT_REFRESH_INTERVAL = 10;		//minutes
 	private final int REQUEST_CODE = 13215564;
@@ -37,16 +41,16 @@ public class UpdateScheduler {
 	
 	private boolean isSchedulerRunnig = false;
 	
-	/*
-	 * singleton
-	 */
-	public static UpdateScheduler getInstance(Context context) {
-		if (instance == null)
-			instance = new UpdateScheduler(context);
-		return instance;
-	}
+//	/*
+//	 * singleton
+//	 */
+//	public static UpdateScheduler getInstance(Context context) {
+//		if (instance == null)
+//			instance = new UpdateScheduler(context);
+//		return instance;
+//	}
 	
-	private UpdateScheduler(Context context) {
+	UpdateScheduler(Context context) {
 		this.context = context;
 		this.preferences = context.getSharedPreferences(Utils.PREF_NAME, 0);
 		

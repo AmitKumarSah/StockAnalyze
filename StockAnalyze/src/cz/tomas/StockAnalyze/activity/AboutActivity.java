@@ -1,8 +1,10 @@
 /**
  * 
  */
-package cz.tomas.StockAnalyze;
+package cz.tomas.StockAnalyze.activity;
 
+import cz.tomas.StockAnalyze.R;
+import cz.tomas.StockAnalyze.R.layout;
 import android.app.Activity;
 import android.os.Bundle;
 

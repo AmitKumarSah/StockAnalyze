@@ -82,21 +82,9 @@ public class DataManager implements IStockDataListener {
 //			e.printStackTrace();
 //		}
 		// TODO
-		
-		// do immediate update and schedule next one
-		try {
-			UpdateScheduler scheduler = UpdateScheduler.getInstance(context);
-			if (! scheduler.isSchedulerRunnig()) {
-				scheduler.updateImmediatly();
-				scheduler.scheduleNextIntraDayUpdate();
-				scheduler.scheduleNextDayUpdate();
-			}
-		} catch (Exception e) {
-			Log.e(Utils.LOG_TAG, "Failed to schedule updates!", e);
-		}
 	}
 	
-	static boolean isInitialized() {
+	public static boolean isInitialized() {
 		return instance != null;
 	}
 

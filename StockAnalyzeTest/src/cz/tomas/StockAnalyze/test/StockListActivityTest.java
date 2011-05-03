@@ -3,7 +3,7 @@
  */
 package cz.tomas.StockAnalyze.test;
 
-import cz.tomas.StockAnalyze.StockListActivity;
+import cz.tomas.StockAnalyze.activity.StockListActivity;
 import android.opengl.Visibility;
 import android.test.ActivityInstrumentationTestCase2;
 import android.view.View;

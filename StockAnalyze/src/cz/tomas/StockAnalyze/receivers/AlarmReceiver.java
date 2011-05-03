@@ -1,7 +1,8 @@
 package cz.tomas.StockAnalyze.receivers;
 
+import cz.tomas.StockAnalyze.Application;
 import cz.tomas.StockAnalyze.R;
-import cz.tomas.StockAnalyze.Data.UpdateScheduler;
+import cz.tomas.StockAnalyze.UpdateScheduler;
 import cz.tomas.StockAnalyze.utils.Utils;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -18,7 +19,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		boolean intra = intent.getExtras().getBoolean("intraday", true);
-		UpdateScheduler scheduler = UpdateScheduler.getInstance(context);
+		UpdateScheduler scheduler = (UpdateScheduler) context.getSystemService(Application.UPDATE_SCHEDULER_SERVICE);
 		if (intra)
 			scheduler.scheduleNextIntraDayUpdate();
 		else

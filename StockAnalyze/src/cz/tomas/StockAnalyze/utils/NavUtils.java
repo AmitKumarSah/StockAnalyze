@@ -3,12 +3,12 @@ package cz.tomas.StockAnalyze.utils;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import cz.tomas.StockAnalyze.AboutActivity;
-import cz.tomas.StockAnalyze.AppPreferencesActivity;
-import cz.tomas.StockAnalyze.StockDetailActivity;
-import cz.tomas.StockAnalyze.StockListActivity;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
+import cz.tomas.StockAnalyze.activity.AboutActivity;
+import cz.tomas.StockAnalyze.activity.AppPreferencesActivity;
+import cz.tomas.StockAnalyze.activity.StockDetailActivity;
+import cz.tomas.StockAnalyze.activity.StockListActivity;
 
 /*
  * util taks to do common navigation tasks

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package cz.tomas.StockAnalyze;
+package cz.tomas.StockAnalyze.activity;
 
 import java.io.IOException;
 import java.text.NumberFormat;
@@ -25,7 +25,12 @@ import android.view.View.OnClickListener;
 import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
+import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.DataManager;
+import cz.tomas.StockAnalyze.R.id;
+import cz.tomas.StockAnalyze.R.layout;
+import cz.tomas.StockAnalyze.R.menu;
+import cz.tomas.StockAnalyze.R.string;
 import cz.tomas.StockAnalyze.charts.view.CompositeChartView;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.Utils;

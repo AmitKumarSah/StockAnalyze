@@ -1,13 +1,16 @@
 /**
  * 
  */
-package cz.tomas.StockAnalyze;
+package cz.tomas.StockAnalyze.activity;
 
 import java.util.List;
 
+import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.MarketFactory;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
+import cz.tomas.StockAnalyze.R.id;
+import cz.tomas.StockAnalyze.R.layout;
 import cz.tomas.StockAnalyze.StockList.StockListAdapter;
 import android.app.Activity;
 import android.app.AlertDialog;

@@ -7,32 +7,32 @@
 		android:allowBackup="true">
 		<activity android:name=".StockAnalyze" android:label="@string/app_name">
 			<intent-filter>
-				<category android:name="android.intent.category.LAUNCHER" />
+<!-- 				<category android:name="android.intent.category.LAUNCHER" /> -->
 <!--				<action android:name="android.intent.action.MAIN" />-->
         	</intent-filter>
 		</activity>
-		<activity android:name=".HomeActivity" android:label="@string/app_name">
+		<activity android:label="@string/app_name" android:name=".activity.HomeActivity">
 			<intent-filter>
 				<category android:name="android.intent.category.LAUNCHER" />
 				<action android:name="android.intent.action.MAIN" />
         	</intent-filter>
 		</activity>
 
-		<activity android:name="StockListActivity"></activity>
-		<activity android:name="StockSearchActivity"></activity>
-		<activity android:name="StockDetailActivity"></activity>
-		<activity android:name="StockChartActivity"	
+		<activity android:name=".activity.StockListActivity"></activity>
+		<activity android:name=".activity.StockSearchActivity"></activity>
+		<activity android:name=".activity.StockDetailActivity"></activity>
+		<activity android:name=".activity.StockChartActivity"	
 			android:theme="@style/themeLightTitle"
-			android:label="@string/app_name"></activity>
-		<activity android:name="PortfolioActivity"></activity>
+			android:label="@string/activityPortfolio" />
+		<activity android:name=".activity.PortfolioActivity"></activity>
 		<activity android:name=".Portfolio.AddPortfolioItemActivity"
 			android:theme="@style/themeLightTitle"
 			android:label="@string/AddPortfolioItemActivityTitle"></activity>
-		<activity android:name="NewsActivity"></activity>
-		<activity android:name="AppPreferencesActivity" 
+		<activity android:name=".activity.NewsActivity"></activity>
+		<activity android:name=".activity.AppPreferencesActivity" 
 			android:label="@string/AppPreferencesActivityTitle"
 			android:theme="@style/themeLightTitle"></activity>
-		<activity android:name="AboutActivity" 
+		<activity android:name=".activity.AboutActivity" 
 			android:label="@string/appAbout"
 			android:theme="@style/themeLightTitle"></activity>
 	<receiver android:enabled="true" android:permission="android.permission.ACCESS_NETWORK_STATE" android:name=".receivers.NetworkBroadcastReceiver">
