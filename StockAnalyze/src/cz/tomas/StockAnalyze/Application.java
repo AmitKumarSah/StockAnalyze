@@ -18,7 +18,7 @@ public class Application extends android.app.Application {
 	 */
 	@Override
 	public void onCreate() {
-		Log.i(Utils.LOG_TAG, "STARTING THE APPLICTION");
+		Log.i(Utils.LOG_TAG, "STARTING THE APPLICATION");
 		
 		this.scheduler = new UpdateScheduler(this);
 		this.dataManager = DataManager.getInstance(this);
@@ -43,7 +43,7 @@ public class Application extends android.app.Application {
 	@Override
 	public Object getSystemService(String name) {
 		if (name.equals(UPDATE_SCHEDULER_SERVICE))
-			return scheduler;
+			return this.scheduler;
 		else if (name.equals(DATA_MANAGER_SERVICE))
 			return this.dataManager;
 		return super.getSystemService(name);
@@ -54,7 +54,7 @@ public class Application extends android.app.Application {
 	 */
 	@Override
 	public void onLowMemory() {
-		Log.i(Utils.LOG_TAG, "low memory... clearing caches...");
+		Log.i(Utils.LOG_TAG, "low MEMORY... clearing caches...");
 		ChartActivity.clearCache();
 		super.onLowMemory();
 	}
