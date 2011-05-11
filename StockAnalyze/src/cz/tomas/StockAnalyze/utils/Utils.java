@@ -24,6 +24,7 @@ public class Utils {
 	public static final String PREF_PERMANENT_NOTIF = "prefPermanentNotif";
 	public static final String PREF_ENABLE_BACKGROUND_UPDATE = "prefEnableBackgroundUpdate";
 	public static final String PREF_INTERVAL_BACKGROUND_UPDATE = "prefIntervalBackgroundUpdate";
+	public static final String PREF_PORTFOLIO_INCLUDE_FEE = "prefPortfolioIncludeFee";
 	
 	public static final TimeZone PRAGUE_TIME_ZONE = TimeZone.getTimeZone("Europe/Prague");
 	

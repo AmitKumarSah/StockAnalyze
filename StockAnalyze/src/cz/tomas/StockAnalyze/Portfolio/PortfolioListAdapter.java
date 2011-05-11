@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -44,6 +45,8 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 	private List<IListAdapterListener<PortfolioSum>> portfolioListeners;
 	
 	private PortfolioSum portfolioSummary;
+	boolean includeFee = true;
+	private SharedPreferences prefs;
 	
 	public PortfolioListAdapter(Context context, int textViewResourceId, final DataManager dataManager, Portfolio portfolio) {
 		super(context, textViewResourceId);
@@ -53,15 +56,16 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 
 		this.datas = new HashMap<PortfolioItem, DayData>();
 		this.setNotifyOnChange(false);
-		//this.portfolioItems = new ArrayList<PortfolioItem>();
 		this.portfolioListeners = new ArrayList<IListAdapterListener<PortfolioSum>>();
 		
         this.vi = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
+        this.prefs = getContext().getSharedPreferences(Utils.PREF_NAME, 0);
+        
         this.refresh();
 	}
 	
 	public void refresh() {
+		this.includeFee = prefs.getBoolean(Utils.PREF_PORTFOLIO_INCLUDE_FEE, true);
 		PortfolioListTask task = new PortfolioListTask();
         task.execute();
 	}
@@ -147,6 +151,10 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
         }
         if (holder.txtPortfolioValue != null && holder.txtPortfolioValueChange != null && data != null) {
         	float currentValue = portfolioItem.getStockCount()  * data.getPrice();
+        	if (includeFee) {
+        		currentValue -= portfolioItem.getBuyFee();
+        		currentValue -= portfolioItem.getSellFee();
+        	}
         	float startValue = portfolioItem.getStartValue();
         	float change = ((currentValue / startValue) * 100) - 100;
         	NumberFormat percentFormat = FormattingUtils.getPercentFormat();
@@ -195,8 +203,7 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 				try {
 					items = portfolio.getGroupedPortfolioItems();
 				} catch (Exception e) {
-					Log.e(Utils.LOG_TAG,
-							"failed to get groupped portfolio items", e);
+					Log.e(Utils.LOG_TAG, "failed to get groupped portfolio items", e);
 					this.ex = e;
 				}
 				try {
@@ -204,16 +211,16 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 						// get day data for each stock and save it
 						datas.clear();
 						for (PortfolioItem portfolioItem : items) {
-							DayData dayData = dataManager
-									.getLastOfflineValue(portfolioItem
-											.getStockId());
+							DayData dayData = dataManager.getLastOfflineValue(portfolioItem.getStockId());
 							datas.put(portfolioItem, dayData);
 
-							float itemValue = portfolioItem.getStockCount()
-									* dayData.getPrice();
+							float itemValue = portfolioItem.getStockCount() * dayData.getPrice();
+							if (includeFee) {
+								itemValue -= portfolioItem.getBuyFee();
+								itemValue -= portfolioItem.getSellFee();
+							}
 							totalValueSum += itemValue;
-							totalChangeSum += itemValue
-									- portfolioItem.getStartValue();
+							totalChangeSum += itemValue- portfolioItem.getStartValue();
 						}
 					}
 				} catch (Exception e) {

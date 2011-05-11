@@ -1,29 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-	<PreferenceCategory android:title="Notifications">
+	<PreferenceCategory android:title="@string/prefGroupNotifications">
 		<CheckBoxPreference 
-			android:title="Update Notification"
+			android:title="@string/prefNotifUpdateTitle"
 			android:defaultValue="true" 
 			android:summary="@string/prefUpdateNotification"
 			android:key="prefUpdateNotification" />
 		<CheckBoxPreference 
-			android:title="Permanent Notification"
+			android:title="@string/prefNotifPermaTitle"
 			android:defaultValue="true" 
 			android:summary="@string/prefPermanentNotification"
 			android:key="prefPermanentNotification" />
 	</PreferenceCategory>
-	<PreferenceCategory android:title="Automatic Updates">
+	<PreferenceCategory android:title="@string/prefGroupAutoUpdates">
 		<CheckBoxPreference 
-			android:title="Background Updates"
+			android:title="@string/prefAutoBackgroundUpdatesTitle"
 			android:defaultValue="true" 
 			android:summary="@string/prefBackgroundUpdate"
 			android:key="prefEnableBackgroundUpdate" />
 		<ListPreference
-			android:title="Update Interval"
+			android:title="@string/prefAutoUpdateIntervalTitle"
 			android:summary="@string/prefUpdateInterval"
 			android:key="prefUpdateTimeInterval"
 			android:defaultValue="10"
 			android:entries="@array/prefListUpdateIntervalEntries"
 			android:entryValues="@array/prefListUpdateIntervalValues" />
 		</PreferenceCategory>
+	<PreferenceCategory android:title="@string/prefGroupPortfolio">
+		<CheckBoxPreference
+			android:title="@string/prefPortfolioIncludeFeeTitle"
+			android:defaultValue="true"
+			android:summary="@string/prefPortfolioIncludeFeeSummary"
+			android:key="prefPortfolioIncludeFee" />
+	</PreferenceCategory>
 </PreferenceScreen>

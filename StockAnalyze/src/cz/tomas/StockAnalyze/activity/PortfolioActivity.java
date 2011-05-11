@@ -7,6 +7,8 @@ import java.text.NumberFormat;
 
 import android.app.ListActivity;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -28,9 +30,6 @@ import cz.tomas.StockAnalyze.Data.Model.PortfolioSum;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.Portfolio.Portfolio;
 import cz.tomas.StockAnalyze.Portfolio.PortfolioListAdapter;
-import cz.tomas.StockAnalyze.R.id;
-import cz.tomas.StockAnalyze.R.layout;
-import cz.tomas.StockAnalyze.R.menu;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
@@ -41,7 +40,7 @@ import cz.tomas.StockAnalyze.utils.Utils;
  * @author tomas
  *
  */
-public class PortfolioActivity extends ListActivity {
+public class PortfolioActivity extends ListActivity implements OnSharedPreferenceChangeListener {
 
 	private DataManager dataManager;
 	private static Portfolio portfolio;
@@ -52,6 +51,7 @@ public class PortfolioActivity extends ListActivity {
 	private static boolean isDirty;
 	
 	private ProgressBar progressBar;
+	private SharedPreferences prefs;
 	
 	/* 
 	 * @see android.app.Activity#onCreate(android.os.Bundle)
@@ -79,6 +79,9 @@ public class PortfolioActivity extends ListActivity {
 
 		if (portfolio == null)
 			portfolio = new Portfolio(this);
+		
+		this.prefs = this.getSharedPreferences(Utils.PREF_NAME, 0);
+		this.prefs.registerOnSharedPreferenceChangeListener(this);
 		this.fill();
 	}
 
@@ -89,7 +92,6 @@ public class PortfolioActivity extends ListActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		
 		this.fill();
 	}
 
@@ -98,7 +100,7 @@ public class PortfolioActivity extends ListActivity {
 	 */
 	@Override
 	protected void onDestroy() {
-		// TODO Auto-generated method stub
+		prefs.unregisterOnSharedPreferenceChangeListener(this);
 		super.onDestroy();
 	}
 
@@ -216,6 +218,7 @@ public class PortfolioActivity extends ListActivity {
 	    	PortfolioActivity.adapter.refresh();
 	        return true;
 	    case R.id.menu_portfolio_settings:
+	    	NavUtils.goToSettings(this);
 	        return true;
 	    default:
 	        return super.onOptionsItemSelected(item);
@@ -234,5 +237,15 @@ public class PortfolioActivity extends ListActivity {
     		txtValueSum.setText(String.valueOf(portfolioSummary.getTotalValue()));
     	if (txtChangeSum != null)
     		txtChangeSum.setText(String.format("%s (%s%%)", strAbsChange, strChange));
+	}
+
+	@Override
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
+			String key) {
+		if (key.equals(Utils.PREF_PORTFOLIO_INCLUDE_FEE)) {
+			PortfolioActivity.isDirty = true;
+			this.fill();
+		}
+		
 	}
 }

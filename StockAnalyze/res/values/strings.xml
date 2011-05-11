@@ -71,6 +71,17 @@ Nikdy se nepouštějte do obchodů, jejichž podstatě plně nerozumíte. Obchod
     
     <string name="prefPermanentNotification">Enable to show permanent notification for quick access.</string>
     <string name="prefUpdateNotification">Show notification when updating data.</string>
+    <string name="prefPortfolioIncludeFeeSummary">Check to subtract fees from portfolio values</string>
+    
+    <string name="prefGroupPortfolio">Portfolio</string>
+    <string name="prefGroupNotifications">Notifications</string>
+    <string name="prefGroupAutoUpdates">Automatic Updates</string>
+    <string name="prefPortfolioIncludeFeeTitle">Include Fee</string>
+    <string name="prefAutoBackgroundUpdatesTitle">Background Updates</string>
+    <string name="prefAutoUpdateIntervalTitle">Update Interval</string>
+    <string name="prefNotifUpdateTitle">Update Notification</string>
+    <string name="prefNotifPermaTitle">Permanent Notification</string>
+    
     <string name="AppPreferencesActivityTitle">Application Preferences</string>
     
     <string-array name="prefListUpdateIntervalEntries">

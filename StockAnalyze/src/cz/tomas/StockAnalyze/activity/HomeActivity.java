@@ -135,7 +135,7 @@ public class HomeActivity extends Activity implements OnClickListener, OnKeyList
 					startActivity(intent);
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				Log.e(Utils.LOG_TAG, "failed to start activity", e);
 				Toast.makeText(this, "Failed to start:\n" + (target == null ? "unkown" : target), Toast.LENGTH_SHORT).show();
 			}
 		}

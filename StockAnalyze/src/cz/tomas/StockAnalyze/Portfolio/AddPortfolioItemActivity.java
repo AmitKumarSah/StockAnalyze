@@ -103,8 +103,10 @@ public final class AddPortfolioItemActivity extends Activity {
 						if (! hasFocus) {
 							try {
 								final int count = Integer.parseInt(countView.getText().toString());
-								final float fee = Float.parseFloat(feeView.getText().toString());
 								final float price = Float.parseFloat(priceView.getText().toString());
+								
+								final float fee = calculateFee(price, count);
+								feeView.setText(String.valueOf(fee));
 								
 								updateTotalValue(price, count, fee);
 							} catch (Exception e) {

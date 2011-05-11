@@ -87,7 +87,7 @@ public class StockListActivity extends ListActivity {
 						act.getTabHost().setCurrentTabByTag("StockDetail");
 					}
 					else
-						Log.d("cz.tomas.StockAnalyze.StockListActivity", "Failed to get TabActivity");
+						Log.d(Utils.LOG_TAG, "Failed to get TabActivity");
 				}
 				else if (stock != null) {
 					NavUtils.goToStockDetail(stock, adapter.getDayData(stock), StockListActivity.this);
@@ -202,7 +202,7 @@ public class StockListActivity extends ListActivity {
 	    // Handle item selection
 	    switch (item.getItemId()) {
 	    case R.id.menu_stock_list_refresh:
-	    	UpdateScheduler scheduler = (UpdateScheduler) this.getSystemService(Application.UPDATE_SCHEDULER_SERVICE);
+	    	UpdateScheduler scheduler = (UpdateScheduler) this.getApplicationContext().getSystemService(Application.UPDATE_SCHEDULER_SERVICE);
 	    	scheduler.updateImmediatly();
 	        return true;
 	    case R.id.menu_stock_list_settings:
