@@ -40,6 +40,8 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 	private LayoutInflater vi; 
 	
 	private Map<PortfolioItem, DayData> datas;
+	private Map<String, StockItem> stockItems;
+	
 	//private List<PortfolioItem> portfolioItems;
 	private Portfolio portfolio = null;
 	private List<IListAdapterListener<PortfolioSum>> portfolioListeners;
@@ -55,6 +57,7 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 		this.dataManager = dataManager;
 
 		this.datas = new HashMap<PortfolioItem, DayData>();
+		this.stockItems = new HashMap<String, StockItem>();
 		this.setNotifyOnChange(false);
 		this.portfolioListeners = new ArrayList<IListAdapterListener<PortfolioSum>>();
 		
@@ -111,7 +114,7 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 			return;
 		}
         
-        StockItem stock = this.dataManager.getStockItem(portfolioItem.getStockId());
+		StockItem stock = this.stockItems.get(portfolioItem.getStockId());
     	DayData data = null;
     	try {
 			data = this.datas.get(portfolioItem);
@@ -210,9 +213,14 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 					if (items != null) {
 						// get day data for each stock and save it
 						datas.clear();
+						stockItems.clear();
 						for (PortfolioItem portfolioItem : items) {
 							DayData dayData = dataManager.getLastOfflineValue(portfolioItem.getStockId());
 							datas.put(portfolioItem, dayData);
+							
+							// load also needed stock items
+							StockItem stockItem = dataManager.getStockItem(portfolioItem.getStockId());
+							stockItems.put(portfolioItem.getStockId(), stockItem);
 
 							float itemValue = portfolioItem.getStockCount() * dayData.getPrice();
 							if (includeFee) {

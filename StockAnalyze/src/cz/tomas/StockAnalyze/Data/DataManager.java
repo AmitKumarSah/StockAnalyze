@@ -141,7 +141,7 @@ public class DataManager implements IStockDataListener {
 		return getStockItem(id, null);
 	}
 	
-	public synchronized StockItem getStockItem(String id, Market market) throws NullPointerException {
+	public StockItem getStockItem(String id, Market market) throws NullPointerException {
 		StockItem item = this.sqlStore.getStockItem(id);
 		
 		if (item == null) {
