@@ -29,6 +29,7 @@ import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.UpdateScheduler;
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.Interfaces.IListAdapterListener;
+import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.Portfolio.AddPortfolioItemActivity;
 import cz.tomas.StockAnalyze.R.id;
@@ -58,8 +59,6 @@ public class StockListActivity extends ListActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		//Debug.startMethodTracing();
-		
 		this.dataManager = DataManager.getInstance(this);
 		
 		this.setContentView(R.layout.stock_list);
@@ -139,13 +138,6 @@ public class StockListActivity extends ListActivity {
 	}
 
 	@Override
-	protected void onStop() {
-		super.onStop();
-		
-		//Debug.stopMethodTracing();
-	}
-	
-	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 	    MenuInflater inflater = getMenuInflater();
 	    inflater.inflate(R.menu.stock_list_menu, menu);
@@ -162,6 +154,7 @@ public class StockListActivity extends ListActivity {
 		
 		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
 		StockItem stockItem = (StockItem) this.getListAdapter().getItem(info.position);
+		DayData data = adapter.getDayData(stockItem);
 		
 		if (stockItem == null)
 			return true;
@@ -169,8 +162,9 @@ public class StockListActivity extends ListActivity {
 		switch (item.getItemId()) {
 			case R.id.stock_item_add_to_portfolio:
 				Intent intent = new Intent();
-				intent.putExtra("stock_id", stockItem.getId());
-				intent.putExtra("market_id", stockItem.getMarket());
+				intent.putExtra(Utils.EXTRA_STOCK_ITEM, stockItem);
+				intent.putExtra(Utils.EXTRA_DAY_DATA, data);
+				intent.putExtra(Utils.EXTRA_MARKET_ID, stockItem.getMarket());
 				intent.setClass(this, AddPortfolioItemActivity.class);
 				startActivity(intent);
 				return true;
@@ -178,7 +172,7 @@ public class StockListActivity extends ListActivity {
 				// TODO mark as favourite
 				return true;
 			case R.id.stock_item_view:
-				NavUtils.goToStockDetail(stockItem, this.adapter.getDayData(stockItem), this);
+				NavUtils.goToStockDetail(stockItem, StockListActivity.adapter.getDayData(stockItem), this);
 				return true;
 			default:
 				return super.onContextItemSelected(item);
@@ -202,7 +196,8 @@ public class StockListActivity extends ListActivity {
 	    // Handle item selection
 	    switch (item.getItemId()) {
 	    case R.id.menu_stock_list_refresh:
-	    	UpdateScheduler scheduler = (UpdateScheduler) this.getApplicationContext().getSystemService(Application.UPDATE_SCHEDULER_SERVICE);
+	    	UpdateScheduler scheduler = 
+	    		(UpdateScheduler) this.getApplicationContext().getSystemService(Application.UPDATE_SCHEDULER_SERVICE);
 	    	scheduler.updateImmediatly();
 	        return true;
 	    case R.id.menu_stock_list_settings:
@@ -246,63 +241,5 @@ public class StockListActivity extends ListActivity {
 		return dlg;
 	}
 	
-//	class RefreshTask extends AsyncTask<Void, Integer, Boolean> {
-//
-//		/* 
-//		 * clear the list view
-//		 * @see android.os.AsyncTask#onPreExecute()
-//		 */
-//		@Override
-//		protected void onPreExecute() {
-//			super.onPreExecute();
-//
-//	    	//setListAdapter(null);
-////			if (StockListActivity.adapter != null)
-////				StockListActivity.adapter.clear();
-//		}
-//
-//		/* 
-//		 * just show error message
-//		 * @see android.os.AsyncTask#onCancelled()
-//		 */
-//		@Override
-//		protected void onCancelled() {
-//			super.onCancelled();
-//			Toast.makeText(getParent(), R.string.update_fail, Toast.LENGTH_LONG).show();
-//		}
-//
-//		/*
-//		 * invoke global data refresh
-//		 * @see android.os.AsyncTask#doInBackground(Params[])
-//		 */
-//		@Override
-//		protected Boolean doInBackground(Void... params) {
-//			boolean result = false;
-//			try {
-//				result = dataManager.refresh();
-//			} catch (Exception e) {
-//				e.printStackTrace();
-//				if (e.getMessage() != null)
-//					Log.d("StockListlActivity", e.getMessage());
-//			}
-//			return result;
-//		}
-//
-//		/* 
-//		 * adapter should get updated on itself, just show proper message
-//		 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
-//		 */
-//		@Override
-//		protected void onPostExecute(Boolean result) {
-//			super.onPostExecute(result);
-//			if (result){
-//		    	fill();
-//		    	Toast.makeText(StockListActivity.this, R.string.update_succes, Toast.LENGTH_SHORT).show();
-//			}
-//			else
-//				Toast.makeText(StockListActivity.this, R.string.NoRefresh, Toast.LENGTH_SHORT).show();
-//		}
-//		
-//	}
 }
 

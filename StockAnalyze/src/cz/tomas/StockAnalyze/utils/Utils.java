@@ -29,6 +29,10 @@ public class Utils {
 	
 	public static final TimeZone PRAGUE_TIME_ZONE = TimeZone.getTimeZone("Europe/Prague");
 	
+	public static final String EXTRA_STOCK_ITEM = "cz.tomas.StockAnalyze:StockItem";
+	public static final String EXTRA_DAY_DATA = "cz.tomas.StockAnalyze:DayData";
+	public static final String EXTRA_MARKET_ID = "cz.tomas.StockAnalyze:Market_ID";
+	
 	private static ConnectivityManager connectivityManager;
 
 //	private final static String HOLIDAYS = {

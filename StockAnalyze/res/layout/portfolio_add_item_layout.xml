@@ -17,6 +17,7 @@
 		
 		<Spinner android:id="@+id/portfolioAddSpinnerDeal" 
 			style="@style/tableItem"
+			android:focusable="true"
 			android:prompt="@string/portfolioDealPrompt"
 			android:entries="@array/portfolioDealArray">
 		</Spinner>
@@ -25,6 +26,7 @@
 	<TableRow>
 		<TextView android:id="@+id/TextView01" 
 			android:text="@string/portfolioTickerLabel" 
+			android:editable="false"
 			style="@style/tableItem">
 		</TextView>
 		<EditText android:id="@+id/portfolioAddTicker"
@@ -81,6 +83,7 @@
 		</TextView>
 		<TextView android:id="@+id/portfolioAddTotalValue" 
 			style="@style/tableItem"
+			android:padding="12dp"
 			android:inputType="number">
 		</TextView>
 	</TableRow>
