@@ -246,63 +246,63 @@ public class StockListActivity extends ListActivity {
 		return dlg;
 	}
 	
-	class RefreshTask extends AsyncTask<Void, Integer, Boolean> {
-
-		/* 
-		 * clear the list view
-		 * @see android.os.AsyncTask#onPreExecute()
-		 */
-		@Override
-		protected void onPreExecute() {
-			super.onPreExecute();
-
-	    	//setListAdapter(null);
-//			if (StockListActivity.adapter != null)
-//				StockListActivity.adapter.clear();
-		}
-
-		/* 
-		 * just show error message
-		 * @see android.os.AsyncTask#onCancelled()
-		 */
-		@Override
-		protected void onCancelled() {
-			super.onCancelled();
-			Toast.makeText(getParent(), R.string.update_fail, Toast.LENGTH_LONG).show();
-		}
-
-		/*
-		 * invoke global data refresh
-		 * @see android.os.AsyncTask#doInBackground(Params[])
-		 */
-		@Override
-		protected Boolean doInBackground(Void... params) {
-			boolean result = false;
-			try {
-				result = dataManager.refresh();
-			} catch (Exception e) {
-				e.printStackTrace();
-				if (e.getMessage() != null)
-					Log.d("StockListlActivity", e.getMessage());
-			}
-			return result;
-		}
-
-		/* 
-		 * adapter should get updated on itself, just show proper message
-		 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
-		 */
-		@Override
-		protected void onPostExecute(Boolean result) {
-			super.onPostExecute(result);
-			if (result){
-		    	fill();
-		    	Toast.makeText(StockListActivity.this, R.string.update_succes, Toast.LENGTH_SHORT).show();
-			}
-			else
-				Toast.makeText(StockListActivity.this, R.string.NoRefresh, Toast.LENGTH_SHORT).show();
-		}
-		
-	}
+//	class RefreshTask extends AsyncTask<Void, Integer, Boolean> {
+//
+//		/* 
+//		 * clear the list view
+//		 * @see android.os.AsyncTask#onPreExecute()
+//		 */
+//		@Override
+//		protected void onPreExecute() {
+//			super.onPreExecute();
+//
+//	    	//setListAdapter(null);
+////			if (StockListActivity.adapter != null)
+////				StockListActivity.adapter.clear();
+//		}
+//
+//		/* 
+//		 * just show error message
+//		 * @see android.os.AsyncTask#onCancelled()
+//		 */
+//		@Override
+//		protected void onCancelled() {
+//			super.onCancelled();
+//			Toast.makeText(getParent(), R.string.update_fail, Toast.LENGTH_LONG).show();
+//		}
+//
+//		/*
+//		 * invoke global data refresh
+//		 * @see android.os.AsyncTask#doInBackground(Params[])
+//		 */
+//		@Override
+//		protected Boolean doInBackground(Void... params) {
+//			boolean result = false;
+//			try {
+//				result = dataManager.refresh();
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//				if (e.getMessage() != null)
+//					Log.d("StockListlActivity", e.getMessage());
+//			}
+//			return result;
+//		}
+//
+//		/* 
+//		 * adapter should get updated on itself, just show proper message
+//		 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
+//		 */
+//		@Override
+//		protected void onPostExecute(Boolean result) {
+//			super.onPostExecute(result);
+//			if (result){
+//		    	fill();
+//		    	Toast.makeText(StockListActivity.this, R.string.update_succes, Toast.LENGTH_SHORT).show();
+//			}
+//			else
+//				Toast.makeText(StockListActivity.this, R.string.NoRefresh, Toast.LENGTH_SHORT).show();
+//		}
+//		
+//	}
 }
 

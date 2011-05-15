@@ -18,6 +18,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -194,6 +195,17 @@ public class UpdateScheduler {
 				}
 			isSchedulerRunning = false;
 			return null;
+		}
+
+		/**
+		 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
+		 */
+		@Override
+		protected void onPostExecute(Boolean result) {
+			Editor editor = preferences.edit();
+			editor.putLong(Utils.PREF_LAST_UPDATE_TIME, System.currentTimeMillis());
+			editor.commit();
+			super.onPostExecute(result);
 		}
 		
 	}

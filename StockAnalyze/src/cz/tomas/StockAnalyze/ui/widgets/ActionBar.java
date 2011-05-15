@@ -12,6 +12,7 @@ import cz.tomas.StockAnalyze.utils.Utils;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -35,13 +36,16 @@ public class ActionBar extends RelativeLayout {
 	
 	public ActionBar(final Context context, AttributeSet attrs) {
 		super(context);
-		
-		if (! this.isInEditMode())
-			initUpdateListener(context);
-		
+
 		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.actionbar_layout, this);
         
+        this.subtitleView = (TextView) this.findViewById(R.id.actionSubTitle);
+        if (this.subtitleView != null && lastUpdateText != null)
+        	this.subtitleView.setText(lastUpdateText);
+		if (! this.isInEditMode())
+			initUpdateListener(context);
+		
         View searchButton = this.findViewById(R.id.actionSearchButton);
         if (searchButton != null) {
         	searchButton.setOnClickListener(new OnClickListener() {
@@ -80,9 +84,6 @@ public class ActionBar extends RelativeLayout {
         	Log.d(Utils.LOG_TAG, "action bar home button not found");
         
         TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.ActionBarAttrs);
-        this.subtitleView = (TextView) this.findViewById(R.id.actionSubTitle);
-        if (this.subtitleView != null && lastUpdateText != null)
-        	this.subtitleView.setText(lastUpdateText);
         
         TextView titleView = (TextView) this.findViewById(R.id.actionTitle);
         
@@ -94,9 +95,22 @@ public class ActionBar extends RelativeLayout {
 	}
 
 	/**
+	 * get last update time and register listener for updates 
 	 * @param context
 	 */
 	private void initUpdateListener(final Context context) {
+		if (lastUpdateText == null) {
+			SharedPreferences preferences = context.getSharedPreferences(Utils.PREF_NAME, 0);
+			long time = preferences.getLong(Utils.PREF_LAST_UPDATE_TIME, -1);
+			if (time > 0 && this.subtitleView != null) {
+				final Calendar cal = Calendar.getInstance(Utils.PRAGUE_TIME_ZONE);
+				cal.setTimeInMillis(time);
+				lastUpdateText = FormattingUtils.formatStockDate(cal);
+				subtitleView.setText(lastUpdateText);
+			}
+		} else {
+			Log.w(Utils.LOG_TAG, "Failed to set initial update value");
+		}
 		this.dataManager = DataManager.getInstance(context);
 		this.dataManager.addUpdateChangedListener(new IUpdateDateChangedListener() {
 			

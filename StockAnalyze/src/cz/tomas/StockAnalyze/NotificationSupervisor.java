@@ -47,7 +47,7 @@ public class NotificationSupervisor implements IStockDataListener {
 		this.noUpdateMessage = this.context.getText(R.string.noDataUpdated);
 	}
 
-	/* 
+	/** 
 	 * update existing notification
 	 * @see cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener#OnStockDataUpdated(cz.tomas.StockAnalyze.Data.IStockDataProvider)
 	 */
@@ -69,7 +69,7 @@ public class NotificationSupervisor implements IStockDataListener {
 		}
 	}
 
-	/* 
+	/** 
 	 * create notification about data update, that is just proceeding
 	 * @see cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener#OnStockDataUpdateBegin(cz.tomas.StockAnalyze.Data.IStockDataProvider)
 	 */
@@ -81,7 +81,7 @@ public class NotificationSupervisor implements IStockDataListener {
 			return;
 		if (this.currentNotificationView == null)
 			this.currentNotificationView = new RemoteViews(this.context.getPackageName(), R.layout.custom_update_notification_layout);
-		this.currentNotificationView.setImageViewResource(R.id.notification_image, R.drawable.ic_launcher);
+		this.currentNotificationView.setImageViewResource(R.id.notification_image, R.drawable.ic_stat_arrow);
 		this.stringBuilder.setLength(0);
 		this.stringBuilder.append(this.updateBeginMessage);
 		this.stringBuilder.append(" from ").append(sender.getDescriptiveName());
@@ -89,7 +89,7 @@ public class NotificationSupervisor implements IStockDataListener {
 		this.currentNotificationView.setTextViewText(R.id.notification_text, this.stringBuilder.toString());
 		this.currentNotificationView.setTextViewText(R.id.notification_subtext, this.context.getText(R.string.app_name));
 		
-		this.notification = new Notification(R.drawable.ic_launcher, this.updateBeginMessage, System.currentTimeMillis());
+		this.notification = new Notification(R.drawable.ic_stat_arrow, this.updateBeginMessage, System.currentTimeMillis());
 		//notification.defaults |= Notification.DEFAULT_SOUND;
 		this.notification.flags |= Notification.FLAG_AUTO_CANCEL;
 		this.notification.contentView = this.currentNotificationView;

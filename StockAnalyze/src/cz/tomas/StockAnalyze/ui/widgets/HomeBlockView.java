@@ -63,7 +63,7 @@ public class HomeBlockView extends RelativeLayout {
 		if (textView != null)
 			textView.setText(a.getResourceId(2, R.string.hello));
 		if (image != null)
-			image.setImageResource(a.getResourceId(3, R.drawable.icon));
+			image.setImageResource(a.getResourceId(3, R.drawable.ic_launcher));
 		this.target = a.getString(4);
 		a.recycle();
 	}

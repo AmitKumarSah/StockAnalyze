@@ -12,7 +12,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
 /**
- * helper class with various helper methods
+ * helper class with various helper methods string const names
  * @author tomas
  *
  */
@@ -25,6 +25,7 @@ public class Utils {
 	public static final String PREF_ENABLE_BACKGROUND_UPDATE = "prefEnableBackgroundUpdate";
 	public static final String PREF_INTERVAL_BACKGROUND_UPDATE = "prefIntervalBackgroundUpdate";
 	public static final String PREF_PORTFOLIO_INCLUDE_FEE = "prefPortfolioIncludeFee";
+	public static final String PREF_LAST_UPDATE_TIME = "prefLastUpdateTime";
 	
 	public static final TimeZone PRAGUE_TIME_ZONE = TimeZone.getTimeZone("Europe/Prague");
 	
@@ -44,7 +45,7 @@ public class Utils {
 //	        "2. svatek vanocni" => "26.12."
 //	        };
 	
-	/*
+	/**
 	 * construct calendar that contains only date info from general Calendar object
 	 */
 	public static Calendar createDateOnlyCalendar(Calendar calendar) {
@@ -61,7 +62,7 @@ public class Utils {
 		return noTimeCal;
 	}
 	
-	/*
+	/**
 	 * construct calendar that contains only date info from general Calendar object
 	 */
 	public static Calendar createDateOnlyCalendar(Date date) {
@@ -71,7 +72,7 @@ public class Utils {
 		return createDateOnlyCalendar(calendar);
 	}
 	
-	/*
+	/**
 	 * get nearest previous day that was a trading day or given day, if it is the trading day
 	 * - it will exclude Saturdays & Sundays
 	 */
@@ -88,7 +89,7 @@ public class Utils {
 		return calendar;
 	}
 	
-	/*
+	/**
 	 * ask ConnectivityManager if the device is connected
 	 */
 	public static boolean isOnline(Context context) {

@@ -12,8 +12,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.util.Log;
 import cz.tomas.StockAnalyze.NotificationSupervisor;
 import cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener;
@@ -73,22 +71,13 @@ public class DataManager implements IStockDataListener {
 		pse.enable(true);
 		pse.addListener(this);
 		//pse.addListener(supervisor);
-		
-//		try {
-//			ConnectivityManager connectivity = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-//			boolean backgroundData = connectivity.getBackgroundDataSetting();
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-		// TODO
 	}
 	
 	public static boolean isInitialized() {
 		return instance != null;
 	}
 
-	/*
+	/**
 	 * search for stocks with pattern in name or in ticker,
 	 * consider only stocks from given market
 	 * use star (*) for all stock items 
@@ -117,7 +106,7 @@ public class DataManager implements IStockDataListener {
 		return results;
 	}
 	
-	/*
+	/**
 	 * get all stock items from database for given Market,
 	 * if stock items weren't found, would try to download them
 	 * @returns map stock id vs StockOte,
@@ -167,7 +156,7 @@ public class DataManager implements IStockDataListener {
 		return data;
 	}
 	
-	/*
+	/**
 	 * get last day data for set of stock items
 	 * Map of StockId: DayData
 	 */
@@ -214,7 +203,7 @@ public class DataManager implements IStockDataListener {
 		return data;
 	}
 	
-	/*
+	/**
 	 * get last data for stock item,
 	 * check in db for todays data, try to download new one or check in db for older one  
 	 */
@@ -254,12 +243,12 @@ public class DataManager implements IStockDataListener {
 	}
 
 	/**
-	 * mix last available offline data with new one, 
+	 * mix last available off-line data with new one, 
 	 * the purpose is to get reasonable data if there is no price
 	 * from data provider 
 	 * @param item stock item to get data for
 	 * @param data data from provider
-	 * @return data from provider with price of last offline data
+	 * @return data from provider with price of last off-line data
 	 */
 	private DayData createDataWithPrice(StockItem item, DayData data) {
 		DayData oldData = this.getLastOfflineValue(item.getId());
@@ -269,17 +258,17 @@ public class DataManager implements IStockDataListener {
 		return data;
 	}	
 
-	/*
-	 * refresh all enabled data providers
-	 */
-	public synchronized boolean refresh() throws Exception {
-		boolean result = DataProviderFactory.refreshAll();
-
-//		if (result) {
-//			fireUpdateDateChanged(Calendar.getInstance().getTimeInMillis());
-//		}
-		return result;
-	}
+//	/**
+//	 * refresh all enabled data providers
+//	 */
+//	public synchronized boolean refresh() throws Exception {
+//		boolean result = DataProviderFactory.refreshAll();
+//
+////		if (result) {
+////			fireUpdateDateChanged(Calendar.getInstance().getTimeInMillis());
+////		}
+//		return result;
+//	}
 	
 	private void fireUpdateDateChanged(long timeInMillis) {
 		for (IUpdateDateChangedListener handler : this.updateDateChangedListeners) {
@@ -301,9 +290,12 @@ public class DataManager implements IStockDataListener {
 		this.updateStockDataListeners.add(listener);
 	}
 
+	/**
+	 * event from data provider, store data to db and fire events
+	 */
 	@Override
 	public void OnStockDataUpdated(IStockDataProvider sender, Map<StockItem,DayData> dataMap) {
-		Log.d(Utils.LOG_TAG, "received stock data update event from " + sender.getId());
+		Log.i(Utils.LOG_TAG, "received stock data update event from " + sender.getId());
 		this.acquireDb(sender.getId());
 		try {
 			if (dataMap == null || dataMap.size() == 0) {
@@ -328,15 +320,15 @@ public class DataManager implements IStockDataListener {
 		}
 	}
 	
-	/*
+	/**
 	 * tell the database to not close until method releaseDb is called
 	 */
 	public void acquireDb(Object applicant) {
 		this.sqlStore.acquireDb(applicant);
 	}
 	
-	/*
-	 * release lock created byt acquireDb() calling
+	/**
+	 * release lock created by acquireDb() calling
 	 */
 	public void releaseDb(boolean close, Object applicant) {
 		this.sqlStore.releaseDb(close, applicant);
