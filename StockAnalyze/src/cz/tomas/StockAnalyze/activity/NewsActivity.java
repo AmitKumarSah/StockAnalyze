@@ -57,11 +57,8 @@ import android.widget.AdapterView.OnItemClickListener;
  *
  */
 public class NewsActivity extends ListActivity {
-
-	private NewsSqlHelper news;
-	private ProgressDialog progressDialog;
 	
-	private static NewsListAdapter adapter;
+	private NewsListAdapter adapter;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -108,11 +105,8 @@ public class NewsActivity extends ListActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    // Handle item selection
 	    switch (item.getItemId()) {
-	    case R.id.menu_stock_list_refresh:
-	    	//this.setListAdapter(null);
-	    	//this.findViewById(R.id.progressNews).setVisibility(View.VISIBLE);
-	    	
-	    	NewsActivity.adapter.refresh();
+	    case R.id.menu_stock_list_refresh:	    	
+	    	this.adapter.refresh();
 	        return true;
 	    case R.id.menu_stock_list_settings:
 	        return true;

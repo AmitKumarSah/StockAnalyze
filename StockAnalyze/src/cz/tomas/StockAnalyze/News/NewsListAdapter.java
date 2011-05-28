@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import cz.tomas.StockAnalyze.R;
+import cz.tomas.StockAnalyze.utils.Utils;
 
 import android.app.Activity;
 import android.content.Context;
@@ -43,10 +44,10 @@ import android.widget.Toast;
  */
 public class NewsListAdapter extends ArrayAdapter<Article> {
 
-	List<Article> newsItems;
+	private static List<Article> newsItems;
 	
-	LayoutInflater vi; 
-	NewsItemsTask task;
+	private LayoutInflater vi; 
+	private NewsItemsTask task;
 	private final int MAX_DESCRIPTION_LENGHT = 100;
 	
 	private final int DEFAULT_NEWS_LIMIT = 20;
@@ -60,15 +61,20 @@ public class NewsListAdapter extends ArrayAdapter<Article> {
 		super(context, textViewResourceId);
 
 		this.vi = (LayoutInflater)this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		this.newsItems = new ArrayList<Article>();
-
-		getNewsData();
+		
+		if (newsItems == null) {
+			newsItems = new ArrayList<Article>();
+			getNewsData();
+		} else {
+			for (Article article : newsItems) {
+				this.add(article);
+			}
+		}
 	}
 
 	private void getNewsData() {
 		task = new NewsItemsTask();
 		task.execute();
-		task = null;
 	}
 	
 	/*
@@ -92,11 +98,11 @@ public class NewsListAdapter extends ArrayAdapter<Article> {
 			
 			Article article = this.getItem(position);
 			if (article != null) {
-				Log.d("cz.tomas.StockAnalyze.News.NewsListAdapter", article.toString());
+				//Log.d(Utils.LOG_TAG, article.toString());
 				if (txtTitle != null)
 					txtTitle.setText(article.getTitle());
 				else
-					Log.d("cz.tomas.StockAnalyze.News.NewsListAdapter", "can't set title text - TextView is null");	
+					Log.d(Utils.LOG_TAG, "can't set title text - TextView is null");	
 				if (txtPreview != null) {
 					String description = article.getEscapedDescription();
 					if (description != null) {
@@ -119,31 +125,23 @@ public class NewsListAdapter extends ArrayAdapter<Article> {
 		}
 		
 		return v;
-	}
-	
-//	@Override
-//	public int getCount() {
-//		return this.newsItems.size();
-//	}
-	
+	}	
 	
 	private class NewsItemsTask extends AsyncTask<Void, Integer, List<Article>> {
-		View view;
-		Exception ex;
+		
+		private Exception ex;
 		
 		@Override
 		protected void onPreExecute() {
 			try {
 				((Activity) getContext()).findViewById(R.id.progressNews).setVisibility(View.VISIBLE);
 			} catch (Exception e) {
-				Log.d("cz.tomas.StockAnalyze.News.NewsListAdapter", "failed to dissmis progess bar! " + e.getMessage());
+				Log.d(Utils.LOG_TAG, "failed to dissmis progess bar! " + e.getMessage());
 			}
 		}
 		
 		@Override
 		protected List<Article> doInBackground(Void... params) {
-			List<Article> newsItems = new ArrayList<Article>();
-
 			Rss rss = new Rss(getContext());
 			
 			try {
@@ -156,11 +154,7 @@ public class NewsListAdapter extends ArrayAdapter<Article> {
 					}
 				}
 			} catch (Exception e) {
-				String message = e.getMessage();
-				if (message == null)
-					message = "Failed to get news articles!";
-				Log.d("cz.tomas.StockAnalyze.News.NewsListAdapter", message);
-				e.printStackTrace();
+				Log.d(Utils.LOG_TAG, "failed to read news", e);
 				this.ex = e;
 			} finally {
 				rss.done();
@@ -169,12 +163,7 @@ public class NewsListAdapter extends ArrayAdapter<Article> {
 			return newsItems;
 		}
 
-		protected void onProgressUpdate(Integer... progress) {
-			// setProgressPercent(progress[0]);
-		}
-
 		protected void onPostExecute(List<Article> result) {
-			//newsItems.addAll(result);
 			clear();
 			for (int i = 0; i < result.size() && i < DEFAULT_NEWS_LIMIT; i++) {
 				add(result.get(i));
@@ -195,9 +184,8 @@ public class NewsListAdapter extends ArrayAdapter<Article> {
 			try {
 				((Activity) getContext()).findViewById(R.id.progressNews).setVisibility(View.GONE);
 			} catch (Exception e) {
-				Log.d("cz.tomas.StockAnalyze.News.NewsListAdapter", "failed to dissmis progess bar! " + e.getMessage());
+				Log.d(Utils.LOG_TAG, "failed to dissmis progess bar! " + e.getMessage());
 			}
-			//((Activity) getContext()).getWindow().setFeatureInt(Window.FEATURE_PROGRESS, 10);
 		}
 	}
 }
