@@ -177,8 +177,8 @@ public class DataManager implements IStockDataListener {
 	 * get last day data for set of stock items
 	 * Map of StockId: DayData
 	 */
-	public synchronized HashMap<StockItem,DayData>  getLastDataSet(Map<String, StockItem> stockItems) {
-		HashMap<StockItem,DayData>  dbData = this.sqlStore.getLastDataSet(stockItems, null, null);
+	public synchronized Map<StockItem,DayData>  getLastDataSet(Map<String, StockItem> stockItems) {
+		Map<StockItem,DayData> dbData = this.sqlStore.getLastDataSet(stockItems, null, null);
 		return dbData;
 	}
 	

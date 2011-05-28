@@ -84,7 +84,7 @@ public final class AddPortfolioItemActivity extends Activity {
 			final TextView countView = (TextView) this.findViewById(R.id.portfolioAddCount);
 			final Button addButton = (Button) this.findViewById(R.id.portfolioAddButton);
 			final Spinner dealSpinner = (Spinner) this.findViewById(R.id.portfolioAddSpinnerDeal);
-			if (priceView != null)
+			if (priceView != null && data != null)
 				priceView.setText(String.valueOf(data.getPrice()));
 			
 			if (marketView != null && market != null)

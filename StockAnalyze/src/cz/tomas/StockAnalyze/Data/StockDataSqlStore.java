@@ -22,7 +22,6 @@ package cz.tomas.StockAnalyze.Data;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -32,7 +31,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.provider.ContactsContract.Contacts.Data;
 import android.util.Log;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.Market;
@@ -392,8 +390,8 @@ public class StockDataSqlStore extends DataSqlHelper {
 		return data;
 	}
 
-	public HashMap<StockItem, DayData> getLastDataSet(Map<String, StockItem> stockItems, Market market, String orderBy) {
-		HashMap<StockItem, DayData> dbData = new HashMap<StockItem, DayData>();
+	public Map<StockItem, DayData> getLastDataSet(Map<String, StockItem> stockItems, Market market, String orderBy) {
+		Map<StockItem, DayData> dbData = new LinkedHashMap<StockItem, DayData>();
 		
 		try {
 			SQLiteDatabase db = this.getWritableDatabase();

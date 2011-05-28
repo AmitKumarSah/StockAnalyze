@@ -22,9 +22,7 @@ package cz.tomas.StockAnalyze.StockList;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -43,11 +41,9 @@ import android.widget.Toast;
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.IStockDataProvider;
-import cz.tomas.StockAnalyze.Data.MarketFactory;
 import cz.tomas.StockAnalyze.Data.Interfaces.IListAdapterListener;
 import cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
-import cz.tomas.StockAnalyze.Data.Model.PortfolioSum;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
@@ -62,11 +58,22 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 	private DataManager dataManager;
 	private LayoutInflater vi; 
 	
+	/**
+	 * items of list view
+	 */
+	private static StockItem[] stockListItems;
+	
+	/**
+	 * these are data to be used in views
+	 */
 	private static Map<StockItem, DayData> dataSet;
-	private StockComparator comparator;
+	//private StockComparator comparator;
+	/**
+	 * listeners for changes in this adapter
+	 */
 	private List<IListAdapterListener<Object>> listeners;
 	
-	private Boolean showIcons = true;
+	//private Boolean showIcons = true;
 	
 	/**
 	 * semaphore to synchronize updates to list in StockListTask
@@ -76,7 +83,7 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 	public StockListAdapter(Activity context, int textViewResourceId, final DataManager dataManager, final String filter) {
 		super(context, textViewResourceId);
 		this.dataManager = dataManager;
-		this.comparator = new StockComparator(StockCompareTypes.Name, dataManager);
+		//this.comparator = new StockComparator(StockCompareTypes.Name, dataManager);
 		this.listeners = new ArrayList<IListAdapterListener<Object>>();
 
         this.vi = (LayoutInflater)	this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -85,12 +92,12 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
        
         // if we have already initialized dataset, just add stock items to adapter,
         // otherwise start task to get it
-        if (dataSet == null) {
-        	dataSet = new HashMap<StockItem, DayData>();
+        if (dataSet == null || stockListItems == null) {
+        	dataSet = new LinkedHashMap<StockItem, DayData>();
         	this.refreshList();
         } else {
-        	for (Entry<StockItem, DayData> entry : dataSet.entrySet()) {
-				add(entry.getKey());
+        	for (StockItem stockItem : stockListItems) {
+				this.add(stockItem);
 			}
         }
 	}
@@ -134,12 +141,12 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 	
 	private void refreshList() {
 		StockListTask task = new StockListTask();
-        task.execute(null);
+        task.execute((String[]) null);
 	}
 	
 	public DayData getDayData(StockItem stockItem) {
-		if (this.dataSet != null)
-			return this.dataSet.get(stockItem);
+		if (dataSet != null)
+			return dataSet.get(stockItem);
 		return null;
 	}
 	
@@ -197,7 +204,7 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
         	DayData data = null;
 			try {
 				//data = this.dataManager.getLastValue(stock);
-				data = this.dataSet.get(stock);
+				data = dataSet.get(stock);
 			} catch (Exception e) {
 				txtPrice.setText("Fail");
 				if (e.getMessage() != null) {
@@ -251,7 +258,7 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
     }
 	
 	public void showIcons(Boolean show) {
-		this.showIcons = show;
+		//this.showIcons = show;
 	}
 	
 	public void addListAdapterListener(IListAdapterListener<Object> listener) {
@@ -322,8 +329,12 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 			else {
 				clear();
 				
+				stockListItems = new StockItem[result.size()];
+				int index = 0;
 				for (Entry<String, StockItem> entry : result.entrySet()) {
 					add(entry.getValue());
+					stockListItems[index] = entry.getValue();
+					index++;
 				}
 			}
 	    	notifyDataSetChanged();
