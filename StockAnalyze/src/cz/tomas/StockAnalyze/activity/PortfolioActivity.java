@@ -60,11 +60,11 @@ import cz.tomas.StockAnalyze.utils.Utils;
 public class PortfolioActivity extends ListActivity implements OnSharedPreferenceChangeListener {
 
 	private DataManager dataManager;
-	private static Portfolio portfolio;
+	private Portfolio portfolio;
 	//private static PortfolioSum portfolioSummary;
-	private static PortfolioListAdapter adapter;
-	private static View headerView;
-	private static View footerView;
+	private PortfolioListAdapter adapter;
+	private View headerView;
+	private View footerView;
 	private static boolean isDirty;
 	
 	private ProgressBar progressBar;
@@ -87,10 +87,9 @@ public class PortfolioActivity extends ListActivity implements OnSharedPreferenc
 		LayoutInflater vi = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
-		if (headerView == null)
-			headerView = vi.inflate(R.layout.portfolio_list_header, null);
-		if (footerView == null)
-			footerView = vi.inflate(R.layout.portfolio_list_footer, null);
+		headerView = vi.inflate(R.layout.portfolio_list_header, null);
+		footerView = vi.inflate(R.layout.portfolio_list_footer, null);
+		
 		this.getListView().addHeaderView(headerView, null, false);
 		this.getListView().addFooterView(footerView, null, false);
 
@@ -109,7 +108,14 @@ public class PortfolioActivity extends ListActivity implements OnSharedPreferenc
 	@Override
 	protected void onResume() {
 		super.onResume();
+		this.dataManager.addUpdateChangedListener(listener);
 		this.fill();
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		this.dataManager.removeUpdateChangedListener(listener);
 	}
 
 	/* (non-Javadoc)
@@ -123,18 +129,6 @@ public class PortfolioActivity extends ListActivity implements OnSharedPreferenc
 
 	private void fill() {
 		if (adapter == null) {
-			// this should be done only one-time
-			if (progressBar != null)
-				progressBar.setVisibility(View.VISIBLE);
-			this.dataManager.addUpdateChangedListener(new IUpdateDateChangedListener() {
-				
-				@Override
-				public void OnLastUpdateDateChanged(long updateTime) {
-					Log.d(Utils.LOG_TAG, "refreshing portfolio list adapter because of datamanager update");
-					//fill(true);
-					isDirty = true;
-				}
-			});
 			adapter = new PortfolioListAdapter(this, R.layout.stock_list, this.dataManager, this.portfolio);
 			adapter.addPortfolioListener(new IListAdapterListener<PortfolioSum>() {
 
@@ -167,6 +161,15 @@ public class PortfolioActivity extends ListActivity implements OnSharedPreferenc
 		}
 	}
 	
+	private IUpdateDateChangedListener listener = new IUpdateDateChangedListener() {
+		
+		@Override
+		public void OnLastUpdateDateChanged(long updateTime) {
+			Log.d(Utils.LOG_TAG, "refreshing portfolio list adapter because of datamanager update");
+			isDirty = true;
+		}
+	};
+	
 	/* stock
 	 * context menu for stock item
 	 * @see android.app.Activity#onContextItemSelected(android.view.MenuItem)
@@ -190,11 +193,10 @@ public class PortfolioActivity extends ListActivity implements OnSharedPreferenc
 			case R.id.portfolio_item_context_menu_remove:
 			try {
 				// TODO own thread
-				this.portfolio.removeFromPortfolio(portfolioItem.getId());
+				portfolio.removeFromPortfolio(portfolioItem.getId());
 				this.adapter.refresh();
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Log.e(Utils.LOG_TAG, "failed to remove portfolio item", e);
 			}
 				return true;
 			case R.id.portfolio_item_context_menu_detail:
@@ -232,7 +234,7 @@ public class PortfolioActivity extends ListActivity implements OnSharedPreferenc
 	    // Handle item selection
 	    switch (item.getItemId()) {
 	    case R.id.menu_portfolio_refresh:
-	    	PortfolioActivity.adapter.refresh();
+	    	this.adapter.refresh();
 	        return true;
 	    case R.id.menu_portfolio_settings:
 	    	NavUtils.goToSettings(this);

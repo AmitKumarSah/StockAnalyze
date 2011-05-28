@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -56,8 +57,8 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 	private DataManager dataManager;
 	private LayoutInflater vi; 
 	
-	private Map<PortfolioItem, DayData> datas;
-	private Map<String, StockItem> stockItems;
+	private static Map<PortfolioItem, DayData> datas;
+	private static Map<String, StockItem> stockItems;
 	
 	//private List<PortfolioItem> portfolioItems;
 	private Portfolio portfolio = null;
@@ -73,15 +74,22 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 		this.portfolio = portfolio;
 		this.dataManager = dataManager;
 
-		this.datas = new HashMap<PortfolioItem, DayData>();
-		this.stockItems = new HashMap<String, StockItem>();
 		this.setNotifyOnChange(false);
 		this.portfolioListeners = new ArrayList<IListAdapterListener<PortfolioSum>>();
 		
         this.vi = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.prefs = getContext().getSharedPreferences(Utils.PREF_NAME, 0);
-        
-        this.refresh();
+		
+		if (datas == null || stockItems == null ) {
+			datas = new HashMap<PortfolioItem, DayData>();
+			stockItems = new HashMap<String, StockItem>();
+
+	        this.refresh();
+		} else {
+			for (Entry<PortfolioItem, DayData> entry : datas.entrySet()) {
+				this.add(entry.getKey());
+			}
+		}
 	}
 	
 	public void refresh() {

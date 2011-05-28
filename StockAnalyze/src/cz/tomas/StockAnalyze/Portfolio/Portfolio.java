@@ -43,7 +43,7 @@ public class Portfolio {
 	
 	public Portfolio(Context context) {
 		this.sqlHelper = new PortfolioSqlHelper(context);
-		this.dataManager = DataManager.getInstance(context);
+		//this.dataManager = DataManager.getInstance(context);
 	}
 	
 	/*
