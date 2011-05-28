@@ -67,10 +67,10 @@ public class StockListActivity extends ListActivity {
 	static final int UPDATE_DLG_FAIL = 1;
 	static final int NO_INTERNET = 2;
 	
-	DataManager dataManager;
-	ProgressBar progressBar;
+	private DataManager dataManager;
+	private ProgressBar progressBar;
 	
-	static StockListAdapter adapter;
+	private StockListAdapter adapter;
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -114,28 +114,27 @@ public class StockListActivity extends ListActivity {
 		
 	}
 
+	/**
+	 * fill list view
+	 */
 	private void fill() {
-		if (adapter == null) {
-			if (progressBar != null)
-				progressBar.setVisibility(View.VISIBLE);
-			// this should be done only one-time
-			adapter = new StockListAdapter(this, R.layout.stock_list, this.dataManager, "*");	//TODO replace string with filter
-			adapter.addListAdapterListener( new IListAdapterListener<Object>() {
-				
-				@Override
-				public void onListLoading() {
-					if (progressBar != null)
-						progressBar.setVisibility(View.VISIBLE);
-				}
-				
-				@Override
-				public void onListLoaded(Object data) {
-					if (progressBar != null)
-						progressBar.setVisibility(View.GONE);
-				}
-			});
-			adapter.showIcons(false);
-		}
+		adapter = new StockListAdapter(this, R.layout.stock_list, this.dataManager, "*");	//TODO replace string with filter
+		adapter.addListAdapterListener( new IListAdapterListener<Object>() {
+			
+			@Override
+			public void onListLoading() {
+				if (progressBar != null)
+					progressBar.setVisibility(View.VISIBLE);
+			}
+			
+			@Override
+			public void onListLoaded(Object data) {
+				if (progressBar != null)
+					progressBar.setVisibility(View.GONE);
+			}
+		});
+		adapter.showIcons(false);
+		adapter.attachToData();
 
 		// in case of resuming when adapter is initialized but not set to list view
 		if (this.getListAdapter() == null) 
@@ -152,6 +151,12 @@ public class StockListActivity extends ListActivity {
 		}
 
 		this.fill();
+	}
+	
+	@Override
+	public void onPause() {
+		this.adapter.detachFromData();
+		super.onPause();
 	}
 
 	@Override
@@ -189,7 +194,7 @@ public class StockListActivity extends ListActivity {
 				// TODO mark as favourite
 				return true;
 			case R.id.stock_item_view:
-				NavUtils.goToStockDetail(stockItem, StockListActivity.adapter.getDayData(stockItem), this);
+				NavUtils.goToStockDetail(stockItem, adapter.getDayData(stockItem), this);
 				return true;
 			default:
 				return super.onContextItemSelected(item);

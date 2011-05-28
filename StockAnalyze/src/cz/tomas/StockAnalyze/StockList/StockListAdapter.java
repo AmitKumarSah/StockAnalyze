@@ -62,57 +62,75 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 	private DataManager dataManager;
 	private LayoutInflater vi; 
 	
-	private Map<StockItem, DayData> dataSet;
+	private static Map<StockItem, DayData> dataSet;
 	private StockComparator comparator;
 	private List<IListAdapterListener<Object>> listeners;
 	
 	private Boolean showIcons = true;
 	
-	/*
+	/**
 	 * semaphore to synchronize updates to list in StockListTask
 	 */
 	private Semaphore semaphore;
 	
-	public StockListAdapter(final Context context, int textViewResourceId, final DataManager dataManager, final String filter) {
+	public StockListAdapter(Activity context, int textViewResourceId, final DataManager dataManager, final String filter) {
 		super(context, textViewResourceId);
 		this.dataManager = dataManager;
 		this.comparator = new StockComparator(StockCompareTypes.Name, dataManager);
 		this.listeners = new ArrayList<IListAdapterListener<Object>>();
 
-		this.dataSet = new HashMap<StockItem, DayData>();
         this.vi = (LayoutInflater)	this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.setNotifyOnChange(false);
         this.semaphore = new Semaphore(1);
-
-        //OfflineStockListTask offlineTask = new OfflineStockListTask();
-        //offlineTask.execute((Void[])null);
-        this.refreshList();
-
-        this.dataManager.addStockDataListener(new IStockDataListener() {
-			
-			@Override
-			public void OnStockDataUpdated(IStockDataProvider sender, Map<StockItem, DayData> dataMap) {
-				if (sender.getAdviser().isRealTime())
-					((Activity) context).runOnUiThread(new Runnable() {
-						
-						@Override
-						public void run() {
-							refreshList();
-						}
-					});
+       
+        // if we have already initialized dataset, just add stock items to adapter,
+        // otherwise start task to get it
+        if (dataSet == null) {
+        	dataSet = new HashMap<StockItem, DayData>();
+        	this.refreshList();
+        } else {
+        	for (Entry<StockItem, DayData> entry : dataSet.entrySet()) {
+				add(entry.getKey());
 			}
-			
-			@Override
-			public void OnStockDataUpdateBegin(IStockDataProvider sender) {
-				
-			}
-
-			@Override
-			public void OnStockDataNoUpdate(IStockDataProvider sender) {
-
-			}
-		});
+        }
 	}
+
+	/**
+	 * register in DataManager for data updates
+	 * 
+	 * @param context
+	 */
+	public void attachToData() {
+		this.dataManager.addStockDataListener(dataListener);
+	}
+	
+	/**
+	 * unregister in DataManager
+	 */
+	public void detachFromData() {
+		this.dataManager.removeStockDataListener(dataListener);
+	}
+	
+	private IStockDataListener dataListener = new IStockDataListener() {
+		
+		@Override
+		public void OnStockDataUpdated(IStockDataProvider sender, Map<StockItem, DayData> dataMap) {
+			if (sender.getAdviser().isRealTime())
+				((Activity) getContext()).runOnUiThread(new Runnable() {
+					
+					@Override
+					public void run() {
+						refreshList();
+					}
+				});
+		}
+		@Override
+		public void OnStockDataUpdateBegin(IStockDataProvider sender) {	
+		}
+		@Override
+		public void OnStockDataNoUpdate(IStockDataProvider sender) {
+		}
+	};
 	
 	private void refreshList() {
 		StockListTask task = new StockListTask();
@@ -224,7 +242,7 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
         return enabled;
     }
     
-    private Boolean isDivider(int position) {
+    private boolean isDivider(int position) {
     	StockItem item = this.getItem(position);
     	if (item != null)
     		return item.getName().startsWith("-");
