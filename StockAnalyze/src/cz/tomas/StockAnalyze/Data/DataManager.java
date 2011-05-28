@@ -299,12 +299,39 @@ public class DataManager implements IStockDataListener {
 		}
 	}
 
+	/**
+	 * register new listener for last update date changed, 
+	 * don't forget to call removeUpdateListener when yuo don't need it anymore
+	 * @param listener
+	 */
 	public void addUpdateChangedListener(IUpdateDateChangedListener listener) {
 		this.updateDateChangedListeners.add(listener);
 	}
 	
+	/**
+	 * remove update date changed listener
+	 * @param listener
+	 * @return true if listener was removed
+	 */
+	public boolean removeUpdateChangedListener(IUpdateDateChangedListener listener) {
+		return this.updateDateChangedListeners.remove(listener);
+	}
+	
+	/**
+	 * add listener to stock data updates
+	 * @param listener
+	 */
 	public void addStockDataListener(IStockDataListener listener) {
 		this.updateStockDataListeners.add(listener);
+	}
+	
+	/**
+	 * remove stock data listener
+	 * @param listener
+	 * @return true if listener was removed
+	 */
+	public boolean removeStockDataListener(IStockDataListener listener) {
+		return this.updateStockDataListeners.remove(listener);
 	}
 
 	/**

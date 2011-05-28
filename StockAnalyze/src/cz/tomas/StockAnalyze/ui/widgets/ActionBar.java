@@ -107,9 +107,22 @@ public class ActionBar extends RelativeLayout {
         if (a != null && titleView != null && a.hasValue(0)) {
         	String title = a.getString(0);
         	titleView.setText(title);
-        } else
-        	Log.d(Utils.LOG_TAG, "Can not set action bar title");
+        }
 	}
+
+	/* (non-Javadoc)
+	 * @see android.view.View#onDetachedFromWindow()
+	 */
+	@Override
+	protected void onDetachedFromWindow() {
+		//Log.d(Utils.LOG_TAG, "cleaning action bar");
+		if (this.subtitleView != null)
+			this.subtitleView.setText(null);
+		this.dataManager.removeUpdateChangedListener(this.listener);
+		super.onDetachedFromWindow();
+	}
+
+
 
 	/**
 	 * get last update time and register listener for updates 
@@ -125,29 +138,33 @@ public class ActionBar extends RelativeLayout {
 				lastUpdateText = FormattingUtils.formatStockDate(cal);
 				subtitleView.setText(lastUpdateText);
 			}
-		} else {
-			Log.w(Utils.LOG_TAG, "Failed to set initial update value");
 		}
 		this.dataManager = DataManager.getInstance(context);
-		this.dataManager.addUpdateChangedListener(new IUpdateDateChangedListener() {
-			
-			@Override
-			public void OnLastUpdateDateChanged(long updateTime) {
-				if (subtitleView != null) {
-					final Calendar cal = Calendar.getInstance(Utils.PRAGUE_TIME_ZONE);
-					cal.setTimeInMillis(updateTime);
-					// this event may come from different thread
-					if (context instanceof Activity)
-						((Activity) context).runOnUiThread(new Runnable() {
-							@Override
-							public void run() {
-								lastUpdateText = FormattingUtils.formatStockDate(cal);
-								subtitleView.setText(lastUpdateText);
-							}
-						});
-				} else 
-					Log.d(Utils.LOG_TAG, "Can not set action bar sub title");
-			}
-		});
+		this.dataManager.addUpdateChangedListener(listener);
 	}
+	
+	/**
+	 * listener to update date change :
+	 * will write new update time in listener 
+	 */
+	IUpdateDateChangedListener listener = new IUpdateDateChangedListener() {
+		
+		@Override
+		public void OnLastUpdateDateChanged(long updateTime) {
+			if (subtitleView != null) {
+				final Calendar cal = Calendar.getInstance(Utils.PRAGUE_TIME_ZONE);
+				cal.setTimeInMillis(updateTime);
+				// this event may come from different thread
+				if (getContext() instanceof Activity)
+					((Activity) getContext()).runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							lastUpdateText = FormattingUtils.formatStockDate(cal);
+							subtitleView.setText(lastUpdateText);
+						}
+					});
+			} else 
+				Log.d(Utils.LOG_TAG, "Can not set action bar sub title");
+		}
+	};
 }
