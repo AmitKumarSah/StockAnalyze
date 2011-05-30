@@ -22,7 +22,7 @@ package cz.tomas.StockAnalyze.Portfolio;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -48,9 +48,10 @@ import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 
 /**
- * @author tomas
- *
  * adapter for portfolio items list in PortfolioActivity
+ * 
+ * @author tomas
+ * 
  */
 public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 	
@@ -60,11 +61,10 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 	private static Map<PortfolioItem, DayData> datas;
 	private static Map<String, StockItem> stockItems;
 	
-	//private List<PortfolioItem> portfolioItems;
 	private Portfolio portfolio = null;
 	private List<IListAdapterListener<PortfolioSum>> portfolioListeners;
 	
-	private PortfolioSum portfolioSummary;
+	private static PortfolioSum portfolioSummary;
 	boolean includeFee = true;
 	private SharedPreferences prefs;
 	
@@ -81,8 +81,8 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
         this.prefs = getContext().getSharedPreferences(Utils.PREF_NAME, 0);
 		
 		if (datas == null || stockItems == null ) {
-			datas = new HashMap<PortfolioItem, DayData>();
-			stockItems = new HashMap<String, StockItem>();
+			datas = new LinkedHashMap<PortfolioItem, DayData>();
+			stockItems = new LinkedHashMap<String, StockItem>();
 
 	        this.refresh();
 		} else {
@@ -92,6 +92,18 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 		}
 	}
 	
+	
+	/**
+	 * get portfolio summary calculated while last portfolio creation/refresh
+	 * @return the portfolioSummary
+	 */
+	public PortfolioSum getPortfolioSummary() {
+		return portfolioSummary;
+	}
+	
+	/**
+	 * reload all data asynchronously
+	 */
 	public void refresh() {
 		this.includeFee = prefs.getBoolean(Utils.PREF_PORTFOLIO_INCLUDE_FEE, true);
 		PortfolioListTask task = new PortfolioListTask();
@@ -102,10 +114,8 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 		this.portfolioListeners.add(listener);
 	}
 
-	/* 
-	 * get view: header for first position
-	 * footer for last position
-	 * portfolio items for rest
+	/** 
+	 * get view for portfolio item
 	 * @see android.widget.ArrayAdapter#getView(int, android.view.View, android.view.ViewGroup)
 	 */
 	@Override
@@ -139,10 +149,10 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 			return;
 		}
         
-		StockItem stock = this.stockItems.get(portfolioItem.getStockId());
+		StockItem stock = stockItems.get(portfolioItem.getStockId());
     	DayData data = null;
     	try {
-			data = this.datas.get(portfolioItem);
+			data = datas.get(portfolioItem);
 		} catch (Exception e) {
 			if (e.getMessage() != null) {
 				Log.d("StockListAdapter", e.getMessage());
@@ -204,7 +214,7 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
         }
 	}
 	
-	/*
+	/**
 	 * task that loads portfolio items from db 
 	 * and add the to the collection of PortfolioListAdapter
 	 */
@@ -301,7 +311,7 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 			notifyDataSetChanged();
 		}
 	}
-	
+
 	private static class PortfolioItemViewHolder {
 		TextView txtTicker;
         TextView txtName;

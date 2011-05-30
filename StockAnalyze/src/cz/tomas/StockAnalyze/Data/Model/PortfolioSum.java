@@ -20,13 +20,15 @@
  */
 package cz.tomas.StockAnalyze.Data.Model;
 
+import java.io.Serializable;
+
 /**
  * portfolio summarization info
  * 
  * @author tomas
  *
  */
-public class PortfolioSum {
+public class PortfolioSum implements Serializable{
 	
 	private float totalValue;
 	private float totalAbsChange;

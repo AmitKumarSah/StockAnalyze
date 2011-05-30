@@ -52,7 +52,8 @@
 			android:layout_below="@+id/actionTitle" />
        <ProgressBar android:id="@+id/progressBar" 
        		style="@style/actionBar.ImageButton"
-		    android:indeterminate="true"
+		    android:indeterminateOnly="true"
+		    android:padding="4dp"
 	        android:layout_toLeftOf="@+id/actionSearchButton"
 		 	android:visibility="gone"
 	        android:layout_alignParentTop="true"

@@ -26,6 +26,7 @@ import android.app.ListActivity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -59,9 +60,11 @@ import cz.tomas.StockAnalyze.utils.Utils;
  */
 public class PortfolioActivity extends ListActivity implements OnSharedPreferenceChangeListener {
 
+	//private static final String INSTANCE_PORTFOLIO_SUMMARY = "portfolioSummary";
+	
 	private DataManager dataManager;
 	private Portfolio portfolio;
-	//private static PortfolioSum portfolioSummary;
+	private PortfolioSum portfolioSummary;
 	private PortfolioListAdapter adapter;
 	private View headerView;
 	private View footerView;
@@ -98,11 +101,23 @@ public class PortfolioActivity extends ListActivity implements OnSharedPreferenc
 		
 		this.prefs = this.getSharedPreferences(Utils.PREF_NAME, 0);
 		this.prefs.registerOnSharedPreferenceChangeListener(this);
-		this.fill();
+		//this.fill();
 	}
 
-	/* 
-	 * check if it is necessary to updated the adapter and listview
+//	/* (non-Javadoc)
+//	 * @see android.app.Activity#onSaveInstanceState(android.os.Bundle)
+//	 */
+//	@Override
+//	protected void onSaveInstanceState(Bundle outState) {
+//		if (this.portfolioSummary != null)
+//			outState.putSerializable(INSTANCE_PORTFOLIO_SUMMARY, this.portfolioSummary);
+//		super.onSaveInstanceState(outState);
+//	}
+
+
+
+	/** 
+	 * check if it is necessary to update the adapter and listview
 	 * @see android.app.Activity#onResume()
 	 */
 	@Override
@@ -149,12 +164,15 @@ public class PortfolioActivity extends ListActivity implements OnSharedPreferenc
 			});
 		}
 
+		// restore portfolio summary, it should available in case of resuming
+		if (adapter.getPortfolioSummary() != null) {
+			this.fillPortfolioSummary(adapter.getPortfolioSummary());
+		}
+		
 		if (isDirty) {
 			adapter.refresh();
 			isDirty = false;
 		}
-//		if (portfolioSummary != null)
-//			this.fillPortfolioSummary(portfolioSummary);
 		// in case of resuming when adapter is initialized but not set to list view
 		if (this.getListAdapter() == null) {
 			this.setListAdapter(adapter);
@@ -177,8 +195,8 @@ public class PortfolioActivity extends ListActivity implements OnSharedPreferenc
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		
-		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-		PortfolioItem portfolioItem = (PortfolioItem) this.getListAdapter().getItem(info.position - 1);
+		final AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+		final PortfolioItem portfolioItem = (PortfolioItem) this.getListAdapter().getItem(info.position - 1);
 		
 		if (portfolioItem == null)
 			return true;
@@ -192,9 +210,30 @@ public class PortfolioActivity extends ListActivity implements OnSharedPreferenc
 			return true;
 			case R.id.portfolio_item_context_menu_remove:
 			try {
-				// TODO own thread
-				portfolio.removeFromPortfolio(portfolioItem.getId());
-				this.adapter.refresh();
+				if (progressBar != null)
+					progressBar.setVisibility(View.VISIBLE);
+				AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
+
+					@Override
+					protected Void doInBackground(Void... params) {
+
+						try {
+							portfolio.removeFromPortfolio(portfolioItem.getId());
+						} catch (Exception e) {
+							Log.e(Utils.LOG_TAG, "failed to remove portfolio item", e);
+						}
+						return null;
+					}
+					@Override
+					protected void onPostExecute(Void result) {
+						adapter.refresh();
+						if (progressBar != null)
+							progressBar.setVisibility(View.GONE);
+						super.onPostExecute(result);
+					}
+					
+				};
+				task.execute((Void[])null);
 			} catch (Exception e) {
 				Log.e(Utils.LOG_TAG, "failed to remove portfolio item", e);
 			}
@@ -206,7 +245,7 @@ public class PortfolioActivity extends ListActivity implements OnSharedPreferenc
 		}
 	}
 
-	/* 
+	/** 
 	 * context menu for all stock items in list view
 	 * @see android.app.Activity#onCreateContextMenu(android.view.ContextMenu, android.view.View, android.view.ContextMenu.ContextMenuInfo)
 	 */
@@ -218,7 +257,7 @@ public class PortfolioActivity extends ListActivity implements OnSharedPreferenc
 		inflater.inflate(R.menu.portfolio_item_context_menu, menu);
 	}
 
-	/*
+	/**
 	 * create activity's main menu
 	 * @see android.app.Activity#onCreateOptionsMenu(android.view.Menu)
 	 */
@@ -244,7 +283,12 @@ public class PortfolioActivity extends ListActivity implements OnSharedPreferenc
 	    }
 	}
 
+	/**
+	 * fill text views with portfolio summary
+	 * @param portfolioSummary
+	 */
 	private void fillPortfolioSummary(PortfolioSum portfolioSummary) {
+		this.portfolioSummary = portfolioSummary;
 		TextView txtValueSum = (TextView)findViewById(R.id.txtPortfolioFooterSumValue);
 		TextView txtChangeSum = (TextView)findViewById(R.id.txtPortfolioFooterSumChange);
 		
