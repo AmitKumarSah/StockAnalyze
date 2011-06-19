@@ -68,6 +68,7 @@ public class UpdateScheduler {
 	public static final String DAY_UPDATE_ACTION = "cz.tomas.StockAnalyze.DAY_DATA_UPDATE";
 	
 	private final int DAY_UPDATE_HOUR = 18;
+	private final int INTRADAY_START_UPDATE_HOUR = 9;
 	
 	private boolean isSchedulerRunning = false;
 	
@@ -163,17 +164,24 @@ public class UpdateScheduler {
 	}
 	
 	/**
-	 * schedule next update via Alarm and according to preferences
+	 * schedule next update via Alarm and according to preferences.
+	 * Scheduling also takes takes cares about days without trading (e.g. weekends)
 	 */
 	private void scheduleAlarm(boolean intraDay) {
 		// get a Calendar object with current time
 		Calendar cal = Calendar.getInstance(Utils.PRAGUE_TIME_ZONE);
+		int today = cal.get(Calendar.DAY_OF_YEAR);
+		cal = Utils.getNextValidDate(cal);
 		PendingIntent pendingIntent = null;
 		if (intraDay) {
-			int seconds = this.preferences.getInt(
-					Utils.PREF_INTERVAL_BACKGROUND_UPDATE,
-					DEFAULT_REFRESH_INTERVAL) * 60;
-			cal.add(Calendar.SECOND, seconds);
+			// if calendar was moved forward, set update time to morning 
+			if (today == cal.get(Calendar.DAY_OF_YEAR)) {
+				int seconds = this.preferences.getInt(Utils.PREF_INTERVAL_BACKGROUND_UPDATE, DEFAULT_REFRESH_INTERVAL) * 60;
+				cal.add(Calendar.SECOND, seconds);
+			} else {
+				cal.set(Calendar.HOUR_OF_DAY, INTRADAY_START_UPDATE_HOUR);
+				cal.set(Calendar.MINUTE, 5);
+			}
 			pendingIntent = intraUpdateIntent;
 		} else {
 			// set it for tomorrow evening
@@ -184,8 +192,7 @@ public class UpdateScheduler {
 			pendingIntent = dayUpdateIntent;
 		}
 		Log.d(Utils.LOG_TAG, "SHEDULING " + (intraDay? "intraday" : "day") + " ALARM TO " + FormattingUtils.formatStockDate(cal));
-			
-
+		
 		// Get the AlarmManager service
 		AlarmManager am = (AlarmManager) this.context.getSystemService(Context.ALARM_SERVICE);
 		am.set(AlarmManager.RTC, cal.getTimeInMillis(), pendingIntent);

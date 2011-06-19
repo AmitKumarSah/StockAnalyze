@@ -103,9 +103,25 @@ public class Utils {
 		// there are no data for weekends
 		if (dayInWeek > 5) {
 			dayInMonth -= (dayInWeek - 5);	// go back by one or two days
-
+			//calendar.roll(Calendar.DAY_OF_WEEK, -(dayInWeek - 5));
 			calendar.set(Calendar.DAY_OF_MONTH, dayInMonth);
 		}
+		
+		return calendar;
+	}
+	
+	/**
+	 * get next nearest day that is trading day, or given day, if it is the trading day
+	 * 
+	 * @param calendar
+	 * @return
+	 */
+	public static Calendar getNextValidDate(Calendar calendar) {
+		int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+		if (dayOfWeek == Calendar.SUNDAY)
+			calendar.roll(Calendar.DAY_OF_YEAR, true);
+		else if (dayOfWeek == Calendar.SATURDAY)
+			calendar.roll(Calendar.DAY_OF_YEAR, 2);
 		
 		return calendar;
 	}

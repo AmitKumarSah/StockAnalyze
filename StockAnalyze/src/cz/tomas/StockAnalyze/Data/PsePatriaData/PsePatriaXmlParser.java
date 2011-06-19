@@ -38,6 +38,8 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import android.util.Log;
+
 import cz.tomas.StockAnalyze.utils.DownloadService;
 import cz.tomas.StockAnalyze.utils.Utils;
 
@@ -110,7 +112,7 @@ public final class PsePatriaXmlParser {
 			String message = "Failed to process patria data xml! ";
 			if (e.getMessage() != null)
 				message += e.getMessage();
-			e.printStackTrace();
+			Log.e(Utils.LOG_TAG, message, e);
 			throw new Exception(message, e);
 		} finally {
 			if (stream != null)

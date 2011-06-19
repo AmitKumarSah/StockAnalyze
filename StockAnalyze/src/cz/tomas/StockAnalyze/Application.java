@@ -17,6 +17,20 @@
  ******************************************************************************/
 package cz.tomas.StockAnalyze;
 
+import org.apache.http.HttpVersion;
+import org.apache.http.conn.params.ConnManagerParams;
+import org.apache.http.conn.scheme.PlainSocketFactory;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
+import org.apache.http.params.HttpProtocolParams;
+import org.apache.http.protocol.HTTP;
+
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.activity.ChartActivity;
 import cz.tomas.StockAnalyze.utils.Utils;
@@ -26,9 +40,11 @@ public class Application extends android.app.Application {
 
 	public static final String UPDATE_SCHEDULER_SERVICE = "cz.tomas.StockAnalyze.Data.UpdateScheduler"; 
 	public static final String DATA_MANAGER_SERVICE = "cz.tomas.StockAnalyze.Data.DataManager";
+	public static final String HTTP_CLIENT_SERVICE = "httpClient";
 	
 	private UpdateScheduler scheduler;
 	private DataManager dataManager;
+	private static DefaultHttpClient sDefaultHttpClient;
 	
 	/* (non-Javadoc)
 	 * @see android.app.Application#onCreate()
@@ -63,6 +79,25 @@ public class Application extends android.app.Application {
 			return this.scheduler;
 		else if (name.equals(DATA_MANAGER_SERVICE))
 			return this.dataManager;
+		else if (HTTP_CLIENT_SERVICE.equals(name)) {
+			if (sDefaultHttpClient == null) {
+				HttpParams params = new BasicHttpParams();
+				HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
+				HttpProtocolParams.setContentCharset(params, HTTP.UTF_8);
+				HttpProtocolParams.setUseExpectContinue(params, false);
+				ConnManagerParams.setMaxTotalConnections(params, 10);
+				HttpConnectionParams.setConnectionTimeout(params, 10 * 1000);
+				HttpConnectionParams.setSoTimeout(params, 10 * 1000);
+
+				SchemeRegistry schReg = new SchemeRegistry();
+				schReg.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+				schReg.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
+				
+				sDefaultHttpClient = new DefaultHttpClient(new ThreadSafeClientConnManager(params, schReg), params);
+			}
+			
+			return sDefaultHttpClient;
+		}
 		return super.getSystemService(name);
 	}
 
