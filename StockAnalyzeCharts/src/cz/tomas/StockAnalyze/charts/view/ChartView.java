@@ -27,12 +27,15 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
-import android.graphics.PathEffect;
+import android.graphics.Paint.Style;
+import android.graphics.Path;
 import android.graphics.Paint.Align;
+import android.graphics.PathEffect;
 import android.graphics.Typeface;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.util.TimingLogger;
 import android.view.View;
 
 /**
@@ -53,9 +56,12 @@ public class ChartView<T> extends View {
 	private Paint paint;
 	private Paint chartPaint;
 	private Paint gridPaint;
+	private Paint gridFillPaint;
 	private TextPaint textPaint;
 	
 	private boolean disableRedraw = false;
+	
+	private TimingLogger logger; 
 	
 	/**
 	 *  Convert the dps to pixels
@@ -91,6 +97,17 @@ public class ChartView<T> extends View {
 		this.textPaint = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
 		this.textPaint.setTypeface(Typeface.DEFAULT_BOLD);
 		this.textPaint.setTextAlign(Align.LEFT);
+		
+		this.gridFillPaint = new Paint();
+		this.gridFillPaint.setStyle(Style.FILL_AND_STROKE);
+		this.gridFillPaint.setColor(Color.argb(100, 64, 200, 64));
+		PathEffect effect = new PathEffect();
+		this.gridFillPaint.setPathEffect(effect);
+		
+//		boolean i = Log.isLoggable(Utils.LOG_TAG, Log.VERBOSE);
+//		String result = System.setProperty("log.tag.StockAnalyze", "VERBOSE");
+//		i = Log.isLoggable(Utils.LOG_TAG, Log.VERBOSE);
+		logger = new TimingLogger(Utils.LOG_TAG, "chart drawing");
 	}
 
 
@@ -110,6 +127,8 @@ public class ChartView<T> extends View {
 		//super.onDraw(canvas);
 		if (this.disableRedraw)
 			return;
+		this.logger.reset();
+		this.logger.addSplit("draw axis");
 		int offsetBelowXAxis, offsetNextToYAxis;									// offset caused by text descriptions of axis
 
 		offsetBelowXAxis = calculateXAxisDescriptionOffset();
@@ -125,10 +144,14 @@ public class ChartView<T> extends View {
 		
 		drawAxis(canvas, originX, originY, chartWidth);
 		drawAxisDescription(canvas, offsetBelowXAxis, offsetNextToYAxis, chartWidth, chartHeight);
+		this.logger.addSplit("draw grid");
 		drawGrid(canvas,originX, originY, chartWidth, chartHeight);
 		
+		this.logger.addSplit("draw DATA");
 		if (this.data != null && this.data.length > 1)
 			this.drawData(canvas, originX, originY, chartWidth, chartHeight);
+		
+		this.logger.dumpToLog();
 	}
 
 	private int calculateYAxisDescriptionOffset() {
@@ -172,27 +195,42 @@ public class ChartView<T> extends View {
 		float step = chartWidth / (float) (this.data.length -1);
 		if (this.preparedData == null || this.preparedData.length == 0)
 			this.preparedData = prepareDataValues(chartHeight);
+		// 
 		// for one line we need 4 points
 		// startX, startY, stopX, stopY
+		//
 		float[] points = new float[this.data.length * 4];
-		Log.d(Utils.LOG_TAG, "drawing chart data " + this.data.length + " with step " + step + " in chart width " + chartWidth + 
-				" from origin " + originX + "; " + originY);
+//		Log.d(Utils.LOG_TAG, "drawing chart data " + this.data.length + " with step " + step + " in chart width " + chartWidth + 
+//				" from origin " + originX + "; " + originY);
 		// first value
 		points[0] = originX;
 		points[1] = chartHeight - preparedData[0] + OFFSET;
 		points[2] = originX;
 		points[3] = chartHeight - preparedData[0] + OFFSET;
+
+		Path path = new Path();
+		path.moveTo(originX, originX);
+		path.lineTo(points[0], points[1]);
 		
 		for (int i = 1; i < data.length; i++) {
 			float value = preparedData[i];
+
+			float x = step * (float)i + originX;
+			float y = chartHeight - value + OFFSET;
 			
 			points[i * 4] = points[i * 4 - 2];
 			points[i * 4 + 1] = points[i * 4 - 1];
-			points[i * 4 + 2] = step * (float)i + originX;
-			points[i * 4 + 3] = chartHeight - value + OFFSET;
 			
+			points[i * 4 + 2] = x;
+			points[i * 4 + 3] = y;
+		
+			path.lineTo(x, y);
 		}
-		canvas.drawLines(points, chartPaint);
+		path.lineTo(originX + chartWidth, originY);
+		path.lineTo(originX, originY);
+		
+		canvas.drawLines(points, this.chartPaint);
+		canvas.drawPath(path, this.gridFillPaint);
 
 		//Log.d(Utils.LOG_TAG, "finished drawing chart, last point: " + (step*(data.length -1)));
 	}
@@ -203,14 +241,14 @@ public class ChartView<T> extends View {
 //		float heightMaxScale = chartHeight / max;
 //		float heightMinScale = chartHeight / min;
 		//float minMax = heightMaxScale / heightMinScale;
-		StringBuilder builder = new StringBuilder("Prepared Data: ");
+		//StringBuilder builder = new StringBuilder("Prepared Data: ");
 		
 		for (int i = 0; i < this.data.length; i++) {
 			//preparedData[i] = this.data[i] * heightMaxScale * minMax;
 			preparedData[i] = this.scaleRange(this.data[i], this.min, this.max, 0, chartHeight);
-			builder.append(String.valueOf(preparedData[i]) + "; ");
+			//builder.append(String.valueOf(preparedData[i]) + "; ");
 		}
-		Log.d(Utils.LOG_TAG, builder.toString());
+		//Log.d(Utils.LOG_TAG, builder.toString());
 		return preparedData;
 	}
 	float scaleRange(float in, float oldMin, float oldMax, float newMin, float newMax)
