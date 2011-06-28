@@ -24,6 +24,7 @@ import java.text.NumberFormat;
 
 import android.app.ListActivity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.AsyncTask;
@@ -36,7 +37,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import cz.tomas.StockAnalyze.R;
@@ -95,6 +98,15 @@ public class PortfolioActivity extends ListActivity implements OnSharedPreferenc
 		
 		this.getListView().addHeaderView(headerView, null, false);
 		this.getListView().addFooterView(footerView, null, false);
+		this.getListView().setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> adapterView, View view, int position,
+					long id) {
+				final PortfolioItem portfolioItem = (PortfolioItem) getListAdapter().getItem(position -1);
+				goToPortfolioDetail(portfolioItem);
+			}
+		});
 
 		if (portfolio == null)
 			portfolio = new Portfolio(this);
@@ -239,10 +251,19 @@ public class PortfolioActivity extends ListActivity implements OnSharedPreferenc
 			}
 				return true;
 			case R.id.portfolio_item_context_menu_detail:
+			goToPortfolioDetail(portfolioItem);
 				return true;
 			default:
 				return super.onContextItemSelected(item);
 		}
+	}
+
+	/**
+	 * 
+	 */
+	private void goToPortfolioDetail(PortfolioItem item) {
+		Intent intent = new Intent(this, PortfolioDetailActivity.class);
+		this.startActivity(intent);
 	}
 
 	/** 

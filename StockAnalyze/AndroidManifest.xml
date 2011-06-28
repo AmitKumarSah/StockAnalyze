@@ -46,6 +46,7 @@
 			android:theme="@style/themeLightTitle"
 			android:label="@string/activityPortfolio" />
 		<activity android:name=".activity.PortfolioActivity"></activity>
+		<activity android:name=".activity.PortfolioDetailActivity"></activity>
 		<activity android:name=".Portfolio.AddPortfolioItemActivity"
 			android:theme="@style/themeLightTitle"
 			android:label="@string/AddPortfolioItemActivityTitle"></activity>
