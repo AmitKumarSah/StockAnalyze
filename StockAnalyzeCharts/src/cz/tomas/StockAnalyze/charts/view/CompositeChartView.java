@@ -61,7 +61,7 @@ public class CompositeChartView extends RelativeLayout {
 			Log.w(Utils.LOG_TAG, "chart in CompositeChartView is null! Can't set data.");
 	}
 	
-	public <T> void setAxisX(T[] xAxisPoints, IChartTextFormatter<T> formatter) {
+	public <T extends Number> void setAxisX(T[] xAxisPoints, IChartTextFormatter<T> formatter) {
 		if (this.chart != null)
 			this.chart.setAxisX(xAxisPoints, formatter);
 		else

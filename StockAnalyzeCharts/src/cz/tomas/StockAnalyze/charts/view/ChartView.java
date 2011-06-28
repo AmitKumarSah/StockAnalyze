@@ -30,7 +30,6 @@ import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.Path;
 import android.graphics.Paint.Align;
-import android.graphics.PathEffect;
 import android.graphics.Typeface;
 import android.text.TextPaint;
 import android.util.AttributeSet;
@@ -42,13 +41,13 @@ import android.view.View;
  * @author tomas
  *
  */
-public class ChartView<T> extends View {
+public class ChartView extends View {
 
 	private float[] data;
 	private float[] preparedData;
 	
-	private T[] axisX;
-	private IChartTextFormatter<T> formatter;
+	private Number[] axisX;
+	private IChartTextFormatter<Number> formatter;
 	
 	private float max;
 	private float min;
@@ -101,8 +100,6 @@ public class ChartView<T> extends View {
 		this.gridFillPaint = new Paint();
 		this.gridFillPaint.setStyle(Style.FILL_AND_STROKE);
 		this.gridFillPaint.setColor(Color.argb(100, 64, 200, 64));
-		PathEffect effect = new PathEffect();
-		this.gridFillPaint.setPathEffect(effect);
 		
 //		boolean i = Log.isLoggable(Utils.LOG_TAG, Log.VERBOSE);
 //		String result = System.setProperty("log.tag.StockAnalyze", "VERBOSE");
@@ -302,7 +299,7 @@ public class ChartView<T> extends View {
 		}
 	}
 	
-	private String getFormattedValue(T val) {
+	private <T extends Number> String getFormattedValue(T val) {
 		if (this.formatter != null)
 			return this.formatter.formatAxeText(val);
 		else
@@ -323,8 +320,9 @@ public class ChartView<T> extends View {
 		Log.d(Utils.LOG_TAG, builder.toString());
 	}
 	
-	public void setAxisX(T[] xAxisPoints, IChartTextFormatter<T> formatter) {
+	@SuppressWarnings("unchecked")
+	public <T extends Number>void setAxisX(T[] xAxisPoints, IChartTextFormatter<T> formatter) {
 		this.axisX = xAxisPoints;
-		this.formatter = formatter;
+		this.formatter = (IChartTextFormatter<Number>) formatter;
 	}
 }

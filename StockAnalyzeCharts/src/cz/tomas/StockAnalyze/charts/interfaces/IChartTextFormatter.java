@@ -17,6 +17,6 @@
  ******************************************************************************/
 package cz.tomas.StockAnalyze.charts.interfaces;
 
-public interface IChartTextFormatter<T> {
+public interface IChartTextFormatter<T extends Number> {
 	String formatAxeText(T val);
 }
