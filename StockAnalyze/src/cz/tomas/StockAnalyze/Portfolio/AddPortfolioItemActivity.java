@@ -21,6 +21,7 @@
 package cz.tomas.StockAnalyze.Portfolio;
 
 import java.sql.SQLException;
+import java.text.NumberFormat;
 import java.util.Calendar;
 
 import android.app.Activity;
@@ -53,9 +54,16 @@ import cz.tomas.StockAnalyze.utils.Utils;
  */
 public final class AddPortfolioItemActivity extends Activity {
 
+	private static final String INSTANCE_COUNT = "count";
+	private static final String INSTANCE_PRICE = "price";
+	
+	private static final int MINIMAL_FEE = 40;
 	private DataManager dataManager = null;
 	private TextView totalValueView = null;
-	private TextView feeView = null;
+	
+	private TextView feeView;
+	private TextView priceView;
+	private TextView countView; 
 	
 	/* (non-Javadoc)
 	 * @see android.app.Activity#onCreate(android.os.Bundle)
@@ -80,8 +88,8 @@ public final class AddPortfolioItemActivity extends Activity {
 			this.feeView = (TextView) this.findViewById(R.id.portfolioAddDealFee);
 			final TextView tickerView = (TextView) this.findViewById(R.id.portfolioAddTicker);
 			final TextView marketView = (TextView) this.findViewById(R.id.portfolioAddMarket);
-			final TextView priceView = (TextView) this.findViewById(R.id.portfolioAddPrice);
-			final TextView countView = (TextView) this.findViewById(R.id.portfolioAddCount);
+			priceView = (TextView) this.findViewById(R.id.portfolioAddPrice);
+			countView = (TextView) this.findViewById(R.id.portfolioAddCount);
 			final Button addButton = (Button) this.findViewById(R.id.portfolioAddButton);
 			final Spinner dealSpinner = (Spinner) this.findViewById(R.id.portfolioAddSpinnerDeal);
 			if (priceView != null && data != null)
@@ -95,39 +103,10 @@ public final class AddPortfolioItemActivity extends Activity {
 			}
 
 			if (countView != null) {
-				countView.setOnFocusChangeListener(new OnFocusChangeListener() {
-					
-					@Override
-					public void onFocusChange(View v, boolean hasFocus) {
-						if (! hasFocus)
-							try {
-								final float price = Float.parseFloat(priceView.getText().toString());
-								final int count = Integer.parseInt(countView.getText().toString());
-
-								updateFeeAndValue(price, count);
-							} catch (Exception e) {
-								Log.e(Utils.LOG_TAG, "failed to set fee text", e);
-							}
-					}
-				});
+				countView.setOnFocusChangeListener(this.focusListener);
 			}
 			if (priceView != null) {
-				priceView.setOnFocusChangeListener(new OnFocusChangeListener() {
-					
-					@Override
-					public void onFocusChange(View v, boolean hasFocus) {
-						if (! hasFocus) {
-							try {
-								final int count = Integer.parseInt(countView.getText().toString());
-								final float price = Float.parseFloat(priceView.getText().toString());
-								
-								updateFeeAndValue(price, count);
-							} catch (Exception e) {
-								Log.e(Utils.LOG_TAG, "failed to set total value", e);
-							}
-						}
-					}
-				});
+				priceView.setOnFocusChangeListener(this.focusListener);
 			}
 			if (addButton != null)
 				addButton.setOnClickListener(new OnClickListener() {
@@ -189,14 +168,56 @@ public final class AddPortfolioItemActivity extends Activity {
 					}
 				});
 			try {
-				final float price = Float.parseFloat(priceView.getText().toString());
-				final int count = Integer.parseInt(countView.getText().toString());
+				String priceText = null;
+				String countText = null;
+				if (savedInstanceState != null) {
+					priceText = savedInstanceState.getString(INSTANCE_PRICE);
+					countText = savedInstanceState.getString(INSTANCE_COUNT);
+					
+					priceView.setText(priceText);
+					countView.setText(countText);
+				} else {
+					priceText = priceView.getText().toString();
+					countText = countView.getText().toString();
+				}
+				final float price = Float.parseFloat(priceText);
+				final int count = Integer.parseInt(countText);
 				updateFeeAndValue(price, count);
 			} catch (Exception e) {
 				Log.e(Utils.LOG_TAG, "failed to fill values", e);
 			}
 		}
 	}
+	
+	private OnFocusChangeListener focusListener = new OnFocusChangeListener() {
+		
+		@Override
+		public void onFocusChange(View v, boolean hasFocus) {
+			if (! hasFocus) {
+				try {
+					final int count = Integer.parseInt(countView.getText().toString());
+					final float price = Float.parseFloat(priceView.getText().toString());
+					
+					updateFeeAndValue(price, count);
+				} catch (Exception e) {
+					Log.e(Utils.LOG_TAG, "failed to set total value", e);
+				}
+			}
+		}
+	};
+	
+	/**
+	 * save stock price and count
+	 * @see android.app.Activity#onSaveInstanceState(android.os.Bundle)
+	 */
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		outState.putString(INSTANCE_PRICE, priceView.getText().toString());
+		outState.putString(INSTANCE_COUNT, countView.getText().toString());
+		super.onSaveInstanceState(outState);
+	}
+
+
 
 	protected void updateFeeAndValue(final float price, final int count) {
 		final float fee = calculateFee(price, count);
@@ -204,8 +225,9 @@ public final class AddPortfolioItemActivity extends Activity {
 		final float value = price * count + fee;
 		
 		try {
-			this.feeView.setText(String.valueOf(fee));
-			this.totalValueView.setText(FormattingUtils.getPriceFormatCzk().format(value));
+			NumberFormat priceFormatCzk = FormattingUtils.getPriceFormatCzk();
+			this.feeView.setText(priceFormatCzk.format(fee));
+			this.totalValueView.setText(priceFormatCzk.format(value));
 		} catch (Exception e) {
 			Log.e(Utils.LOG_TAG, "failed to set total fee and value", e);
 		}
@@ -239,8 +261,8 @@ public final class AddPortfolioItemActivity extends Activity {
 	 * @return
 	 */
 	private float calculateFee(final float price, final int count) {
-		float fee = (price * count) * 0.001f;
-		return fee;
+		float fee = (price * count) * 0.004f;
+		return Math.max(MINIMAL_FEE, fee);
 	}
 
 	/**

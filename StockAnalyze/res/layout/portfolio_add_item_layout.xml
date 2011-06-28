@@ -48,7 +48,7 @@
 		</TextView>
 		<EditText android:id="@+id/portfolioAddTicker"
 			style="@style/tableItem" 
-			android:text="@+id/EditText01">
+			android:text="@+id/EditText01" android:editable="false">
 		</EditText>
 	</TableRow>
 	<TableRow>
@@ -80,7 +80,7 @@
 		</TextView>
 		<EditText android:id="@+id/portfolioAddPrice" 
 			style="@style/tableItem"
-			android:inputType="number">
+			android:inputType="numberDecimal">
 		</EditText>
 	</TableRow>
 	<TableRow>
