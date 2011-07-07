@@ -248,6 +248,7 @@ public class ChartView extends View {
 		//Log.d(Utils.LOG_TAG, builder.toString());
 		return preparedData;
 	}
+	
 	float scaleRange(float in, float oldMin, float oldMax, float newMin, float newMax)
 	{
 		return ( ((newMax - newMin) * (in - oldMin)) / (oldMax - oldMin) ) + newMin;

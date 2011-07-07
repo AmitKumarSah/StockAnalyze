@@ -25,14 +25,10 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
-
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
-import cz.tomas.StockAnalyze.R.id;
-import cz.tomas.StockAnalyze.R.string;
 import cz.tomas.StockAnalyze.charts.interfaces.IChartTextFormatter;
 import cz.tomas.StockAnalyze.charts.view.CompositeChartView;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
@@ -244,10 +240,10 @@ public abstract class ChartActivity extends Activity {
 				//Map<Date, Float> chartData = new LinkedHashMap<Date, Float>();
 				float max = 0;
 				float min = Float.MAX_VALUE;
-				
+
+				float price = -1f;
+				long time = -1l;
 				for (int i = 0; i < dataSet.length; i++) {
-					float price = -1f;
-					Long time = -1l;
 					if (dataSet[i] != null) {
 						price = dataSet[i].getPrice();
 						time = dataSet[i].getDate().getTime();

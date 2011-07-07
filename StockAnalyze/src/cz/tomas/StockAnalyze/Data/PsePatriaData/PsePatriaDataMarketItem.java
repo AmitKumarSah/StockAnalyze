@@ -20,7 +20,6 @@
  */
 package cz.tomas.StockAnalyze.Data.PsePatriaData;
 
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,7 +65,7 @@ public class PsePatriaDataMarketItem {
 		this.patriaTickerMapping.put("FORTUNA", "BAAFOREG");
 		this.patriaTickerMapping.put("KB", "BAAKOMB");
 		this.patriaTickerMapping.put("KITD", "BAAKITDG");
-		this.patriaTickerMapping.put("NWR", "BAANWR");
+		this.patriaTickerMapping.put("NWR", "BAANWRUK");
 		this.patriaTickerMapping.put("ORCO", "BAAORCO");
 		this.patriaTickerMapping.put("PEGAS", "BAAPEGAS");
 		this.patriaTickerMapping.put("PM", "BAATABAK");

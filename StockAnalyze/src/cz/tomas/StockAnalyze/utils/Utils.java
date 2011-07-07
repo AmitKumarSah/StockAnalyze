@@ -43,6 +43,7 @@ public class Utils {
 	public static final String PREF_INTERVAL_BACKGROUND_UPDATE = "prefIntervalBackgroundUpdate";
 	public static final String PREF_PORTFOLIO_INCLUDE_FEE = "prefPortfolioIncludeFee";
 	public static final String PREF_LAST_UPDATE_TIME = "prefLastUpdateTime";
+	public static final String PREF_LAST_STOCK_LIST_UPDATE_TIME = "cz.tomas.StockAnalyze:StockListUpdateTime";
 	
 	public static final TimeZone PRAGUE_TIME_ZONE = TimeZone.getTimeZone("Europe/Prague");
 	

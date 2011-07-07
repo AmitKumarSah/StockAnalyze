@@ -20,7 +20,6 @@
  */
 package cz.tomas.StockAnalyze.StockList;
 
-import java.io.IOException;
 import java.util.Comparator;
 
 import cz.tomas.StockAnalyze.Data.DataManager;

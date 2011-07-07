@@ -23,23 +23,15 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
-import cz.tomas.StockAnalyze.Data.DataProviderAdviser;
-import cz.tomas.StockAnalyze.Data.IStockDataProvider;
-import cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener;
-import cz.tomas.StockAnalyze.Data.Model.DayData;
+import android.util.Log;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.utils.DownloadService;
-
-import android.util.Log;
 
 /**
  * Data provider for Prague Stock Exchange

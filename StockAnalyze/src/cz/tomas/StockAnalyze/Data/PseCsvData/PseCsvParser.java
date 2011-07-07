@@ -39,7 +39,7 @@ public class PseCsvParser {
 	private final static HashSet<String> KNOWN_STOCKS = new HashSet<String>( 
 		Arrays.asList(new String[] {
 			"BAAAAA", "BAACETV", "BAACEZ", "BAAECM", "BAAERBAG", "BAAFOREG", "BAAKITDG","BAAKOMB", 
-			"BAANWR", "BAAORCO", "BAAPEGAS", "BAATABAK", "BAATELEC", "BAAUNIPE", "BAAVIG", "PX"
+			"BAANWRUK", "BAAORCO", "BAAPEGAS", "BAATABAK", "BAATELEC", "BAAUNIPE", "BAAVIG", "PX"
 		})
 	);
 

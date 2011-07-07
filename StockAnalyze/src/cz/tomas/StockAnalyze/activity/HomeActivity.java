@@ -38,12 +38,8 @@ import android.widget.ImageView;
 import android.widget.Toast;
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.DataManager;
-import cz.tomas.StockAnalyze.Data.MarketFactory;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
-import cz.tomas.StockAnalyze.R.id;
-import cz.tomas.StockAnalyze.R.layout;
-import cz.tomas.StockAnalyze.R.menu;
 import cz.tomas.StockAnalyze.charts.view.ChartView;
 import cz.tomas.StockAnalyze.ui.widgets.HomeBlockView;
 import cz.tomas.StockAnalyze.utils.DownloadService;
@@ -81,13 +77,13 @@ public class HomeActivity extends Activity implements OnClickListener, OnKeyList
 //		task.execute(null);
 		//Debug.startMethodTracing();
 		// if chart bitmap is null or too old, refresh it
-		if (this.chartBitmap == null || (System.currentTimeMillis() - this.chartLastUpdate) > this.chartUpdateInterval) {
+		if (chartBitmap == null || (System.currentTimeMillis() - chartLastUpdate) > chartUpdateInterval) {
 			ChartUpdateTask task = new ChartUpdateTask();
 			task.execute((Void[])null);
 		}
 		else {
 			ImageView chart = (ImageView) findViewById(R.id.home_chart);
-			chart.setImageBitmap(this.chartBitmap);
+			chart.setImageBitmap(chartBitmap);
 		}
 	}
 	
@@ -164,7 +160,8 @@ public class HomeActivity extends Activity implements OnClickListener, OnKeyList
 		protected Void doInBackground(Void... params) {
 			DayData[] dataSet = null;
 			try {
-				StockItem item = dataManager.getStockItems(MarketFactory.getCzechMarket()).get("PX");
+				//StockItem item = dataManager.getStockItems(MarketFactory.getCzechMarket()).get("PX");
+				StockItem item = dataManager.getStockItem("PX");
 				dataSet = dataManager.getDayDataSet(item, Calendar.getInstance(), 10, false);
 			} catch (Exception e) {
 				Log.e(Utils.LOG_TAG, "failed to get data", e);

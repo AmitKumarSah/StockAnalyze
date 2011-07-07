@@ -23,18 +23,14 @@ package cz.tomas.StockAnalyze.Data.PsePatriaData;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Currency;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.Map.Entry;
 
 import android.os.Handler;
 import android.util.Log;
-
 import cz.tomas.StockAnalyze.Data.DataProviderAdviser;
 import cz.tomas.StockAnalyze.Data.IStockDataProvider;
 import cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener;
@@ -121,7 +117,7 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 		this.tickerIsinMapping.put("BAAFOREG", "NL0009604859");
 		this.tickerIsinMapping.put("BAAKOMB", "CZ0008019106");
 		this.tickerIsinMapping.put("BAAKITDG", "US4824702009");
-		this.tickerIsinMapping.put("BAANWR", "NL0006282204");
+		this.tickerIsinMapping.put("BAANWRUK", "GB00B42CTW68");
 		this.tickerIsinMapping.put("BAAORCO", "LU0122624777");
 		this.tickerIsinMapping.put("BAAPEGAS", "LU0275164910");
 		this.tickerIsinMapping.put("BAATABAK", "CS0008418869");

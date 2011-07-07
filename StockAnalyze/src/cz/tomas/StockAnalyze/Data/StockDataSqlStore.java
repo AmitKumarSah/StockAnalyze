@@ -401,12 +401,13 @@ public class StockDataSqlStore extends DataSqlHelper {
 				String[] whereArgs = new String[stockItems.size()];
 				int index = 0;
 				for (Entry<String, StockItem> stockItem : stockItems.entrySet()) {
-					if (selectionBuilder.length() > 1)
-						selectionBuilder.append(" or ");
-					selectionBuilder.append("stock_id=?");
-					
-					whereArgs[index] = stockItem.getKey();
-					index++;
+					if (stockItem.getKey() != null) {
+						if (selectionBuilder.length() > 1)
+							selectionBuilder.append(" or ");
+						selectionBuilder.append("stock_id=?");
+						whereArgs[index] = stockItem.getKey();
+						index++;
+					}
 				}
 				
 				// order by given column, if any, and by date, so we get last results 

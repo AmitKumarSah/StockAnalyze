@@ -23,12 +23,15 @@ package cz.tomas.StockAnalyze.Data;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 import cz.tomas.StockAnalyze.NotificationSupervisor;
 import cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener;
@@ -39,6 +42,8 @@ import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.Data.PseCsvData.PseCsvDataAdapter;
 import cz.tomas.StockAnalyze.Data.PsePatriaData.PsePatriaDataAdapter;
 import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetDataException;
+import cz.tomas.StockAnalyze.StockList.StockComparator;
+import cz.tomas.StockAnalyze.StockList.StockCompareTypes;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 
@@ -50,7 +55,9 @@ import cz.tomas.StockAnalyze.utils.Utils;
  *
  */
 public class DataManager implements IStockDataListener {
-		
+
+	private int STOCK_LIST_EXPIRATION_DAYS = 30;
+	
 	private StockDataSqlStore sqlStore;
 		
 	private List<IUpdateDateChangedListener> updateDateChangedListeners;
@@ -129,10 +136,17 @@ public class DataManager implements IStockDataListener {
 	 * @returns map stock id vs StockOte,
 	 */
 	public synchronized Map<String, StockItem> getStockItems(Market market) {
+		SharedPreferences prefs = this.context.getSharedPreferences(Utils.PREF_NAME, 0);
+		
+		long lastUpdate = prefs.getLong(Utils.PREF_LAST_STOCK_LIST_UPDATE_TIME, 0);
+		long diff = System.currentTimeMillis() - lastUpdate; 
+		long dayDiff = diff / (1000 * 60 * 60 * 24); 
 		Map<String, StockItem> items = this.sqlStore.getStockItems(market, "ticker");
-		if (items == null || items.size() == 0) {
+		if (items == null || items.size() == 0 || dayDiff > STOCK_LIST_EXPIRATION_DAYS) {
 			items = downloadStockItems(market);
+			prefs.edit().putLong(Utils.PREF_LAST_STOCK_LIST_UPDATE_TIME, System.currentTimeMillis()).commit();
 		}
+			
 		return items;
 	}
 
@@ -146,14 +160,22 @@ public class DataManager implements IStockDataListener {
 		Map<String, StockItem> items;
 		IStockDataProvider provider = DataProviderFactory.getDataProvider(market);
 		List<StockItem> stocks = provider.getAvailableStockList();
+		Collections.sort(stocks, new StockComparator(StockCompareTypes.Ticker, null));
 		
-		items = new HashMap<String, StockItem>();
+		items = new LinkedHashMap<String, StockItem>();
 		for (StockItem stockItem : stocks) {
 			items.put(stockItem.getId(), stockItem);
 		}
 		return items;
 	}
 	
+	/**
+	 * get single stock item based on its id
+	 * 
+	 * @param id
+	 * @return
+	 * @throws NullPointerException
+	 */
 	public StockItem getStockItem(String id) throws NullPointerException {
 		return getStockItem(id, null);
 	}
