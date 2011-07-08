@@ -102,6 +102,19 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 	}
 	
 	/**
+	 * get DayData associated woth portfolio item.
+	 * DayData are available after the adapter is initialized with data.
+	 * @param item
+	 * @return
+	 */
+	public DayData getData(PortfolioItem item) {
+		if (datas == null)
+			return null;
+		
+		return datas.get(item);
+	}
+	
+	/**
 	 * reload all data asynchronously
 	 */
 	public void refresh() {

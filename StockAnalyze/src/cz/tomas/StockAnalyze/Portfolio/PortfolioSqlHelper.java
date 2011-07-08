@@ -30,7 +30,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import cz.tomas.StockAnalyze.Data.DataSqlHelper;
 import cz.tomas.StockAnalyze.Data.Model.PortfolioItem;
-import cz.tomas.StockAnalyze.Data.Model.PortfolioSum;
 
 /*
  * 
@@ -60,6 +59,11 @@ public class PortfolioSqlHelper extends DataSqlHelper {
 		super(context);
 	}
 
+	/**
+	 * add new portfolio item to database
+	 * @param item
+	 * @throws SQLException
+	 */
 	void addPortfolioItem(PortfolioItem item) throws SQLException {
 		SQLiteDatabase db = null;
 		try {
@@ -80,13 +84,14 @@ public class PortfolioSqlHelper extends DataSqlHelper {
 			if (result == -1)
 				throw new SQLException("Failed to insert portfolio item!");
 		} finally {
-			if (db != null)
-				db.close();
+			this.close();
 		}
 	}
 
-	/*
-	 * get portfolio items grouped by stock id - sums up positions
+	/**
+	 * get portfolio items grouped by stock id - sums up positions.
+	 * So for each stock, that is in portfolio, it will find all portfolio items
+	 * and group them to get total count and average buy/sell prices
 	 */
 	public List<PortfolioItem> getGroupedPortfolioItems() {
 		List<PortfolioItem> items = new ArrayList<PortfolioItem>();
@@ -118,13 +123,13 @@ public class PortfolioSqlHelper extends DataSqlHelper {
 		} finally {
 			if (c != null)
 				c.close();
-			if (db != null)
-				db.close();
+			this.close();
 		}
 		return items;
 	}
 	
-	/*
+	
+	/**
 	 * get all portfolio items in database
 	 */
 	public List<PortfolioItem> getPortfolioItems() {
@@ -157,18 +162,59 @@ public class PortfolioSqlHelper extends DataSqlHelper {
 		} finally {
 			if (c != null)
 				c.close();
-			if (db != null)
-				db.close();
+			this.close();
+		}
+		return items;
+		
+	}
+	
+	/**
+	 * get all portfolio items in database for one stock
+	 */
+	public List<PortfolioItem> getPortfolioItems(String stockId) {
+		List<PortfolioItem> items = new ArrayList<PortfolioItem>();
+		Cursor c = null;
+		SQLiteDatabase db = null;
+		try {
+			db = this.getWritableDatabase();
+			
+			c = db.query(PORTFOLIO_TABLE_NAME, new String [] {"count", "buy_price", "sell_price",
+					"buy_date", "sell_date", "name", "buy_fee", "sell_fee", "market_id", "id" },
+					"stock_id=?", new String[] { stockId }, null, null, null);
+			if (c.moveToFirst())
+				do {
+					int count = c.getInt(0);
+					float buyPrice = c.getFloat(1);
+					float sellPrice = c.getFloat(2);
+					long buyDate = c.getLong(3);
+					long sellDate = c.getLong(4);
+					String name = c.getString(5);
+					float buyFee = c.getFloat(6);
+					float sellFee = c.getFloat(7);
+					String marketId = c.getString(8);
+					int id = c.getInt(9);
+					PortfolioItem item = new PortfolioItem(id, stockId, name, count, buyPrice, sellPrice, 
+							buyDate, sellDate, buyFee, sellFee, marketId);
+					items.add(item);
+				} while(c.moveToNext());
+		} finally {
+			if (c != null)
+				c.close();
+			this.close();
 		}
 		return items;
 		
 	}
 
+
 	public void removeItem(int id) {
 		SQLiteDatabase db = null;
-		db = this.getWritableDatabase();
-		db.delete(PORTFOLIO_TABLE_NAME, "id=?", new String[] { String.valueOf(id) });
-		db.close();
+		try {
+			db = this.getWritableDatabase();
+			db.delete(PORTFOLIO_TABLE_NAME, "id=?", new String[] { String.valueOf(id) });
+		} finally {
+			this.close();
+		}
 	}
 
 }

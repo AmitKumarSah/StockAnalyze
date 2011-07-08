@@ -22,7 +22,9 @@ package cz.tomas.StockAnalyze.activity;
 
 import java.text.NumberFormat;
 
+import android.app.Dialog;
 import android.app.ListActivity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -46,6 +48,7 @@ import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.Interfaces.IListAdapterListener;
 import cz.tomas.StockAnalyze.Data.Interfaces.IUpdateDateChangedListener;
+import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.PortfolioItem;
 import cz.tomas.StockAnalyze.Data.Model.PortfolioSum;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
@@ -63,11 +66,10 @@ import cz.tomas.StockAnalyze.utils.Utils;
  */
 public class PortfolioActivity extends ListActivity implements OnSharedPreferenceChangeListener {
 
-	//private static final String INSTANCE_PORTFOLIO_SUMMARY = "portfolioSummary";
+	private static final int DIALOG_PROGRESS = 1000;
 	
 	private DataManager dataManager;
 	private Portfolio portfolio;
-	private PortfolioSum portfolioSummary;
 	private PortfolioListAdapter adapter;
 	private View headerView;
 	private View footerView;
@@ -115,18 +117,6 @@ public class PortfolioActivity extends ListActivity implements OnSharedPreferenc
 		this.prefs.registerOnSharedPreferenceChangeListener(this);
 		//this.fill();
 	}
-
-//	/* (non-Javadoc)
-//	 * @see android.app.Activity#onSaveInstanceState(android.os.Bundle)
-//	 */
-//	@Override
-//	protected void onSaveInstanceState(Bundle outState) {
-//		if (this.portfolioSummary != null)
-//			outState.putSerializable(INSTANCE_PORTFOLIO_SUMMARY, this.portfolioSummary);
-//		super.onSaveInstanceState(outState);
-//	}
-
-
 
 	/** 
 	 * check if it is necessary to update the adapter and listview
@@ -200,6 +190,25 @@ public class PortfolioActivity extends ListActivity implements OnSharedPreferenc
 		}
 	};
 	
+	
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onCreateDialog(int)
+	 */
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		switch (id) {
+		case DIALOG_PROGRESS:
+			CharSequence text = getText(R.string.working);
+			ProgressDialog dialog = new ProgressDialog(this);
+			dialog.setMessage(text);
+			return dialog;
+
+		default:
+			break;
+		}
+		return super.onCreateDialog(id);
+	}
+
 	/* stock
 	 * context menu for stock item
 	 * @see android.app.Activity#onContextItemSelected(android.view.MenuItem)
@@ -216,43 +225,64 @@ public class PortfolioActivity extends ListActivity implements OnSharedPreferenc
 		switch (item.getItemId()) {
 			case R.id.portfolio_item_context_menu_stock_detail:
 			if (portfolioItem.getStockId() != null) {
-				StockItem stock = this.dataManager.getStockItem(portfolioItem.getStockId());
-				NavUtils.goToStockDetail(stock, this);
+				new Thread(new Runnable() {
+					public void run() {
+						StockItem stock = PortfolioActivity.this.dataManager.getStockItem(portfolioItem.getStockId());
+						NavUtils.goToStockDetail(stock, PortfolioActivity.this);
+					}
+				}).start();
 			}
 			return true;
 			case R.id.portfolio_item_context_menu_remove:
-			try {
-				if (progressBar != null)
-					progressBar.setVisibility(View.VISIBLE);
-				AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
-
-					@Override
-					protected Void doInBackground(Void... params) {
-
-						try {
-							portfolio.removeFromPortfolio(portfolioItem.getId());
-						} catch (Exception e) {
-							Log.e(Utils.LOG_TAG, "failed to remove portfolio item", e);
+				try {
+					if (progressBar != null)
+						progressBar.setVisibility(View.VISIBLE);
+					AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
+	
+						@Override
+						protected void onPreExecute() {
+							showDialog(DIALOG_PROGRESS);
+							super.onPreExecute();
 						}
-						return null;
-					}
-					@Override
-					protected void onPostExecute(Void result) {
-						adapter.refresh();
-						if (progressBar != null)
-							progressBar.setVisibility(View.GONE);
-						super.onPostExecute(result);
-					}
-					
-				};
-				task.execute((Void[])null);
-			} catch (Exception e) {
-				Log.e(Utils.LOG_TAG, "failed to remove portfolio item", e);
-			}
+						@Override
+						protected Void doInBackground(Void... params) {
+	
+							try {
+								StockItem stock = PortfolioActivity.this.dataManager.getStockItem(portfolioItem.getStockId());
+								portfolio.removeFromPortfolio(stock.getId());
+							} catch (Exception e) {
+								Log.e(Utils.LOG_TAG, "failed to remove portfolio item", e);
+							}
+							return null;
+						}
+						@Override
+						protected void onPostExecute(Void result) {
+							adapter.refresh();
+							if (progressBar != null)
+								progressBar.setVisibility(View.GONE);
+							dismissDialog(DIALOG_PROGRESS);
+							super.onPostExecute(result);
+						}
+						
+					};
+					task.execute((Void[])null);
+				} catch (Exception e) {
+					Log.e(Utils.LOG_TAG, "failed to remove portfolio item", e);
+				}
 				return true;
 			case R.id.portfolio_item_context_menu_detail:
-			goToPortfolioDetail(portfolioItem);
+				goToPortfolioDetail(portfolioItem);
 				return true;
+			case R.id.portfolio_item_context_menu_add_more:
+				new Thread(new Runnable() {
+					public void run() {
+						StockItem stock = PortfolioActivity.this.dataManager.getStockItem(portfolioItem.getStockId());
+						DayData data = PortfolioActivity.this.adapter.getData(portfolioItem);
+						
+						NavUtils.goToAddToPortfolio(PortfolioActivity.this, stock,data);
+					}
+				}).start();
+			return true;
 			default:
 				return super.onContextItemSelected(item);
 		}
@@ -309,7 +339,6 @@ public class PortfolioActivity extends ListActivity implements OnSharedPreferenc
 	 * @param portfolioSummary
 	 */
 	private void fillPortfolioSummary(PortfolioSum portfolioSummary) {
-		this.portfolioSummary = portfolioSummary;
 		TextView txtValueSum = (TextView)findViewById(R.id.txtPortfolioFooterSumValue);
 		TextView txtChangeSum = (TextView)findViewById(R.id.txtPortfolioFooterSumChange);
 		

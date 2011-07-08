@@ -21,15 +21,14 @@
 package cz.tomas.StockAnalyze.Portfolio;
 
 import java.sql.SQLException;
-import java.text.NumberFormat;
 import java.util.List;
 
-import cz.tomas.StockAnalyze.Data.DataManager;
-import cz.tomas.StockAnalyze.Data.Model.DayData;
-import cz.tomas.StockAnalyze.Data.Model.PortfolioItem;
-import cz.tomas.StockAnalyze.Data.Model.PortfolioSum;
-import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.text.TextUtils;
+import android.util.Log;
+import cz.tomas.StockAnalyze.Data.Model.PortfolioItem;
+import cz.tomas.StockAnalyze.utils.Utils;
 
 /**
  * class wrapping all portfolio functionality
@@ -39,11 +38,9 @@ import android.content.Context;
 public class Portfolio {
 
 	private PortfolioSqlHelper sqlHelper;
-	private DataManager dataManager;
 	
 	public Portfolio(Context context) {
 		this.sqlHelper = new PortfolioSqlHelper(context);
-		//this.dataManager = DataManager.getInstance(context);
 	}
 	
 	/*
@@ -61,18 +58,40 @@ public class Portfolio {
 		return this.sqlHelper.getPortfolioItems();
 	}
 	
-	/*
-	 * remove all records records from given stock from db
-	 */
-	public void removeFromPortfolio(String stockId) {
-		throw new RuntimeException("this is not yet implemented");
-	}
-	
-	/*
-	 * remove one record from db
+	/**
+	 * remove one portfolio record from db
 	 */
 	public void removeFromPortfolio(int id) {
-		if (id != -1)
+		if (id != -1) {
 			this.sqlHelper.removeItem(id);
+		}
+	}
+	
+	/**
+	 * remove all portfolio items for given stock
+	 */
+	public void removeFromPortfolio(String stockId) {
+		if (! TextUtils.isEmpty(stockId)) {
+			
+			try {
+				this.sqlHelper.acquireDb(this);
+				SQLiteDatabase db = this.sqlHelper.getWritableDatabase();
+				db.beginTransaction();
+				List<PortfolioItem> items = this.sqlHelper.getPortfolioItems(stockId);
+				for (PortfolioItem portfolioItem : items) {
+					this.sqlHelper.removeItem(portfolioItem.getId());
+				}
+				db.setTransactionSuccessful();
+			} finally {
+				try {
+					this.sqlHelper.getWritableDatabase().endTransaction();
+				} catch (Exception e) {
+					Log.e(Utils.LOG_TAG, "faild to end transaction", e);
+				}
+				this.sqlHelper.releaseDb(true, this);
+			}
+		} else {
+			throw new NullPointerException("stock id cannot be null, can't remove associated portfolio items");
+		}
 	}
 }

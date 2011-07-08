@@ -137,4 +137,6 @@ Nikdy se nepouštějte do obchodů, jejichž podstatě plně nerozumíte. Obchod
     <string name="chart3months">3 Months</string>
     <string name="chart6months">6 Months</string>
     <string name="chartYear">Year</string>
+    
+    <string name="working">Processing...</string>
 </resources>

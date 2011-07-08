@@ -22,10 +22,10 @@ import android.content.Context;
 import android.content.Intent;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
+import cz.tomas.StockAnalyze.Portfolio.AddPortfolioItemActivity;
 import cz.tomas.StockAnalyze.activity.AboutActivity;
 import cz.tomas.StockAnalyze.activity.AppPreferencesActivity;
 import cz.tomas.StockAnalyze.activity.StockDetailActivity;
-import cz.tomas.StockAnalyze.activity.StockListActivity;
 
 /*
  * util taks to do common navigation tasks
@@ -56,6 +56,20 @@ public class NavUtils {
 		intent.putExtra("market_id", stock.getMarket());
 		intent.setClass(context, StockDetailActivity.class);
 		context.startActivity(intent);
+	}
+	
+
+	/**
+	 * @param stockItem
+	 * @param data
+	 */
+	public static void goToAddToPortfolio(Activity activity, StockItem stockItem, DayData data) {
+		Intent intent = new Intent();
+		intent.putExtra(Utils.EXTRA_STOCK_ITEM, stockItem);
+		intent.putExtra(Utils.EXTRA_DAY_DATA, data);
+		intent.putExtra(Utils.EXTRA_MARKET_ID, stockItem.getMarket());
+		intent.setClass(activity, AddPortfolioItemActivity.class);
+		activity.startActivity(intent);
 	}
 	
 	public static void goToSettings(Activity activity) {

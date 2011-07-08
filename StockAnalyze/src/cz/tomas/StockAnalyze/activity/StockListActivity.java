@@ -25,10 +25,7 @@ import android.app.Dialog;
 import android.app.ListActivity;
 import android.app.TabActivity;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Debug;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -48,11 +45,6 @@ import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.Interfaces.IListAdapterListener;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
-import cz.tomas.StockAnalyze.Portfolio.AddPortfolioItemActivity;
-import cz.tomas.StockAnalyze.R.id;
-import cz.tomas.StockAnalyze.R.layout;
-import cz.tomas.StockAnalyze.R.menu;
-import cz.tomas.StockAnalyze.R.string;
 import cz.tomas.StockAnalyze.StockList.StockListAdapter;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
@@ -183,12 +175,7 @@ public class StockListActivity extends ListActivity {
 		
 		switch (item.getItemId()) {
 			case R.id.stock_item_add_to_portfolio:
-				Intent intent = new Intent();
-				intent.putExtra(Utils.EXTRA_STOCK_ITEM, stockItem);
-				intent.putExtra(Utils.EXTRA_DAY_DATA, data);
-				intent.putExtra(Utils.EXTRA_MARKET_ID, stockItem.getMarket());
-				intent.setClass(this, AddPortfolioItemActivity.class);
-				startActivity(intent);
+				NavUtils.goToAddToPortfolio(this, stockItem, data);
 				return true;
 			case R.id.stock_item_favourite:
 				// TODO mark as favourite
