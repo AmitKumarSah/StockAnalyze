@@ -17,8 +17,6 @@
  ******************************************************************************/
 package cz.tomas.StockAnalyze.Data;
 
-import java.util.concurrent.Semaphore;
-
 import cz.tomas.StockAnalyze.utils.Utils;
 import android.content.Context;
 import android.database.SQLException;
@@ -26,12 +24,13 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-/*
- * initialize database - create all tables we need 
+/**
+ * Provides access to acquirable database.
+ * Also initialize database - create all basic tables we need. 
  */
 public class DataSqlHelper extends SQLiteOpenHelper {
 		
-		private final String DATABASE_NAME = "cz.tomas.StockAnalyze.Data";
+		//private final String DATABASE_NAME = "cz.tomas.StockAnalyze.Data";
 		
 		private final static int DATABASE_VERSION_NUMBER = 10;
 		
@@ -102,15 +101,14 @@ public class DataSqlHelper extends SQLiteOpenHelper {
 		protected static final String FEEDS_TABLE_NAME = "feeds";
 		protected static final String ARTICLES_TABLE_NAME = "articles";
 		
-		/*
+		/**
 		 * db counter - only for diag purpose so far
 		 */
 		private static int acquireCounter = 0;
-		//private static Semaphore semaphore;
 		
 		private static boolean keepDbOpen = false;
 		
-		/*
+		/**
 		 * determine deffered db close
 		 * if set to true, in next successful db release, 
 		 * will close the db
@@ -119,7 +117,6 @@ public class DataSqlHelper extends SQLiteOpenHelper {
 		
 		public DataSqlHelper(Context context) {
 			super(context, DATABASE_FILE_NAME, null, DATABASE_VERSION_NUMBER);
-			//this.semaphore = new Semaphore(1);
 		}
 
 		@Override
@@ -158,6 +155,9 @@ public class DataSqlHelper extends SQLiteOpenHelper {
 		}
 
 
+		/**
+		 * Close any open database object, if database isn't acquired
+		 */
 		@Override
 		public synchronized void close() {
 			if (! keepDbOpen) {
@@ -166,12 +166,14 @@ public class DataSqlHelper extends SQLiteOpenHelper {
 			}
 		}
 
-		/*
+		/**
 		 * calling this method will cause the database connection to be open until 
-		 * releaseDb() will get called
+		 * releaseDb() will be called
 		 * The purpose of this method is to allow service to access database and not get 
 		 * interrupted - closed - by user interaction in UI.
 		 * This calling won't open the connection.
+		 * 
+		 * @param applicant object acquiring the database - only informative purpose
 		 */
 		public synchronized void acquireDb(Object applicant) {
 			keepDbOpen = true;
@@ -181,6 +183,12 @@ public class DataSqlHelper extends SQLiteOpenHelper {
 			Log.d(Utils.LOG_TAG, String.format("database acquired by %s ... %d", applicant.toString(), acquireCounter));
 		}
 		
+		/**
+		 * Release previously acquired database. If database wasn't acquired,
+		 * nothing would happen
+		 * @param close true to invoke close method
+		 * @param applicant object releasing database - only informative
+		 */
 		public synchronized void releaseDb(boolean close, Object applicant) {
 			acquireCounter--;
 			if (applicant == null)

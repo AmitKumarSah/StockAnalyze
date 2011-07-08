@@ -21,9 +21,12 @@
 package cz.tomas.StockAnalyze.Data.exceptions;
 
 /**
+ * Exception saying, there was an error in getting news
+ * 
  * @author tomas
  *
  */
+@SuppressWarnings("serial")
 public class FailedToGetNewsException extends RuntimeException {
 	
 	public FailedToGetNewsException() {

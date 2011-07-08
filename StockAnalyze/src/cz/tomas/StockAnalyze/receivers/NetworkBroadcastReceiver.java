@@ -18,8 +18,6 @@
 package cz.tomas.StockAnalyze.receivers;
 
 import cz.tomas.StockAnalyze.utils.Utils;
-import android.app.ActivityManager;
-import android.app.Application;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;

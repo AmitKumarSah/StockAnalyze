@@ -20,19 +20,19 @@
  */
 package cz.tomas.StockAnalyze.Data;
 
-import java.util.Calendar;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import android.util.Log;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 
-import android.util.Log;
-
 /**
+ * Factory for data providers
+ * You can get data provider by your wish here:
+ * by stock, by market, historical vs realtime.
+ * 
  * @author tomas
- * factory for data providers
  */
 public class DataProviderFactory {
 
@@ -42,7 +42,7 @@ public class DataProviderFactory {
 		providers.put(provider.getId(), provider);
 	}
 	
-	/*
+	/**
 	 * get data provider that knows the stock based on ticker,
 	 * if no provider knows the ticker, null is returned
 	 */
@@ -55,14 +55,14 @@ public class DataProviderFactory {
 		return null;
 	}
 	
-	/*
+	/**
 	 * get default DataProvider
 	 */
 	public static IStockDataProvider getDataProvider() {
 		return providers.get("PSE_PATRIA");
 	}
 	
-	/*
+	/**
 	 * get real time data provider for market specified
 	 * if no provider fits the condition, null is returned
 	 */
@@ -80,7 +80,7 @@ public class DataProviderFactory {
 		return null;
 	}
 	
-	/*
+	/**
 	 * get data provider based on adviser,
 	 * if no provider fits the condition, null is returned
 	 */
@@ -96,7 +96,7 @@ public class DataProviderFactory {
 		return null;
 	}
 	
-	/*
+	/**
 	 * get real time data provider for market specified
 	 * if no provider fits the condition, null is returned
 	 */
@@ -112,7 +112,7 @@ public class DataProviderFactory {
 		return null;
 	}
 	
-	/*
+	/**
 	 * get real time data provider for market specified
 	 * if no provider fits the condition, null is returned
 	 */
@@ -128,7 +128,7 @@ public class DataProviderFactory {
 		return null;
 	}
 	
-	/* 
+	/** 
 	 * refresh all registered data providers
 	 * @returns true if something was updated
 	 */

@@ -24,6 +24,7 @@ package cz.tomas.StockAnalyze.Data.exceptions;
  * @author tomas
  *
  */
+@SuppressWarnings("serial")
 public class MarketNotFoundException extends RuntimeException {
 	String code;
 

@@ -49,6 +49,8 @@ import org.apache.http.util.ByteArrayBuffer;
 import android.util.Log;
 
 /**
+ * Service for accessing remote resources
+ * 
  * @author tomas
  * 
  */
@@ -64,7 +66,7 @@ public class DownloadService {
 	}	
 
 	/**
-	 * 
+	 * initialize http client
 	 */
 	public DownloadService() {
 		HttpParams params = new BasicHttpParams();
@@ -91,7 +93,7 @@ public class DownloadService {
 			long startTime = System.currentTimeMillis();
 			Log.d(Utils.LOG_TAG, "DownloadService; download begining");
 			Log.d(Utils.LOG_TAG, "DownloadService: download url:" + url);
-			/* Open a connection to that URL. */
+			/* Open a connection to the URL. */
 			InputStream is = openHttpConnection(downloadUrl);
 			BufferedInputStream bis = null;
 			if (compress) {
@@ -146,14 +148,13 @@ public class DownloadService {
 		return is;
 	}
 	
-	/*
+	/**
 	 * open http connection to InputStream
 	 * 
 	 * stream must be closed manually
 	 */
 	public InputStream openHttpConnection(String urlString, boolean compress) throws IOException {
 		InputStream in = null;
-		int response = -1;
 
 		try {
 			InputStream stream = this.openHttpConnection(urlString);
