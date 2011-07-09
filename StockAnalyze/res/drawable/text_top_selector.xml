@@ -13,7 +13,7 @@
     <item android:state_pressed="true"
           android:drawable="@drawable/btn_top_pressed" />
     <item android:state_focused="true"
-          android:drawable="@drawable/btn_top_focused" />
+          android:drawable="@android:color/transparent" />
           
-    <item android:drawable="@drawable/btn_top_normal"/>
+    <item android:drawable="@android:color/transparent"/>
 </selector>

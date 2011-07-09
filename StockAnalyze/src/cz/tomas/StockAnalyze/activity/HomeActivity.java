@@ -41,12 +41,14 @@ import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.charts.view.ChartView;
+import cz.tomas.StockAnalyze.ui.widgets.ActionBar;
 import cz.tomas.StockAnalyze.ui.widgets.HomeBlockView;
+import cz.tomas.StockAnalyze.ui.widgets.ActionBar.IActionBarListener;
 import cz.tomas.StockAnalyze.utils.DownloadService;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 
-public class HomeActivity extends Activity implements OnClickListener, OnKeyListener {
+public class HomeActivity extends Activity implements OnClickListener, OnKeyListener, IActionBarListener {
 
 	private DataManager dataManager;
 	private static Bitmap chartBitmap;
@@ -85,6 +87,10 @@ public class HomeActivity extends Activity implements OnClickListener, OnKeyList
 			ImageView chart = (ImageView) findViewById(R.id.home_chart);
 			chart.setImageBitmap(chartBitmap);
 		}
+		
+		ActionBar bar = (ActionBar) findViewById(R.id.homeActionBar);
+		if (bar != null)
+			bar.setActionBarListener(this);
 	}
 	
 	@Override
@@ -219,5 +225,11 @@ public class HomeActivity extends Activity implements OnClickListener, OnKeyList
 			chartLastUpdate = System.currentTimeMillis();
 		}
 		
+	}
+
+	@Override
+	public void onAction(int viewId) {
+		if (viewId == R.id.actionHelpButton)
+			NavUtils.gotToAbout(this);
 	}
 }

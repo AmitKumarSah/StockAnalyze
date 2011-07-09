@@ -22,8 +22,7 @@
 <!--	android:layout_width="fill_parent" -->
 <!--	android:layout_height="fill_parent" >-->
 	<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-		style="@style/actionBar" android:orientation="horizontal"
-		android:paddingLeft="4dp">
+		style="@style/actionBar" android:orientation="horizontal">
 		<ImageButton android:id="@+id/actionHomeButton"
 			style="@style/actionBar.ImageButton"
 			android:src="@drawable/ic_tab_home"
@@ -42,7 +41,6 @@
 	        android:layout_alignParentBottom="false" />
 	   <TextView android:id="@+id/actionSubTitle" 
 	   		style="@style/actionBar.subtitle_text"
-	   		android:focusable="false"
 	   		android:layout_alignWithParentIfMissing="true"
 			android:layout_toRightOf="@+id/actionHomeButton"
 			android:layout_toLeftOf="@+id/actionTopButtonsLayout"
