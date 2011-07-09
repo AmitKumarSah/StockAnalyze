@@ -21,11 +21,15 @@
 package cz.tomas.StockAnalyze.activity;
 
 import java.text.NumberFormat;
+import java.util.Map;
+import java.util.Map.Entry;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -55,6 +59,8 @@ import cz.tomas.StockAnalyze.Data.Model.PortfolioSum;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.Portfolio.Portfolio;
 import cz.tomas.StockAnalyze.Portfolio.PortfolioListAdapter;
+import cz.tomas.StockAnalyze.ui.widgets.ActionBar;
+import cz.tomas.StockAnalyze.ui.widgets.ActionBar.IActionBarListener;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
@@ -65,9 +71,10 @@ import cz.tomas.StockAnalyze.utils.Utils;
  * @author tomas
  *
  */
-public class PortfolioActivity extends ListActivity implements OnSharedPreferenceChangeListener {
+public class PortfolioActivity extends ListActivity implements OnSharedPreferenceChangeListener, IActionBarListener {
 
 	private static final int DIALOG_PROGRESS = 1000;
+	private static final int DIALOG_ADD_NEW = DIALOG_PROGRESS + 1;
 	
 	private DataManager dataManager;
 	private Portfolio portfolio;
@@ -97,7 +104,9 @@ public class PortfolioActivity extends ListActivity implements OnSharedPreferenc
 		
 		LayoutInflater vi = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.refreshButton = findViewById(R.id.actionRefreshButton);
-
+		ActionBar bar = (ActionBar) findViewById(R.id.portfolioActionBar);
+		bar.setActionBarListener(this);
+		
 		headerView = vi.inflate(R.layout.portfolio_list_header, null);
 		footerView = vi.inflate(R.layout.portfolio_list_footer, null);
 		
@@ -206,7 +215,29 @@ public class PortfolioActivity extends ListActivity implements OnSharedPreferenc
 			ProgressDialog dialog = new ProgressDialog(this);
 			dialog.setMessage(text);
 			return dialog;
-
+		case DIALOG_ADD_NEW:
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			final Map<String, StockItem> items = this.dataManager.getStockItems(null);
+			final String[] stockNames = new String[items.size()];
+			final String[] stockIds = new String[items.size()];	// we need ids to get StockItem below
+			int index = 0;
+			for (Entry<String, StockItem> entry : items.entrySet()) {
+				if (entry != null && entry.getValue() != null) {
+					stockNames[index] = entry.getValue().getName();
+					stockIds[index] = entry.getKey();
+				}
+				index++;
+			}
+			builder.setTitle("Pick a Stock");
+			builder.setItems(stockNames, new DialogInterface.OnClickListener() {
+			    public void onClick(DialogInterface dialog, int item) {
+			        String stockId = stockIds[item];
+			        StockItem stockItem = items.get(stockId);
+			        NavUtils.goToAddToPortfolio(PortfolioActivity.this, stockItem, null);
+			    }
+			});
+			AlertDialog alert = builder.create();
+			return alert;
 		default:
 			break;
 		}
@@ -364,5 +395,13 @@ public class PortfolioActivity extends ListActivity implements OnSharedPreferenc
 			this.fill();
 		}
 		
+	}
+
+	@Override
+	public void onAction(int viewId) {
+		if (viewId == R.id.actionRefreshButton)
+			this.adapter.refresh();
+		else if (viewId == R.id.actionAddButton) 
+			showDialog(DIALOG_ADD_NEW);
 	}
 }

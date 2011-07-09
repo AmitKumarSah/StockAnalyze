@@ -40,19 +40,25 @@ import android.widget.TextView;
 
 public class ActionBar extends RelativeLayout {
 
-	/*
+	public interface IActionBarListener {
+		void onAction(int viewId);
+	}
+	
+	/**
 	 * data manager to get last update date;
 	 */
 	private DataManager dataManager;
 	
-	/*
+	/**
 	 * text under title - display last update time here
 	 */
 	private TextView subtitleView; 
 	private static String lastUpdateText;
 	
+	private IActionBarListener actionBarListener;
+	
 	public ActionBar(final Context context, AttributeSet attrs) {
-		super(context);
+		super(context, attrs);
 
 		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.actionbar_layout, this);
@@ -116,6 +122,10 @@ public class ActionBar extends RelativeLayout {
         View refreshButton = findViewById(R.id.actionRefreshButton);
         View helpButton = findViewById(R.id.actionHelpButton);
         
+        addButton.setOnClickListener(this.actionClickListener);
+        refreshButton.setOnClickListener(this.actionClickListener);
+        helpButton.setOnClickListener(this.actionClickListener);
+        
         if (! showSearch)
         	searchButton.setVisibility(View.GONE);
         if (! showAdd)
@@ -135,8 +145,26 @@ public class ActionBar extends RelativeLayout {
 		if (this.subtitleView != null)
 			this.subtitleView.setText(null);
 		this.dataManager.removeUpdateChangedListener(this.listener);
+		this.actionBarListener = null;
 		super.onDetachedFromWindow();
 	}
+	
+	/**
+	 * set listener for action bar buttons
+	 * @param listener
+	 */
+	public void setActionBarListener(IActionBarListener listener) {
+		this.actionBarListener = listener;
+	}
+	
+	private OnClickListener actionClickListener = new OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			if (actionBarListener != null)
+				actionBarListener.onAction(v.getId());
+		}
+	};
 
 	private OnClickListener homeClickListener = new OnClickListener() {
 		

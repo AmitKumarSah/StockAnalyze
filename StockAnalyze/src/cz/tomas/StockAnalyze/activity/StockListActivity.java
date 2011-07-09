@@ -47,6 +47,8 @@ import cz.tomas.StockAnalyze.Data.Interfaces.IListAdapterListener;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.StockList.StockListAdapter;
+import cz.tomas.StockAnalyze.ui.widgets.ActionBar;
+import cz.tomas.StockAnalyze.ui.widgets.ActionBar.IActionBarListener;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 
@@ -54,7 +56,7 @@ import cz.tomas.StockAnalyze.utils.Utils;
  * @author tomas
  *
  */
-public class StockListActivity extends ListActivity {
+public class StockListActivity extends ListActivity implements IActionBarListener {
 
 	static final int UPDATE_DLG_SUCCES = 0;
 	static final int UPDATE_DLG_FAIL = 1;
@@ -79,8 +81,11 @@ public class StockListActivity extends ListActivity {
 		try {
 			this.refreshButton = findViewById(R.id.actionRefreshButton);
 		} catch (Exception e) {
-			Log.e(Utils.LOG_TAG, "failed to find progress bar", e);
+			Log.e(Utils.LOG_TAG, "failed to find refresh button", e);
 		}
+		ActionBar bar = (ActionBar) findViewById(R.id.stockListActionBar);
+		if (bar != null)
+			bar.setActionBarListener(this);
 
 		this.getListView().setOnItemClickListener(new OnItemClickListener() {
 			@Override
@@ -209,9 +214,7 @@ public class StockListActivity extends ListActivity {
 	    // Handle item selection
 	    switch (item.getItemId()) {
 	    case R.id.menu_stock_list_refresh:
-	    	UpdateScheduler scheduler = 
-	    		(UpdateScheduler) this.getApplicationContext().getSystemService(Application.UPDATE_SCHEDULER_SERVICE);
-	    	scheduler.updateImmediatly();
+	    	updateImmediatly();
 	        return true;
 	    case R.id.menu_stock_list_settings:
 	    	NavUtils.goToSettings(this);
@@ -219,6 +222,15 @@ public class StockListActivity extends ListActivity {
 	    default:
 	        return super.onOptionsItemSelected(item);
 	    }
+	}
+
+	/**
+	 * call UpdateScheduller for immediate update
+	 */
+	private void updateImmediatly() {
+		UpdateScheduler scheduler = 
+			(UpdateScheduler) this.getApplicationContext().getSystemService(Application.UPDATE_SCHEDULER_SERVICE);
+		scheduler.updateImmediatly();
 	}
 	
 	@Override
@@ -252,6 +264,13 @@ public class StockListActivity extends ListActivity {
 		}
 		
 		return dlg;
+	}
+
+	@Override
+	public void onAction(int viewId) {
+		if (viewId == R.id.actionRefreshButton) {
+			this.updateImmediatly();
+		}
 	}
 	
 }

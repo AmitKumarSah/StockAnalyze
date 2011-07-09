@@ -22,7 +22,7 @@
          android:layout_height="fill_parent">
 	<cz.tomas.StockAnalyze.ui.widgets.ActionBar
 		xmlns:actionBar="http://schemas.android.com/apk/res/cz.tomas.StockAnalyze"
-		android:id="@+id/homeActionBar"
+		android:id="@+id/stockListActionBar"
 		android:layout_width="fill_parent" 
 		android:layout_height="wrap_content"
 		actionBar:showRefreshButton="true"

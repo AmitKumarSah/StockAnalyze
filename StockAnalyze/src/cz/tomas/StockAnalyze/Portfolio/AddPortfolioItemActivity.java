@@ -94,6 +94,10 @@ public final class AddPortfolioItemActivity extends Activity {
 			final Spinner dealSpinner = (Spinner) this.findViewById(R.id.portfolioAddSpinnerDeal);
 			if (priceView != null && data != null)
 				priceView.setText(String.valueOf(data.getPrice()));
+			else if (data == null) {
+				DayDataTask task = new DayDataTask();
+				task.execute(stockItem);
+			}
 			
 			if (marketView != null && market != null)
 				marketView.setText(market.getName());
@@ -292,8 +296,14 @@ public final class AddPortfolioItemActivity extends Activity {
 		@Override
 		protected void onPostExecute(Float result) {
 			final TextView priceView = (TextView) findViewById(R.id.portfolioAddPrice);
-			if (priceView != null)
+			if (priceView != null) {
 				priceView.setText(String.valueOf(result));
+				try {
+					updateFeeAndValue(result, Integer.parseInt(countView.getText().toString()));
+				} catch (NumberFormatException e) {
+					Log.e(Utils.LOG_TAG, "failed to parse count text", e);
+				}
+			}
 			setProgressBarVisibility(false);
 			super.onPostExecute(result);
 		}

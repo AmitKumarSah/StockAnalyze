@@ -59,6 +59,10 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 	private LayoutInflater vi; 
 	
 	private static Map<PortfolioItem, DayData> datas;
+	
+	/**
+	 * portfolio item id is a key for stock items
+	 */
 	private static Map<String, StockItem> stockItems;
 	
 	private Portfolio portfolio = null;
@@ -112,6 +116,19 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 			return null;
 		
 		return datas.get(item);
+	}
+	
+	/**
+	 * get Stock item associated with portfolio item.
+	 * Stock items are available after the adapter is initialized with data.
+	 * @param item
+	 * @return StockItem if available, otherwise null
+	 */
+	public StockItem getStockItem(PortfolioItem item) {
+		if (stockItems == null)
+			return null;
+		
+		return stockItems.get(item.getId());
 	}
 	
 	/**
