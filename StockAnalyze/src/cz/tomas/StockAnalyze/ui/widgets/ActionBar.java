@@ -30,7 +30,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -80,34 +80,50 @@ public class ActionBar extends RelativeLayout {
 	
         View homeButton = this.findViewById(R.id.actionHomeButton);
 
-        if (homeButton != null) {        
-            // don't show home button on home screen
-            if (this.getParent() != null && this.getParent() instanceof HomeActivity) {
-            	homeButton.setVisibility(View.GONE);
-            	View separator1 = this.findViewById(R.id.actionbar_sep1);
-            	separator1.setVisibility(View.GONE);
-            }
-	        homeButton.setOnClickListener(new OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-					Intent intent = new Intent();
-					intent.setClass(getContext(), HomeActivity.class);
-					getContext().startActivity(intent);
-				}
-			});
+        if (homeButton != null) {
+	        homeButton.setOnClickListener(homeClickListener);
         }
         else
         	Log.d(Utils.LOG_TAG, "action bar home button not found");
         
-        TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.ActionBarAttrs);
+        //TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.ActionBarAttrs);
         
-        TextView titleView = (TextView) this.findViewById(R.id.actionTitle);
+        final TextView titleView = (TextView) this.findViewById(R.id.actionTitle);
+        titleView.setOnClickListener(homeClickListener);
+        titleView.setOnFocusChangeListener(new OnFocusChangeListener() {
+			
+			@Override
+			public void onFocusChange(View v, boolean hasFocus) {
+				if (hasFocus) {
+					titleView.setShadowLayer(18f, 0f, 0f, Color.WHITE);
+				} else {
+					titleView.setShadowLayer(0f, 0f, 0f, Color.WHITE);
+				}
+			}
+		});
         
-        if (a != null && titleView != null && a.hasValue(0)) {
-        	String title = a.getString(0);
-        	titleView.setText(title);
+        String ns = "http://schemas.android.com/apk/res/cz.tomas.StockAnalyze";
+        String text = context.getText(attrs.getAttributeResourceValue(ns, "titleText", R.string.app_name)).toString();
+        boolean showRefresh = attrs.getAttributeBooleanValue(ns, "showRefreshButton", false);
+        boolean showSearch = attrs.getAttributeBooleanValue(ns, "showSearchButton", false);
+        boolean showAdd = attrs.getAttributeBooleanValue(ns, "showAddButton", false);
+        boolean showHelp = attrs.getAttributeBooleanValue(ns, "showHelpButton", false);
+        //boolean showHome = attrs.getAttributeBooleanValue(ns, "showHomeButton", false);
+        if (text != null && titleView != null) {
+        	titleView.setText(text);
         }
+        View addButton = findViewById(R.id.actionAddButton);
+        View refreshButton = findViewById(R.id.actionRefreshButton);
+        View helpButton = findViewById(R.id.actionHelpButton);
+        
+        if (! showSearch)
+        	searchButton.setVisibility(View.GONE);
+        if (! showAdd)
+        	addButton.setVisibility(View.GONE);
+        if (! showRefresh)
+        	refreshButton.setVisibility(View.GONE);
+        if (! showHelp)
+        	helpButton.setVisibility(View.GONE);
 	}
 
 	/* (non-Javadoc)
@@ -122,6 +138,15 @@ public class ActionBar extends RelativeLayout {
 		super.onDetachedFromWindow();
 	}
 
+	private OnClickListener homeClickListener = new OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			Intent intent = new Intent();
+			intent.setClass(getContext(), HomeActivity.class);
+			getContext().startActivity(intent);
+		}
+	};
 
 
 	/**

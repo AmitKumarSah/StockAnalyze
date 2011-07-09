@@ -34,6 +34,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -42,7 +44,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.DataManager;
@@ -75,7 +76,9 @@ public class PortfolioActivity extends ListActivity implements OnSharedPreferenc
 	private View footerView;
 	private static boolean isDirty;
 	
-	private ProgressBar progressBar;
+	private View refreshButton;
+	private Animation refreshAnim;
+	
 	private SharedPreferences prefs;
 	
 	/* 
@@ -93,7 +96,7 @@ public class PortfolioActivity extends ListActivity implements OnSharedPreferenc
 		isDirty |= this.getIntent().getBooleanExtra("refresh", false);
 		
 		LayoutInflater vi = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		this.progressBar = (ProgressBar) findViewById(R.id.progressBar);
+		this.refreshButton = findViewById(R.id.actionRefreshButton);
 
 		headerView = vi.inflate(R.layout.portfolio_list_header, null);
 		footerView = vi.inflate(R.layout.portfolio_list_footer, null);
@@ -151,8 +154,9 @@ public class PortfolioActivity extends ListActivity implements OnSharedPreferenc
 
 				@Override
 				public void onListLoading() {					
-					if (progressBar != null)
-						progressBar.setVisibility(View.VISIBLE);
+					if (refreshButton != null)
+						refreshAnim = AnimationUtils.loadAnimation(PortfolioActivity.this, R.anim.refresh_rotate);
+						refreshButton.startAnimation(refreshAnim);
 				}
 
 				@Override
@@ -160,8 +164,8 @@ public class PortfolioActivity extends ListActivity implements OnSharedPreferenc
 					Log.d(Utils.LOG_TAG, "Updating portfolio summary");
 					fillPortfolioSummary(portfolioSummary);
 					
-					if (progressBar != null)
-						progressBar.setVisibility(View.GONE);					
+					if (refreshAnim != null)
+						refreshAnim.setDuration(0);					
 				}
 			});
 		}
@@ -235,8 +239,8 @@ public class PortfolioActivity extends ListActivity implements OnSharedPreferenc
 			return true;
 			case R.id.portfolio_item_context_menu_remove:
 				try {
-					if (progressBar != null)
-						progressBar.setVisibility(View.VISIBLE);
+					if (refreshButton != null)
+						refreshButton.setVisibility(View.VISIBLE);
 					AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
 	
 						@Override
@@ -258,8 +262,8 @@ public class PortfolioActivity extends ListActivity implements OnSharedPreferenc
 						@Override
 						protected void onPostExecute(Void result) {
 							adapter.refresh();
-							if (progressBar != null)
-								progressBar.setVisibility(View.GONE);
+							if (refreshButton != null)
+								refreshButton.setVisibility(View.GONE);
 							dismissDialog(DIALOG_PROGRESS);
 							super.onPostExecute(result);
 						}

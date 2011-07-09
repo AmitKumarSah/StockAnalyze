@@ -33,10 +33,11 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 import cz.tomas.StockAnalyze.Application;
 import cz.tomas.StockAnalyze.R;
@@ -60,7 +61,8 @@ public class StockListActivity extends ListActivity {
 	static final int NO_INTERNET = 2;
 	
 	private DataManager dataManager;
-	private ProgressBar progressBar;
+	private View refreshButton;
+	private Animation refreshAnim; 
 	
 	private StockListAdapter adapter;
 	
@@ -75,7 +77,7 @@ public class StockListActivity extends ListActivity {
 		this.registerForContextMenu(this.getListView());
 		
 		try {
-			this.progressBar = (ProgressBar) findViewById(R.id.progressBar);
+			this.refreshButton = findViewById(R.id.actionRefreshButton);
 		} catch (Exception e) {
 			Log.e(Utils.LOG_TAG, "failed to find progress bar", e);
 		}
@@ -115,14 +117,16 @@ public class StockListActivity extends ListActivity {
 			
 			@Override
 			public void onListLoading() {
-				if (progressBar != null)
-					progressBar.setVisibility(View.VISIBLE);
+				if (refreshButton != null){
+					refreshAnim = AnimationUtils.loadAnimation(StockListActivity.this, R.anim.refresh_rotate);
+					refreshButton.startAnimation(refreshAnim);
+				}
 			}
 			
 			@Override
 			public void onListLoaded(Object data) {
-				if (progressBar != null)
-					progressBar.setVisibility(View.GONE);
+				if (refreshAnim != null)
+					refreshAnim.setDuration(0);
 			}
 		});
 		adapter.showIcons(false);

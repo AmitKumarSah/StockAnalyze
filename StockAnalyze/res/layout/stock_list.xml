@@ -25,6 +25,7 @@
 		android:id="@+id/homeActionBar"
 		android:layout_width="fill_parent" 
 		android:layout_height="wrap_content"
+		actionBar:showRefreshButton="true"
 		actionBar:titleText="@string/activityStockList" />
      <ListView android:id="@id/android:list"
                android:layout_width="fill_parent"

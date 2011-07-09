@@ -22,10 +22,12 @@
 	android:layout_height="fill_parent"
 	android:orientation="vertical">
 	
-	<cz.tomas.StockAnalyze.ui.widgets.ActionBar
+	<cz.tomas.StockAnalyze.ui.widgets.ActionBar xmlns:actionBar="http://schemas.android.com/apk/res/cz.tomas.StockAnalyze"
 		android:id="@+id/homeActionBar"
 		android:layout_width="fill_parent" 
-		android:layout_height="wrap_content" />
+		android:layout_height="wrap_content"
+		actionBar:showHelpButton="true"/>
+		
 		<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
 			android:layout_width="fill_parent" 
 			android:layout_height="fill_parent"
