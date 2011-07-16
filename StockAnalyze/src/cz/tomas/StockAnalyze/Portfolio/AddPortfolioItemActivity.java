@@ -23,6 +23,10 @@ package cz.tomas.StockAnalyze.Portfolio;
 import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.flurry.android.FlurryAgent;
 
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -45,6 +49,7 @@ import cz.tomas.StockAnalyze.Data.Model.PortfolioItem;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.activity.PortfolioActivity;
 import cz.tomas.StockAnalyze.activity.base.BaseActivity;
+import cz.tomas.StockAnalyze.utils.Consts;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 
@@ -257,6 +262,10 @@ public final class AddPortfolioItemActivity extends BaseActivity {
 		} finally {
 			this.dataManager.releaseDb(true, this.getClass().getName());
 		}
+		Map<String, String> pars = new HashMap<String, String>();
+		pars.put(Consts.FLURRY_KEY_PORTFOLIO_NEW_SOURCE, getIntent().getStringExtra(Utils.EXTRA_SOURCE));
+		pars.put(Consts.FLURRY_KEY_PORTFOLIO_NEW_OPERATOIN, count > 0 ? "buy" : "sell");
+		FlurryAgent.onEvent(Consts.FLURRY_EVENT_PORTFOLIO_NEW, pars);
 	}
 
 	/**

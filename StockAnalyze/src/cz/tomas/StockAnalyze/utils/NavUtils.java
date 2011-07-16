@@ -60,6 +60,8 @@ public class NavUtils {
 	
 
 	/**
+	 * Navigate to AddToPortfolioActivity and put stock item and day data to intent
+	 * 
 	 * @param stockItem
 	 * @param data
 	 */
@@ -68,6 +70,7 @@ public class NavUtils {
 		intent.putExtra(Utils.EXTRA_STOCK_ITEM, stockItem);
 		intent.putExtra(Utils.EXTRA_DAY_DATA, data);
 		intent.putExtra(Utils.EXTRA_MARKET_ID, stockItem.getMarket());
+		intent.putExtra(Utils.EXTRA_SOURCE, activity.getClass().getName());
 		intent.setClass(activity, AddPortfolioItemActivity.class);
 		activity.startActivity(intent);
 	}

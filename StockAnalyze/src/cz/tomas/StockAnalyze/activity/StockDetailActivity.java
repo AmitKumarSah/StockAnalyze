@@ -23,6 +23,10 @@ package cz.tomas.StockAnalyze.activity;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.flurry.android.FlurryAgent;
 
 import android.app.TabActivity;
 import android.content.Intent;
@@ -41,6 +45,7 @@ import android.widget.Toast;
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.charts.view.CompositeChartView;
+import cz.tomas.StockAnalyze.utils.Consts;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 
@@ -182,6 +187,10 @@ public final class StockDetailActivity extends ChartActivity {
 		if (dayCount != 0) {
 			this.chartDayCount = dayCount;
 			this.updateChart();
+			Map<String, String> pars = new HashMap<String, String>(2);
+			pars.put(Consts.FLURRY_KEY_CHART_TIME_PERIOD, String.valueOf(dayCount));
+			pars.put(Consts.FLURRY_KEY_CHART_TIME_SOURCE, getClass().getName());
+			FlurryAgent.onEvent(Consts.FLURRY_EVENT_CHART_TIME_PERIOD, pars);
 			return true;
 		} else
 			return super.onContextItemSelected(item);

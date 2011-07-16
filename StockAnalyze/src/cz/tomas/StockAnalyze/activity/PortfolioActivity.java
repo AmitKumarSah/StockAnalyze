@@ -24,6 +24,8 @@ import java.text.NumberFormat;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.flurry.android.FlurryAgent;
+
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -61,6 +63,7 @@ import cz.tomas.StockAnalyze.Portfolio.PortfolioListAdapter;
 import cz.tomas.StockAnalyze.activity.base.BaseListActivity;
 import cz.tomas.StockAnalyze.ui.widgets.ActionBar;
 import cz.tomas.StockAnalyze.ui.widgets.ActionBar.IActionBarListener;
+import cz.tomas.StockAnalyze.utils.Consts;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
@@ -272,6 +275,7 @@ public class PortfolioActivity extends BaseListActivity implements OnSharedPrefe
 				try {
 					if (refreshButton != null)
 						refreshButton.setVisibility(View.VISIBLE);
+					FlurryAgent.onEvent(Consts.FLURRY_EVENT_PORTFOLIO_REMOVE);
 					AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
 	
 						@Override

@@ -18,12 +18,17 @@
 package cz.tomas.StockAnalyze.ui.widgets;
 
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.flurry.android.FlurryAgent;
 
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.Interfaces.IUpdateDateChangedListener;
 import cz.tomas.StockAnalyze.activity.HomeActivity;
 import cz.tomas.StockAnalyze.activity.StockSearchActivity;
+import cz.tomas.StockAnalyze.utils.Consts;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 import android.app.Activity;
@@ -161,6 +166,12 @@ public class ActionBar extends RelativeLayout {
 		
 		@Override
 		public void onClick(View v) {
+			if (v.getId() == R.id.actionRefreshButton) {
+				Map<String, String> pars = new HashMap<String, String>(2);
+				pars.put(Consts.FLURRY_KEY_REFRESH_SOURCE, "actionbar");
+				pars.put(Consts.FLURRY_KEY_REFRESH_TARGET, getContext().getClass().getName());
+				FlurryAgent.onEvent(Consts.FLURRY_EVENT_REFRESH, pars);
+			}
 			if (actionBarListener != null)
 				actionBarListener.onAction(v.getId());
 		}

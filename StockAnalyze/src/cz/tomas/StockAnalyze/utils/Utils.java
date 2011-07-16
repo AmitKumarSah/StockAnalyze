@@ -50,6 +50,7 @@ public class Utils {
 	public static final String EXTRA_STOCK_ITEM = "cz.tomas.StockAnalyze:StockItem";
 	public static final String EXTRA_DAY_DATA = "cz.tomas.StockAnalyze:DayData";
 	public static final String EXTRA_MARKET_ID = "cz.tomas.StockAnalyze:Market_ID";
+	public static final String EXTRA_SOURCE = "cz.tomas.StockAnalyze:Source";
 	
 	public static final String FLURRY_KEY = "DZTBW5JWI9WLE92D1QBX";
 	
