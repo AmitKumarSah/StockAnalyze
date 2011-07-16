@@ -45,15 +45,18 @@ import android.widget.Toast;
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.charts.view.CompositeChartView;
+import cz.tomas.StockAnalyze.ui.widgets.ActionBar;
+import cz.tomas.StockAnalyze.ui.widgets.ActionBar.IActionBarListener;
 import cz.tomas.StockAnalyze.utils.Consts;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
+import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 
 /**
  * @author tomas
  *
  */
-public final class StockDetailActivity extends ChartActivity {
+public final class StockDetailActivity extends ChartActivity implements IActionBarListener {
 
 	private TextView txtChartDescription;
 	
@@ -133,6 +136,8 @@ public final class StockDetailActivity extends ChartActivity {
 				toast.show();
 			}
 		}
+		ActionBar bar = (ActionBar) this.findViewById(R.id.detailActionBar);
+		bar.setActionBarListener(this);
 	}
 		
 
@@ -268,5 +273,13 @@ public final class StockDetailActivity extends ChartActivity {
 		
 		if (txtName != null)
 			txtName.setText(R.string.NoStockSelected);
+	}
+
+
+	@Override
+	public void onAction(int viewId) {
+		if(viewId == R.id.actionAddButton) {
+			NavUtils.goToAddToPortfolio(this, this.stockItem, this.dayData);
+		}
 	}	
 }
