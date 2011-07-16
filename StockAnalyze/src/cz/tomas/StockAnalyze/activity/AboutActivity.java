@@ -21,13 +21,10 @@
 package cz.tomas.StockAnalyze.activity;
 
 import cz.tomas.StockAnalyze.R;
-import cz.tomas.StockAnalyze.R.layout;
+import cz.tomas.StockAnalyze.activity.base.BaseActivity;
 import cz.tomas.StockAnalyze.utils.Utils;
-import android.app.Activity;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
@@ -36,7 +33,7 @@ import android.widget.TextView;
  * @author tomas
  *
  */
-public class AboutActivity extends Activity {
+public class AboutActivity extends BaseActivity {
 
 	/* (non-Javadoc)
 	 * @see android.app.Activity#onCreate(android.os.Bundle)

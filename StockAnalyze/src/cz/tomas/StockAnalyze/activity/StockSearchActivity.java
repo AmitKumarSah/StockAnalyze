@@ -22,13 +22,6 @@ package cz.tomas.StockAnalyze.activity;
 
 import java.util.List;
 
-import cz.tomas.StockAnalyze.R;
-import cz.tomas.StockAnalyze.Data.DataManager;
-import cz.tomas.StockAnalyze.Data.MarketFactory;
-import cz.tomas.StockAnalyze.Data.Model.StockItem;
-import cz.tomas.StockAnalyze.R.id;
-import cz.tomas.StockAnalyze.R.layout;
-import cz.tomas.StockAnalyze.StockList.StockListAdapter;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -40,20 +33,25 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Toast;
+import cz.tomas.StockAnalyze.R;
+import cz.tomas.StockAnalyze.Data.DataManager;
+import cz.tomas.StockAnalyze.Data.MarketFactory;
+import cz.tomas.StockAnalyze.Data.Model.StockItem;
+import cz.tomas.StockAnalyze.StockList.StockListAdapter;
+import cz.tomas.StockAnalyze.activity.base.BaseActivity;
 
 /**
  * @author tomas
  *
  */
-public class StockSearchActivity extends Activity {
+public class StockSearchActivity extends BaseActivity {
 
 	private static final String SELECTED_STOCK = "stock_id";
-	private static final String MARKET = "market_id";
+	//private static final String MARKET = "market_id";
 	DataManager dataManger;
 	static final int DIALOG_ADD = 0;
 	

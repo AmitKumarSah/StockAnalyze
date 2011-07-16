@@ -29,12 +29,12 @@ import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
+import cz.tomas.StockAnalyze.activity.base.BaseActivity;
 import cz.tomas.StockAnalyze.charts.interfaces.IChartTextFormatter;
 import cz.tomas.StockAnalyze.charts.view.CompositeChartView;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
-import android.app.Activity;
 import android.content.Intent;	
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -48,7 +48,7 @@ import android.view.View;
  * @author tomas
  *
  */
-public abstract class ChartActivity extends Activity {
+public abstract class ChartActivity extends BaseActivity {
 	
 	interface IChartActivityListener {
 		void onChartUpdateBegin();

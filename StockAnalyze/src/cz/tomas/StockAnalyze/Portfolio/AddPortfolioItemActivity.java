@@ -24,7 +24,6 @@ import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.util.Calendar;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -45,6 +44,7 @@ import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.PortfolioItem;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.activity.PortfolioActivity;
+import cz.tomas.StockAnalyze.activity.base.BaseActivity;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 
@@ -52,7 +52,7 @@ import cz.tomas.StockAnalyze.utils.Utils;
  * @author tomas
  *
  */
-public final class AddPortfolioItemActivity extends Activity {
+public final class AddPortfolioItemActivity extends BaseActivity {
 
 	private static final String INSTANCE_COUNT = "count";
 	private static final String INSTANCE_PRICE = "price";

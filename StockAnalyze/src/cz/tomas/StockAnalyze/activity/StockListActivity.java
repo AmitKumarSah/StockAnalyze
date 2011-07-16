@@ -22,7 +22,6 @@ package cz.tomas.StockAnalyze.activity;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.ListActivity;
 import android.app.TabActivity;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -47,6 +46,7 @@ import cz.tomas.StockAnalyze.Data.Interfaces.IListAdapterListener;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.StockList.StockListAdapter;
+import cz.tomas.StockAnalyze.activity.base.BaseListActivity;
 import cz.tomas.StockAnalyze.ui.widgets.ActionBar;
 import cz.tomas.StockAnalyze.ui.widgets.ActionBar.IActionBarListener;
 import cz.tomas.StockAnalyze.utils.NavUtils;
@@ -56,7 +56,7 @@ import cz.tomas.StockAnalyze.utils.Utils;
  * @author tomas
  *
  */
-public class StockListActivity extends ListActivity implements IActionBarListener {
+public class StockListActivity extends BaseListActivity implements IActionBarListener {
 
 	static final int UPDATE_DLG_SUCCES = 0;
 	static final int UPDATE_DLG_FAIL = 1;

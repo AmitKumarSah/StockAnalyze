@@ -29,8 +29,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 import cz.tomas.StockAnalyze.R;
-import cz.tomas.StockAnalyze.R.menu;
-import cz.tomas.StockAnalyze.R.string;
 import cz.tomas.StockAnalyze.charts.view.CompositeChartView;
 import cz.tomas.StockAnalyze.utils.Utils;
 

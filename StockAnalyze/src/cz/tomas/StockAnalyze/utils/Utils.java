@@ -29,7 +29,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
 /**
- * helper class with various helper methods string const names
+ * helper class with various helper methods and string const names
  * @author tomas
  *
  */
@@ -50,6 +50,8 @@ public class Utils {
 	public static final String EXTRA_STOCK_ITEM = "cz.tomas.StockAnalyze:StockItem";
 	public static final String EXTRA_DAY_DATA = "cz.tomas.StockAnalyze:DayData";
 	public static final String EXTRA_MARKET_ID = "cz.tomas.StockAnalyze:Market_ID";
+	
+	public static final String FLURRY_KEY = "DZTBW5JWI9WLE92D1QBX";
 	
 	private static ConnectivityManager connectivityManager;
 

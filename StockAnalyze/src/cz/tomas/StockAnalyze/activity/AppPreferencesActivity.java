@@ -20,9 +20,6 @@
  */
 package cz.tomas.StockAnalyze.activity;
 
-import cz.tomas.StockAnalyze.R;
-import cz.tomas.StockAnalyze.R.xml;
-import cz.tomas.StockAnalyze.utils.Utils;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
@@ -30,8 +27,9 @@ import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
-import android.preference.Preference.OnPreferenceClickListener;
-import android.preference.PreferenceActivity;
+import cz.tomas.StockAnalyze.R;
+import cz.tomas.StockAnalyze.activity.base.BasePreferenceActivity;
+import cz.tomas.StockAnalyze.utils.Utils;
 
 /**
  * General Application Prefernces activity accessible from home page
@@ -39,7 +37,7 @@ import android.preference.PreferenceActivity;
  * @author tomas
  * 
  */
-public class AppPreferencesActivity extends PreferenceActivity {
+public class AppPreferencesActivity extends BasePreferenceActivity {
 
 	private SharedPreferences sharedPreferences;
 	

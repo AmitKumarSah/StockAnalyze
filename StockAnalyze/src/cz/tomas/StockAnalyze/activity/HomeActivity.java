@@ -20,7 +20,6 @@ package cz.tomas.StockAnalyze.activity;
 import java.io.IOException;
 import java.util.Calendar;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -40,6 +39,7 @@ import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
+import cz.tomas.StockAnalyze.activity.base.BaseActivity;
 import cz.tomas.StockAnalyze.charts.view.ChartView;
 import cz.tomas.StockAnalyze.ui.widgets.ActionBar;
 import cz.tomas.StockAnalyze.ui.widgets.HomeBlockView;
@@ -48,7 +48,7 @@ import cz.tomas.StockAnalyze.utils.DownloadService;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 
-public class HomeActivity extends Activity implements OnClickListener, OnKeyListener, IActionBarListener {
+public class HomeActivity extends BaseActivity implements OnClickListener, OnKeyListener, IActionBarListener {
 
 	private DataManager dataManager;
 	private static Bitmap chartBitmap;
@@ -77,7 +77,6 @@ public class HomeActivity extends Activity implements OnClickListener, OnKeyList
 		}
 //		DrawChartTask task = new DrawChartTask();
 //		task.execute(null);
-		//Debug.startMethodTracing();
 		// if chart bitmap is null or too old, refresh it
 		if (chartBitmap == null || (System.currentTimeMillis() - chartLastUpdate) > chartUpdateInterval) {
 			ChartUpdateTask task = new ChartUpdateTask();
@@ -114,13 +113,6 @@ public class HomeActivity extends Activity implements OnClickListener, OnKeyList
 	    default:
 	        return super.onOptionsItemSelected(item);
 	    }
-	}
-	
-	@Override
-	protected void onStop() {
-		super.onStop();
-		
-		//Debug.stopMethodTracing();
 	}
 
 	@Override

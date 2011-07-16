@@ -26,7 +26,6 @@ import java.util.Map.Entry;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -59,6 +58,7 @@ import cz.tomas.StockAnalyze.Data.Model.PortfolioSum;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.Portfolio.Portfolio;
 import cz.tomas.StockAnalyze.Portfolio.PortfolioListAdapter;
+import cz.tomas.StockAnalyze.activity.base.BaseListActivity;
 import cz.tomas.StockAnalyze.ui.widgets.ActionBar;
 import cz.tomas.StockAnalyze.ui.widgets.ActionBar.IActionBarListener;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
@@ -71,7 +71,7 @@ import cz.tomas.StockAnalyze.utils.Utils;
  * @author tomas
  *
  */
-public class PortfolioActivity extends ListActivity implements OnSharedPreferenceChangeListener, IActionBarListener {
+public class PortfolioActivity extends BaseListActivity implements OnSharedPreferenceChangeListener, IActionBarListener {
 
 	private static final int DIALOG_PROGRESS = 1000;
 	private static final int DIALOG_ADD_NEW = DIALOG_PROGRESS + 1;
