@@ -18,8 +18,8 @@
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
 	package="cz.tomas.StockAnalyze" 
-	android:versionName="0.9.0" 
-	android:versionCode="00900">
+	android:versionName="0.9.1" 
+	android:versionCode="00901">
 	
 	<application android:icon="@drawable/ic_launcher" android:label="@string/app_name"
 		android:name="cz.tomas.StockAnalyze.Application"
@@ -32,14 +32,14 @@
 <!--				<action android:name="android.intent.action.MAIN" />-->
         	</intent-filter>
 		</activity>
-		<activity android:label="@string/app_name" android:name=".activity.HomeActivity">
+		<activity android:label="@string/app_name" android:name=".activity.HomeActivity" android:launchMode="singleTop">
 			<intent-filter>
 				<category android:name="android.intent.category.LAUNCHER" />
 				<action android:name="android.intent.action.MAIN" />
         	</intent-filter>
 		</activity>
 
-		<activity android:name=".activity.StockListActivity"></activity>
+		<activity android:name=".activity.StockListActivity" android:launchMode="singleTop"></activity>
 		<activity android:name=".activity.StockSearchActivity"></activity>
 		<activity android:name=".activity.StockDetailActivity"></activity>
 		<activity android:name=".activity.StockChartActivity"	
@@ -57,22 +57,17 @@
 		<activity android:name=".activity.AboutActivity" 
 			android:label="@string/appAbout"
 			android:theme="@style/themeLightTitle"></activity>
-	<receiver android:enabled="true" android:permission="android.permission.ACCESS_NETWORK_STATE" android:name=".receivers.NetworkBroadcastReceiver">
-		<intent-filter>
-			<action android:name="android.net.conn.BACKGROUND_DATA_SETTING_CHANGED"/>
-			<action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
-		</intent-filter>
-	</receiver>
-	<receiver android:name=".receivers.AlarmReceiver"></receiver>
-
-</application>
+		<receiver android:enabled="true" android:permission="android.permission.ACCESS_NETWORK_STATE" android:name=".receivers.NetworkBroadcastReceiver">
+			<intent-filter>
+				<action android:name="android.net.conn.BACKGROUND_DATA_SETTING_CHANGED"/>
+				<action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
+			</intent-filter>
+		</receiver>
+		<receiver android:name=".receivers.AlarmReceiver"></receiver>
+	
+	</application>
 	<uses-sdk android:minSdkVersion="7" />
 
 	<uses-permission android:name="android.permission.INTERNET"></uses-permission>
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
-<!--	<uses-permission android:name="android.permission.READ_PHONE_STATE"></uses-permission>-->
-<!--	<uses-permission android:name="android.permission.EXTERNAL_STORAGE"></uses-permission>-->
-
-
-<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
 </manifest> 

@@ -25,7 +25,7 @@
 			android:key="prefUpdateNotification" />
 		<CheckBoxPreference 
 			android:title="@string/prefNotifPermaTitle"
-			android:defaultValue="true" 
+			android:defaultValue="false" 
 			android:summary="@string/prefPermanentNotification"
 			android:key="prefPermanentNotification" />
 	</PreferenceCategory>
@@ -39,7 +39,7 @@
 			android:title="@string/prefAutoUpdateIntervalTitle"
 			android:summary="@string/prefUpdateInterval"
 			android:key="prefUpdateTimeInterval"
-			android:defaultValue="10"
+			android:defaultValue="30"
 			android:entries="@array/prefListUpdateIntervalEntries"
 			android:entryValues="@array/prefListUpdateIntervalValues" />
 		</PreferenceCategory>
