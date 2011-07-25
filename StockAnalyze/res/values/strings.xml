@@ -83,6 +83,7 @@ Nikdy se nepouštějte do obchodů, jejichž podstatě plně nerozumíte. Obchod
     <string name="portfolioListHeader3">Stock Price\nChange</string>
     <string name="portfolioFooterSum">Sum:"</string>
     <string name="AddPortfolioItemActivityTitle">Add Stock to Portfolio</string>
+    <string name="portfolioPickStock">Pick Stock</string>
     
     <string name="failedScheduleUpdate">Failed to schedule intraday update!</string>
     

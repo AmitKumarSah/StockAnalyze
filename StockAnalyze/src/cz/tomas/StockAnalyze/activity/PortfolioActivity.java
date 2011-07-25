@@ -220,25 +220,31 @@ public class PortfolioActivity extends BaseListActivity implements OnSharedPrefe
 			return dialog;
 		case DIALOG_ADD_NEW:
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			final Map<String, StockItem> items = this.dataManager.getStockItems(null);
-			final String[] stockNames = new String[items.size()];
-			final String[] stockIds = new String[items.size()];	// we need ids to get StockItem below
-			int index = 0;
-			for (Entry<String, StockItem> entry : items.entrySet()) {
-				if (entry != null && entry.getValue() != null) {
-					stockNames[index] = entry.getValue().getName();
-					stockIds[index] = entry.getKey();
+			try {
+				// TODO do it somehow asynchronously
+				final Map<String, StockItem> items = this.dataManager.getStockItems(null);
+				final String[] stockNames = new String[items.size()];
+				final String[] stockIds = new String[items.size()];	// we need ids to get StockItem below
+				int index = 0;
+				for (Entry<String, StockItem> entry : items.entrySet()) {
+					if (entry != null && entry.getValue() != null) {
+						stockNames[index] = entry.getValue().getName();
+						stockIds[index] = entry.getKey();
+					}
+					index++;
 				}
-				index++;
+				builder.setTitle(R.string.portfolioPickStock);
+				builder.setItems(stockNames, new DialogInterface.OnClickListener() {
+				    public void onClick(DialogInterface dialog, int item) {
+				        String stockId = stockIds[item];
+				        StockItem stockItem = items.get(stockId);
+				        NavUtils.goToAddToPortfolio(PortfolioActivity.this, stockItem, null);
+				    }
+				});
+			} catch (Exception e) {
+				Log.e(Utils.LOG_TAG, "failed to get all stock items to add new record to portfoliol", e);
+					
 			}
-			builder.setTitle("Pick a Stock");
-			builder.setItems(stockNames, new DialogInterface.OnClickListener() {
-			    public void onClick(DialogInterface dialog, int item) {
-			        String stockId = stockIds[item];
-			        StockItem stockItem = items.get(stockId);
-			        NavUtils.goToAddToPortfolio(PortfolioActivity.this, stockItem, null);
-			    }
-			});
 			AlertDialog alert = builder.create();
 			return alert;
 		default:
