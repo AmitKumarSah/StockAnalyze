@@ -14,4 +14,7 @@ public class Consts {
 	public static final String FLURRY_EVENT_CHART_TIME_PERIOD = "chart-time-period-change";
 	public static final String FLURRY_KEY_CHART_TIME_PERIOD = "time-period";
 	public static final String FLURRY_KEY_CHART_TIME_SOURCE = "source";
+
+	public static final String FLURRY_EVENT_SCHEDULED_UPDATE = "scheduled-update";
+	public static final String FLURRY_KEY_SCHEDULED_UPDATE_DAY = "day";
 }

@@ -21,6 +21,10 @@
 package cz.tomas.StockAnalyze;
 
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.flurry.android.FlurryAgent;
 
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.DataProviderFactory;
@@ -28,6 +32,7 @@ import cz.tomas.StockAnalyze.Data.IStockDataProvider;
 import cz.tomas.StockAnalyze.Data.MarketFactory;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.receivers.AlarmReceiver;
+import cz.tomas.StockAnalyze.utils.Consts;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 import android.app.AlarmManager;
@@ -146,15 +151,39 @@ public class UpdateScheduler {
 	}
 	
 	/**
+	 * perform update scheduled by alarm,
+	 * send event to flurry analysis
+	 */
+	public void perfromScheduledUpdate() {
+		Log.i(Utils.LOG_TAG, "going to perform scheduled update");
+		FlurryAgent.onStartSession(this.context, "UpdateSheduler");
+		Map<String, String> pars = new HashMap<String, String>();
+		pars.put(Consts.FLURRY_KEY_SCHEDULED_UPDATE_DAY, String.valueOf(Calendar.getInstance().get(Calendar.DAY_OF_WEEK)));
+		FlurryAgent.onEvent(Consts.FLURRY_EVENT_SCHEDULED_UPDATE, pars);
+		
+		this.performUpdateInternal();
+		FlurryAgent.onEndSession(this.context);
+	}
+	
+	/**
 	 * update real time data immediately
 	 */
 	public void updateImmediatly() {
+		this.performUpdateInternal();
+	}
+
+	/**
+	 * execute refresh task on realtime provider
+	 */
+	private void performUpdateInternal() {
 		if (! Utils.isOnline(this.context)) {
 			Log.i(Utils.LOG_TAG, "Device is offline, canceling data update");
 			return;
 		}
 		this.isSchedulerRunning = true;
 		if (!DataManager.isInitialized()) {
+			// if process was started by alarm and the rest of the application isn't initialized, 
+			// we need to initialize DataManager
 			DataManager.getInstance(this.context);
 		}
 		IStockDataProvider provider = DataProviderFactory.getRealTimeDataProvider(MarketFactory.getCzechMarket());
@@ -174,7 +203,8 @@ public class UpdateScheduler {
 		cal = Utils.getNextValidDate(cal);
 		PendingIntent pendingIntent = null;
 		if (intraDay) {
-			// if calendar was moved forward, set update time to morning 
+			// if calendar was moved forward (from weekend to Monday),
+			// set update time to morning 
 			if (today == cal.get(Calendar.DAY_OF_YEAR)) {
 				int seconds = this.preferences.getInt(Utils.PREF_INTERVAL_BACKGROUND_UPDATE, DEFAULT_REFRESH_INTERVAL) * 60;
 				cal.add(Calendar.SECOND, seconds);

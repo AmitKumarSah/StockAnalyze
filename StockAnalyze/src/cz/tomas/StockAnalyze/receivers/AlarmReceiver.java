@@ -29,8 +29,8 @@ import android.widget.Toast;
 
 public class AlarmReceiver extends BroadcastReceiver {
 
-	/*
-	 * schedule next update and do an update
+	/**
+	 * schedule next update and do an immediate update
 	 * @see android.content.BroadcastReceiver#onReceive(android.content.Context, android.content.Intent)
 	 */
 	@Override
@@ -43,14 +43,13 @@ public class AlarmReceiver extends BroadcastReceiver {
 			scheduler.scheduleNextDayUpdate();
 		
 		try {
-			scheduler.updateImmediatly();
+			scheduler.perfromScheduledUpdate();
 		} catch (Exception e) {
-			e.printStackTrace();
 			String message = context.getString(R.string.failedScheduleUpdate);
 			if (e.getMessage() != null)
 				message += "\n" + e.getMessage();
 			
-			Log.d(Utils.LOG_TAG, message);
+			Log.d(Utils.LOG_TAG, message, e);
 			Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
 		}
 	}
