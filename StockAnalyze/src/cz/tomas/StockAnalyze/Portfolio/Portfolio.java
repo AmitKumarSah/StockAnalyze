@@ -43,19 +43,28 @@ public class Portfolio {
 		this.sqlHelper = new PortfolioSqlHelper(context);
 	}
 	
-	/*
+	/**
 	 * add new Portfolio item to database
 	 */
 	public void addToPortfolio(PortfolioItem item) throws SQLException {
 		this.sqlHelper.addPortfolioItem(item);
 	}
 	
+	/**
+	 * get portfolio items grouped by stock id - sums up positions. So for each stock, that is in 
+	 * portfolio, it will find all portfolio items and group them to get total count and average buy/sell prices
+	 * @return
+	 */
 	public List<PortfolioItem> getGroupedPortfolioItems() {
 		return this.sqlHelper.getGroupedPortfolioItems();
 	}
 	
-	public List<PortfolioItem> getPortfolioItems() {
-		return this.sqlHelper.getPortfolioItems();
+	/**
+	 * get every single portfolio item in database for given stock
+	 * @return
+	 */
+	public List<PortfolioItem> getPortfolioItems(String stockId) {
+		return this.sqlHelper.getPortfolioItems(stockId);
 	}
 	
 	/**

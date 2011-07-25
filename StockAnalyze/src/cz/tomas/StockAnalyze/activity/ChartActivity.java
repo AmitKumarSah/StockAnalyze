@@ -25,6 +25,9 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import com.flurry.android.FlurryAgent;
+
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
@@ -32,6 +35,7 @@ import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.activity.base.BaseActivity;
 import cz.tomas.StockAnalyze.charts.interfaces.IChartTextFormatter;
 import cz.tomas.StockAnalyze.charts.view.CompositeChartView;
+import cz.tomas.StockAnalyze.utils.Consts;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
@@ -39,7 +43,11 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ContextMenu.ContextMenuInfo;
 
 /**
  * Base class for activities containing chart view,
@@ -118,6 +126,39 @@ public abstract class ChartActivity extends BaseActivity {
 		outState.putInt(EXTRA_CHART_DAY_COUNT, this.chartDayCount);
 	}
 
+
+	/** 
+	 * create context menu for chart
+	 * @see android.app.Activity#onCreateContextMenu(android.view.ContextMenu, android.view.View, android.view.ContextMenu.ContextMenuInfo)
+	 */
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+		super.onCreateContextMenu(menu, v, menuInfo);
+		// in case the task is running, don't create context menu
+		if (this.isChartUpdating())
+			return;
+		
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.chart_context_menu, menu);
+	}
+
+	/* 
+	 * @see android.app.Activity#onContextItemSelected(android.view.MenuItem)
+	 */
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		int dayCount = this.getDayCountByResource(item.getItemId());
+		if (dayCount != 0) {
+			this.chartDayCount = dayCount;
+			this.updateChart();
+			Map<String, String> pars = new HashMap<String, String>(2);
+			pars.put(Consts.FLURRY_KEY_CHART_TIME_PERIOD, String.valueOf(dayCount));
+			pars.put(Consts.FLURRY_KEY_CHART_TIME_SOURCE, getClass().getName());
+			FlurryAgent.onEvent(Consts.FLURRY_EVENT_CHART_TIME_PERIOD, pars);
+			return true;
+		} else
+			return super.onContextItemSelected(item);
+	}
 
 	/**
 	 * read data from input intent

@@ -127,8 +127,7 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 	public StockItem getStockItem(PortfolioItem item) {
 		if (stockItems == null)
 			return null;
-		
-		return stockItems.get(item.getId());
+		return stockItems.get(item.getStockId());
 	}
 	
 	/**

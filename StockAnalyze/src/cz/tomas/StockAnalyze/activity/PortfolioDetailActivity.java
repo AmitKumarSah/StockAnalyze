@@ -1,15 +1,14 @@
 package cz.tomas.StockAnalyze.activity;
 
-import cz.tomas.StockAnalyze.R;
-import cz.tomas.StockAnalyze.charts.view.CompositeChartView;
 import android.os.Bundle;
-import android.view.Gravity;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.BaseExpandableListAdapter;
+import android.util.Log;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
+import cz.tomas.StockAnalyze.R;
+import cz.tomas.StockAnalyze.Data.Model.StockItem;
+import cz.tomas.StockAnalyze.Portfolio.PortfolioDetailListAdapter;
+import cz.tomas.StockAnalyze.charts.view.CompositeChartView;
+import cz.tomas.StockAnalyze.utils.Utils;
 
 
 public class PortfolioDetailActivity extends ChartActivity {
@@ -19,97 +18,30 @@ public class PortfolioDetailActivity extends ChartActivity {
 	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 		
 		this.setContentView(R.layout.portfolio_detail_layout);
 		
-		MyExpandableListAdapter mAdapter;
-		ExpandableListView epView = (ExpandableListView) findViewById(R.id.portfolioDetailList);
+		
+		try {
+			StockItem stockItem = getIntent().getParcelableExtra(PortfolioActivity.EXTRA_STOCK_ITEM);
+			this.stockItem = stockItem;
+			TextView title = (TextView) this.findViewById(R.id.portfolioDetailTitle);
+			title.setText(stockItem.getTicker());
+			
+			PortfolioDetailListAdapter adapter = new PortfolioDetailListAdapter(this, stockItem);
+			
+			ExpandableListView epView = (ExpandableListView) findViewById(R.id.portfolioDetailList);
+			epView.setAdapter(adapter);
+		} catch (Exception e) {
+			Log.e(Utils.LOG_TAG, "failed to initialize portfolio detail");
+		}
+
 		this.chartView = (CompositeChartView) this.findViewById(R.id.portfolioDetailChartView);
-		mAdapter = new MyExpandableListAdapter();
-		epView.setAdapter(mAdapter);
-		super.onCreate(savedInstanceState);
+		if (chartView != null && this.stockItem != null) {
+			this.registerForContextMenu(this.chartView);
+			this.updateChart();
+		} else
+			Log.w(Utils.LOG_TAG, "Failed to initialize chart view");
 	}
-
-	 /**
-     * A simple adapter which maintains an ArrayList of photo resource Ids. Each
-     * photo is displayed as an image. This adapter supports clearing the list
-     * of photos and adding a new photo.
-     * 
-     */
-    public class MyExpandableListAdapter extends BaseExpandableListAdapter {
-	    // Sample data set. children[i] contains the children (String[]) for
-	    // groups[i].
-	    private String[] groups = { "Parent1", "Parent2",
-	        "Parent3" };
-	    private String[][] children = { { "Child1" },{ "Child2" }, { "Child3" },{ "Child4" }, { "Child5" } };
-	
-	    public Object getChild(int groupPosition, int childPosition) {
-	        return children[groupPosition][childPosition];
-	    }
-	
-	    public long getChildId(int groupPosition, int childPosition) {
-	        return childPosition;
-	    }
-	
-	    public int getChildrenCount(int groupPosition) {
-	        int i = 0;
-	        try {
-	        i = children[groupPosition].length;
-	
-	        } catch (Exception e) {
-	        }
-	
-	        return i;
-	    }
-	
-	    public TextView getGenericView() {
-	        // Layout parameters for the ExpandableListView
-	        AbsListView.LayoutParams lp = new AbsListView.LayoutParams(
-	            ViewGroup.LayoutParams.FILL_PARENT, 64);
-	
-	        TextView textView = new TextView(PortfolioDetailActivity.this);
-	        textView.setLayoutParams(lp);
-	        // Center the text vertically
-	        textView.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
-	        textView.setTextColor(android.R.color.darker_gray);
-	        // Set the text starting position
-	        textView.setPadding(36, 0, 0, 0);
-	        return textView;
-	    }
-	
-	    public View getChildView(int groupPosition, int childPosition,
-	        boolean isLastChild, View convertView, ViewGroup parent) {
-	        TextView textView = getGenericView();
-	        textView.setText(getChild(groupPosition, childPosition).toString());
-	        return textView;
-	    }
-	
-	    public Object getGroup(int groupPosition) {
-	        return groups[groupPosition];
-	    }
-	
-	    public int getGroupCount() {
-	        return groups.length;
-	    }
-	
-	    public long getGroupId(int groupPosition) {
-	        return groupPosition;
-	    }
-	
-	    public View getGroupView(int groupPosition, boolean isExpanded,
-	        View convertView, ViewGroup parent) {
-	        TextView textView = getGenericView();
-	        textView.setText(getGroup(groupPosition).toString());
-	        return textView;
-	    }
-	
-	    public boolean isChildSelectable(int groupPosition, int childPosition) {
-	        return true;
-	    }
-	
-	    public boolean hasStableIds() {
-	        return true;
-	    }
-
-    }
 }

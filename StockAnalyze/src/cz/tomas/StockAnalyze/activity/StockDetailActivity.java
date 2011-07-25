@@ -23,20 +23,12 @@ package cz.tomas.StockAnalyze.activity;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
-
-import com.flurry.android.FlurryAgent;
 
 import android.app.TabActivity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TabHost.OnTabChangeListener;
@@ -47,7 +39,6 @@ import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.charts.view.CompositeChartView;
 import cz.tomas.StockAnalyze.ui.widgets.ActionBar;
 import cz.tomas.StockAnalyze.ui.widgets.ActionBar.IActionBarListener;
-import cz.tomas.StockAnalyze.utils.Consts;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
@@ -168,38 +159,6 @@ public final class StockDetailActivity extends ChartActivity implements IActionB
 	}
 
 
-	/* 
-	 * create context menu for chart
-	 * @see android.app.Activity#onCreateContextMenu(android.view.ContextMenu, android.view.View, android.view.ContextMenu.ContextMenuInfo)
-	 */
-	@Override
-	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-		super.onCreateContextMenu(menu, v, menuInfo);
-		// in case the task is running, don't create context menu
-		if (this.isChartUpdating())
-			return;
-		
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.chart_context_menu, menu);
-	}
-
-	/* 
-	 * @see android.app.Activity#onContextItemSelected(android.view.MenuItem)
-	 */
-	@Override
-	public boolean onContextItemSelected(MenuItem item) {
-		int dayCount = this.getDayCountByResource(item.getItemId());
-		if (dayCount != 0) {
-			this.chartDayCount = dayCount;
-			this.updateChart();
-			Map<String, String> pars = new HashMap<String, String>(2);
-			pars.put(Consts.FLURRY_KEY_CHART_TIME_PERIOD, String.valueOf(dayCount));
-			pars.put(Consts.FLURRY_KEY_CHART_TIME_SOURCE, getClass().getName());
-			FlurryAgent.onEvent(Consts.FLURRY_EVENT_CHART_TIME_PERIOD, pars);
-			return true;
-		} else
-			return super.onContextItemSelected(item);
-	}
 
 	private void updateCurrentStock() throws NullPointerException, IOException {
 		if (this.stockItem == null)

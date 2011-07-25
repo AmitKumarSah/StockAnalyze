@@ -79,6 +79,8 @@ public class PortfolioActivity extends BaseListActivity implements OnSharedPrefe
 	private static final int DIALOG_PROGRESS = 1000;
 	private static final int DIALOG_ADD_NEW = DIALOG_PROGRESS + 1;
 	
+	public static final String EXTRA_STOCK_ITEM = "portfolioStockItem";
+	
 	private DataManager dataManager;
 	private Portfolio portfolio;
 	private PortfolioListAdapter adapter;
@@ -279,38 +281,7 @@ public class PortfolioActivity extends BaseListActivity implements OnSharedPrefe
 			return true;
 			case R.id.portfolio_item_context_menu_remove:
 				try {
-					if (refreshButton != null)
-						refreshButton.setVisibility(View.VISIBLE);
-					FlurryAgent.onEvent(Consts.FLURRY_EVENT_PORTFOLIO_REMOVE);
-					AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
-	
-						@Override
-						protected void onPreExecute() {
-							showDialog(DIALOG_PROGRESS);
-							super.onPreExecute();
-						}
-						@Override
-						protected Void doInBackground(Void... params) {
-	
-							try {
-								StockItem stock = PortfolioActivity.this.dataManager.getStockItem(portfolioItem.getStockId());
-								portfolio.removeFromPortfolio(stock.getId());
-							} catch (Exception e) {
-								Log.e(Utils.LOG_TAG, "failed to remove portfolio item", e);
-							}
-							return null;
-						}
-						@Override
-						protected void onPostExecute(Void result) {
-							adapter.refresh();
-							if (refreshButton != null)
-								refreshButton.setVisibility(View.GONE);
-							dismissDialog(DIALOG_PROGRESS);
-							super.onPostExecute(result);
-						}
-						
-					};
-					task.execute((Void[])null);
+					removePortfolioRecord(portfolioItem);
 				} catch (Exception e) {
 					Log.e(Utils.LOG_TAG, "failed to remove portfolio item", e);
 				}
@@ -334,10 +305,54 @@ public class PortfolioActivity extends BaseListActivity implements OnSharedPrefe
 	}
 
 	/**
+	 * remove all portfolio items in portfolio group,
+	 * this task is done on background and progress dialog is showed while
+	 * the operation is in progress
+	 * @param portfolioItem
+	 */
+	private void removePortfolioRecord(final PortfolioItem portfolioItem) {
+		if (refreshButton != null)
+			refreshButton.setVisibility(View.VISIBLE);
+		FlurryAgent.onEvent(Consts.FLURRY_EVENT_PORTFOLIO_REMOVE);
+		AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
+
+			@Override
+			protected void onPreExecute() {
+				showDialog(DIALOG_PROGRESS);
+				super.onPreExecute();
+			}
+			@Override
+			protected Void doInBackground(Void... params) {
+
+				try {
+					//StockItem stock = PortfolioActivity.this.dataManager.getStockItem(portfolioItem.getStockId());
+					StockItem stock = adapter.getStockItem(portfolioItem);
+					portfolio.removeFromPortfolio(stock.getId());
+				} catch (Exception e) {
+					Log.e(Utils.LOG_TAG, "failed to remove portfolio item", e);
+				}
+				return null;
+			}
+			@Override
+			protected void onPostExecute(Void result) {
+				adapter.refresh();
+				if (refreshButton != null)
+					refreshButton.setVisibility(View.GONE);
+				dismissDialog(DIALOG_PROGRESS);
+				super.onPostExecute(result);
+			}
+			
+		};
+		task.execute((Void[])null);
+	}
+
+	/**
 	 * 
 	 */
 	private void goToPortfolioDetail(PortfolioItem item) {
 		Intent intent = new Intent(this, PortfolioDetailActivity.class);
+		StockItem stockItem = this.adapter.getStockItem(item);
+		intent.putExtra(EXTRA_STOCK_ITEM, stockItem);
 		this.startActivity(intent);
 	}
 

@@ -131,6 +131,14 @@ public final class FormattingUtils {
 		return result;
 	}
 	
+	public static String formatStockShortDate(long ms) {
+		Calendar cal = Calendar.getInstance(Utils.PRAGUE_TIME_ZONE);
+		cal.setTimeInMillis(ms);
+		DateFormat formatter = null;
+		formatter = DateFormat.getDateInstance(DateFormat.SHORT);
+		return formatter.format(cal.getTime());
+	}
+	
 	public static String formatStockShortDate(Calendar cal) {
 		DateFormat formatter = null;
 		formatter = DateFormat.getDateInstance(DateFormat.SHORT);
