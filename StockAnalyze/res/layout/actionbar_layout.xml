@@ -32,20 +32,28 @@
 	        android:layout_alignParentTop="true"
 	        android:layout_alignParentBottom="true"/>
 
-		<TextView android:id="@+id/actionTitle"
-			style="@style/actionBar.title_text"
-        	android:layout_alignWithParentIfMissing="true"
-			android:layout_toRightOf="@+id/actionHomeButton"
-			android:layout_toLeftOf="@+id/actionTopButtonsLayout"
-	        android:layout_alignParentTop="true"
-	        android:layout_alignParentBottom="false" />
-	   <TextView android:id="@+id/actionSubTitle" 
-	   		style="@style/actionBar.subtitle_text"
-	   		android:layout_alignWithParentIfMissing="true"
-			android:layout_toRightOf="@+id/actionHomeButton"
-			android:layout_toLeftOf="@+id/actionTopButtonsLayout"
-			android:layout_alignParentBottom="true"
-			android:layout_below="@+id/actionTitle" />
+		<LinearLayout
+		    android:id="@+id/actionTextContainer"
+		    android:layout_width="wrap_content"
+		    android:background="@drawable/text_top_selector"
+		    android:layout_height="fill_parent"
+		    android:focusable="true"
+		    android:focusableInTouchMode="true"
+		    android:clickable="true"
+		    android:layout_alignWithParentIfMissing="true"
+		    android:orientation="vertical"
+		    android:paddingRight="10dp">
+		    <TextView android:id="@+id/actionTitle"
+    			style="@style/actionBar.title_text"
+    			android:layout_weight="1"
+    			android:duplicateParentState="true" />
+    	   <TextView android:id="@+id/actionSubTitle" 
+    	   		style="@style/actionBar.subtitle_text"
+    	   		android:layout_weight="0.8"
+    	   		android:duplicateParentState="true"
+    	   		android:layout_gravity="bottom"
+    			android:layout_below="@+id/actionTitle" />
+		</LinearLayout>
 
 		<LinearLayout android:id="@+id/actionTopButtonsLayout"
 		    android:layout_width="wrap_content"

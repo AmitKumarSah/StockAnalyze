@@ -99,19 +99,13 @@ public class ActionBar extends RelativeLayout {
         
         //TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.ActionBarAttrs);
         
+        final View textContainer = this.findViewById(R.id.actionTextContainer);
         final TextView titleView = (TextView) this.findViewById(R.id.actionTitle);
-        titleView.setOnClickListener(homeClickListener);
-        titleView.setOnFocusChangeListener(new OnFocusChangeListener() {
-			
-			@Override
-			public void onFocusChange(View v, boolean hasFocus) {
-				if (hasFocus) {
-					titleView.setShadowLayer(18f, 0f, 0f, Color.WHITE);
-				} else {
-					titleView.setShadowLayer(0f, 0f, 0f, Color.WHITE);
-				}
-			}
-		});
+        final View subtitleView = this.findViewById(R.id.actionSubTitle);
+        subtitleView.setOnFocusChangeListener(textFocusChangedListener);
+        textContainer.setOnClickListener(homeClickListener);
+        //titleView.setOnClickListener(homeClickListener);
+        titleView.setOnFocusChangeListener(textFocusChangedListener);
         
         String ns = "http://schemas.android.com/apk/res/cz.tomas.StockAnalyze";
         String text = context.getText(attrs.getAttributeResourceValue(ns, "titleText", R.string.app_name)).toString();
@@ -161,6 +155,18 @@ public class ActionBar extends RelativeLayout {
 	public void setActionBarListener(IActionBarListener listener) {
 		this.actionBarListener = listener;
 	}
+	
+	private OnFocusChangeListener textFocusChangedListener = new OnFocusChangeListener() {
+		
+		@Override
+		public void onFocusChange(View v, boolean hasFocus) {
+			if (hasFocus) {
+				((TextView) v).setShadowLayer(18f, 0f, 0f, Color.WHITE);
+			} else {
+				((TextView) v).setShadowLayer(0f, 0f, 0f, Color.WHITE);
+			}
+		}
+	};
 	
 	private OnClickListener actionClickListener = new OnClickListener() {
 		
