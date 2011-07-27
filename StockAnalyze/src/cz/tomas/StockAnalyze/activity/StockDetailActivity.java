@@ -213,7 +213,6 @@ public final class StockDetailActivity extends ChartActivity implements IActionB
 		if (txtPrice != null) {
 			String strPrice = priceFormat.format(this.dayData.getPrice());
 			txtPrice.setText(strPrice);
-			//txtPrice.setText(String.format("%s (%s%%)", strPrice, strChange));
 		}
 		if (txtChange != null) {
 			String strChange = percentFormat.format(this.dayData.getChange());

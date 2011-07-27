@@ -31,6 +31,7 @@ import java.util.Map.Entry;
 
 import android.os.Handler;
 import android.util.Log;
+import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.DataProviderAdviser;
 import cz.tomas.StockAnalyze.Data.IStockDataProvider;
 import cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener;
@@ -41,9 +42,10 @@ import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetDataException;
 import cz.tomas.StockAnalyze.utils.Utils;
 
 /**
+ * Adapter from PsePatriaDataProvider, that can registered in {@link DataManager}
+ * 
  * @author tomas
  *
- * Adapter from PsePatriaDataProvider
  */
 public class PsePatriaDataAdapter implements IStockDataProvider {
 
@@ -57,9 +59,7 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 							listener.OnStockDataUpdateBegin(PsePatriaDataAdapter.this);
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
-
-						Log.d(Utils.LOG_TAG, "OnStockDataUpdateBegin failed!");
+						Log.e(Utils.LOG_TAG, "OnStockDataUpdateBegin failed!", e);
 					}
 					// the market could be closed, so we don't neccessarly get updated data
 					if (provider.refresh()) {
@@ -73,16 +73,12 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 						}
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
-					Log.d(Utils.LOG_TAG, "Regular update failed!");
+					Log.e(Utils.LOG_TAG, "Regular update failed!", e);
 				}
-				// Schedule next update
-				if (PsePatriaDataAdapter.this.updateHandler != null)
-					PsePatriaDataAdapter.this.updateHandler.postDelayed(PsePatriaDataAdapter.this.updateTask, refreshInterval);
 		}
 	}
 
-	PsePatriaDataProvider provider;
+	private PsePatriaDataProvider provider;
 	/*
 	 * time interval between refreshes - in milliseconds
 	 */
@@ -91,18 +87,18 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 	//Timer timer;
 	private boolean enabled;
 
-	List<IStockDataListener> eventListeners;
+	private List<IStockDataListener> eventListeners;
 	
 	/*
 	 * mapping between ticker and ISIN (id)
 	 * patria does not contain isin information
 	 */
-	Map<String, String> tickerIsinMapping;
+	private Map<String, String> tickerIsinMapping;
 	
-	Market market;
+	private Market market;
 	
-	UpdateTask updateTask;
-	Handler updateHandler;
+	private UpdateTask updateTask;
+	private Handler updateHandler;
 	
 	public PsePatriaDataAdapter() {
 		this.provider = new PsePatriaDataProvider();
@@ -129,13 +125,9 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 
 		this.eventListeners = new ArrayList<IStockDataListener>();
 		this.updateTask = new UpdateTask();
-	    
-	    //this.updateHandler = new Handler();
-	    
-	    //this.updateHandler.postDelayed(this.updateTask, 0);
 	}
 	
-	/* 
+	/** 
 	 * get last known data from provider
 	 * @see cz.tomas.StockAnalyze.Data.IStockDataProvider#getLastData(java.lang.String)
 	 */
@@ -145,7 +137,7 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 		try {
 			dataItem = this.provider.getLastData(ticker);
 		} catch (Exception e) {
-			e.printStackTrace();
+			Log.e(Utils.LOG_TAG, "failed to get last known data from provider", e);
 			throw new FailedToGetDataException(e);
 		}
 		DayData data = null;
@@ -156,7 +148,7 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 		return data;
 	}
 
-	/* 
+	/**
 	 * get (historical) data from specific day
 	 * NOT supported for this data provider!
 	 * @see cz.tomas.StockAnalyze.Data.IStockDataProvider#getDayData(java.lang.String, java.util.Calendar)
@@ -167,7 +159,7 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 		return null;
 	}
 
-	/* 
+	/** 
 	 * get data from within the one day
 	 * NOT supported by this provider
 	 * @see cz.tomas.StockAnalyze.Data.IStockDataProvider#getIntraDayData(java.lang.String, java.util.Date, int)
@@ -179,7 +171,7 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 		return null;
 	}
 
-	/* 
+	/** 
 	 * get list of available stocks from data provider
 	 * @see cz.tomas.StockAnalyze.Data.IStockDataProvider#getAvailableStockList()
 	 */
@@ -208,7 +200,8 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 		return items;
 	}
 
-	/* id of data provider
+	/**
+	 * id of data provider
 	 * @see cz.tomas.StockAnalyze.Data.IStockDataProvider#getId()
 	 */
 	@Override
@@ -216,7 +209,8 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 		return "PSE_PATRIA";
 	}
 
-	/* Descriptive name of data provider
+	/**
+	 * Descriptive name of data provider
 	 * @see cz.tomas.StockAnalyze.Data.IStockDataProvider#getDescriptiveName()
 	 */
 	@Override
@@ -224,7 +218,7 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 		return "Prague Stock Exchange";
 	}
 
-	/* 
+	/** 
 	 * refresh data from provider 
 	 * @see cz.tomas.StockAnalyze.Data.IStockDataProvider#refresh()
 	 */
@@ -242,6 +236,9 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 		return result;
 	}
 
+	/**
+	 * get adviser describing this pse provider
+	 */
 	@Override
 	public DataProviderAdviser getAdviser() {
 		DataProviderAdviser adviser = new DataProviderAdviser(true, false, false, this.market);
@@ -258,9 +255,6 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 		this.enabled = enabled;
 		if (this.updateHandler != null) {
 			this.updateHandler.removeCallbacks(this.updateTask);
-			if (enabled)
-				this.updateHandler.postDelayed(this.updateTask,
-						this.refreshInterval);
 		}
 	}
 

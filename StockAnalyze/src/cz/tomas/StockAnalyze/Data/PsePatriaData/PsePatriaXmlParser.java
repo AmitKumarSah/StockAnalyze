@@ -25,7 +25,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.TimeZone;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
@@ -119,7 +118,7 @@ public final class PsePatriaXmlParser {
 				try {
 					stream.close();
 				} catch (IOException e) {
-					e.printStackTrace();
+					Log.e(Utils.LOG_TAG, "failed to close stream",e);
 				}
 		}
 		return items;

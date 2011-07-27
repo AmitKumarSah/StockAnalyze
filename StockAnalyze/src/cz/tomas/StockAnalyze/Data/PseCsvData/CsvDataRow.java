@@ -21,6 +21,8 @@
 package cz.tomas.StockAnalyze.Data.PseCsvData;
 
 /**
+ * model class for csv file downloaded from ftp.pse.cz
+ * 
  * @author tomas
  *
  */

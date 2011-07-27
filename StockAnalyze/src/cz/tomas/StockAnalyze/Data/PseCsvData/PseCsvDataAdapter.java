@@ -41,13 +41,16 @@ import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetDataException;
 import cz.tomas.StockAnalyze.utils.Utils;
 
 /**
+ * Adapter for pse provider that can be registered in DataManager.
+ * It adapts the data from pse provider to DataManager model
+ * 
  * @author tomas
  *
  */
 public class PseCsvDataAdapter implements IStockDataProvider {
 
 	private PseCsvDataProvider provider;
-	Set<IStockDataListener> listeners;
+	private Set<IStockDataListener> listeners;
 
 	public PseCsvDataAdapter() {
 		this.provider = new PseCsvDataProvider();
@@ -78,7 +81,8 @@ public class PseCsvDataAdapter implements IStockDataProvider {
 		});
 	}
 
-	/* (non-Javadoc)
+	/**
+	 * register listener for updates
 	 * @see cz.tomas.StockAnalyze.Data.Interfaces.IObservableDataProvider#addListener(cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener)
 	 */
 	@Override	
@@ -86,7 +90,8 @@ public class PseCsvDataAdapter implements IStockDataProvider {
 		this.listeners.add(listener);
 	}
 
-	/* (non-Javadoc)
+	/**
+	 * get last known available day data, that is current data
 	 * @see cz.tomas.StockAnalyze.Data.IStockDataProvider#getLastData(java.lang.String)
 	 */
 	@Override
@@ -100,7 +105,8 @@ public class PseCsvDataAdapter implements IStockDataProvider {
 		return this.createDayData(row);
 	}
 
-	/* (non-Javadoc)
+	/**
+	 * get day data for particular stock and date
 	 * @see cz.tomas.StockAnalyze.Data.IStockDataProvider#getDayData(java.lang.String, java.util.Calendar)
 	 */
 	@Override
@@ -109,7 +115,8 @@ public class PseCsvDataAdapter implements IStockDataProvider {
 		return this.createDayData(row);
 	}
 
-	/* (non-Javadoc)
+	/**
+	 * get all stocks that this provider supports
 	 * @see cz.tomas.StockAnalyze.Data.IStockDataProvider#getAvailableStockList()
 	 */
 	@Override
@@ -123,8 +130,8 @@ public class PseCsvDataAdapter implements IStockDataProvider {
 		return "PSE";
 	}
 
-	/*
-	 * doesn't support
+	/**
+	 * this provider doesn't support intraday data
 	 * @see cz.tomas.StockAnalyze.Data.IStockDataProvider#getIntraDayData(java.lang.String, java.util.Date, int)
 	 */
 	@Override
@@ -137,7 +144,8 @@ public class PseCsvDataAdapter implements IStockDataProvider {
 		return this.provider.getDescriptiveName();
 	}
 
-	/* (non-Javadoc)
+	/**
+	 * refresh provider - ask remote server for data
 	 * @see cz.tomas.StockAnalyze.Data.IStockDataProvider#refresh()
 	 */
 	@Override
@@ -152,20 +160,20 @@ public class PseCsvDataAdapter implements IStockDataProvider {
 		return adviser;
 	}
 
-	/* (non-Javadoc)
+	/** 
+	 * not yet implemented
 	 * @see cz.tomas.StockAnalyze.Data.IStockDataProvider#enable(boolean)
 	 */
 	@Override
 	public void enable(boolean enabled) {
 	}
 	
-	/*
+	/**
 	 * convert csv data row to DayData
 	 */
 	private DayData createDayData(CsvDataRow dataRow) {
 		float price, change, volume, yearMinimum, yearMaximum;
 		Date date;
-		int tradedPieces;
 		
 		if (dataRow == null) {
 			throw new NullPointerException("dataRow is null");
@@ -204,12 +212,6 @@ public class PseCsvDataAdapter implements IStockDataProvider {
 			yearMinimum = Float.parseFloat(dataRow.getYearMin());
 		} catch (NumberFormatException e) {
 			yearMinimum = -1;
-			Log.e(Utils.LOG_TAG, "parse error", e);
-		}
-		try {
-			tradedPieces = (int) Float.parseFloat(dataRow.getTradedPieces());
-		} catch (NumberFormatException e) {
-			tradedPieces = -1;
 			Log.e(Utils.LOG_TAG, "parse error", e);
 		}
 		return new DayData(price, change, date, volume, yearMaximum, yearMinimum, Utils.createDateOnlyCalendar(date).getTimeInMillis());
