@@ -8,16 +8,14 @@
     	android:layout_width="fill_parent" 
     	android:layout_height="wrap_content" />
     
-    <TextView android:id="@+id/portfolioDetailTitle" 
-    	android:layout_height="wrap_content"
-		android:textAppearance="?android:attr/textAppearanceLarge"
-		android:text="TextView" 
-		android:layout_width="fill_parent" />
-    <ExpandableListView android:id="@+id/portfolioDetailList"
-    	android:layout_width="fill_parent" android:layout_height="220dp">
-        <!-- Preview: listitem=@android:layout/simple_expandable_list_item_1 -->
-    </ExpandableListView>
-    <cz.tomas.StockAnalyze.charts.view.CompositeChartView android:id="@+id/portfolioDetailChartView" 
-    	android:layout_width="fill_parent" 
-    	android:layout_height="wrap_content" />
+  	<TextView android:id="@+id/portfolioDetailTitle"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content" 
+		android:textAppearance="?android:attr/textAppearanceMedium"
+		android:text="TextView"  />
+	<ExpandableListView android:id="@+id/portfolioDetailList"
+	  	android:layout_width="fill_parent"
+	  	android:layout_height="fill_parent" >
+	      <!-- Preview: listitem=@android:layout/simple_expandable_list_item_1 -->
+	</ExpandableListView>
 </LinearLayout>

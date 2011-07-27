@@ -17,7 +17,6 @@ public class PortfolioDetailListAdapter extends BaseExpandableListAdapter {
 
 	private static final int CHILD_COUNT = 1;
 	
-	//private Map<String, List<PortfolioItem>> portfolioItems;
 	private List<PortfolioItem> portfolioGroups;
 		
 	private LayoutInflater inflater;
@@ -28,31 +27,22 @@ public class PortfolioDetailListAdapter extends BaseExpandableListAdapter {
 		this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		Portfolio portfolio = new Portfolio(context);
 		
-		//this.portfolioItems = new HashMap<String, List<PortfolioItem>>();
-		//this.portfolioGroups = portfolio.getGroupedPortfolioItems();
-		//List<PortfolioItem> items = portfolio.getPortfolioItems(stockItem.getId());
 		this.portfolioGroups = portfolio.getPortfolioItems(stockItem.getId());
-		
-//		for (PortfolioItem portfolioItem : items) {
-//			String stockId = portfolioItem.getStockId();
-//			if (! this.portfolioItems.containsKey(stockId) ) {
-//				this.portfolioItems.put(stockId, new ArrayList<PortfolioItem>());
-//			}
-//			this.portfolioItems.get(stockId).add(portfolioItem);
-//		}
 	}
 		
 	@Override
 	public Object getChild(int groupPosition, int childPosition) {
-//		String stockId = this.portfolioGroups.get(groupPosition).getStockId();
-//		PortfolioItem portfolioItem = this.portfolioItems.get(stockId).get(childPosition);
+		if (this.portfolioGroups == null) {
+			return null;
+		}
 		return this.portfolioGroups.get(groupPosition);
 	}
 
 	@Override
 	public long getChildId(int groupPosition, int childPosition) {
-//		String stockId = this.portfolioGroups.get(groupPosition).getStockId();
-//		PortfolioItem portfolioItem = this.portfolioItems.get(stockId).get(childPosition);
+		if (this.portfolioGroups == null) {
+			return 0;
+		}
 		PortfolioItem portfolioItem = this.portfolioGroups.get(groupPosition);
 		return portfolioItem.getId();
 	}
@@ -83,23 +73,30 @@ public class PortfolioDetailListAdapter extends BaseExpandableListAdapter {
 
 	@Override
 	public int getChildrenCount(int groupPosition) {
-		//String stockId = this.portfolioGroups.get(groupPosition).getStockId();
-		
 		return CHILD_COUNT;
 	}
 
 	@Override
 	public Object getGroup(int groupPosition) {
+		if (this.portfolioGroups == null) {
+			return null;
+		}
 		return this.portfolioGroups.get(groupPosition);
 	}
 
 	@Override
 	public int getGroupCount() {
+		if (this.portfolioGroups == null) {
+			return 0;
+		}
 		return this.portfolioGroups.size();
 	}
 
 	@Override
 	public long getGroupId(int groupPosition) {
+		if (this.portfolioGroups == null) {
+			return -1;
+		}
 		PortfolioItem group = this.portfolioGroups.get(groupPosition);
 		return group.getId();
 	}
