@@ -86,6 +86,13 @@
 					android:layout_height="fill_parent"
 					android:visibility="gone"
 					android:minHeight="150dp"/>
+				
+				<TextView 
+					style="@style/subText"
+					android:singleLine="false"
+					android:inputType="textMultiLine"
+					android:padding="8dp"
+					android:text="@string/disclaimerShortText" />
 			</TableLayout>
-	</ScrollView>
+		</ScrollView>
 </LinearLayout>

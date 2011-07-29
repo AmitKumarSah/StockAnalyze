@@ -58,6 +58,7 @@ import android.view.ContextMenu.ContextMenuInfo;
  */
 public abstract class ChartActivity extends BaseActivity {
 	
+
 	interface IChartActivityListener {
 		void onChartUpdateBegin();
 		void onChartUpdateFinish();
@@ -65,10 +66,17 @@ public abstract class ChartActivity extends BaseActivity {
 	
 	protected static final String EXTRA_CHART_DAY_COUNT = "cz.tomas.StockAnalyze.chart_day_count";
 	protected static final int MAX_CACHE_SIZE = 4;
+	private static final int DEFAULT_CHART_DAY_COUNT = 23;
+	private static final int DAYS_WEEK = 5;
+	private static final int DAYS_YEAR = 252;
+	private static final int DAYS_MONTH = 23;
+	private static final int DAYS_6MONTH = 126;
+	private static final int DAYS_3MONTH = 65;
+	private static final int DAYS_2WEEKS = 10;
 	
 	protected StockItem stockItem;
 	protected DataManager dataManager;
-	protected int chartDayCount = 10;
+	protected int chartDayCount = DEFAULT_CHART_DAY_COUNT;
 	protected CompositeChartView chartView;
 	protected DrawChartTask chartTask;
 	protected DayData dayData;
@@ -89,12 +97,12 @@ public abstract class ChartActivity extends BaseActivity {
 		
 		if (DAY_COUNT_MAP == null) {
 			DAY_COUNT_MAP = new HashMap<Integer, Integer>();
-			DAY_COUNT_MAP.put(5, R.string.chart5days);
-			DAY_COUNT_MAP.put(10, R.string.chart10days);
-			DAY_COUNT_MAP.put(21, R.string.chartMonth);
-			DAY_COUNT_MAP.put(63, R.string.chart3months);
-			DAY_COUNT_MAP.put(126, R.string.chart6months);
-			DAY_COUNT_MAP.put(252, R.string.chartYear);
+			DAY_COUNT_MAP.put(DAYS_WEEK, R.string.chart5days);
+			DAY_COUNT_MAP.put(DAYS_2WEEKS, R.string.chart10days);
+			DAY_COUNT_MAP.put(DAYS_MONTH, R.string.chartMonth);
+			DAY_COUNT_MAP.put(DAYS_3MONTH, R.string.chart3months);
+			DAY_COUNT_MAP.put(DAYS_6MONTH, R.string.chart6months);
+			DAY_COUNT_MAP.put(DAYS_YEAR, R.string.chartYear);
 		}
 
 		if (savedInstanceState != null) {
@@ -209,22 +217,22 @@ public abstract class ChartActivity extends BaseActivity {
 		// day counts are work days only
 		switch (id) {
 		case R.id.chart10days:
-			dayCount = 10;
+			dayCount = DAYS_2WEEKS;
 			break;
 		case R.id.chart3months:
-			dayCount = 63;
+			dayCount = DAYS_3MONTH;
 			break;
 		case R.id.chart5days:
-			dayCount = 5;
+			dayCount = DAYS_WEEK;
 			break;
 		case R.id.chart6months:
-			dayCount =  126;
+			dayCount =  DAYS_6MONTH;
 			break;
 		case R.id.chartMonth:
-			dayCount = 21;
+			dayCount = DAYS_MONTH;
 			break;
 		case R.id.chartYear:
-			dayCount = 252;
+			dayCount = DAYS_YEAR;
 			break;
 		default:
 			break;
