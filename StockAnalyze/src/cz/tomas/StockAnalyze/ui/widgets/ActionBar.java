@@ -58,6 +58,7 @@ public class ActionBar extends RelativeLayout {
 	 * text under title - display last update time here
 	 */
 	private TextView subtitleView; 
+	private TextView titleView;
 	private static String lastUpdateText;
 	
 	private IActionBarListener actionBarListener;
@@ -67,7 +68,8 @@ public class ActionBar extends RelativeLayout {
 
 		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.actionbar_layout, this);
-        
+
+        this.titleView = (TextView) this.findViewById(R.id.actionTitle);
         this.subtitleView = (TextView) this.findViewById(R.id.actionSubTitle);
         if (this.subtitleView != null && lastUpdateText != null)
         	this.subtitleView.setText(lastUpdateText);
@@ -97,15 +99,9 @@ public class ActionBar extends RelativeLayout {
         else
         	Log.d(Utils.LOG_TAG, "action bar home button not found");
         
-        //TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.ActionBarAttrs);
-        
         final View textContainer = this.findViewById(R.id.actionTextContainer);
-        final TextView titleView = (TextView) this.findViewById(R.id.actionTitle);
-        final View subtitleView = this.findViewById(R.id.actionSubTitle);
-        subtitleView.setOnFocusChangeListener(textFocusChangedListener);
         textContainer.setOnClickListener(homeClickListener);
-        //titleView.setOnClickListener(homeClickListener);
-        titleView.setOnFocusChangeListener(textFocusChangedListener);
+        textContainer.setOnFocusChangeListener(this.textFocusChangedListener);
         
         String ns = "http://schemas.android.com/apk/res/cz.tomas.StockAnalyze";
         String text = context.getText(attrs.getAttributeResourceValue(ns, "titleText", R.string.app_name)).toString();
@@ -161,9 +157,11 @@ public class ActionBar extends RelativeLayout {
 		@Override
 		public void onFocusChange(View v, boolean hasFocus) {
 			if (hasFocus) {
-				((TextView) v).setShadowLayer(18f, 0f, 0f, Color.WHITE);
+				titleView.setShadowLayer(18f, 0f, 0f, Color.WHITE);
+				subtitleView.setShadowLayer(18f, 0f, 0f, Color.WHITE);
 			} else {
-				((TextView) v).setShadowLayer(0f, 0f, 0f, Color.WHITE);
+				titleView.setShadowLayer(0f, 0f, 0f, Color.WHITE);
+				subtitleView.setShadowLayer(0f, 0f, 0f, Color.WHITE);
 			}
 		}
 	};
@@ -190,6 +188,8 @@ public class ActionBar extends RelativeLayout {
 			Intent intent = new Intent();
 			intent.setClass(getContext(), HomeActivity.class);
 			getContext().startActivity(intent);
+			
+			FlurryAgent.logEvent(Consts.FLURRY_EVENT_ACTION_HOME);
 		}
 	};
 

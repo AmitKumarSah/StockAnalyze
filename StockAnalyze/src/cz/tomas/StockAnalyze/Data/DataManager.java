@@ -109,6 +109,8 @@ public class DataManager implements IStockDataListener {
 	public List<StockItem> search(String pattern, Market market) throws NullPointerException, FailedToGetDataException {
 		// FIXME
 		IStockDataProvider provider = DataProviderFactory.getRealTimeDataProvider(market);
+		if (provider == null)
+			throw new NullPointerException("failed to find appropriate data provider to search for stock");
 		List<StockItem> stocks = provider.getAvailableStockList();
 		if (stocks == null)
 			throw new NullPointerException("can't get list of available stock items");
