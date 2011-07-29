@@ -68,6 +68,14 @@ public class Portfolio {
 	}
 	
 	/**
+	 * get all portfolio items
+	 * (test and debug purposes so far)
+	 */
+	public List<PortfolioItem> getPortfolioItems() {
+		return this.sqlHelper.getPortfolioItems();
+	}
+	
+	/**
 	 * remove one portfolio record from db
 	 */
 	public void removeFromPortfolio(int id) {

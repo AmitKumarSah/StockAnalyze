@@ -21,7 +21,6 @@
 package cz.tomas.StockAnalyze.test;
 
 import cz.tomas.StockAnalyze.activity.StockListActivity;
-import android.opengl.Visibility;
 import android.test.ActivityInstrumentationTestCase2;
 import android.view.View;
 import android.widget.ListView;
@@ -36,7 +35,7 @@ public class StockListActivityTest extends ActivityInstrumentationTestCase2<Stoc
 	ListView listView;
 	View progressView;
 	
-	private final int STOCK_COUNT = 16;
+	private final int STOCK_COUNT = 17;
 	private final int WAIT_TIME = 20000;
 	
 	/**
@@ -51,7 +50,7 @@ public class StockListActivityTest extends ActivityInstrumentationTestCase2<Stoc
 		super.setUp();
 		this.activity = this.getActivity();
 		listView = this.activity.getListView();
-		this.progressView = this.activity.findViewById(cz.tomas.StockAnalyze.R.id.progressBar);
+		this.progressView = this.activity.findViewById(cz.tomas.StockAnalyze.R.id.actionRefreshButton);
 	}
 	
 	public void testPreconditions() {
