@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="horizontal"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:padding="4dp"
+	android:layout_marginLeft="64dp">
+  
+    <TextView android:id="@+id/portfolioGroupDate"
+    	android:layout_width="wrap_content" 
+    	android:textAppearance="?android:attr/textAppearanceMedium" 
+    	android:text="ticker" 
+    	android:layout_weight="1"
+    	android:layout_height="wrap_content"
+    	android:paddingLeft="36dp" />
+    <TextView android:id="@+id/portfolioGroupCount"
+    	android:layout_width="wrap_content" 
+    	android:textAppearance="?android:attr/textAppearanceMedium" 
+    	android:text="count"
+    	android:layout_weight="1" 
+    	android:layout_height="wrap_content" />
+    <TextView android:id="@+id/portfolioGroupValue"
+    	android:layout_width="wrap_content" 
+    	android:textAppearance="?android:attr/textAppearanceMedium" 
+    	android:text="value" 
+    	android:layout_weight="1"
+    	android:layout_height="wrap_content" />
+    
+</LinearLayout>
