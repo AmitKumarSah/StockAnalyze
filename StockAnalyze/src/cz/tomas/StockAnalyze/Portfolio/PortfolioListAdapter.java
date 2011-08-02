@@ -217,19 +217,22 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 			}
         }
         if (holder.txtPortfolioValue != null && holder.txtPortfolioValueChange != null && data != null) {
-        	float currentValue = portfolioItem.getStockCount()  * data.getPrice();
-        	if (includeFee) {
-        		currentValue -= portfolioItem.getBuyFee();
-        		currentValue -= portfolioItem.getSellFee();
-        	}
-        	float startValue = portfolioItem.getStartValue();
-        	float change = ((currentValue / startValue) * 100) - 100;
+        	// price of all stocks currently held:
+        	float currentMarketValue = portfolioItem.getCurrentStockCount() * data.getPrice();
+        	// value of sold items, this is negative number
+        	float soldItemsValue = portfolioItem.getSoldStockCount() * portfolioItem.getSellPrice();
+        	float boughtItemsValue = portfolioItem.getBoughtStockCount() * portfolioItem.getBuyPrice();
+        	float portfolioValue = boughtItemsValue + soldItemsValue;
+        	
+        	float change = calculateChange(portfolioItem, currentMarketValue);
+        	
         	NumberFormat percentFormat = FormattingUtils.getPercentFormat();
-        	String strAbsChange = percentFormat.format(currentValue - startValue);
+        	String strAbsChange = percentFormat.format(currentMarketValue - portfolioValue);
         	String strChange = percentFormat.format(change);
+        	String strCurrentValue = percentFormat.format(currentMarketValue);
         	
         	holder.txtPortfolioValueChange.setText(String.format("%s (%s%%)", strAbsChange, strChange));
-        	holder.txtPortfolioValue.setText(String.valueOf(currentValue));
+        	holder.txtPortfolioValue.setText(strCurrentValue);
         	// set background drawable according to positive/negative portfolio value change
 			if (change > 0 && holder.portfolioGroupView != null) {
 				holder.portfolioGroupView.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.groupbox_green_shape));
@@ -243,6 +246,30 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
         }
 	}
 	
+	/**
+	 * @param portfolioItem
+	 * @param itemCurrentValue
+	 * @return
+	 */
+	private float calculateChange(PortfolioItem portfolioItem, float itemCurrentValue) {
+    	// value of sold items, this is negative number
+		float soldItemsValue = portfolioItem.getSoldStockCount() * portfolioItem.getSellPrice();
+		float boughtItemsValue = portfolioItem.getBoughtStockCount() * portfolioItem.getBuyPrice();
+		float portfolioValue = boughtItemsValue + soldItemsValue;
+		float change = 0;
+		if (portfolioValue != 0 && itemCurrentValue != 0) {
+			change = ((itemCurrentValue / portfolioValue) * 100) - 100;
+		} 
+		else if (itemCurrentValue == 0) {
+			// we sold all we had and now have nothing
+			change = ((boughtItemsValue / -soldItemsValue) * 100) - 100;
+		}
+		if (portfolioValue < 0) {
+			change *= -1f;
+		}
+		return change;
+	}
+
 	/**
 	 * task that loads portfolio items from db 
 	 * and add the to the collection of PortfolioListAdapter
@@ -286,13 +313,18 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 							StockItem stockItem = dataManager.getStockItem(portfolioItem.getStockId());
 							stockItems.put(portfolioItem.getStockId(), stockItem);
 
-							float itemValue = portfolioItem.getStockCount() * dayData.getPrice();
+							float itemValue = portfolioItem.getCurrentStockCount() * dayData.getPrice();
 							if (includeFee) {
 								itemValue -= portfolioItem.getBuyFee();
 								itemValue -= portfolioItem.getSellFee();
 							}
+							float soldItemsValue = portfolioItem.getSoldStockCount() * portfolioItem.getSellPrice();
+				        	float boughtItemsValue = portfolioItem.getBoughtStockCount() * portfolioItem.getBuyPrice();
+				        	float portfolioValue = boughtItemsValue + soldItemsValue;
+				        	
+							float absChange = itemValue - portfolioValue;
 							totalValueSum += itemValue;
-							totalChangeSum += itemValue- portfolioItem.getStartValue();
+							totalChangeSum += absChange;
 						}
 					}
 				} catch (Exception e) {

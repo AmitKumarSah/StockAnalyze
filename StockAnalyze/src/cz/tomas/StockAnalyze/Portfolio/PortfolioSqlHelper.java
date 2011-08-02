@@ -22,7 +22,9 @@ package cz.tomas.StockAnalyze.Portfolio;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -72,7 +74,7 @@ public class PortfolioSqlHelper extends DataSqlHelper {
 			values.put("stock_id", item.getStockId());
 			values.put("buy_date", item.getBuyDate());
 			values.put("sell_date", item.getSellDate());
-			values.put("count", item.getStockCount());
+			values.put("count", item.getBoughtStockCount());
 			values.put("buy_price", item.getBuyPrice());
 			values.put("sell_price", item.getSellPrice());
 			values.put("buy_fee", item.getBuyFee());
@@ -91,21 +93,23 @@ public class PortfolioSqlHelper extends DataSqlHelper {
 	/**
 	 * get portfolio items grouped by stock id - sums up positions.
 	 * So for each stock, that is in portfolio, it will find all portfolio items
-	 * and group them to get total count and average buy/sell prices
+	 * and group them to get total count and sum buy/sell prices
 	 */
-	public List<PortfolioItem> getGroupedPortfolioItems() {
-		List<PortfolioItem> items = new ArrayList<PortfolioItem>();
+	public Map<String, PortfolioItem> getGroupedPortfolioItems(boolean bought) {
+		Map<String, PortfolioItem> items = new HashMap<String, PortfolioItem>();
 		Cursor c = null;
 		SQLiteDatabase db = null;
 		try {
 			db = this.getWritableDatabase();
 			
+			String selection = bought ? "count > 0" : "count < 0";
 			c = db.query(PORTFOLIO_TABLE_NAME, new String [] {"stock_id", "SUM(count)", "AVG(buy_price)", "AVG(sell_price)",
 					"buy_date", "sell_date", "name", "SUM(buy_fee)", "SUM(sell_fee)", "market_id", "id" },
-					null, null, "stock_id", null, "buy_date");
+					selection, null, "stock_id", null, "buy_date");
 			if (c.moveToFirst())
 				do {
 					String stockId = c.getString(0);
+					//int count = Math.abs(c.getInt(1));
 					int count = c.getInt(1);
 					float buyPrice = c.getFloat(2);
 					float sellPrice = c.getFloat(3);
@@ -118,7 +122,7 @@ public class PortfolioSqlHelper extends DataSqlHelper {
 					int id = c.getInt(10);
 					PortfolioItem item = new PortfolioItem(id, stockId, name, count, buyPrice, sellPrice, 
 							buyDate, sellDate, buyFee, sellFee, marketId);
-					items.add(item);
+					items.put(stockId, item);
 				} while(c.moveToNext());
 		} finally {
 			if (c != null)

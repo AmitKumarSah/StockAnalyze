@@ -21,7 +21,10 @@
 package cz.tomas.StockAnalyze.Portfolio;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -56,7 +59,34 @@ public class Portfolio {
 	 * @return
 	 */
 	public List<PortfolioItem> getGroupedPortfolioItems() {
-		return this.sqlHelper.getGroupedPortfolioItems();
+		Map<String, PortfolioItem> bought = this.sqlHelper.getGroupedPortfolioItems(true);
+		Map<String, PortfolioItem> sold = this.sqlHelper.getGroupedPortfolioItems(false);
+		
+		List<PortfolioItem> result = new ArrayList<PortfolioItem>();
+		
+		// match bought and sold items together
+		for (Entry<String, PortfolioItem> entry : bought.entrySet()) {
+			PortfolioItem item = entry.getValue();
+			if (sold.containsKey(entry.getKey())) {
+				PortfolioItem soldItem = sold.get(entry.getKey());
+				item.setSellFee(soldItem.getSellPrice());
+				item.setSellPrice(soldItem.getSellPrice());
+				item.setSellDate(soldItem.getSellDate());
+				//item.setStockCount(item.getStockCount() + soldItem.getStockCount());
+				item.setSoldStockCount(soldItem.getBoughtStockCount());
+				
+				sold.remove(entry.getKey());
+			}
+			
+			result.add(item);
+		}
+		
+		// add the rest of sold items to result list
+		for (Entry<String, PortfolioItem> entry : sold.entrySet()) {
+			result.add(entry.getValue());
+		}
+		
+		return result;
 	}
 	
 	/**

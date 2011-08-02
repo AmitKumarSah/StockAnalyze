@@ -37,6 +37,7 @@ public class PortfolioItem {
 	String stockId;
 	String portfolioName;
 	int stockCount;
+	int soldCount;
 	
 	float buyPrice;
 	float sellPrice;
@@ -61,8 +62,8 @@ public class PortfolioItem {
 	 * @param marketId
 	 */
 	public PortfolioItem(String stockId, String portfolioName, int stockCount,
-			float buyPrice, long buyDate, String marketId) {
-		this(-1, stockId, portfolioName, stockCount, buyPrice, 0, buyDate, 0, 0, 0, marketId);
+			float buyPrice, float sellPrice, long buyDate, long sellDate, String marketId) {
+		this(-1, stockId, portfolioName, stockCount, buyPrice, sellPrice, buyDate, sellDate, 0, 0, marketId);
 	}
 
 	public PortfolioItem(int id, String stockId, String portfolioName, int stockCount,
@@ -144,14 +145,28 @@ public class PortfolioItem {
 		return portfolioName;
 	}
 
-
+	/**
+	 * bought count - sold count
+	 * @return
+	 */
+	public int getCurrentStockCount() {
+		return this.stockCount + this.soldCount;
+	}
 
 	/**
 	 * number of stock pieces for this particular portfolio item
 	 * @return the stockCount
 	 */
-	public int getStockCount() {
+	public int getBoughtStockCount() {
 		return stockCount;
+	}
+	
+	public void setSoldStockCount(int count) {
+		this.soldCount = count;
+	}
+	
+	public int getSoldStockCount() {
+		return soldCount;
 	}
 
 	/**
@@ -185,9 +200,29 @@ public class PortfolioItem {
 	public long getSellDate() {
 		return sellDate;
 	}
+	
+	/**
+	 * @param stockCount the stock count to set
+	 */
+	public void setStockCount(int stockCount) {
+		this.stockCount = stockCount;
+	}
 
+	/**
+	 * @param sellPrice the sell price to set
+	 */
+	public void setSellPrice(float sellPrice) {
+		this.sellPrice = sellPrice;
+	}
 
-	/* 
+	/**
+	 * @param sellDate the sell date to set
+	 */
+	public void setSellDate(long sellDate) {
+		this.sellDate = sellDate;
+	}
+
+	/** 
 	 * full string representation of portfolio item
 	 * @see java.lang.Object#toString()
 	 */
@@ -199,11 +234,11 @@ public class PortfolioItem {
 				+ buyDate + ", sellDate=" + sellDate + "]";
 	}
 
-	/*
+	/**
 	 * count * buy price
 	 */
 	public float getStartValue() {
-		return this.stockCount * this.buyPrice;
+		return (this.stockCount + this.soldCount) * this.buyPrice;
 	}
 	
 	

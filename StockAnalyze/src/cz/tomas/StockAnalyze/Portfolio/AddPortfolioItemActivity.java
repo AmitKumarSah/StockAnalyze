@@ -31,6 +31,7 @@ import com.flurry.android.FlurryAgent;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -131,10 +132,13 @@ public final class AddPortfolioItemActivity extends BaseActivity {
 							try {
 								addButton.setEnabled(false);
 								final int count = Integer.parseInt(countView.getText().toString());
-								float price = Float.parseFloat(priceView.getText().toString());
-								if (((String) dealSpinner.getSelectedItem()).equalsIgnoreCase("sell"))
-									price = -price;
-								final float finalPrice = price; 
+								String deal = dealSpinner.getSelectedItem().toString();
+								String[] deals = getResources().getStringArray(R.array.portfolioDealArray);
+								final boolean sell = deal.equals(deals[1]);
+									
+								final float price = Float.parseFloat(priceView.getText().toString());
+//								final float finalPrice = price; 
+//								final int finalCount = count;
 								final float fee = calculateFee(price, count);
 
 								setProgressBarVisibility(true);
@@ -143,7 +147,7 @@ public final class AddPortfolioItemActivity extends BaseActivity {
 									@Override
 									protected Void doInBackground(Void... params) {
 										try {
-											addPortfolioItem(stockItem.getId(), count, finalPrice, "default", market.getId(), fee);
+											addPortfolioItem(stockItem.getId(), count, price, "default", market.getId(), fee, sell);
 										} catch (SQLException e) {
 											ex = e;
 										}
@@ -189,9 +193,11 @@ public final class AddPortfolioItemActivity extends BaseActivity {
 					priceText = priceView.getText().toString();
 					countText = countView.getText().toString();
 				}
-				final float price = Float.parseFloat(priceText);
-				final int count = Integer.parseInt(countText);
-				updateFeeAndValue(price, count);
+				if (! TextUtils.isEmpty(priceText) && ! TextUtils.isEmpty(countText)) {
+					final float price = Float.parseFloat(priceText);
+					final int count = Integer.parseInt(countText);
+					updateFeeAndValue(price, count);
+				}
 			} catch (Exception e) {
 				Log.e(Utils.LOG_TAG, "failed to fill values", e);
 			}
@@ -242,12 +248,23 @@ public final class AddPortfolioItemActivity extends BaseActivity {
 		}
 	}
 
-	private void addPortfolioItem(String stockId, int count, float price, String portfolioName, String marketId, float fee) throws SQLException {
+	private void addPortfolioItem(String stockId, int count, float price, String portfolioName, String marketId, float fee, boolean sell) throws SQLException {
 		Portfolio portfolio = new Portfolio(this);
 		
+		float buyPrice = 0, sellPrice = 0;
+		long buyDate = 0, sellDate = 0;
+		long ms = Calendar.getInstance().getTimeInMillis();
+		if (! sell) {
+			buyPrice = price;
+			buyDate = ms;
+		} else {
+			sellPrice = price;
+			sellDate = ms;
+			count = -count;
+		}
 		// construct portfolio item and pass it to Portfolio
-		PortfolioItem item = new PortfolioItem(stockId, portfolioName, count, price, 
-				Calendar.getInstance().getTimeInMillis(), marketId);
+		PortfolioItem item = new PortfolioItem(stockId, portfolioName, count, buyPrice, sellPrice,
+				buyDate, sellDate, marketId);
 		if (count > 0)
 			item.setBuyFee(fee);
 		else

@@ -84,7 +84,7 @@ public class PortfolioTest extends AndroidTestCase {
 		
 		assertEquals(stockId, actualItem.getStockId());
 		assertEquals(portfoliName, actualItem.getPortfolioName());
-		assertEquals(count, actualItem.getStockCount());
+		assertEquals(count, actualItem.getBoughtStockCount());
 		assertEquals(price, actualItem.getBuyPrice());
 		assertEquals(marketId, actualItem.getMarketId());
 	}
@@ -107,7 +107,7 @@ public class PortfolioTest extends AndroidTestCase {
 		
 		PortfolioItem actualItem = items.get(0);
 		
-		assertEquals(count * 2, actualItem.getStockCount());
+		assertEquals(count * 2, actualItem.getBoughtStockCount());
 	}
 	
 	public void testPortfolioNegativeGrouping() throws SQLException {
@@ -130,7 +130,7 @@ public class PortfolioTest extends AndroidTestCase {
 		
 		PortfolioItem actualItem = items.get(0);
 		
-		assertEquals(0, actualItem.getStockCount());
+		assertEquals(0, actualItem.getBoughtStockCount());
 	}
 	
 	public void testPortfolioPriceGrouping() throws SQLException {
