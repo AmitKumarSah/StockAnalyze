@@ -281,6 +281,9 @@ public abstract class ChartActivity extends BaseActivity {
 					ChartActivity.chartCacheDataSet.put(stockItem.getId(), dataSet);
 				} catch (Exception e) {
 					Log.e(Utils.LOG_TAG, "failed to get data", e);
+				} catch (OutOfMemoryError error) {
+					Log.i(Utils.LOG_TAG, "allocation: " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
+					Log.e(Utils.LOG_TAG, "Out of memory! Failed to get data", error);
 				}
 			}
 			if (dataSet != null) {

@@ -218,26 +218,27 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
         }
         if (holder.txtPortfolioValue != null && holder.txtPortfolioValueChange != null && data != null) {
         	// price of all stocks currently held:
-        	float currentMarketValue = portfolioItem.getCurrentStockCount() * data.getPrice();
         	// value of sold items, this is negative number
-        	float soldItemsValue = portfolioItem.getSoldStockCount() * portfolioItem.getSellPrice();
-        	float boughtItemsValue = portfolioItem.getBoughtStockCount() * portfolioItem.getBuyPrice();
-        	float portfolioValue = boughtItemsValue + soldItemsValue;
+//        	float soldItemsValue = portfolioItem.getSoldStockCount() * portfolioItem.getSellPrice();
+//        	float boughtItemsValue = portfolioItem.getBoughtStockCount() * portfolioItem.getBuyPrice();
+//        	float portfolioValue = boughtItemsValue + soldItemsValue;
         	
-        	float change = calculateChange(portfolioItem, currentMarketValue);
+        	final float[] changes = new float[2]; 
+        	portfolioItem.calculateChanges(data.getPrice(), includeFee, changes);
+        	final float currentMarketValue = portfolioItem.getCurrentStockCount() * data.getPrice();
         	
         	NumberFormat percentFormat = FormattingUtils.getPercentFormat();
-        	String strAbsChange = percentFormat.format(currentMarketValue - portfolioValue);
-        	String strChange = percentFormat.format(change);
+        	String strAbsChange = percentFormat.format(changes[1]);
+        	String strChange = percentFormat.format(changes[0]);
         	String strCurrentValue = percentFormat.format(currentMarketValue);
         	
         	holder.txtPortfolioValueChange.setText(String.format("%s (%s%%)", strAbsChange, strChange));
         	holder.txtPortfolioValue.setText(strCurrentValue);
         	// set background drawable according to positive/negative portfolio value change
-			if (change > 0 && holder.portfolioGroupView != null) {
+			if (changes[0] > 0 && holder.portfolioGroupView != null) {
 				holder.portfolioGroupView.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.groupbox_green_shape));
 			}
-			else if (change < 0 && holder.portfolioGroupView != null) {
+			else if (changes[0] < 0 && holder.portfolioGroupView != null) {
 				holder.portfolioGroupView.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.groupbox_red_shape));
 			}
 			else if (holder.portfolioGroupView != null) {
@@ -246,30 +247,7 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
         }
 	}
 	
-	/**
-	 * @param portfolioItem
-	 * @param itemCurrentValue
-	 * @return
-	 */
-	private float calculateChange(PortfolioItem portfolioItem, float itemCurrentValue) {
-    	// value of sold items, this is negative number
-		float soldItemsValue = portfolioItem.getSoldStockCount() * portfolioItem.getSellPrice();
-		float boughtItemsValue = portfolioItem.getBoughtStockCount() * portfolioItem.getBuyPrice();
-		float portfolioValue = boughtItemsValue + soldItemsValue;
-		float change = 0;
-		if (portfolioValue != 0 && itemCurrentValue != 0) {
-			change = ((itemCurrentValue / portfolioValue) * 100) - 100;
-		} 
-		else if (itemCurrentValue == 0) {
-			// we sold all we had and now have nothing
-			change = ((boughtItemsValue / -soldItemsValue) * 100) - 100;
-		}
-		if (portfolioValue < 0) {
-			change *= -1f;
-		}
-		return change;
-	}
-
+	
 	/**
 	 * task that loads portfolio items from db 
 	 * and add the to the collection of PortfolioListAdapter
@@ -278,7 +256,7 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 		
 		private Exception ex;
 		private float totalValueSum;
-		private float totalChangeSum;
+		private float totalAbsChangeSum;
 		
 		@Override
 		protected void onPreExecute() {
@@ -318,13 +296,12 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 								itemValue -= portfolioItem.getBuyFee();
 								itemValue -= portfolioItem.getSellFee();
 							}
-							float soldItemsValue = portfolioItem.getSoldStockCount() * portfolioItem.getSellPrice();
-				        	float boughtItemsValue = portfolioItem.getBoughtStockCount() * portfolioItem.getBuyPrice();
-				        	float portfolioValue = boughtItemsValue + soldItemsValue;
-				        	
-							float absChange = itemValue - portfolioValue;
-							totalValueSum += itemValue;
-							totalChangeSum += absChange;
+							
+							final float[] changes = new float[2];
+							portfolioItem.calculateChanges(dayData.getPrice(), includeFee, changes);
+							totalValueSum += Math.abs(itemValue);	// count short positions as positive so we have their value
+							totalAbsChangeSum += changes[1];
+							// TODO cache changes
 						}
 					}
 				} catch (Exception e) {
@@ -356,8 +333,8 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 			}
 			float totalPercChange = 0;
 			if (totalValueSum > 0)
-				totalPercChange = (totalChangeSum / totalValueSum)*100;
-			portfolioSummary = new PortfolioSum(this.totalValueSum, this.totalChangeSum, totalPercChange);
+				totalPercChange = (totalAbsChangeSum / totalValueSum)*100;
+			portfolioSummary = new PortfolioSum(this.totalValueSum, this.totalAbsChangeSum, totalPercChange);
 			clear();
 			
 			// add portfolio items to the adapter list

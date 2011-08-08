@@ -198,7 +198,7 @@ public class PseCsvDataAdapter implements IStockDataProvider {
 		}
 		try {
 			volume = Float.parseFloat(dataRow.getDayVolume());
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			volume = -1;
 			Log.e(Utils.LOG_TAG, "parse error", e);
 		}

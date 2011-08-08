@@ -405,9 +405,10 @@ public class PortfolioActivity extends BaseListActivity implements OnSharedPrefe
 		NumberFormat percentFormat = FormattingUtils.getPercentFormat();
     	String strAbsChange = percentFormat.format(portfolioSummary.getTotalAbsChange());
     	String strChange = percentFormat.format(portfolioSummary.getTotalPercChange());
+    	String totalValue = percentFormat.format(portfolioSummary.getTotalValue());
     	
     	if (txtValueSum != null)
-    		txtValueSum.setText(String.valueOf(portfolioSummary.getTotalValue()));
+    		txtValueSum.setText(totalValue);
     	if (txtChangeSum != null)
     		txtChangeSum.setText(String.format("%s (%s%%)", strAbsChange, strChange));
 	}

@@ -74,7 +74,11 @@ public class PortfolioSqlHelper extends DataSqlHelper {
 			values.put("stock_id", item.getStockId());
 			values.put("buy_date", item.getBuyDate());
 			values.put("sell_date", item.getSellDate());
-			values.put("count", item.getBoughtStockCount());
+			if (item.getBoughtStockCount() > 0) {
+				values.put("count", item.getBoughtStockCount());
+			} else {
+				values.put("count", item.getSoldStockCount());
+			}
 			values.put("buy_price", item.getBuyPrice());
 			values.put("sell_price", item.getSellPrice());
 			values.put("buy_fee", item.getBuyFee());

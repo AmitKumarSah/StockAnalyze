@@ -220,8 +220,7 @@ public class DataManager implements IStockDataListener {
 				try {
 					dataSet[i] = this.getDayData(item, currentCal);
 				} catch (Exception e) {
-					Log.e(Utils.LOG_TAG, "failed to get data for "
-							+ FormattingUtils.formatStockDate(currentCal), e);
+					Log.e(Utils.LOG_TAG, "failed to get data for " + FormattingUtils.formatStockDate(currentCal), e);
 				}
 				currentCal.roll(Calendar.DAY_OF_YEAR, false);
 				currentCal = Utils.getLastValidDate(currentCal);

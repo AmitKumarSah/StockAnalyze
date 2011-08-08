@@ -28,6 +28,7 @@ import java.io.Serializable;
  * @author tomas
  *
  */
+@SuppressWarnings("serial")
 public class PortfolioSum implements Serializable{
 	
 	private float totalValue;
@@ -41,14 +42,14 @@ public class PortfolioSum implements Serializable{
 		this.totalPercChange = totalPercChange;
 	}
 	
-	/*
+	/**
 	 * get total absolute value of all portfolio items
 	 */
 	public float getTotalValue() {
 		return totalValue;
 	}
 	
-	/*
+	/**
 	 * get total absolute value of change of your portfolio, 
 	 * that is, sum of all changes among all portfolio items.
 	 */
@@ -56,7 +57,7 @@ public class PortfolioSum implements Serializable{
 		return totalAbsChange;
 	}
 	
-	/*
+	/**
 	 * get total percentual change of all portfolio items
 	 */
 	public float getTotalPercChange() {

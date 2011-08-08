@@ -50,7 +50,12 @@ public class Portfolio {
 	 * add new Portfolio item to database
 	 */
 	public void addToPortfolio(PortfolioItem item) throws SQLException {
-		this.sqlHelper.addPortfolioItem(item);
+		try {
+			this.sqlHelper.acquireDb(this);
+			this.sqlHelper.addPortfolioItem(item);
+		} finally {
+			this.sqlHelper.releaseDb(true, this);
+		}
 	}
 	
 	/**
@@ -59,9 +64,15 @@ public class Portfolio {
 	 * @return
 	 */
 	public List<PortfolioItem> getGroupedPortfolioItems() {
-		Map<String, PortfolioItem> bought = this.sqlHelper.getGroupedPortfolioItems(true);
-		Map<String, PortfolioItem> sold = this.sqlHelper.getGroupedPortfolioItems(false);
-		
+		this.sqlHelper.acquireDb(this);
+		Map<String, PortfolioItem> bought;
+		Map<String, PortfolioItem> sold;
+		try {
+			bought = this.sqlHelper.getGroupedPortfolioItems(true);
+			sold = this.sqlHelper.getGroupedPortfolioItems(false);
+		} finally {
+			this.sqlHelper.releaseDb(true, this);
+		}
 		List<PortfolioItem> result = new ArrayList<PortfolioItem>();
 		
 		// match bought and sold items together
@@ -72,8 +83,8 @@ public class Portfolio {
 				item.setSellFee(soldItem.getSellPrice());
 				item.setSellPrice(soldItem.getSellPrice());
 				item.setSellDate(soldItem.getSellDate());
-				//item.setStockCount(item.getStockCount() + soldItem.getStockCount());
-				item.setSoldStockCount(soldItem.getBoughtStockCount());
+				item.setSoldStockCount(soldItem.getSoldStockCount());
+				//item.setBoughtStockCount(soldItem.getBoughtStockCount());
 				
 				sold.remove(entry.getKey());
 			}
@@ -94,7 +105,12 @@ public class Portfolio {
 	 * @return
 	 */
 	public List<PortfolioItem> getPortfolioItems(String stockId) {
-		return this.sqlHelper.getPortfolioItems(stockId);
+		try {
+			this.sqlHelper.acquireDb(this);
+			return this.sqlHelper.getPortfolioItems(stockId);
+		} finally {
+			this.sqlHelper.releaseDb(true, this);
+		}
 	}
 	
 	/**

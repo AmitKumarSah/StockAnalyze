@@ -36,7 +36,7 @@ public class PortfolioItem {
 	
 	String stockId;
 	String portfolioName;
-	int stockCount;
+	int boughtCount;
 	int soldCount;
 	
 	float buyPrice;
@@ -72,7 +72,11 @@ public class PortfolioItem {
 		this.id = id;
 		this.stockId = stockId;
 		this.portfolioName = portfolioName;
-		this.stockCount = stockCount;
+		if (stockCount > 0) {
+			this.boughtCount = stockCount;
+		} else {
+			this.soldCount = stockCount;
+		}
 		this.buyPrice = buyPrice;
 		this.buyDate = buyDate;
 		this.marketId = marketId;
@@ -150,7 +154,7 @@ public class PortfolioItem {
 	 * @return
 	 */
 	public int getCurrentStockCount() {
-		return this.stockCount + this.soldCount;
+		return this.boughtCount + this.soldCount;
 	}
 
 	/**
@@ -158,7 +162,7 @@ public class PortfolioItem {
 	 * @return the stockCount
 	 */
 	public int getBoughtStockCount() {
-		return stockCount;
+		return boughtCount;
 	}
 	
 	public void setSoldStockCount(int count) {
@@ -204,8 +208,8 @@ public class PortfolioItem {
 	/**
 	 * @param stockCount the stock count to set
 	 */
-	public void setStockCount(int stockCount) {
-		this.stockCount = stockCount;
+	public void setBoughtStockCount(int stockCount) {
+		this.boughtCount = stockCount;
 	}
 
 	/**
@@ -229,17 +233,45 @@ public class PortfolioItem {
 	@Override
 	public String toString() {
 		return "PortfolioItem [stockId=" + stockId + ", portfolioName="
-				+ portfolioName + ", stockCount=" + stockCount + ", buyPrice="
+				+ portfolioName + ", stockCount=" + boughtCount + ", buyPrice="
 				+ buyPrice + ", sellPrice=" + sellPrice + ", buyDate="
 				+ buyDate + ", sellDate=" + sellDate + "]";
 	}
 
 	/**
-	 * count * buy price
+	 * calculate absolute and relative changes according value and current price
+	 * 
+	 * @param stockPrice current stock price
+	 * @param includeFees true if calculation should include fees
+	 * @param output 2 element array that will be filled with change values.
+	 * at index 0 is relative change in % and at index 1 is absolute change
 	 */
-	public float getStartValue() {
-		return (this.stockCount + this.soldCount) * this.buyPrice;
+	public void calculateChanges(float stockPrice, boolean includeFees, float[] output) {
+		final float currentMarketValue = this.getCurrentStockCount() * stockPrice;
+    	// value of sold items, this is negative number
+		float soldItemsValue = this.soldCount * this.sellPrice;
+		float boughtItemsValue = this.boughtCount * this.buyPrice;
+		
+		//final float portfolioValue = boughtItemsValue + soldItemsValue;
+		soldItemsValue = Math.abs(soldItemsValue);
+		if (includeFees) {
+			boughtItemsValue -= this.getBuyFee();
+			soldItemsValue -= this.getSellFee();
+		}
+		float change = 0f;
+		float absChange = 0f;
+
+		if (boughtItemsValue > soldItemsValue) {
+			// portfolio is long
+			absChange = soldItemsValue + currentMarketValue - boughtItemsValue;
+			change = 100 * absChange / boughtItemsValue;
+		} else if (boughtItemsValue < soldItemsValue) {
+			// portfolio is short
+			absChange = soldItemsValue - boughtItemsValue + currentMarketValue;
+			change = 100 * absChange / soldItemsValue;
+		}
+		output[0] = change;
+		output[1] = absChange;
 	}
-	
 	
 }

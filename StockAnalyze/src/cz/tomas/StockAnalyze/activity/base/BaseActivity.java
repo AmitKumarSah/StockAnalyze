@@ -10,14 +10,14 @@ public abstract class BaseActivity extends Activity {
 
 	public void onStart()
 	{
-	   super.onStart();
-	   FlurryAgent.onStartSession(this, Utils.FLURRY_KEY);
-	   FlurryAgent.onPageView();
+		super.onStart();
+		FlurryAgent.onStartSession(this, Utils.FLURRY_KEY);
+		FlurryAgent.onPageView(); 
 	}
 	
 	public void onStop()
 	{
-	   super.onStop();
-	   FlurryAgent.onEndSession(this);
+		super.onStop();
+		FlurryAgent.onEndSession(this);
 	}
 }

@@ -82,7 +82,7 @@ public class DayData implements Parcelable {
 	public float getPrice() {
 		return price;
 	}
-	/*
+	/**
 	 * percentual change
 	 */
 	public float getChange() {
@@ -101,13 +101,13 @@ public class DayData implements Parcelable {
 		return date;
 	}
 	
-	/*
+	/**
 	 * last update time (in miliseconds)
 	 */
 	public long getLastUpdate() {
 		return lastUpdate;
 	}
-	/*
+	/**
 	 * Day volume in stock's currency
 	 * */
 	public float getVolume() {
@@ -138,7 +138,7 @@ public class DayData implements Parcelable {
 		return tradedPieces;
 	}
 
-	/* 
+	/** 
 	 * string representation with selected fields
 	 * @see java.lang.Object#toString()
 	 */

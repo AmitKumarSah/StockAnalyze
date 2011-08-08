@@ -115,7 +115,7 @@ public class PortfolioDetailListAdapter extends BaseExpandableListAdapter {
 		
 		PortfolioItem group = this.portfolioGroups.get(groupPosition);
 		if (group != null) {
-			countView.setText(String.valueOf(group.getBoughtStockCount()));
+			countView.setText(String.valueOf(group.getBoughtStockCount() + group.getSoldStockCount()));
 			dateView.setText(FormattingUtils.formatStockShortDate(group.getBuyDate()));
 			valueView.setText("0");
 		}
