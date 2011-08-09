@@ -156,13 +156,13 @@ public class UpdateScheduler {
 	 */
 	public void perfromScheduledUpdate() {
 		Log.i(Utils.LOG_TAG, "going to perform scheduled update");
-		FlurryAgent.onStartSession(this.context, "UpdateSheduler");
-		Map<String, String> pars = new HashMap<String, String>();
-		pars.put(Consts.FLURRY_KEY_SCHEDULED_UPDATE_DAY, String.valueOf(Calendar.getInstance().get(Calendar.DAY_OF_WEEK)));
-		FlurryAgent.onEvent(Consts.FLURRY_EVENT_SCHEDULED_UPDATE, pars);
+//		FlurryAgent.onStartSession(this.context, "UpdateSheduler");
+//		Map<String, String> pars = new HashMap<String, String>();
+//		pars.put(Consts.FLURRY_KEY_SCHEDULED_UPDATE_DAY, String.valueOf(Calendar.getInstance().get(Calendar.DAY_OF_WEEK)));
+//		FlurryAgent.onEvent(Consts.FLURRY_EVENT_SCHEDULED_UPDATE, pars);
 		
 		this.performUpdateInternal();
-		FlurryAgent.onEndSession(this.context);
+//		FlurryAgent.onEndSession(this.context);
 	}
 	
 	/**
