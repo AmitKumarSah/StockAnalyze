@@ -23,11 +23,12 @@
 <RelativeLayout
   android:layout_width="fill_parent"
   android:layout_height="fill_parent"
-  android:padding="8dp" 
+   
   android:layout_margin="8dp" >
   
   <ImageView android:id="@+id/aboutLogo"
 	style="@style/aboutContent"
+	android:layout_marginLeft="10dp"
   	android:src="@drawable/ic_launcher"
   	android:layout_alignParentTop="true"
   	android:layout_alignParentLeft="true" />
@@ -40,7 +41,7 @@
   	android:gravity="center"/>
   <TextView android:id="@+id/aboutVersion"
   	style="@style/aboutContent"
-  	android:text="0.9.1"
+  	android:text="0.9"
   	android:layout_toRightOf="@+id/aboutTitle"
   	android:layout_alignParentTop="true"
   	android:layout_alignBottom="@+id/aboutLogo"
@@ -48,6 +49,7 @@
   <TextView android:id="@+id/aboutAuthor"
   	style="@style/aboutContent"
   	android:text="@string/appAuthor"
+  	android:autoLink="email"
   	android:layout_width="fill_parent"
   	android:layout_alignParentLeft="true"
   	android:layout_below="@+id/aboutLogo"
@@ -57,6 +59,7 @@
   	android:text="@string/appWww"
   	android:layout_width="fill_parent"
   	android:gravity="center"
+  	android:autoLink="web"
   	android:layout_alignParentLeft="true"
   	android:layout_below="@+id/aboutAuthor"/>
   <TextView android:id="@+id/aboutDisclaimerTitle"
@@ -72,6 +75,7 @@
  	android:layout_below="@+id/aboutDisclaimerTitle">
 	<TextView android:id="@+id/aboutDisclaimer"
 	 	style="@style/aboutContent"
+	 	android:layout_margin="0dp"
 	 	android:text="@string/disclaimerText"/>
  	</LinearLayout>
 </RelativeLayout>

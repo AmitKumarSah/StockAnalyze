@@ -168,7 +168,6 @@ public final class StockDetailActivity extends ChartActivity implements IActionB
 			throw new NullPointerException("market must be defined");
 		
 		TextView txtHeader = (TextView) this.findViewById(R.id.txtDetailHeader);
-		TextView txtDate = (TextView) this.findViewById(R.id.txtDetailDate);
 		TextView txtName = (TextView) this.findViewById(R.id.txtDetailName);
 		TextView txtPrice = (TextView) this.findViewById(R.id.txtDetailClosingPrice);
 		TextView txtChange = (TextView) this.findViewById(R.id.txtDetailChange);
@@ -201,12 +200,6 @@ public final class StockDetailActivity extends ChartActivity implements IActionB
 			
 			txtHeader.setText(String.format("%s - %s - %s", time, stockItem.getTicker(), stockItem.getId()));
 		}
-//		if (txtDate != null) {
-//			Calendar cal = Calendar.getInstance();
-//			cal.setTimeInMillis(this.dayData.getLastUpdate());
-//			
-//			txtDate.setText(FormattingUtils.formatStockDate(cal));
-//		}
 		if (txtVolume != null) {
 			String strVolume = priceFormat.format(this.dayData.getVolume());
 			txtVolume.setText(strVolume);
