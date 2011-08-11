@@ -34,12 +34,12 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 import cz.tomas.StockAnalyze.NotificationSupervisor;
+import cz.tomas.StockAnalyze.Data.GaeData.GaeDataAdapter;
 import cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener;
 import cz.tomas.StockAnalyze.Data.Interfaces.IUpdateDateChangedListener;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
-import cz.tomas.StockAnalyze.Data.PseCsvData.PseCsvDataAdapter;
 import cz.tomas.StockAnalyze.Data.PsePatriaData.PsePatriaDataAdapter;
 import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetDataException;
 import cz.tomas.StockAnalyze.StockList.StockComparator;
@@ -57,6 +57,14 @@ import cz.tomas.StockAnalyze.utils.Utils;
 public class DataManager implements IStockDataListener {
 
 	private int STOCK_LIST_EXPIRATION_DAYS = 30;
+	
+	public static int TIME_PERIOD_NONE = 0;
+	public static int TIME_PERIOD_DAY = 1;
+	public static int TIME_PERIOD_WEEK = 2;
+	public static int TIME_PERIOD_MONTH = 3;
+	public static int TIME_PERIOD_QUARTER = 4;
+	public static int TIME_PERIOD_HALF_YEAR = 5;
+	public static int TIME_PERIOD_YEAR = 6;
 	
 	private StockDataSqlStore sqlStore;
 		
@@ -78,10 +86,12 @@ public class DataManager implements IStockDataListener {
 		
 		this.sqlStore = new StockDataSqlStore(context);
 		
-		IStockDataProvider pse = new PseCsvDataAdapter();
+		//IStockDataProvider pse = new PseCsvDataAdapter();
 		IStockDataProvider patriaPse = new PsePatriaDataAdapter();
+		IStockDataProvider gae = new GaeDataAdapter();
 		
-		DataProviderFactory.registerDataProvider(pse);
+		//DataProviderFactory.registerDataProvider(pse);
+		DataProviderFactory.registerDataProvider(gae);
 		DataProviderFactory.registerDataProvider(patriaPse);
 		
 		this.updateDateChangedListeners = new ArrayList<IUpdateDateChangedListener>();
@@ -92,8 +102,8 @@ public class DataManager implements IStockDataListener {
 		patriaPse.addListener(this);
 		patriaPse.addListener(supervisor);
 		
-		pse.enable(true);
-		pse.addListener(this);
+		gae.enable(true);
+		gae.addListener(this);
 		//pse.addListener(supervisor);
 	}
 	
@@ -206,29 +216,33 @@ public class DataManager implements IStockDataListener {
 		return dbData;
 	}
 	
-	public synchronized DayData[] getDayDataSet(StockItem item, Calendar cal, int count, boolean includeToday) throws FailedToGetDataException, IOException {
-		DayData[] dataSet = new DayData[count];
+	public synchronized Map<Long, Float> getDayDataSet(StockItem item, int timePeriod, boolean includeToday) throws FailedToGetDataException, IOException {
+		//DayData[] dataSet = new DayData[count];
 		
-		Calendar currentCal = Utils.getLastValidDate(cal);
+		Calendar currentCal = Utils.getLastValidDate(Calendar.getInstance(Utils.PRAGUE_TIME_ZONE));
 		if (! includeToday) {
 			currentCal.roll(Calendar.DAY_OF_YEAR, false);
 			currentCal = Utils.getLastValidDate(currentCal);
 		}
-		this.acquireDb(this);
-		try {
-			for (int i = dataSet.length - 1; i >= 0; i--) {
-				try {
-					dataSet[i] = this.getDayData(item, currentCal);
-				} catch (Exception e) {
-					Log.e(Utils.LOG_TAG, "failed to get data for " + FormattingUtils.formatStockDate(currentCal), e);
-				}
-				currentCal.roll(Calendar.DAY_OF_YEAR, false);
-				currentCal = Utils.getLastValidDate(currentCal);
-			}
-		} finally {
-			this.releaseDb(true, this);
-		}
-		return dataSet;
+		
+		IStockDataProvider provider = DataProviderFactory.getHistoricalDataProvider(MarketFactory.getCzechMarket());
+		return provider.getHistoricalPriceSet(item.getTicker(), timePeriod);
+		
+//		this.acquireDb(this);
+//		try {
+//			for (int i = dataSet.length - 1; i >= 0; i--) {
+//				try {
+//					dataSet[i] = this.getDayData(item, currentCal);
+//				} catch (Exception e) {
+//					Log.e(Utils.LOG_TAG, "failed to get data for " + FormattingUtils.formatStockDate(currentCal), e);
+//				}
+//				currentCal.roll(Calendar.DAY_OF_YEAR, false);
+//				currentCal = Utils.getLastValidDate(currentCal);
+//			}
+//		} finally {
+//			this.releaseDb(true, this);
+//		}
+//		return dataSet;
 	}
 	
 	public synchronized DayData getDayData(StockItem item, Calendar cal) throws FailedToGetDataException, IOException {

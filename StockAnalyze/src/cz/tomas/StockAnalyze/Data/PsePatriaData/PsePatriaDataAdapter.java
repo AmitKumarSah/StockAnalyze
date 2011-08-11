@@ -80,9 +80,9 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 
 	private PsePatriaDataProvider provider;
 	/*
-	 * time interval between refreshes - in milliseconds
-	 */
-	long refreshInterval = 1000 * 60 * 10;		//Milliseconds
+//	 * time interval between refreshes - in milliseconds
+//	 */
+//	long refreshInterval = 1000 * 60 * 10;		//Milliseconds
 
 	//Timer timer;
 	private boolean enabled;
@@ -258,4 +258,8 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 		}
 	}
 
+	@Override
+	public Map<Long, Float> getHistoricalPriceSet(String ticker, int timePeriod) {
+		throw new UnsupportedOperationException();
+	}
 }

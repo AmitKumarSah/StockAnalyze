@@ -217,4 +217,9 @@ public class PseCsvDataAdapter implements IStockDataProvider {
 		return new DayData(price, change, date, volume, yearMaximum, yearMinimum, Utils.createDateOnlyCalendar(date).getTimeInMillis());
 	}
 
+	@Override
+	public Map<Long, Float> getHistoricalPriceSet(String ticker, int timePeriod) {
+		throw new UnsupportedOperationException();
+	}
+
 }

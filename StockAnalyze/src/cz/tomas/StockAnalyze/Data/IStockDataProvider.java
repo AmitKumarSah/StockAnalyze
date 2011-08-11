@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import cz.tomas.StockAnalyze.Data.Interfaces.IObservableDataProvider;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
@@ -35,8 +36,31 @@ import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetDataException;
  *
  */
 public interface IStockDataProvider extends IObservableDataProvider {
+	/**
+	 * get last available data for stock
+	 * @param ticker
+	 * @return
+	 * @throws FailedToGetDataException
+	 */
 	DayData getLastData(String ticker) throws FailedToGetDataException;
+	/**
+	 * get data for stock in given date
+	 * @param ticker
+	 * @param date
+	 * @return
+	 * @throws IOException
+	 * @throws FailedToGetDataException
+	 */
 	DayData getDayData(String ticker, Calendar date) throws IOException, FailedToGetDataException;
+	
+	/**
+	 * get array of historical data
+	 * 
+	 * @param timePeriod see {@link DataManager} constants for valid time periods
+	 * @param timeSet an array to get filled by time data
+	 * @return
+	 */
+	Map<Long, Float> getHistoricalPriceSet(String ticker, int timePeriod);
 	DayData[] getIntraDayData(String ticker, Date date, int minuteInterval);
 	List<StockItem> getAvailableStockList() throws FailedToGetDataException;
 	String getId();

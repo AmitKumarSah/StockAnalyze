@@ -20,8 +20,10 @@
  */
 package cz.tomas.StockAnalyze.Data.Interfaces;
 
+import cz.tomas.StockAnalyze.Data.DataManager;
+
 /**
- * all stock data providers should implement this interface to enable Datamanger 
+ * all stock data providers should implement this interface to enable {@link DataManager} 
  * to get notified about their update
  * @author tomas
  *
