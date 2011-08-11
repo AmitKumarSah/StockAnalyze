@@ -48,7 +48,7 @@ public class StockChartActivity extends ChartActivity {
 		
 		// if we aren't resuming, load day count from intent (first run)
 		if (savedInstanceState == null || !savedInstanceState.containsKey(EXTRA_CHART_DAY_COUNT))
-			this.chartDayCount = this.getIntent().getIntExtra(EXTRA_CHART_DAY_COUNT, 10);
+			this.timePeriod = this.getIntent().getIntExtra(EXTRA_CHART_DAY_COUNT, 10);
 		
 		this.setChartActivityListener(new IChartActivityListener() {
 			
@@ -83,7 +83,7 @@ public class StockChartActivity extends ChartActivity {
 	 * @param loading true if chart is just loading
 	 */
 	private void updateTitle(boolean loading) {
-		int id = ChartActivity.DAY_COUNT_MAP.get(this.chartDayCount);
+		int id = ChartActivity.DAY_COUNT_MAP.get(this.timePeriod);
 		String title = this.getString(R.string.activityStockChart);
 		if (this.stockItem != null) {
 			title += ": " + this.stockItem.getTicker();

@@ -74,7 +74,7 @@ public final class StockDetailActivity extends ChartActivity implements IActionB
 			
 			@Override
 			public void onChartUpdateFinish() {
-				int id = DAY_COUNT_MAP.get(chartDayCount);
+				int id = DAY_COUNT_MAP.get(timePeriod);
 				if (txtChartDescription != null)
 					txtChartDescription.setText(getString(id));
 			}
@@ -141,7 +141,7 @@ public final class StockDetailActivity extends ChartActivity implements IActionB
 		Intent intent = new Intent(StockDetailActivity.this,
 				StockChartActivity.class);
 		intent.putExtras(getIntent());
-		intent.putExtra(EXTRA_CHART_DAY_COUNT, this.chartDayCount);
+		intent.putExtra(EXTRA_CHART_DAY_COUNT, this.timePeriod);
 		startActivity(intent);
 	}
 

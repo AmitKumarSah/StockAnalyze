@@ -110,7 +110,8 @@ public class StockListActivity extends BaseListActivity implements IActionBarLis
 			}
 
 		});
-		
+
+		this.fill();
 	}
 
 	/**
@@ -150,14 +151,20 @@ public class StockListActivity extends BaseListActivity implements IActionBarLis
 			//this.showDialog(NO_INTERNET);
 			Toast.makeText(this, R.string.NoInternet, Toast.LENGTH_SHORT).show();
 		}
-
-		this.fill();
 	}
 	
 	@Override
 	public void onPause() {
-		this.adapter.detachFromData();
 		super.onPause();
+	}
+
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onDestroy()
+	 */
+	@Override
+	protected void onDestroy() {
+		this.adapter.detachFromData();
+		super.onDestroy();
 	}
 
 	@Override

@@ -76,12 +76,17 @@
 					android:layout_margin="10dip" />	
 				<TextView android:id="@+id/home_chart_title"
 					style="@style/titleText"
+					android:visibility="gone"
 					android:text="@string/homeChartTitle"
 					android:layout_width="fill_parent"
 					android:layout_height="wrap_content"/>
 				<ImageView android:id="@+id/home_chart" 
 					style="@style/homeBlock"
+					android:visibility="gone"
 					android:src="@drawable/chart_preview"/>
+				<include layout="@layout/part_chart_with_header"  
+					android:layout_width="fill_parent" 
+					android:layout_height="wrap_content"/>
 				<TextView 
 					style="@style/subText"
 					android:singleLine="false"

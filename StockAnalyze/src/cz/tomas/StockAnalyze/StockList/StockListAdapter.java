@@ -94,12 +94,12 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
         // otherwise start task to get it
         if (dataSet == null || stockListItems == null) {
         	dataSet = new LinkedHashMap<StockItem, DayData>();
-        	this.refreshList();
         } else {
         	for (StockItem stockItem : stockListItems) {
 				this.add(stockItem);
 			}
         }
+    	this.refreshList();
 	}
 
 	/**
@@ -127,6 +127,7 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 					
 					@Override
 					public void run() {
+						Log.d(Utils.LOG_TAG, "StockList: received update notification from DataManager");
 						refreshList();
 					}
 				});
@@ -301,6 +302,7 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 						// get day data for each stock and save it
 						dataSet.clear();
 						dataSet = dataManager.getLastDataSet(items);
+						Log.d(Utils.LOG_TAG, "StockList: loaded data from database: " + dataSet.size());
 					}
 				} catch (Exception e) {
 					String message = "Failed to get stock day data. ";

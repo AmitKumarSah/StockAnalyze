@@ -18,7 +18,7 @@
 package cz.tomas.StockAnalyze.activity;
 
 import java.io.IOException;
-import java.util.Calendar;
+import java.util.Map;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -37,10 +37,10 @@ import android.widget.ImageView;
 import android.widget.Toast;
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.DataManager;
-import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.activity.base.BaseActivity;
 import cz.tomas.StockAnalyze.charts.view.ChartView;
+import cz.tomas.StockAnalyze.charts.view.CompositeChartView;
 import cz.tomas.StockAnalyze.ui.widgets.ActionBar;
 import cz.tomas.StockAnalyze.ui.widgets.HomeBlockView;
 import cz.tomas.StockAnalyze.ui.widgets.ActionBar.IActionBarListener;
@@ -48,7 +48,7 @@ import cz.tomas.StockAnalyze.utils.DownloadService;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 
-public class HomeActivity extends BaseActivity implements OnClickListener, OnKeyListener, IActionBarListener {
+public class HomeActivity extends ChartActivity implements OnClickListener, OnKeyListener, IActionBarListener {
 
 	private DataManager dataManager;
 	private static Bitmap chartBitmap;
@@ -61,6 +61,7 @@ public class HomeActivity extends BaseActivity implements OnClickListener, OnKey
 		
 		this.setContentView(R.layout.home_layout);
 		
+		this.chartView = (CompositeChartView) this.findViewById(R.id.stockChartView);
 		this.dataManager = DataManager.getInstance(this);
 		
 		View[] blockViews = new View[4];
@@ -75,18 +76,20 @@ public class HomeActivity extends BaseActivity implements OnClickListener, OnKey
 				view.setOnKeyListener(this);
 			}
 		}
-//		DrawChartTask task = new DrawChartTask();
-//		task.execute(null);
-		// if chart bitmap is null or too old, refresh it
-		if (chartBitmap == null || (System.currentTimeMillis() - chartLastUpdate) > chartUpdateInterval) {
-			ChartUpdateTask task = new ChartUpdateTask();
-			task.execute((Void[])null);
-		}
-		else {
-			ImageView chart = (ImageView) findViewById(R.id.home_chart);
-			chart.setImageBitmap(chartBitmap);
-		}
-		
+		final Runnable runnable = new Runnable() {
+			public void run() {
+				HomeActivity.this.stockItem = HomeActivity.this.dataManager.getStockItem("PX");
+				runOnUiThread(new Runnable() {
+					
+					@Override
+					public void run() {
+						updateChart();
+					}
+				});
+			}
+		};
+		Thread thread = new Thread(runnable);
+		thread.start();
 		ActionBar bar = (ActionBar) findViewById(R.id.homeActionBar);
 		if (bar != null)
 			bar.setActionBarListener(this);
@@ -150,44 +153,6 @@ public class HomeActivity extends BaseActivity implements OnClickListener, OnKey
 				Toast.makeText(this, "Failed to start:\n" + (target == null ? "unkown" : target), Toast.LENGTH_SHORT).show();
 			}
 		}
-	}
-	
-	final class DrawChartTask extends AsyncTask<Void, Integer, Void> {
-
-		@Override
-		protected Void doInBackground(Void... params) {
-			DayData[] dataSet = null;
-			try {
-				//StockItem item = dataManager.getStockItems(MarketFactory.getCzechMarket()).get("PX");
-				StockItem item = dataManager.getStockItem("PX");
-				dataSet = dataManager.getDayDataSet(item, Calendar.getInstance(), 10, false);
-			} catch (Exception e) {
-				Log.e(Utils.LOG_TAG, "failed to get data", e);
-			}
-			if (dataSet != null) {
-				float[] dataPoints = new float[dataSet.length];
-				float max = 0;
-				float min = Float.MAX_VALUE;
-				for (int i = 0; i < dataSet.length; i++) {
-					float price = dataSet[i].getPrice();
-					dataPoints[i] = price;
-					
-					if (price > max)
-						max = price;
-					if (price < min)
-						min = price;
-				}
-				ChartView chart = (ChartView) findViewById(R.id.homeChartView);
-				chart.setData(dataPoints, max, min);
-			}
-			return null;
-		}
-
-		@Override
-		protected void onPostExecute(Void result) {
-			
-		}
-		
 	}
 
 	final class ChartUpdateTask extends AsyncTask<Void, Integer, Bitmap> {

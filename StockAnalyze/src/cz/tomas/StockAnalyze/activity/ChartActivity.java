@@ -25,6 +25,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.flurry.android.FlurryAgent;
 
@@ -64,24 +65,41 @@ public abstract class ChartActivity extends BaseActivity {
 		void onChartUpdateFinish();
 	}
 	
+	private class ChartDataCache {
+		Map<Long, Float> dataSet;
+		int timePeriod;
+		
+		/**
+		 * @param dataSet
+		 * @param timePeriod
+		 */
+		public ChartDataCache(Map<Long, Float> dataSet, int timePeriod) {
+			super();
+			this.dataSet = dataSet;
+			this.timePeriod = timePeriod;
+		}
+		
+	}
+	
 	protected static final String EXTRA_CHART_DAY_COUNT = "cz.tomas.StockAnalyze.chart_day_count";
 	protected static final int MAX_CACHE_SIZE = 4;
-	private static final int DEFAULT_CHART_DAY_COUNT = 23;
-	private static final int DAYS_WEEK = 5;
-	private static final int DAYS_YEAR = 252;
-	private static final int DAYS_MONTH = 23;
-	private static final int DAYS_6MONTH = 126;
-	private static final int DAYS_3MONTH = 65;
-	private static final int DAYS_2WEEKS = 10;
+//	private static final int DEFAULT_CHART_DAY_COUNT = 23;
+//	private static final int DAYS_WEEK = 5;
+//	private static final int DAYS_YEAR = 252;
+//	private static final int DAYS_MONTH = 23;
+//	private static final int DAYS_6MONTH = 126;
+//	private static final int DAYS_3MONTH = 65;
+//	private static final int DAYS_2WEEKS = 10;
 	
 	protected StockItem stockItem;
 	protected DataManager dataManager;
-	protected int chartDayCount = DEFAULT_CHART_DAY_COUNT;
+	protected int timePeriod = DataManager.TIME_PERIOD_MONTH;
 	protected CompositeChartView chartView;
 	protected DrawChartTask chartTask;
 	protected DayData dayData;
 	
-	private final static Map<String, DayData[]> chartCacheDataSet = new LinkedHashMap<String, DayData[]>();
+	private final static Map<String, ChartDataCache> chartCacheDataSet = new LinkedHashMap<String, ChartDataCache>();
+	//private final static Map<String, int[]> chartCacheTimeSet = new LinkedHashMap<String, int[]>();
 	
 	private IChartActivityListener listener;
 	/**
@@ -97,16 +115,16 @@ public abstract class ChartActivity extends BaseActivity {
 		
 		if (DAY_COUNT_MAP == null) {
 			DAY_COUNT_MAP = new HashMap<Integer, Integer>();
-			DAY_COUNT_MAP.put(DAYS_WEEK, R.string.chart5days);
-			DAY_COUNT_MAP.put(DAYS_2WEEKS, R.string.chart10days);
-			DAY_COUNT_MAP.put(DAYS_MONTH, R.string.chartMonth);
-			DAY_COUNT_MAP.put(DAYS_3MONTH, R.string.chart3months);
-			DAY_COUNT_MAP.put(DAYS_6MONTH, R.string.chart6months);
-			DAY_COUNT_MAP.put(DAYS_YEAR, R.string.chartYear);
+			DAY_COUNT_MAP.put(DataManager.TIME_PERIOD_WEEK, R.string.chart5days);
+			//DAY_COUNT_MAP.put(DAYS_2WEEKS, R.string.chart10days);
+			DAY_COUNT_MAP.put(DataManager.TIME_PERIOD_MONTH, R.string.chartMonth);
+			DAY_COUNT_MAP.put(DataManager.TIME_PERIOD_QUARTER, R.string.chart3months);
+			DAY_COUNT_MAP.put(DataManager.TIME_PERIOD_HALF_YEAR, R.string.chart6months);
+			DAY_COUNT_MAP.put(DataManager.TIME_PERIOD_YEAR, R.string.chartYear);
 		}
 
 		if (savedInstanceState != null) {
-			this.chartDayCount = savedInstanceState.getInt(EXTRA_CHART_DAY_COUNT);
+			this.timePeriod = savedInstanceState.getInt(EXTRA_CHART_DAY_COUNT);
 		}
 		if (chartCacheDataSet.size() > MAX_CACHE_SIZE) {
 			clearCache();
@@ -131,7 +149,7 @@ public abstract class ChartActivity extends BaseActivity {
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		
-		outState.putInt(EXTRA_CHART_DAY_COUNT, this.chartDayCount);
+		outState.putInt(EXTRA_CHART_DAY_COUNT, this.timePeriod);
 	}
 
 
@@ -155,12 +173,12 @@ public abstract class ChartActivity extends BaseActivity {
 	 */
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		int dayCount = this.getDayCountByResource(item.getItemId());
-		if (dayCount != 0) {
-			this.chartDayCount = dayCount;
+		int timePeriod = this.getDayCountByResource(item.getItemId());
+		if (timePeriod != 0) {
+			this.timePeriod = timePeriod;
 			this.updateChart();
 			Map<String, String> pars = new HashMap<String, String>(2);
-			pars.put(Consts.FLURRY_KEY_CHART_TIME_PERIOD, String.valueOf(dayCount));
+			pars.put(Consts.FLURRY_KEY_CHART_TIME_PERIOD, String.valueOf(timePeriod));
 			pars.put(Consts.FLURRY_KEY_CHART_TIME_SOURCE, getClass().getName());
 			FlurryAgent.onEvent(Consts.FLURRY_EVENT_CHART_TIME_PERIOD, pars);
 			return true;
@@ -213,38 +231,39 @@ public abstract class ChartActivity extends BaseActivity {
 	 * @return
 	 */
 	protected int getDayCountByResource(int id) {
-		int dayCount = 0;
+		//int dayCount = 0;
+		int timePeriod = 0;
 		// day counts are work days only
 		switch (id) {
-		case R.id.chart10days:
-			dayCount = DAYS_2WEEKS;
-			break;
+//		case R.id.chart10days:
+//			timePeriod = 0;
+//			break;
 		case R.id.chart3months:
-			dayCount = DAYS_3MONTH;
+			timePeriod = DataManager.TIME_PERIOD_QUARTER;
 			break;
 		case R.id.chart5days:
-			dayCount = DAYS_WEEK;
+			timePeriod = DataManager.TIME_PERIOD_WEEK;
 			break;
 		case R.id.chart6months:
-			dayCount =  DAYS_6MONTH;
+			timePeriod =  DataManager.TIME_PERIOD_HALF_YEAR;
 			break;
 		case R.id.chartMonth:
-			dayCount = DAYS_MONTH;
+			timePeriod = DataManager.TIME_PERIOD_MONTH;
 			break;
 		case R.id.chartYear:
-			dayCount = DAYS_YEAR;
+			timePeriod = DataManager.TIME_PERIOD_YEAR;
 			break;
 		default:
 			break;
 		}
-		return dayCount;
+		return timePeriod;
 	}
 
 	public void setChartActivityListener(IChartActivityListener listener) {
 		this.listener = listener;
 	}
 
-	final protected class DrawChartTask extends AsyncTask<StockItem, Integer, DayData[]> {
+	final protected class DrawChartTask extends AsyncTask<StockItem, Integer, Void> {
 		
 		/* 
 		 * @see android.os.AsyncTask#onPreExecute()
@@ -259,26 +278,31 @@ public abstract class ChartActivity extends BaseActivity {
 		}
 
 		@Override
-		protected DayData[] doInBackground(StockItem... params) {
-			if (params.length == 0)
+		protected Void doInBackground(StockItem... params) {
+			if (params.length == 0) {
 				return null;
+			}
 			StockItem stockItem = params[0];
 
-			DayData[] dataSet = null;
-			// either take data from local variable, or load them
+			Map<Long, Float> dataSet = null;
 			
+			// either take data from local cache, or load them:
 			if (ChartActivity.chartCacheDataSet.containsKey(stockItem.getId()) && 
-					ChartActivity.chartCacheDataSet.get(stockItem.getId()).length == chartDayCount) {
-				dataSet = ChartActivity.chartCacheDataSet.get(stockItem.getId());
+					ChartActivity.chartCacheDataSet.get(stockItem.getId()).timePeriod == timePeriod) {
+				dataSet = ChartActivity.chartCacheDataSet.get(stockItem.getId()).dataSet;
 			} else {
 				try {
-					dataSet = dataManager.getDayDataSet(stockItem, Calendar.getInstance(), chartDayCount, true);
+					dataSet = dataManager.getDayDataSet(stockItem, timePeriod, true);
 
 					// save loaded data to cache
 					if (ChartActivity.chartCacheDataSet.containsKey(stockItem.getId())) {
 						ChartActivity.chartCacheDataSet.remove(stockItem.getId());
 					}
-					ChartActivity.chartCacheDataSet.put(stockItem.getId(), dataSet);
+					if (dataSet != null) {
+						ChartActivity.chartCacheDataSet.put(stockItem.getId(), new ChartDataCache(dataSet, timePeriod));
+					} else {
+						Log.w(Utils.LOG_TAG, "dataset for chart is null");
+					}
 				} catch (Exception e) {
 					Log.e(Utils.LOG_TAG, "failed to get data", e);
 				} catch (OutOfMemoryError error) {
@@ -287,29 +311,31 @@ public abstract class ChartActivity extends BaseActivity {
 				}
 			}
 			if (dataSet != null) {
-				float[] dataPoints = new float[dataSet.length];
-				Long[] xAxisPoints = new Long[dataSet.length];
+				final float[] dataPoints = new float[dataSet.size()];
+				final Long[] xAxisPoints = new Long[dataSet.size()];
 				//Map<Date, Float> chartData = new LinkedHashMap<Date, Float>();
 				float max = 0;
 				float min = Float.MAX_VALUE;
 
 				float price = -1f;
 				long time = -1l;
-				for (int i = 0; i < dataSet.length; i++) {
-					if (dataSet[i] != null) {
-						price = dataSet[i].getPrice();
-						time = dataSet[i].getDate().getTime();
+				//for (int i = 0; i < dataSet.length; i++) {
+				int index = 0;
+				for (Entry<Long, Float> entry : dataSet.entrySet()) {
+					if (entry.getValue() != 0f) {
+						price = entry.getValue();
+						time = entry.getKey();
 					} else {
-						Log.w(Utils.LOG_TAG, "day data with index " + i + " are not available");
-						if (i > 0 && dataSet[i-1] != null) {
-							// try to get previous one
-							price = dataSet[i-1].getPrice();
-							time = dataSet[i-1].getDate().getTime();
-						}
+						Log.w(Utils.LOG_TAG, "day data with index " + index + " are not available");
+//						if (i > 0 && dataSet[i-1] != 0f) {
+//							// try to get previous one
+//							price = dataSet[i-1];
+//							time = timeSet[i];
+//						}
 					}
 					if (price >= 0 && time >= 0) {
-						dataPoints[i] = price;
-						xAxisPoints[i] = time;
+						dataPoints[index] = price;
+						xAxisPoints[index] = time;
 						//					chartData.put(time, price);
 
 						if (price > max)
@@ -317,6 +343,7 @@ public abstract class ChartActivity extends BaseActivity {
 						if (price < min)
 							min = price;
 					}
+					index++;
 				}
 
 				if (chartView != null && chartView.getVisibility() == View.VISIBLE) {
@@ -335,11 +362,11 @@ public abstract class ChartActivity extends BaseActivity {
 					chartView.setData(dataPoints, max, min);
 				}
 			}
-			return dataSet;
+			return null;
 		}
 
 		@Override
-		protected void onPostExecute(DayData[] result) {		
+		protected void onPostExecute(Void result) {		
 			// change ui to show that update is done
 			if (chartView != null)
 				chartView.setLoading(false);
@@ -348,6 +375,7 @@ public abstract class ChartActivity extends BaseActivity {
 			
 			if (listener != null)
 				listener.onChartUpdateFinish();
+			chartView.invalidate();
 		}
 		
 	}

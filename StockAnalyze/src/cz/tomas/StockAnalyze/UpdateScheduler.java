@@ -21,20 +21,7 @@
 package cz.tomas.StockAnalyze;
 
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
 
-import com.flurry.android.FlurryAgent;
-
-import cz.tomas.StockAnalyze.Data.DataManager;
-import cz.tomas.StockAnalyze.Data.DataProviderFactory;
-import cz.tomas.StockAnalyze.Data.IStockDataProvider;
-import cz.tomas.StockAnalyze.Data.MarketFactory;
-import cz.tomas.StockAnalyze.Data.Model.Market;
-import cz.tomas.StockAnalyze.receivers.AlarmReceiver;
-import cz.tomas.StockAnalyze.utils.Consts;
-import cz.tomas.StockAnalyze.utils.FormattingUtils;
-import cz.tomas.StockAnalyze.utils.Utils;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -44,6 +31,14 @@ import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.AsyncTask;
 import android.util.Log;
+import cz.tomas.StockAnalyze.Data.DataManager;
+import cz.tomas.StockAnalyze.Data.DataProviderFactory;
+import cz.tomas.StockAnalyze.Data.IStockDataProvider;
+import cz.tomas.StockAnalyze.Data.MarketFactory;
+import cz.tomas.StockAnalyze.Data.Model.Market;
+import cz.tomas.StockAnalyze.receivers.AlarmReceiver;
+import cz.tomas.StockAnalyze.utils.FormattingUtils;
+import cz.tomas.StockAnalyze.utils.Utils;
 
 /**
  * UpdateScheduler service. allows to schedule different updates,
