@@ -23,6 +23,7 @@ package cz.tomas.StockAnalyze.activity;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import android.app.TabActivity;
 import android.content.Intent;
@@ -192,14 +193,20 @@ public final class StockDetailActivity extends ChartActivity implements IActionB
 		if (this.dayData == null)
 			throw new NullPointerException("Day data is null!");
 		
-		if (txtHeader != null)
-			txtHeader.setText(stockItem.getTicker() + " - " + stockItem.getId());
-		if (txtDate != null) {
-			Calendar cal = Calendar.getInstance();
+		if (txtHeader != null) {
+			//Calendar cal = Calendar.getInstance();
+			Calendar cal = new GregorianCalendar(Utils.PRAGUE_TIME_ZONE);
 			cal.setTimeInMillis(this.dayData.getLastUpdate());
+			String time = FormattingUtils.formatStockDate(cal);
 			
-			txtDate.setText(FormattingUtils.formatStockDate(cal));
+			txtHeader.setText(String.format("%s - %s - %s", time, stockItem.getTicker(), stockItem.getId()));
 		}
+//		if (txtDate != null) {
+//			Calendar cal = Calendar.getInstance();
+//			cal.setTimeInMillis(this.dayData.getLastUpdate());
+//			
+//			txtDate.setText(FormattingUtils.formatStockDate(cal));
+//		}
 		if (txtVolume != null) {
 			String strVolume = priceFormat.format(this.dayData.getVolume());
 			txtVolume.setText(strVolume);

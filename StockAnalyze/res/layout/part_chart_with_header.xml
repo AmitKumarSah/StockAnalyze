@@ -5,8 +5,7 @@
    	android:orientation="vertical">
     <LinearLayout android:id="@+id/detailChartHeaderContainer"
     	style="@style/groupboxHeader"
-    	android:layout_below="@+id/tableDetailData"
-    	android:background="@drawable/groupbox_header_shape" >
+    	android:layout_below="@+id/tableDetailData" >
     	
     	<TextView android:id="@+id/detail_label_chart"
     		style="@style/groupboxHeader"

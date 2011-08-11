@@ -72,7 +72,7 @@
 					android:layout_height="1dip"
 					android:layout_below="@id/actionTitle"
 					android:layout_alignParentBottom="true"
-					android:background="@color/separator_color"
+					android:background="@drawable/bg_header"
 					android:layout_margin="10dip" />	
 				<TextView android:id="@+id/home_chart_title"
 					style="@style/titleText"

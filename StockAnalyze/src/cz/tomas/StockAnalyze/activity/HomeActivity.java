@@ -18,7 +18,6 @@
 package cz.tomas.StockAnalyze.activity;
 
 import java.io.IOException;
-import java.util.Map;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -37,13 +36,10 @@ import android.widget.ImageView;
 import android.widget.Toast;
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.DataManager;
-import cz.tomas.StockAnalyze.Data.Model.StockItem;
-import cz.tomas.StockAnalyze.activity.base.BaseActivity;
-import cz.tomas.StockAnalyze.charts.view.ChartView;
 import cz.tomas.StockAnalyze.charts.view.CompositeChartView;
 import cz.tomas.StockAnalyze.ui.widgets.ActionBar;
-import cz.tomas.StockAnalyze.ui.widgets.HomeBlockView;
 import cz.tomas.StockAnalyze.ui.widgets.ActionBar.IActionBarListener;
+import cz.tomas.StockAnalyze.ui.widgets.HomeBlockView;
 import cz.tomas.StockAnalyze.utils.DownloadService;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
@@ -51,8 +47,11 @@ import cz.tomas.StockAnalyze.utils.Utils;
 public class HomeActivity extends ChartActivity implements OnClickListener, OnKeyListener, IActionBarListener {
 
 	private DataManager dataManager;
+	@SuppressWarnings("unused")
 	private static Bitmap chartBitmap;
+	@SuppressWarnings("unused")
 	private static long chartLastUpdate;
+	@SuppressWarnings("unused")
 	private static long chartUpdateInterval = 1000 * 60 * 10;
 	
 	@Override
@@ -93,6 +92,8 @@ public class HomeActivity extends ChartActivity implements OnClickListener, OnKe
 		ActionBar bar = (ActionBar) findViewById(R.id.homeActionBar);
 		if (bar != null)
 			bar.setActionBarListener(this);
+		
+		this.registerForContextMenu(this.chartView);
 	}
 	
 	@Override
