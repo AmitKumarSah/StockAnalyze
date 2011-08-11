@@ -162,9 +162,9 @@ public class StockListActivity extends BaseListActivity implements IActionBarLis
 	 * @see android.app.Activity#onDestroy()
 	 */
 	@Override
-	protected void onDestroy() {
+	public void onStop() {
 		this.adapter.detachFromData();
-		super.onDestroy();
+		super.onStop();
 	}
 
 	@Override

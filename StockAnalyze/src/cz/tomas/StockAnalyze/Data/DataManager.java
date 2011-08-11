@@ -291,6 +291,8 @@ public class DataManager implements IStockDataListener {
 		} else if (data.getPrice() == 0) {
 			// this is special case when the data is downloaded, but the price is not valid,
 			// so we take old data's price and set it to the output DayData object
+			// (it happens in patria provider and zeor is reported
+			// if there wasn't any trade yet)
 			data = createDataWithPrice(item, data);
 		}
 		return data;
@@ -299,7 +301,9 @@ public class DataManager implements IStockDataListener {
 	/**
 	 * mix last available off-line data with new one, 
 	 * the purpose is to get reasonable data if there is no price
-	 * from data provider 
+	 * from data provider - it may happen if there wasn't any trade yet
+	 * and provider reports price as a zero
+	 * 
 	 * @param item stock item to get data for
 	 * @param data data from provider
 	 * @return data from provider with price of last off-line data
@@ -311,18 +315,6 @@ public class DataManager implements IStockDataListener {
 					data.getLastUpdate(), data.getId());
 		return data;
 	}	
-
-//	/**
-//	 * refresh all enabled data providers
-//	 */
-//	public synchronized boolean refresh() throws Exception {
-//		boolean result = DataProviderFactory.refreshAll();
-//
-////		if (result) {
-////			fireUpdateDateChanged(Calendar.getInstance().getTimeInMillis());
-////		}
-//		return result;
-//	}
 	
 	private void fireUpdateDateChanged(long timeInMillis) {
 		for (IUpdateDateChangedListener handler : this.updateDateChangedListeners) {

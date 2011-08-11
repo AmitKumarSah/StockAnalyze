@@ -83,7 +83,8 @@
 					style="@style/homeBlock"
 					android:visibility="gone"
 					android:src="@drawable/chart_preview"/>
-				<include layout="@layout/part_chart_with_header"  
+				<include layout="@layout/part_chart_with_header"
+					style="@style/homeBlock"  
 					android:layout_width="fill_parent" 
 					android:layout_height="wrap_content"/>
 				
