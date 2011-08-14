@@ -61,7 +61,7 @@ public interface IStockDataProvider extends IObservableDataProvider {
 	 * @return
 	 */
 	Map<Long, Float> getHistoricalPriceSet(String ticker, int timePeriod);
-	DayData[] getIntraDayData(String ticker, Date date, int minuteInterval);
+	Map<Long, Float> getIntraDayData(String ticker, Date date);
 	List<StockItem> getAvailableStockList() throws FailedToGetDataException;
 	String getId();
 	String getDescriptiveName();

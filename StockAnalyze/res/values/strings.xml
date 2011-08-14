@@ -136,12 +136,15 @@ Nikdy se nepouštějte do obchodů, jejichž podstatě plně nerozumíte. Obchod
     <string name="activityNews">News</string>
     <string name="activityCurrencies">Currencies</string>
     <string name="activityStockChart">Stock Chart</string>
+    <string name="chartDay">Day</string>
     <string name="chart5days">1 Week</string>
     <string name="chart10days">2 Weeks</string>
     <string name="chartMonth">1 Month</string>
     <string name="chart3months">3 Months</string>
     <string name="chart6months">6 Months</string>
     <string name="chartYear">Year</string>
+    
+    <string name="failedGetChart">Failed to get data for chart...</string>
     
     <string name="working">Processing...</string>
 </resources>

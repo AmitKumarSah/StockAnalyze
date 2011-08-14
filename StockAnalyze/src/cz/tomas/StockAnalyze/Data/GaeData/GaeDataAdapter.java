@@ -42,9 +42,18 @@ public final class GaeDataAdapter implements IStockDataProvider {
 		return null;
 	}
 
+	/**
+	 * get intra day data for current day or last trading if today isn't trading day
+	 */
 	@Override
-	public DayData[] getIntraDayData(String ticker, Date date, int minuteInterval) {
-		return null;
+	public Map<Long, Float> getIntraDayData(String ticker, Date date) {
+		Map<Long, Float> data = null;
+		try {
+			data = this.provider.getIntraDayData(ticker);
+		} catch (Exception e) {
+			throw new FailedToGetDataException(e);
+		}
+		return data;
 	}
 
 	@Override

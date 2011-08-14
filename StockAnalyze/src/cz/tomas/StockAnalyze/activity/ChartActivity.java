@@ -49,6 +49,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.widget.Toast;
 
 /**
  * Base class for activities containing chart view,
@@ -65,31 +66,24 @@ public abstract class ChartActivity extends BaseActivity {
 		void onChartUpdateFinish();
 	}
 	
-	private class ChartDataCache {
-		Map<Long, Float> dataSet;
-		int timePeriod;
-		
-		/**
-		 * @param dataSet
-		 * @param timePeriod
-		 */
-		public ChartDataCache(Map<Long, Float> dataSet, int timePeriod) {
-			super();
-			this.dataSet = dataSet;
-			this.timePeriod = timePeriod;
-		}
-		
-	}
+//	private class ChartDataCache {
+//		Map<Long, Float> dataSet;
+//		int timePeriod;
+//		
+//		/**
+//		 * @param dataSet
+//		 * @param timePeriod
+//		 */
+//		public ChartDataCache(Map<Long, Float> dataSet, int timePeriod) {
+//			super();
+//			this.dataSet = dataSet;
+//			this.timePeriod = timePeriod;
+//		}
+//		
+//	}
 	
 	protected static final String EXTRA_CHART_DAY_COUNT = "cz.tomas.StockAnalyze.chart_day_count";
-	protected static final int MAX_CACHE_SIZE = 4;
-//	private static final int DEFAULT_CHART_DAY_COUNT = 23;
-//	private static final int DAYS_WEEK = 5;
-//	private static final int DAYS_YEAR = 252;
-//	private static final int DAYS_MONTH = 23;
-//	private static final int DAYS_6MONTH = 126;
-//	private static final int DAYS_3MONTH = 65;
-//	private static final int DAYS_2WEEKS = 10;
+	protected static final int MAX_CACHE_SIZE = 8;
 	
 	protected StockItem stockItem;
 	protected DataManager dataManager;
@@ -98,7 +92,7 @@ public abstract class ChartActivity extends BaseActivity {
 	protected DrawChartTask chartTask;
 	protected DayData dayData;
 	
-	private final static Map<String, ChartDataCache> chartCacheDataSet = new LinkedHashMap<String, ChartDataCache>();
+	private final static Map<String, Map<Long, Float>> chartCacheDataSet = new LinkedHashMap<String, Map<Long, Float>>();
 	//private final static Map<String, int[]> chartCacheTimeSet = new LinkedHashMap<String, int[]>();
 	
 	private IChartActivityListener listener;
@@ -115,6 +109,7 @@ public abstract class ChartActivity extends BaseActivity {
 		
 		if (DAY_COUNT_MAP == null) {
 			DAY_COUNT_MAP = new HashMap<Integer, Integer>();
+			DAY_COUNT_MAP.put(DataManager.TIME_PERIOD_DAY, R.string.chartDay);
 			DAY_COUNT_MAP.put(DataManager.TIME_PERIOD_WEEK, R.string.chart5days);
 			//DAY_COUNT_MAP.put(DAYS_2WEEKS, R.string.chart10days);
 			DAY_COUNT_MAP.put(DataManager.TIME_PERIOD_MONTH, R.string.chartMonth);
@@ -235,9 +230,9 @@ public abstract class ChartActivity extends BaseActivity {
 		int timePeriod = 0;
 		// day counts are work days only
 		switch (id) {
-//		case R.id.chart10days:
-//			timePeriod = 0;
-//			break;
+		case R.id.chartDay:
+			timePeriod = DataManager.TIME_PERIOD_DAY;
+			break;
 		case R.id.chart3months:
 			timePeriod = DataManager.TIME_PERIOD_QUARTER;
 			break;
@@ -265,6 +260,8 @@ public abstract class ChartActivity extends BaseActivity {
 
 	final protected class DrawChartTask extends AsyncTask<StockItem, Integer, Void> {
 		
+		private Throwable ex;
+		
 		/* 
 		 * @see android.os.AsyncTask#onPreExecute()
 		 */
@@ -287,27 +284,29 @@ public abstract class ChartActivity extends BaseActivity {
 			Map<Long, Float> dataSet = null;
 			
 			// either take data from local cache, or load them:
-			if (ChartActivity.chartCacheDataSet.containsKey(stockItem.getId()) && 
-					ChartActivity.chartCacheDataSet.get(stockItem.getId()).timePeriod == timePeriod) {
-				dataSet = ChartActivity.chartCacheDataSet.get(stockItem.getId()).dataSet;
+			String key = String.format("%s-%d", stockItem.getId(), timePeriod);
+			if (ChartActivity.chartCacheDataSet.containsKey(key)) {
+				dataSet = ChartActivity.chartCacheDataSet.get(key);
 			} else {
 				try {
 					dataSet = dataManager.getDayDataSet(stockItem, timePeriod, true);
 
 					// save loaded data to cache
-					if (ChartActivity.chartCacheDataSet.containsKey(stockItem.getId())) {
-						ChartActivity.chartCacheDataSet.remove(stockItem.getId());
+					if (ChartActivity.chartCacheDataSet.containsKey(key)) {
+						ChartActivity.chartCacheDataSet.remove(key);
 					}
 					if (dataSet != null) {
-						ChartActivity.chartCacheDataSet.put(stockItem.getId(), new ChartDataCache(dataSet, timePeriod));
+						ChartActivity.chartCacheDataSet.put(key, dataSet);
 					} else {
 						Log.w(Utils.LOG_TAG, "dataset for chart is null");
 					}
 				} catch (Exception e) {
 					Log.e(Utils.LOG_TAG, "failed to get data", e);
+					this.ex = e;
 				} catch (OutOfMemoryError error) {
 					Log.i(Utils.LOG_TAG, "allocation: " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
 					Log.e(Utils.LOG_TAG, "Out of memory! Failed to get data", error);
+					this.ex = error;
 				}
 			}
 			if (dataSet != null) {
@@ -366,7 +365,10 @@ public abstract class ChartActivity extends BaseActivity {
 		}
 
 		@Override
-		protected void onPostExecute(Void result) {		
+		protected void onPostExecute(Void result) {	
+			if (this.ex != null) {
+				Toast.makeText(ChartActivity.this, R.string.failedGetChart, Toast.LENGTH_LONG).show();
+			}
 			// change ui to show that update is done
 			if (chartView != null)
 				chartView.setLoading(false);

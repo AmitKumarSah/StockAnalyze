@@ -15,6 +15,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
 import cz.tomas.StockAnalyze.utils.DownloadService;
@@ -22,7 +23,8 @@ import cz.tomas.StockAnalyze.utils.Utils;
 
 public final class GaeDataProvider {
 
-	private static final String URL = "http://backend-stockanalyze.appspot.com/HData?stockId=%s&timePeriod=%s";
+	private static final String URL_HDATA = "http://backend-stockanalyze.appspot.com/HData?stockId=%s&timePeriod=%s";
+	private static final String URL_IDATA = "http://backend-stockanalyze.appspot.com/IData?stockId=%s";
 	
 	private static final String[] TIME_PERIODS = { "", "1D", "1W", "1M", "3M", "6M", "1Y" };
 	
@@ -36,14 +38,35 @@ public final class GaeDataProvider {
 		if (TextUtils.isEmpty(stockTicker)) {
 			throw new NullPointerException("stock can't be null!");
 		}
-		Map<Long, Float> data = new LinkedHashMap<Long, Float>();
 		
-		String urlString = String.format(URL, stockTicker, TIME_PERIODS[timePeriod]);
-		Log.d(Utils.LOG_TAG, "connecting to " + urlString);
+		String urlString = String.format(URL_HDATA, stockTicker, TIME_PERIODS[timePeriod]);
+		
+		return getTextData(urlString);
+	}
+
+	public Map<Long, Float> getIntraDayData(String ticker) throws IOException {
+		if (TextUtils.isEmpty(ticker)) {
+			throw new NullPointerException("stock can't be null!");
+		}
+		
+		String urlString = String.format(URL_IDATA, ticker);
+		return getTextData(urlString);
+	}
+
+	/**
+	 * @param url
+	 * @return
+	 * @throws IOException
+	 * @throws JsonSyntaxException
+	 */
+	private Map<Long, Float> getTextData(String url) throws IOException,
+			JsonSyntaxException {
+		Log.d(Utils.LOG_TAG, "connecting to " + url);
+		Map<Long, Float> data = new LinkedHashMap<Long, Float>();
 		
 		InputStream stream = null;
 		try {
-			stream = DownloadService.GetInstance().openHttpConnection(urlString, true);
+			stream = DownloadService.GetInstance().openHttpConnection(url, true);
 			String content = null;
 			//this.builder.setLength(0);
 			try {

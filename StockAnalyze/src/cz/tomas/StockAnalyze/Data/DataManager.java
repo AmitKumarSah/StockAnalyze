@@ -226,7 +226,14 @@ public class DataManager implements IStockDataListener {
 		}
 		
 		IStockDataProvider provider = DataProviderFactory.getHistoricalDataProvider(MarketFactory.getCzechMarket());
-		return provider.getHistoricalPriceSet(item.getTicker(), timePeriod);
+		
+		Map<Long, Float> dataSet = null;
+		if (timePeriod != TIME_PERIOD_DAY) {
+			dataSet = provider.getHistoricalPriceSet(item.getTicker(), timePeriod);
+		} else {
+			dataSet = provider.getIntraDayData(item.getTicker(), null);
+		}
+		return dataSet;
 		
 //		this.acquireDb(this);
 //		try {

@@ -135,7 +135,7 @@ public class PseCsvDataAdapter implements IStockDataProvider {
 	 * @see cz.tomas.StockAnalyze.Data.IStockDataProvider#getIntraDayData(java.lang.String, java.util.Date, int)
 	 */
 	@Override
-	public DayData[] getIntraDayData(String ticker, Date date, int minuteInterval) {
+	public Map<Long, Float> getIntraDayData(String ticker, Date date) {
 		return null;
 	}
 
