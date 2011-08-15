@@ -21,6 +21,7 @@
 package cz.tomas.StockAnalyze.activity;
 
 import java.io.IOException;
+import java.lang.ref.SoftReference;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -43,6 +44,7 @@ import cz.tomas.StockAnalyze.utils.Utils;
 import android.content.Intent;	
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
@@ -66,21 +68,23 @@ public abstract class ChartActivity extends BaseActivity {
 		void onChartUpdateFinish();
 	}
 	
-//	private class ChartDataCache {
-//		Map<Long, Float> dataSet;
-//		int timePeriod;
-//		
-//		/**
-//		 * @param dataSet
-//		 * @param timePeriod
-//		 */
-//		public ChartDataCache(Map<Long, Float> dataSet, int timePeriod) {
-//			super();
-//			this.dataSet = dataSet;
-//			this.timePeriod = timePeriod;
-//		}
-//		
-//	}
+	private class ChartDataCache {
+		Map<Long, Float> dataSet;
+		int timePeriod;
+		long creationTime;
+		
+		/**
+		 * @param dataSet
+		 * @param timePeriod
+		 */
+		public ChartDataCache(Map<Long, Float> dataSet, int timePeriod) {
+			super();
+			this.dataSet = dataSet;
+			this.timePeriod = timePeriod;
+			this.creationTime = SystemClock.elapsedRealtime(); 
+		}
+		
+	}
 	
 	protected static final String EXTRA_CHART_DAY_COUNT = "cz.tomas.StockAnalyze.chart_day_count";
 	protected static final int MAX_CACHE_SIZE = 8;
@@ -92,8 +96,10 @@ public abstract class ChartActivity extends BaseActivity {
 	protected DrawChartTask chartTask;
 	protected DayData dayData;
 	
-	private final static Map<String, Map<Long, Float>> chartCacheDataSet = new LinkedHashMap<String, Map<Long, Float>>();
+	private final static Map<String, SoftReference<ChartDataCache>> chartCacheDataSet = new LinkedHashMap<String, SoftReference<ChartDataCache>>();
+	private final static Map<String, SoftReference<ChartDataCache>> chartIntradayCacheDataSet = new LinkedHashMap<String, SoftReference<ChartDataCache>>();
 	//private final static Map<String, int[]> chartCacheTimeSet = new LinkedHashMap<String, int[]>();
+	public static final long CACHE_INTRADAY_EXPIRATION = 8 * 60 * 1000;
 	
 	private IChartActivityListener listener;
 	/**
@@ -111,7 +117,6 @@ public abstract class ChartActivity extends BaseActivity {
 			DAY_COUNT_MAP = new HashMap<Integer, Integer>();
 			DAY_COUNT_MAP.put(DataManager.TIME_PERIOD_DAY, R.string.chartDay);
 			DAY_COUNT_MAP.put(DataManager.TIME_PERIOD_WEEK, R.string.chart5days);
-			//DAY_COUNT_MAP.put(DAYS_2WEEKS, R.string.chart10days);
 			DAY_COUNT_MAP.put(DataManager.TIME_PERIOD_MONTH, R.string.chartMonth);
 			DAY_COUNT_MAP.put(DataManager.TIME_PERIOD_QUARTER, R.string.chart3months);
 			DAY_COUNT_MAP.put(DataManager.TIME_PERIOD_HALF_YEAR, R.string.chart6months);
@@ -121,20 +126,32 @@ public abstract class ChartActivity extends BaseActivity {
 		if (savedInstanceState != null) {
 			this.timePeriod = savedInstanceState.getInt(EXTRA_CHART_DAY_COUNT);
 		}
-		if (chartCacheDataSet.size() > MAX_CACHE_SIZE) {
-			clearCache();
-		}
+		
 		this.dataManager = DataManager.getInstance(this);		
+	}
+	
+	/* (non-Javadoc)
+	 * @see cz.tomas.StockAnalyze.activity.base.BaseActivity#onStop()
+	 */
+	@Override
+	public void onStop() {
+		super.onStop();
+		
+		if (this.chartTask != null) {
+			this.chartTask.cancel(false);
+		}
 	}
 
 	/**
-	 * 
+	 * clear chart data caches
 	 */
 	public static void clearCache() {
 		Log.i(Utils.LOG_TAG, "freeing chart activity cache...");
 		// TODO better mechanism
 		if (chartCacheDataSet != null)
 			chartCacheDataSet.clear();
+		if (chartIntradayCacheDataSet != null) 
+			chartIntradayCacheDataSet.clear();
 	}
 
 	/* (non-Javadoc)
@@ -257,6 +274,14 @@ public abstract class ChartActivity extends BaseActivity {
 	public void setChartActivityListener(IChartActivityListener listener) {
 		this.listener = listener;
 	}
+	
+	private Map<String, SoftReference<ChartDataCache>> getCacheMap(int timePeriod) {
+		if (timePeriod != DataManager.TIME_PERIOD_DAY) {
+			return ChartActivity.chartCacheDataSet;
+		} else {
+			return ChartActivity.chartIntradayCacheDataSet;
+		}
+	}
 
 	final protected class DrawChartTask extends AsyncTask<StockItem, Integer, Void> {
 		
@@ -279,24 +304,28 @@ public abstract class ChartActivity extends BaseActivity {
 			if (params.length == 0) {
 				return null;
 			}
-			StockItem stockItem = params[0];
+			final StockItem stockItem = params[0];
 
 			Map<Long, Float> dataSet = null;
 			
 			// either take data from local cache, or load them:
-			String key = String.format("%s-%d", stockItem.getId(), timePeriod);
-			if (ChartActivity.chartCacheDataSet.containsKey(key)) {
-				dataSet = ChartActivity.chartCacheDataSet.get(key);
+			final String key = String.format("%s-%d", stockItem.getId(), timePeriod);
+
+			ChartDataCache chartCache = getCacheData(key);
+			if (chartCache != null) {
+				dataSet = chartCache.dataSet;
 			} else {
 				try {
 					dataSet = dataManager.getDayDataSet(stockItem, timePeriod, true);
 
-					// save loaded data to cache
-					if (ChartActivity.chartCacheDataSet.containsKey(key)) {
-						ChartActivity.chartCacheDataSet.remove(key);
-					}
 					if (dataSet != null) {
-						ChartActivity.chartCacheDataSet.put(key, dataSet);
+						chartCache = new ChartDataCache(dataSet, timePeriod);
+						Map<String, SoftReference<ChartDataCache>> cacheMap = getCacheMap(timePeriod);
+						if (cacheMap.size() >= MAX_CACHE_SIZE) {
+							String firstKey = cacheMap.keySet().iterator().next();
+							cacheMap.remove(firstKey);
+						}
+						cacheMap.put(key, new SoftReference<ChartActivity.ChartDataCache>(chartCache));
 					} else {
 						Log.w(Utils.LOG_TAG, "dataset for chart is null");
 					}
@@ -362,6 +391,33 @@ public abstract class ChartActivity extends BaseActivity {
 				}
 			}
 			return null;
+		}
+
+		/**
+		 * @param key
+		 * @param chartData
+		 * @return
+		 */
+		private ChartDataCache getCacheData(String key) {
+			final long currentTime = SystemClock.elapsedRealtime();
+			
+			SoftReference<ChartDataCache> chartDataRef = null;
+			ChartDataCache chartData = null;
+
+			Map<String, SoftReference<ChartDataCache>> cacheMap = getCacheMap(timePeriod);
+			chartDataRef = cacheMap.get(key);
+			
+			if (chartDataRef != null) {
+				chartData = chartDataRef.get();
+				// intra day data has some expiration time
+				if (chartData != null && timePeriod == DataManager.TIME_PERIOD_DAY 
+						&& currentTime - chartData.creationTime > CACHE_INTRADAY_EXPIRATION) {
+					chartData.dataSet.clear();
+					cacheMap.remove(key);
+					chartData = null;
+				}
+			}
+			return chartData;
 		}
 
 		@Override

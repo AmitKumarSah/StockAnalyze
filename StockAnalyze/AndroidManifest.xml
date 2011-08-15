@@ -44,6 +44,7 @@
 		<activity android:name=".activity.StockDetailActivity"></activity>
 		<activity android:name=".activity.StockChartActivity"	
 			android:theme="@style/themeLightTitle"
+			android:screenOrientation="landscape"
 			android:label="@string/activityPortfolio" />
 		<activity android:name=".activity.PortfolioActivity"></activity>
 		<activity android:name=".activity.PortfolioDetailActivity"></activity>
