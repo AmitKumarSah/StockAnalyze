@@ -24,6 +24,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 import cz.tomas.StockAnalyze.R;
+import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.charts.view.CompositeChartView;
 import cz.tomas.StockAnalyze.utils.Utils;
 
@@ -48,7 +49,7 @@ public class StockChartActivity extends ChartActivity {
 		
 		// if we aren't resuming, load day count from intent (first run)
 		if (savedInstanceState == null || !savedInstanceState.containsKey(EXTRA_CHART_DAY_COUNT))
-			this.timePeriod = this.getIntent().getIntExtra(EXTRA_CHART_DAY_COUNT, 10);
+			this.timePeriod = this.getIntent().getIntExtra(EXTRA_CHART_DAY_COUNT, DataManager.TIME_PERIOD_MONTH);
 		
 		this.setChartActivityListener(new IChartActivityListener() {
 			

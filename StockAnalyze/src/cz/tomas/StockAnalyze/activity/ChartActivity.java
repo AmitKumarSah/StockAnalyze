@@ -42,6 +42,8 @@ import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 import android.content.Intent;	
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -101,6 +103,8 @@ public abstract class ChartActivity extends BaseActivity {
 	
 	public static final long CACHE_INTRADAY_EXPIRATION = 8 * 60 * 1000;
 	
+	protected SharedPreferences prefs;
+	
 	private IChartActivityListener listener;
 	/**
 	 * string resource ids mapped to day count
@@ -123,8 +127,12 @@ public abstract class ChartActivity extends BaseActivity {
 			DAY_COUNT_MAP.put(DataManager.TIME_PERIOD_YEAR, R.string.chartYear);
 		}
 
+		this.prefs = this.getSharedPreferences(Utils.PREF_NAME, 0);
+		
 		if (savedInstanceState != null) {
 			this.timePeriod = savedInstanceState.getInt(EXTRA_CHART_DAY_COUNT);
+		} else {
+			this.timePeriod = this.prefs.getInt(Utils.PREF_CHART_TIME_PERIOD, DataManager.TIME_PERIOD_MONTH);
 		}
 		
 		this.dataManager = DataManager.getInstance(this);		
@@ -147,7 +155,6 @@ public abstract class ChartActivity extends BaseActivity {
 	 */
 	public static void clearCache() {
 		Log.i(Utils.LOG_TAG, "freeing chart activity cache...");
-		// TODO better mechanism
 		if (chartCacheDataSet != null)
 			chartCacheDataSet.clear();
 		if (chartIntradayCacheDataSet != null) 
@@ -188,6 +195,9 @@ public abstract class ChartActivity extends BaseActivity {
 		int timePeriod = this.getDayCountByResource(item.getItemId());
 		if (timePeriod != 0) {
 			this.timePeriod = timePeriod;
+			Editor ed = this.prefs.edit();
+			ed.putInt(Utils.PREF_CHART_TIME_PERIOD, timePeriod);
+			ed.commit();
 			this.updateChart();
 			Map<String, String> pars = new HashMap<String, String>(2);
 			pars.put(Consts.FLURRY_KEY_CHART_TIME_PERIOD, String.valueOf(timePeriod));

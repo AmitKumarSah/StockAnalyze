@@ -323,9 +323,7 @@ public class PortfolioActivity extends BaseListActivity implements OnSharedPrefe
 			}
 			@Override
 			protected Void doInBackground(Void... params) {
-
 				try {
-					//StockItem stock = PortfolioActivity.this.dataManager.getStockItem(portfolioItem.getStockId());
 					StockItem stock = adapter.getStockItem(portfolioItem);
 					portfolio.removeFromPortfolio(stock.getId());
 				} catch (Exception e) {
@@ -336,8 +334,6 @@ public class PortfolioActivity extends BaseListActivity implements OnSharedPrefe
 			@Override
 			protected void onPostExecute(Void result) {
 				adapter.refresh();
-				if (refreshButton != null)
-					refreshButton.setVisibility(View.GONE);
 				dismissDialog(DIALOG_PROGRESS);
 				super.onPostExecute(result);
 			}
