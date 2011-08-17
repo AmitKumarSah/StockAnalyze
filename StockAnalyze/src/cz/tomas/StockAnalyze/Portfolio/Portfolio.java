@@ -80,7 +80,7 @@ public class Portfolio {
 			PortfolioItem item = entry.getValue();
 			if (sold.containsKey(entry.getKey())) {
 				PortfolioItem soldItem = sold.get(entry.getKey());
-				item.setSellFee(soldItem.getSellPrice());
+				item.setSellFee(soldItem.getSellFee());
 				item.setSellPrice(soldItem.getSellPrice());
 				item.setSellDate(soldItem.getSellDate());
 				item.setSoldStockCount(soldItem.getSoldStockCount());

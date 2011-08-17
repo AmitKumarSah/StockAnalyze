@@ -238,6 +238,25 @@ public class PortfolioItem {
 				+ buyDate + ", sellDate=" + sellDate + "]";
 	}
 
+	public float getInvestedValue(boolean includeFees) {
+		float soldItemsValue = this.soldCount * this.sellPrice;
+		float boughtItemsValue = this.boughtCount * this.buyPrice;
+		
+		soldItemsValue = Math.abs(soldItemsValue);
+		if (includeFees) {
+			boughtItemsValue += this.buyFee;	// how much money user paid
+			soldItemsValue -= this.sellFee;		// how much money did user get
+		}
+		
+		if (boughtItemsValue > soldItemsValue) {
+			// portfolio is long
+			return boughtItemsValue;
+		} else {
+			// portfolio is short
+			return soldItemsValue;
+		}
+	}
+	
 	/**
 	 * calculate absolute and relative changes according value and current price
 	 * 
@@ -252,11 +271,10 @@ public class PortfolioItem {
 		float soldItemsValue = this.soldCount * this.sellPrice;
 		float boughtItemsValue = this.boughtCount * this.buyPrice;
 		
-		//final float portfolioValue = boughtItemsValue + soldItemsValue;
 		soldItemsValue = Math.abs(soldItemsValue);
 		if (includeFees) {
-			boughtItemsValue -= this.getBuyFee();
-			soldItemsValue -= this.getSellFee();
+			boughtItemsValue += this.buyFee;	// how much money user paid
+			soldItemsValue -= this.sellFee;		// how much money did user get
 		}
 		float change = 0f;
 		float absChange = 0f;

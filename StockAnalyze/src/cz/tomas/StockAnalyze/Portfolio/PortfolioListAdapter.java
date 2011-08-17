@@ -216,13 +216,7 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 				holder.txtPrice.setText("Fail");
 			}
         }
-        if (holder.txtPortfolioValue != null && holder.txtPortfolioValueChange != null && data != null) {
-        	// price of all stocks currently held:
-        	// value of sold items, this is negative number
-//        	float soldItemsValue = portfolioItem.getSoldStockCount() * portfolioItem.getSellPrice();
-//        	float boughtItemsValue = portfolioItem.getBoughtStockCount() * portfolioItem.getBuyPrice();
-//        	float portfolioValue = boughtItemsValue + soldItemsValue;
-        	
+        if (holder.txtPortfolioValue != null && holder.txtPortfolioValueChange != null && data != null) {        	
         	final float[] changes = new float[2]; 
         	portfolioItem.calculateChanges(data.getPrice(), includeFee, changes);
         	final float currentMarketValue = portfolioItem.getCurrentStockCount() * data.getPrice();
@@ -257,6 +251,7 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 		private Exception ex;
 		private float totalValueSum;
 		private float totalAbsChangeSum;
+		private float totalInvestedSum;
 		
 		@Override
 		protected void onPreExecute() {
@@ -292,16 +287,21 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 							stockItems.put(portfolioItem.getStockId(), stockItem);
 
 							float itemValue = portfolioItem.getCurrentStockCount() * dayData.getPrice();
+							itemValue = Math.abs(itemValue);
 							if (includeFee) {
 								itemValue -= portfolioItem.getBuyFee();
 								itemValue -= portfolioItem.getSellFee();
 							}
 							
+							// invested value is here because item value might be null,
+							// because user bought something and also sold it - therefore
+							// we need to know invested money so we can calculate percentual change for whole portfolio
+							final float investedValue = portfolioItem.getInvestedValue(includeFee);
 							final float[] changes = new float[2];
 							portfolioItem.calculateChanges(dayData.getPrice(), includeFee, changes);
-							totalValueSum += Math.abs(itemValue);	// count short positions as positive so we have their value
+							totalValueSum += itemValue;	// count short positions as positive so we have their value
 							totalAbsChangeSum += changes[1];
-							// TODO cache changes
+							totalInvestedSum += investedValue;
 						}
 					}
 				} catch (Exception e) {
@@ -331,9 +331,9 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 				Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
 				return;
 			}
-			float totalPercChange = 0;
-			if (totalValueSum > 0)
-				totalPercChange = (totalAbsChangeSum / totalValueSum)*100;
+			float totalPercChange = 0f;
+			if (totalInvestedSum > 0)
+				totalPercChange = (totalAbsChangeSum / totalInvestedSum)*100;
 			portfolioSummary = new PortfolioSum(this.totalValueSum, this.totalAbsChangeSum, totalPercChange);
 			clear();
 			

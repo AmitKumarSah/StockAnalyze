@@ -98,7 +98,7 @@ public abstract class ChartActivity extends BaseActivity {
 	
 	private final static Map<String, SoftReference<ChartDataCache>> chartCacheDataSet = new LinkedHashMap<String, SoftReference<ChartDataCache>>();
 	private final static Map<String, SoftReference<ChartDataCache>> chartIntradayCacheDataSet = new LinkedHashMap<String, SoftReference<ChartDataCache>>();
-	//private final static Map<String, int[]> chartCacheTimeSet = new LinkedHashMap<String, int[]>();
+	
 	public static final long CACHE_INTRADAY_EXPIRATION = 8 * 60 * 1000;
 	
 	private IChartActivityListener listener;
@@ -309,7 +309,7 @@ public abstract class ChartActivity extends BaseActivity {
 			Map<Long, Float> dataSet = null;
 			
 			// either take data from local cache, or load them:
-			final String key = String.format("%s-%d", stockItem.getId(), timePeriod);
+			final String key = String.format("%s-%d", stockItem.getId(), timePeriod);	// key to cache
 
 			ChartDataCache chartCache = getCacheData(key);
 			if (chartCache != null) {
