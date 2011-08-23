@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import android.util.Log;
 import cz.tomas.StockAnalyze.Data.DataProviderAdviser;
 import cz.tomas.StockAnalyze.Data.IStockDataProvider;
 import cz.tomas.StockAnalyze.Data.MarketFactory;
@@ -14,6 +15,7 @@ import cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetDataException;
+import cz.tomas.StockAnalyze.utils.Utils;
 
 
 public final class GaeDataAdapter implements IStockDataProvider {
@@ -21,6 +23,7 @@ public final class GaeDataAdapter implements IStockDataProvider {
 
 	private List<IStockDataListener> eventListeners;
 	private GaeDataProvider provider;
+	private boolean enabled;
 	
 	public GaeDataAdapter() {
 		this.eventListeners = new ArrayList<IStockDataListener>();
@@ -34,7 +37,13 @@ public final class GaeDataAdapter implements IStockDataProvider {
 
 	@Override
 	public DayData getLastData(String ticker) throws FailedToGetDataException {
-		return null;
+		DayData lastData = null;
+		try {
+			lastData = this.provider.getLastData(ticker);
+		} catch (IOException e) {
+			throw new FailedToGetDataException(e);
+		}
+		return lastData;
 	}
 
 	@Override
@@ -59,14 +68,18 @@ public final class GaeDataAdapter implements IStockDataProvider {
 	@Override
 	public List<StockItem> getAvailableStockList()
 			throws FailedToGetDataException {
-		// TODO Auto-generated method stub
-		return null;
+		List<StockItem> stockList;
+		try {
+			stockList = this.provider.getStockList("cz");
+		} catch (Exception e) {
+			throw new FailedToGetDataException("failed to get stock list", e);
+		}
+		return stockList;
 	}
 
 	@Override
 	public String getId() {
-		// TODO Auto-generated method stub
-		return null;
+		return "GAE data provider for PSE";
 	}
 
 	@Override
@@ -76,20 +89,43 @@ public final class GaeDataAdapter implements IStockDataProvider {
 
 	@Override
 	public boolean refresh() {
-		// TODO Auto-generated method stub
+		if (enabled) {
+			try {
+				try {
+					for (IStockDataListener listener : eventListeners) {
+						listener.OnStockDataUpdateBegin(this);
+					}
+				} catch (Exception e) {
+					Log.e(Utils.LOG_TAG, "OnStockDataUpdateBegin failed!", e);
+				}
+				// the market could be closed, so we don't neccessarly get updated data
+				if (provider.refresh()) {
+					// if refresh proceeded and the market is open, fire the event
+					for (IStockDataListener listener : eventListeners) {
+						listener.OnStockDataUpdated(this, null);
+					}
+				} else {
+					for (IStockDataListener listener : eventListeners) {
+						listener.OnStockDataNoUpdate(this);
+					}
+				}
+				return true;
+			} catch (Exception e) {
+				Log.e(Utils.LOG_TAG, "Regular update failed!", e);
+			}
+		}
 		return false;
 	}
 
 	@Override
 	public DataProviderAdviser getAdviser() {
-		DataProviderAdviser adviser = new DataProviderAdviser(false, true, false, MarketFactory.getCzechMarket());
+		DataProviderAdviser adviser = new DataProviderAdviser(true, true, true, MarketFactory.getCzechMarket());
 		return adviser;
 	}
 
 	@Override
 	public void enable(boolean enabled) {
-		// TODO Auto-generated method stub
-		
+		this.enabled = enabled;
 	}
 
 	@Override
@@ -98,7 +134,7 @@ public final class GaeDataAdapter implements IStockDataProvider {
 		try {
 			data = this.provider.getHistoricalData(ticker, timePeriod);
 		} catch (Exception e) {
-			throw new FailedToGetDataException(e);
+			throw new FailedToGetDataException("failed to get historical dataset for " + ticker, e);
 		}
 		return data;
 	}

@@ -92,7 +92,7 @@ public class DataManager implements IStockDataListener {
 		
 		//DataProviderFactory.registerDataProvider(pse);
 		DataProviderFactory.registerDataProvider(gae);
-		DataProviderFactory.registerDataProvider(patriaPse);
+		//DataProviderFactory.registerDataProvider(patriaPse);
 		
 		this.updateDateChangedListeners = new ArrayList<IUpdateDateChangedListener>();
 		this.updateStockDataListeners = new ArrayList<IStockDataListener>();
@@ -104,6 +104,7 @@ public class DataManager implements IStockDataListener {
 		
 		gae.enable(true);
 		gae.addListener(this);
+		gae.addListener(supervisor);
 		//pse.addListener(supervisor);
 	}
 	
@@ -216,6 +217,16 @@ public class DataManager implements IStockDataListener {
 		return dbData;
 	}
 	
+	/**
+	 * get historical or intraday data
+	 * 
+	 * @param item see {@link DataManager} constant fields
+	 * @param timePeriod
+	 * @param includeToday
+	 * @return
+	 * @throws FailedToGetDataException
+	 * @throws IOException
+	 */
 	public synchronized Map<Long, Float> getDayDataSet(StockItem item, int timePeriod, boolean includeToday) throws FailedToGetDataException, IOException {
 		//DayData[] dataSet = new DayData[count];
 		

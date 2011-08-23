@@ -21,6 +21,7 @@
 package cz.tomas.StockAnalyze.Data;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -121,7 +122,8 @@ public class DataProviderFactory {
 		for (Entry<String, IStockDataProvider> provider : providers.entrySet()) {
 			DataProviderAdviser providerAdviser =  provider.getValue().getAdviser();
 			
-			if (! providerAdviser.isRealTime() && providerAdviser.getMarkets().contains(market))
+			List<Market> markets = providerAdviser.getMarkets();
+			if (providerAdviser.supportHistorical() && markets.contains(market))
 				return provider.getValue();
 		}
 		

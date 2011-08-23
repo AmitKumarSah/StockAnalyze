@@ -50,6 +50,7 @@
 	<string name="NoNews">"There are no updated news."</string>
 	<string name="InvalidData">Invalid data</string>
 	<string name="Statistics">Statistics</string>
+	<string name="pieces">pcs</string>
 	
 	<string name="homeStockList">Stock List</string>
 	<string name="homeNews">Market News</string>

@@ -22,6 +22,7 @@ package cz.tomas.StockAnalyze.Data;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -127,7 +128,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 	
 	public void insertDayData(StockItem item, DayData newdata) {
 		try {
-			Calendar cal = Calendar.getInstance(Utils.PRAGUE_TIME_ZONE);
+			Calendar cal = new GregorianCalendar(Utils.PRAGUE_TIME_ZONE);
 			cal.setTime(newdata.getDate());
 			DayData currentData = getDayData(cal, item);
 			if (currentData != null) {

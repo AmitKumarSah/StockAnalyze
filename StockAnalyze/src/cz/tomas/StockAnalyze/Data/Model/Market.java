@@ -37,24 +37,24 @@ public class Market implements Serializable {
 	
 	String name;
 	String id;
-	Currency currency;
+	String currency;
 	String description;
 
 	public Market(String name, String id, String currencyCode, String description) {
 		super();
 		this.name = name;
 		this.id = id;
-		this.currency = Currency.getInstance(currencyCode);
+		this.currency = currencyCode;
 		this.description = description;
 	}
 	
-	public Market(String name, String id, Currency currency, String description) {
-		super();
-		this.name = name;
-		this.id = id;
-		this.currency = currency;
-		this.description = description;
-	}
+//	public Market(String name, String id, Currency currency, String description) {
+//		super();
+//		this.name = name;
+//		this.id = id;
+//		this.currency = currency;
+//		this.description = description;
+//	}
 	/**
 	 * name of market (e.g. New York Stock Exchange)
 	 * @return the name
@@ -88,15 +88,9 @@ public class Market implements Serializable {
 	 * @return the currency
 	 */
 	public Currency getCurrency() {
-		return currency;
+		return Currency.getInstance(currency);
 	}
-	/**
-	 * set Currency used for trading on the market
-	 * @param currency the currency to set
-	 */
-	public void setCurrency(Currency currency) {
-		this.currency = currency;
-	}
+
 	/**
 	 * market description, it's optional
 	 * @return the description
@@ -128,7 +122,7 @@ public class Market implements Serializable {
 				+ ((description == null) ? 0 : description.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((currency == null) ? 0 : currency.getCurrencyCode().hashCode());
+		result = prime * result + ((currency == null) ? 0 : currency.hashCode());
 		return result;
 	}
 

@@ -201,7 +201,8 @@ public final class StockDetailActivity extends ChartActivity implements IActionB
 			txtHeader.setText(String.format("%s - %s - %s", time, stockItem.getTicker(), stockItem.getId()));
 		}
 		if (txtVolume != null) {
-			String strVolume = priceFormat.format(this.dayData.getVolume());
+			//String strVolume = priceFormat.format(this.dayData.getVolume());
+			String strVolume = String.valueOf((int) dayData.getVolume()) + getString(R.string.pieces);
 			txtVolume.setText(strVolume);
 		}
 		if (txtMax != null)

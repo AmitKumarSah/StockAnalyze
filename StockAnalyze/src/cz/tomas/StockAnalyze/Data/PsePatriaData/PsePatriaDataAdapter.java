@@ -230,7 +230,7 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 				result = true;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			Log.e(Utils.LOG_TAG, "failed to run update task", e);
 		}
 		return result;
 	}
