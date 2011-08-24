@@ -20,9 +20,7 @@
  */
 package cz.tomas.StockAnalyze.Data;
 
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -72,7 +70,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 	}
 
 
-	private boolean checkForStock(String id) {
+	boolean checkForStock(String id) {
 		if (id == null || id.length() == 0)
 			return false;
 		boolean result = false;
@@ -111,7 +109,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 	
 	public void insertStockItem(StockItem item) {
 		try {
-			Log.d("StockDataSqlStore", "inserting stockItem " + item.toString());
+			Log.d(Utils.LOG_TAG, "inserting stockItem " + item.toString());
 			SQLiteDatabase db = this.getWritableDatabase();
 			ContentValues values = new ContentValues();
 			values.put("id", item.getId());
@@ -126,26 +124,21 @@ public class StockDataSqlStore extends DataSqlHelper {
 		}
 	}
 	
-	public void insertDayData(StockItem item, DayData newdata) {
+	public void insertDayData(String stockId, DayData newdata) {
 		try {
-			Calendar cal = new GregorianCalendar(Utils.PRAGUE_TIME_ZONE);
-			cal.setTime(newdata.getDate());
-			DayData currentData = getDayData(cal, item);
+			DayData currentData = getDayData(stockId);
 			if (currentData != null) {
-				updateDateData(item, newdata, currentData);
+				updateDateData(newdata, currentData);
 				return;
 			}
-			Log.d(Utils.LOG_TAG, "inserting day data for " + item.getTicker() + " to db (" + newdata.getDate().toString() + ")");
-			if (! this.checkForStock(item))
-				this.insertStockItem(item);
 			SQLiteDatabase db = this.getWritableDatabase();
 			ContentValues values = new ContentValues();
-
+	
 			values.put("date", Utils.createDateOnlyCalendar(newdata.getDate()).getTimeInMillis());
 			values.put("last_update", newdata.getLastUpdate());
 			values.put("price", newdata.getPrice());
 			values.put("change", newdata.getChange());
-			values.put("stock_id", item.getId());
+			values.put("stock_id", stockId);
 			values.put("year_max", newdata.getYearMaximum());
 			values.put("year_min", newdata.getYearMinimum());
 			values.put("volume", newdata.getVolume());
@@ -160,16 +153,25 @@ public class StockDataSqlStore extends DataSqlHelper {
 			this.close();
 		}
 	}
+	
+	public void insertDayData(StockItem item, DayData newdata) {
+
+		Log.d(Utils.LOG_TAG, "inserting day data for " + item.getTicker() + " to db (" + newdata.getDate().toString() + ")");
+		if (! this.checkForStock(item))
+			this.insertStockItem(item);
+		
+		this.insertDayData(item.getId(), newdata);
+	}
 
 	/**
 	 * insert set of data in one transaction
 	 * @param receivedData
 	 */
-	public void insertDayDataSet(Map<StockItem, DayData> receivedData) {
+	public void insertDayDataSet(Map<String, DayData> receivedData) {
 		SQLiteDatabase db = this.getWritableDatabase();
 		db.beginTransaction();
 		try {
-			for (Entry<StockItem, DayData> entry : receivedData.entrySet()) {
+			for (Entry<String, DayData> entry : receivedData.entrySet()) {
 				this.insertDayData(entry.getKey(), entry.getValue());
 			}
 			db.setTransactionSuccessful();
@@ -180,12 +182,12 @@ public class StockDataSqlStore extends DataSqlHelper {
 		}
 	}
 	
-	private void updateDateData(StockItem item, DayData newData, DayData currentData) {
+	private void updateDateData(DayData newData, DayData currentData) {
 		try {
 			SQLiteDatabase db = this.getWritableDatabase();
 			ContentValues values = new ContentValues();
 
-			Log.d(Utils.LOG_TAG, "updating day data for " + item.getTicker() + " to db");
+			Log.d(Utils.LOG_TAG, "updating day data for " + currentData.toString() + " to db");
 			values.put("date" ,Utils.createDateOnlyCalendar(newData.getDate()).getTimeInMillis());
 			values.put("last_update", newData.getLastUpdate());
 			values.put("price", newData.getPrice());
@@ -244,7 +246,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 		return items;
 	}
 
-	/*
+	/**
 	 * get stock item by id from database
 	 * returns null if nothing is found
 	 */
@@ -280,32 +282,32 @@ public class StockDataSqlStore extends DataSqlHelper {
 		return item;
 	}
 
-	/*
+	/**
 	 * get day data item from stock_day_data table
 	 * for given stock item and day in year represented by Calendar.
 	 * returns null if nothing is found
 	 */
-	public DayData getDayData(Calendar calendar, StockItem item) {
-		return this.getDayData(calendar, item.getId());
+	public DayData getDayData(StockItem item) {
+		return this.getDayData(item.getId());
 	}
 	
-	/*
+	/**
 	 * get day data item from stock_day_data table
 	 * for given stock item and day in year represented by Calendar.
 	 * returns null if nothing is found
 	 */
-	public DayData getDayData(Calendar calendar, String stockId) {
+	public DayData getDayData(String stockId) {
 		DayData data = null;
 
 		try {
-			Calendar cal = Utils.createDateOnlyCalendar(calendar);
-			long miliseconds =  cal.getTimeInMillis();
+//			Calendar cal = Utils.createDateOnlyCalendar(calendar);
+//			long miliseconds =  cal.getTimeInMillis();
 			SQLiteDatabase db = this.getWritableDatabase();
 			Cursor c = null;
 			try {
 				c = db.query(DAY_DATA_TABLE_NAME, new String[] {
 						"price", "change", "year_max", "year_min", "date", "volume", "id", "last_update" }, 
-						"stock_id=? AND date=?", new String[] { stockId, String.valueOf(miliseconds) }, null, null, "date");
+						"stock_id=?", new String[] { stockId }, null, null, null);
 
 				if (c.moveToFirst()) {
 					float price = c.getFloat(0);
@@ -336,7 +338,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 		return data;
 	}
 
-	/*
+	/**
 	 * get day data item from stock_day_data table
 	 * for given stock.
 	 * returns null if nothing is found
@@ -345,7 +347,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 		return this.getLastAvailableDayData(item.getId());
 	}
 	
-	/*
+	/**
 	 * get day data item from stock_day_data table
 	 * for given stock.
 	 * returns null if nothing is found

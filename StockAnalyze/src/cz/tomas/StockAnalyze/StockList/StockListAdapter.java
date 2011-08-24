@@ -121,7 +121,7 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 	private IStockDataListener dataListener = new IStockDataListener() {
 		
 		@Override
-		public void OnStockDataUpdated(IStockDataProvider sender, Map<StockItem, DayData> dataMap) {
+		public void OnStockDataUpdated(IStockDataProvider sender, Map<String, DayData> dataMap) {
 			if (sender.getAdviser().isRealTime())
 				((Activity) getContext()).runOnUiThread(new Runnable() {
 					

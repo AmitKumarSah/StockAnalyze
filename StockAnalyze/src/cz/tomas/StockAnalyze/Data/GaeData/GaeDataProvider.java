@@ -26,10 +26,11 @@ import cz.tomas.StockAnalyze.utils.Utils;
 
 public final class GaeDataProvider {
 
-	private static final String URL_HDATA = "http://backend-stockanalyze.appspot.com/HData?stockId=%s&timePeriod=%s";
-	private static final String URL_IDATA = "http://backend-stockanalyze.appspot.com/IData?stockId=%s";
-	private static final String URL_DDATA = "http://backend-stockanalyze.appspot.com/DData?stockId=%s";
-	private static final String URL_LIST = "http://backend-stockanalyze.appspot.com/DData?stockList=%s";
+	private static final String URL_HDATA 			= "http://backend-stockanalyze.appspot.com/HData?stockId=%s&timePeriod=%s";
+	private static final String URL_IDATA			= "http://backend-stockanalyze.appspot.com/IData?stockId=%s";
+	private static final String URL_DDATA 			= "http://backend-stockanalyze.appspot.com/DData?stockId=%s";
+	private static final String URL_DDATA_MARKET 	= "http://backend-stockanalyze.appspot.com/DData?marketCode=cz";
+	private static final String URL_LIST 			= "http://backend-stockanalyze.appspot.com/DData?stockList=%s";
 	
 	private static final String[] TIME_PERIODS = { "", "1D", "1W", "1M", "3M", "6M", "1Y" };
 	
@@ -38,9 +39,36 @@ public final class GaeDataProvider {
 	GaeDataProvider() {
 		this.gson = new Gson();
 	}
-	
 
-	public DayData getLastData(String ticker) throws IOException {
+	Map<String, DayData> getDayDataSet() throws JsonSyntaxException, IOException {
+		String url = URL_DDATA_MARKET;
+		
+		Log.d(Utils.LOG_TAG, "connecting to " + url);
+		Map<String, DayData> data = new LinkedHashMap<String, DayData>();
+		InputStream stream = null;
+		try {
+			stream = DownloadService.GetInstance().openHttpConnection(url, true);
+			String content = null;
+			//this.builder.setLength(0);
+			try {
+				content = readStream(stream);
+				//content = content.substring(content.indexOf("\n"));
+				//reader = new InputStreamReader(stream, "UTF-8");
+				Type listType = new TypeToken<Map<String, DayData>>() {}.getType();
+				data = gson.fromJson(content, listType);
+			} catch (IOException ex) {
+				Log.e(Utils.LOG_TAG, "failed to parse " + content, ex);
+				throw ex;
+			}
+		} finally {
+			if (stream != null) {
+				stream.close();
+			}
+		}
+		return data;
+	}
+
+	DayData getLastData(String ticker) throws IOException {
 		if (TextUtils.isEmpty(ticker)) {
 			throw new NullPointerException("stock can't be empty!");
 		}
@@ -70,7 +98,7 @@ public final class GaeDataProvider {
 		return data;
 	}
 
-	public List<StockItem> getStockList(String countryCode) throws JsonSyntaxException, IOException {
+	List<StockItem> getStockList(String countryCode) throws JsonSyntaxException, IOException {
 		if (TextUtils.isEmpty(countryCode)) {
 			throw new NullPointerException("stock can't be empty!");
 		}
@@ -100,7 +128,7 @@ public final class GaeDataProvider {
 		return data;
 	}
 	
-	public Map<Long, Float> getHistoricalData(String stockTicker, int timePeriod) throws IOException {
+	Map<Long, Float> getHistoricalData(String stockTicker, int timePeriod) throws IOException {
 		if (TextUtils.isEmpty(stockTicker)) {
 			throw new NullPointerException("stock ticker can't be empty!");
 		}
@@ -110,7 +138,7 @@ public final class GaeDataProvider {
 		return getTextData(urlString);
 	}
 
-	public Map<Long, Float> getIntraDayData(String ticker) throws IOException {
+	Map<Long, Float> getIntraDayData(String ticker) throws IOException {
 		if (TextUtils.isEmpty(ticker)) {
 			throw new NullPointerException("stock can't be null!");
 		}
@@ -129,7 +157,6 @@ public final class GaeDataProvider {
 			JsonSyntaxException {
 		Log.d(Utils.LOG_TAG, "connecting to " + url);
 		Map<Long, Float> data = new LinkedHashMap<Long, Float>();
-		
 		InputStream stream = null;
 		try {
 			stream = DownloadService.GetInstance().openHttpConnection(url, true);

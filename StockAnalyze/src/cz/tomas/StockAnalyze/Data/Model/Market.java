@@ -31,9 +31,8 @@ import java.util.Currency;
  * 
  * StockItem has a reference to the Market
  */
+@SuppressWarnings("serial")
 public class Market implements Serializable {
-	
-	private static final long serialVersionUID = 1L;
 	
 	String name;
 	String id;

@@ -68,11 +68,11 @@ public class PseCsvDataAdapter implements IStockDataProvider {
 			
 			@Override
 			public void DownloadFinished(Map<String, CsvDataRow> rows) {
-				Map<StockItem,DayData> dataMap = new HashMap<StockItem, DayData>();
+				Map<String,DayData> dataMap = new HashMap<String, DayData>();
 				for (CsvDataRow row : rows.values()) {
-					StockItem stockItem = new StockItem(row.ticker, row.code, row.name, provider.getMarket());
+					//StockItem stockItem = new StockItem(row.ticker, row.code, row.name, provider.getMarket());
 					DayData data = createDayData(row);
-					dataMap.put(stockItem, data);
+					dataMap.put(row.code, data);
 				}
 				for (IStockDataListener listener : listeners) {
 					listener.OnStockDataUpdated(PseCsvDataAdapter.this, dataMap);

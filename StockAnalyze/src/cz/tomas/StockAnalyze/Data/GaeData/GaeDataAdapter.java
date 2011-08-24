@@ -20,7 +20,8 @@ import cz.tomas.StockAnalyze.utils.Utils;
 
 public final class GaeDataAdapter implements IStockDataProvider {
 
-
+	public static final String ID = "GAE PSE Provider";
+	
 	private List<IStockDataListener> eventListeners;
 	private GaeDataProvider provider;
 	private boolean enabled;
@@ -79,7 +80,7 @@ public final class GaeDataAdapter implements IStockDataProvider {
 
 	@Override
 	public String getId() {
-		return "GAE data provider for PSE";
+		return ID;
 	}
 
 	@Override
@@ -101,8 +102,9 @@ public final class GaeDataAdapter implements IStockDataProvider {
 				// the market could be closed, so we don't neccessarly get updated data
 				if (provider.refresh()) {
 					// if refresh proceeded and the market is open, fire the event
+					Map<String, DayData> data = this.provider.getDayDataSet();
 					for (IStockDataListener listener : eventListeners) {
-						listener.OnStockDataUpdated(this, null);
+						listener.OnStockDataUpdated(this, data);
 					}
 				} else {
 					for (IStockDataListener listener : eventListeners) {

@@ -33,7 +33,6 @@ import android.widget.RemoteViews;
 import cz.tomas.StockAnalyze.Data.IStockDataProvider;
 import cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
-import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.activity.StockListActivity;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
@@ -69,7 +68,7 @@ public class NotificationSupervisor implements IStockDataListener {
 	 * @see cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener#OnStockDataUpdated(cz.tomas.StockAnalyze.Data.IStockDataProvider)
 	 */
 	@Override
-	public void OnStockDataUpdated(IStockDataProvider sender, Map<StockItem,DayData> dataMap) {
+	public void OnStockDataUpdated(IStockDataProvider sender, Map<String,DayData> dataMap) {
 		if (this.currentNotificationView != null) {
 			this.stringBuilder.setLength(0);
 			this.stringBuilder.append(this.updateFinishedMessage);

@@ -44,7 +44,6 @@ import cz.tomas.StockAnalyze.Data.PsePatriaData.PsePatriaDataAdapter;
 import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetDataException;
 import cz.tomas.StockAnalyze.StockList.StockComparator;
 import cz.tomas.StockAnalyze.StockList.StockCompareTypes;
-import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 
 /**
@@ -56,7 +55,9 @@ import cz.tomas.StockAnalyze.utils.Utils;
  */
 public class DataManager implements IStockDataListener {
 
-	private int STOCK_LIST_EXPIRATION_DAYS = 30;
+	private static final int STOCK_LIST_EXPIRATION = 1000 * 60 * 60 * 24;
+
+	private int STOCK_LIST_EXPIRATION_DAYS = 10;
 	
 	public static int TIME_PERIOD_NONE = 0;
 	public static int TIME_PERIOD_DAY = 1;
@@ -153,10 +154,11 @@ public class DataManager implements IStockDataListener {
 		
 		long lastUpdate = prefs.getLong(Utils.PREF_LAST_STOCK_LIST_UPDATE_TIME, 0);
 		long diff = System.currentTimeMillis() - lastUpdate; 
-		long dayDiff = diff / (1000 * 60 * 60 * 24); 
+		long dayDiff = diff / STOCK_LIST_EXPIRATION; 
 		Map<String, StockItem> items = this.sqlStore.getStockItems(market, "ticker");
 		if (items == null || items.size() == 0 || dayDiff > STOCK_LIST_EXPIRATION_DAYS) {
 			items = downloadStockItems(market);
+			
 			prefs.edit().putLong(Utils.PREF_LAST_STOCK_LIST_UPDATE_TIME, System.currentTimeMillis()).commit();
 		}
 			
@@ -176,9 +178,14 @@ public class DataManager implements IStockDataListener {
 		Collections.sort(stocks, new StockComparator(StockCompareTypes.Ticker, null));
 		
 		items = new LinkedHashMap<String, StockItem>();
+		Log.i(Utils.LOG_TAG, "storing stock items to db ... " + items.size());
+		
+		this.acquireDb(this);
 		for (StockItem stockItem : stocks) {
 			items.put(stockItem.getId(), stockItem);
+			this.sqlStore.insertStockItem(stockItem);
 		}
+		this.releaseDb(true, this);
 		return items;
 	}
 	
@@ -263,17 +270,17 @@ public class DataManager implements IStockDataListener {
 //		return dataSet;
 	}
 	
-	public synchronized DayData getDayData(StockItem item, Calendar cal) throws FailedToGetDataException, IOException {
-		DayData data = this.sqlStore.getDayData(cal, item);
-		// if data is null, we will have to download them
-		if (data == null) {
-			Log.d(Utils.LOG_TAG, "day data for " + FormattingUtils.formatStockDate(cal) + " wasn't found in db, downloading...");
-			IStockDataProvider provider = DataProviderFactory.getHistoricalDataProvider(MarketFactory.getCzechMarket());
-			data = provider.getDayData(item.getTicker(), cal);
-		}
-		
-		return data;
-	}
+//	public synchronized DayData getDayData(StockItem item, Calendar cal) throws FailedToGetDataException, IOException {
+//		DayData data = this.sqlStore.getDayData(cal, item);
+//		// if data is null, we will have to download them
+//		if (data == null) {
+//			Log.d(Utils.LOG_TAG, "day data for " + FormattingUtils.formatStockDate(cal) + " wasn't found in db, downloading...");
+//			IStockDataProvider provider = DataProviderFactory.getHistoricalDataProvider(MarketFactory.getCzechMarket());
+//			data = provider.getDayData(item.getTicker(), cal);
+//		}
+//		
+//		return data;
+//	}
 	
 	/**
 	 * get last data for stock item,
@@ -282,9 +289,9 @@ public class DataManager implements IStockDataListener {
 	public synchronized DayData getLastValue(StockItem item) throws IOException, NullPointerException {
 		float val = -1;
 		DayData data = null;
-		Calendar now = Calendar.getInstance();
+		//Calendar now = Calendar.getInstance();
 		
-		data = this.sqlStore.getDayData(now, item);
+		data = this.sqlStore.getDayData(item);
 		// we still can be without data from db - so we need to download it
 		// of try to search for older from database
 		if (data == null && Utils.isOnline(this.context)) {
@@ -297,7 +304,7 @@ public class DataManager implements IStockDataListener {
 				else
 					throw new NullPointerException("Can't find appropriate data provider for " + item.toString());
 			} catch (NullPointerException e) {
-				e.printStackTrace();
+				Log.e(Utils.LOG_TAG, "failed to get day dat for " + item, e);
 				throw e;
 			}
 			if (val > 0) {
@@ -340,7 +347,7 @@ public class DataManager implements IStockDataListener {
 		}
 	}
 	
-	private void fireUpdateStockDataListenerUpdate(IStockDataProvider sender, Map<StockItem, DayData> dataMap) {
+	private void fireUpdateStockDataListenerUpdate(IStockDataProvider sender, Map<String, DayData> dataMap) {
 		for (IStockDataListener listener : this.updateStockDataListeners) {
 			listener.OnStockDataUpdated(sender, dataMap);
 		}
@@ -385,22 +392,25 @@ public class DataManager implements IStockDataListener {
 	 * event from data provider, store data to db and fire events
 	 */
 	@Override
-	public void OnStockDataUpdated(IStockDataProvider sender, Map<StockItem,DayData> dataMap) {
+	public void OnStockDataUpdated(IStockDataProvider sender, Map<String, DayData> dataMap) {
 		Log.i(Utils.LOG_TAG, "received stock data update event from " + sender.getId());
 		this.acquireDb(sender.getId());
 		try {
 			if (dataMap == null || dataMap.size() == 0) {
-				Map<StockItem, DayData> receivedData = new HashMap<StockItem, DayData>();
+				Map<String, DayData> receivedData = new HashMap<String, DayData>();
 				for (StockItem item : sender.getAvailableStockList()) {
 					DayData data = sender.getLastData(item.getTicker());
 					if (data.getPrice() == 0)
 						data = this.createDataWithPrice(item, data);
-					receivedData.put(item, data);
+					receivedData.put(item.getId(), data);
 				}
 
 				this.sqlStore.insertDayDataSet(receivedData);
 			} else {
-				for (Entry<StockItem, DayData> entry : dataMap.entrySet()) {
+				for (Entry<String, DayData> entry : dataMap.entrySet()) {
+					if (!this.sqlStore.checkForStock(entry.getKey())) {
+						this.downloadStockItems(null);
+					}
 					this.sqlStore.insertDayData(entry.getKey(), entry.getValue());
 				}
 			}

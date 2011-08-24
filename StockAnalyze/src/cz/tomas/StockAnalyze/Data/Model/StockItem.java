@@ -24,19 +24,19 @@ public class StockItem implements Parcelable {
 	/*
 	 * stock ticker
 	 * */
-	String ticker;
+	private String ticker;
 	/*
 	 * ISIN
 	 * */
-	String id;
+	private String id;
 	/*
 	 * full name of stock
 	 * */
-	String name;
+	private String name;
 	/*
 	 * market where is the stock traded, e.g. NYSE, RM-System,
 	 * */
-	Market market;
+	private Market market;
 	
 	public static final Parcelable.Creator<StockItem> CREATOR = new Parcelable.Creator<StockItem>() {
 		public StockItem createFromParcel(Parcel in) {
