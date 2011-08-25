@@ -112,6 +112,11 @@ public class StockListActivity extends BaseListActivity implements IActionBarLis
 		});
 
 		this.fill();
+
+		if (! Utils.isOnline(this)) {
+			//this.showDialog(NO_INTERNET);
+			Toast.makeText(this, R.string.NoInternet, Toast.LENGTH_SHORT).show();
+		}
 	}
 
 	/**
@@ -136,35 +141,25 @@ public class StockListActivity extends BaseListActivity implements IActionBarLis
 			}
 		});
 		adapter.showIcons(false);
-		adapter.attachToData();
 
 		// in case of resuming when adapter is initialized but not set to list view
 		if (this.getListAdapter() == null) 
 			this.setListAdapter(adapter);
 	}
-	
+
 	@Override
 	public void onResume() {
 		super.onResume();
-
-		if (! Utils.isOnline(this)) {
-			//this.showDialog(NO_INTERNET);
-			Toast.makeText(this, R.string.NoInternet, Toast.LENGTH_SHORT).show();
-		}
-	}
-	
-	@Override
-	public void onPause() {
-		super.onPause();
+		adapter.attachToData();
 	}
 
 	/* (non-Javadoc)
-	 * @see android.app.Activity#onDestroy()
+	 * @see android.app.Activity#onPause()
 	 */
 	@Override
-	public void onStop() {
+	protected void onPause() {
+		super.onPause();
 		this.adapter.detachFromData();
-		super.onStop();
 	}
 
 	@Override

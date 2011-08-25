@@ -150,19 +150,30 @@ public class DataManager implements IStockDataListener {
 	 * @returns map stock id vs StockOte,
 	 */
 	public synchronized Map<String, StockItem> getStockItems(Market market) {
-		SharedPreferences prefs = this.context.getSharedPreferences(Utils.PREF_NAME, 0);
 		
-		long lastUpdate = prefs.getLong(Utils.PREF_LAST_STOCK_LIST_UPDATE_TIME, 0);
-		long diff = System.currentTimeMillis() - lastUpdate; 
-		long dayDiff = diff / STOCK_LIST_EXPIRATION; 
+		boolean isStockListDirty = isStockListDirty();
 		Map<String, StockItem> items = this.sqlStore.getStockItems(market, "ticker");
-		if (items == null || items.size() == 0 || dayDiff > STOCK_LIST_EXPIRATION_DAYS) {
+		if (items == null || items.size() == 0 || isStockListDirty) {
 			items = downloadStockItems(market);
-			
-			prefs.edit().putLong(Utils.PREF_LAST_STOCK_LIST_UPDATE_TIME, System.currentTimeMillis()).commit();
 		}
 			
 		return items;
+	}
+
+	/**
+	 * check if stock list was downloaded and isn't too old
+	 * 
+	 * @param prefs
+	 * @return true if stock list needs to be refreshed
+	 */
+	protected boolean isStockListDirty() {
+		SharedPreferences prefs = this.context.getSharedPreferences(Utils.PREF_NAME, 0);
+		long lastUpdate = prefs.getLong(Utils.PREF_LAST_STOCK_LIST_UPDATE_TIME, 0);
+		long diff = System.currentTimeMillis() - lastUpdate; 
+		long dayDiff = diff / STOCK_LIST_EXPIRATION; 
+		boolean isStockListDirty = dayDiff > STOCK_LIST_EXPIRATION_DAYS;
+		
+		return isStockListDirty;
 	}
 
 	/**
@@ -186,6 +197,8 @@ public class DataManager implements IStockDataListener {
 			this.sqlStore.insertStockItem(stockItem);
 		}
 		this.releaseDb(true, this);
+		SharedPreferences prefs = this.context.getSharedPreferences(Utils.PREF_NAME, 0);
+		prefs.edit().putLong(Utils.PREF_LAST_STOCK_LIST_UPDATE_TIME, System.currentTimeMillis()).commit();
 		return items;
 	}
 	
@@ -252,35 +265,7 @@ public class DataManager implements IStockDataListener {
 			dataSet = provider.getIntraDayData(item.getTicker(), null);
 		}
 		return dataSet;
-		
-//		this.acquireDb(this);
-//		try {
-//			for (int i = dataSet.length - 1; i >= 0; i--) {
-//				try {
-//					dataSet[i] = this.getDayData(item, currentCal);
-//				} catch (Exception e) {
-//					Log.e(Utils.LOG_TAG, "failed to get data for " + FormattingUtils.formatStockDate(currentCal), e);
-//				}
-//				currentCal.roll(Calendar.DAY_OF_YEAR, false);
-//				currentCal = Utils.getLastValidDate(currentCal);
-//			}
-//		} finally {
-//			this.releaseDb(true, this);
-//		}
-//		return dataSet;
 	}
-	
-//	public synchronized DayData getDayData(StockItem item, Calendar cal) throws FailedToGetDataException, IOException {
-//		DayData data = this.sqlStore.getDayData(cal, item);
-//		// if data is null, we will have to download them
-//		if (data == null) {
-//			Log.d(Utils.LOG_TAG, "day data for " + FormattingUtils.formatStockDate(cal) + " wasn't found in db, downloading...");
-//			IStockDataProvider provider = DataProviderFactory.getHistoricalDataProvider(MarketFactory.getCzechMarket());
-//			data = provider.getDayData(item.getTicker(), cal);
-//		}
-//		
-//		return data;
-//	}
 	
 	/**
 	 * get last data for stock item,
@@ -408,7 +393,7 @@ public class DataManager implements IStockDataListener {
 				this.sqlStore.insertDayDataSet(receivedData);
 			} else {
 				for (Entry<String, DayData> entry : dataMap.entrySet()) {
-					if (!this.sqlStore.checkForStock(entry.getKey())) {
+					if (this.isStockListDirty()) {
 						this.downloadStockItems(null);
 					}
 					this.sqlStore.insertDayData(entry.getKey(), entry.getValue());

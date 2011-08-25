@@ -122,7 +122,7 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 		
 		@Override
 		public void OnStockDataUpdated(IStockDataProvider sender, Map<String, DayData> dataMap) {
-			if (sender.getAdviser().isRealTime())
+			if (sender.getAdviser().isRealTime() && getContext() != null)
 				((Activity) getContext()).runOnUiThread(new Runnable() {
 					
 					@Override
