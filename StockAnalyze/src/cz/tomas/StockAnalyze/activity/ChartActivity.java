@@ -23,6 +23,7 @@ package cz.tomas.StockAnalyze.activity;
 import java.io.IOException;
 import java.lang.ref.SoftReference;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -293,6 +294,32 @@ public abstract class ChartActivity extends BaseActivity {
 		}
 	}
 
+	private static final IChartTextFormatter<Long> FORMATTER_DATE = new IChartTextFormatter<Long>() {
+		
+		@Override
+		public String formatAxeText(Long val) {
+			if (val != null) {
+				final Calendar cal = new GregorianCalendar(Utils.PRAGUE_TIME_ZONE);
+				cal.setTimeInMillis(val);
+				return FormattingUtils.formatStockShortDate(cal);
+			} 
+			return "";
+		}
+	};
+	
+	private static final IChartTextFormatter<Long> FORMATTER_TIME = new IChartTextFormatter<Long>() {
+		
+		@Override
+		public String formatAxeText(Long val) {
+			if (val != null) {
+				final Calendar cal = new GregorianCalendar(Utils.PRAGUE_TIME_ZONE);
+				cal.setTimeInMillis(val);
+				return FormattingUtils.formatStockShortTime(cal);
+			} 
+			return "";
+		}
+	};
+	
 	final protected class DrawChartTask extends AsyncTask<StockItem, Integer, Void> {
 		
 		private Throwable ex;
@@ -385,18 +412,9 @@ public abstract class ChartActivity extends BaseActivity {
 				}
 
 				if (chartView != null && chartView.getVisibility() == View.VISIBLE) {
-					final Calendar cal = Calendar.getInstance();
-					chartView.setAxisX(xAxisPoints, new IChartTextFormatter<Long>() {
-
-						@Override
-						public String formatAxeText(Long val) {
-							if (val != null) {
-								cal.setTimeInMillis(val);
-								return FormattingUtils.formatStockShortDate(cal);
-							} 
-							return "";
-						}
-					});
+					IChartTextFormatter<Long> formatter = timePeriod == DataManager.TIME_PERIOD_DAY ? 
+							FORMATTER_TIME : FORMATTER_DATE;
+					chartView.setAxisX(xAxisPoints, formatter);
 					chartView.setData(dataPoints, max, min);
 				}
 			}
@@ -436,14 +454,15 @@ public abstract class ChartActivity extends BaseActivity {
 				Toast.makeText(ChartActivity.this, R.string.failedGetChart, Toast.LENGTH_LONG).show();
 			}
 			// change ui to show that update is done
-			if (chartView != null)
+			if (chartView != null) {
 				chartView.setLoading(false);
-			else
+				chartView.invalidate();
+			} else {
 				Log.w(Utils.LOG_TAG, "ChartView is null! Can not set data to chart!");
+			}
 			
 			if (listener != null)
 				listener.onChartUpdateFinish();
-			chartView.invalidate();
 		}
 		
 	}

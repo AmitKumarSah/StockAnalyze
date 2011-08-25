@@ -55,9 +55,9 @@ import cz.tomas.StockAnalyze.utils.Utils;
  */
 public class DataManager implements IStockDataListener {
 
-	private static final int STOCK_LIST_EXPIRATION = 1000 * 60 * 60 * 24;
+	private static final int DAY_IN_MILISECONDS = 1000 * 60 * 60 * 24;
 
-	private int STOCK_LIST_EXPIRATION_DAYS = 10;
+	private int STOCK_LIST_EXPIRATION_DAYS = 2;
 	
 	public static int TIME_PERIOD_NONE = 0;
 	public static int TIME_PERIOD_DAY = 1;
@@ -170,7 +170,7 @@ public class DataManager implements IStockDataListener {
 		SharedPreferences prefs = this.context.getSharedPreferences(Utils.PREF_NAME, 0);
 		long lastUpdate = prefs.getLong(Utils.PREF_LAST_STOCK_LIST_UPDATE_TIME, 0);
 		long diff = System.currentTimeMillis() - lastUpdate; 
-		long dayDiff = diff / STOCK_LIST_EXPIRATION; 
+		long dayDiff = diff / DAY_IN_MILISECONDS; 
 		boolean isStockListDirty = dayDiff > STOCK_LIST_EXPIRATION_DAYS;
 		
 		return isStockListDirty;
