@@ -52,6 +52,7 @@
 			android:theme="@style/themeLightTitle"
 			android:label="@string/AddPortfolioItemActivityTitle"></activity>
 		<activity android:name=".activity.NewsActivity"></activity>
+		<activity android:name=".activity.NewsDetailActivity"></activity>
 		<activity android:name=".activity.AppPreferencesActivity" 
 			android:label="@string/AppPreferencesActivityTitle"
 			android:theme="@style/themeLightTitle"></activity>

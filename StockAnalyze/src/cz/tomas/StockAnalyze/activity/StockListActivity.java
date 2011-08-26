@@ -72,7 +72,7 @@ public class StockListActivity extends BaseListActivity implements IActionBarLis
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		this.dataManager = DataManager.getInstance(this);
+		this.dataManager = (DataManager) getApplicationContext().getSystemService(Application.DATA_MANAGER_SERVICE);
 		
 		this.setContentView(R.layout.stock_list);
 		this.getListView().setTextFilterEnabled(true);

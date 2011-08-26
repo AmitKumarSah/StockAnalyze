@@ -40,6 +40,7 @@ import cz.tomas.StockAnalyze.activity.base.BaseListActivity;
  */
 public class NewsActivity extends BaseListActivity {
 	
+	public static final String EXTRA_NEWS_ARTICLE = "news-article";
 	private NewsListAdapter adapter;
 	
 	@Override
@@ -53,11 +54,17 @@ public class NewsActivity extends BaseListActivity {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long rowId) {
 				Article article = (Article) getListView().getItemAtPosition(position);
 				
-				if (article != null && article.getUrl() != null) {
-					Uri uri = Uri.parse(article.getUrl().toString());
-					Intent browserIntent = new Intent("android.intent.action.VIEW", uri);
-					startActivity(browserIntent);
+				if (article != null) {
+					Intent intent = new Intent(NewsActivity.this, NewsDetailActivity.class);
+					intent.putExtra(EXTRA_NEWS_ARTICLE, article);
+					startActivity(intent);
 				}
+				
+//				if (article != null && article.getUrl() != null) {
+//					Uri uri = Uri.parse(article.getUrl().toString());
+//					Intent browserIntent = new Intent("android.intent.action.VIEW", uri);
+//					startActivity(browserIntent);
+//				}
 			}
 		});
 	}

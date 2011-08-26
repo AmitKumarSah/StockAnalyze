@@ -28,10 +28,8 @@ import android.database.Cursor;
 import android.database.CursorIndexOutOfBoundsException;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteFullException;
 import android.util.Log;
 import cz.tomas.StockAnalyze.Data.DataSqlHelper;
-import cz.tomas.StockAnalyze.Data.StockDataSqlStore;
 import cz.tomas.StockAnalyze.utils.Utils;
 
 public final class NewsSqlHelper extends DataSqlHelper {
@@ -40,10 +38,14 @@ public final class NewsSqlHelper extends DataSqlHelper {
 //	private static final String SOURCE_CYRRUS_NAME = "Cyrrus";
 //	private static final String SOURCE_CYRRUS_COUNTRY = "cz";
 	
-	private static final String SOURCE_AKCIE = "http://www.akcie.cz/rss/novinky-a-zpravy.xml";
-	//private static final String SOURCE_AKCIE = "http://www.akcie.cz/rss/zpravy2.xml";
-	private static final String SOURCE_AKCIE_NAME = "Akcie.cz";
-	private static final String SOURCE_AKCIE_COUNTRY = "cz";
+//	private static final String SOURCE_AKCIE = "http://www.akcie.cz/rss/novinky-a-zpravy.xml";
+//	//private static final String SOURCE_AKCIE = "http://www.akcie.cz/rss/zpravy2.xml";
+//	private static final String SOURCE_AKCIE_NAME = "Akcie.cz";
+//	private static final String SOURCE_AKCIE_COUNTRY = "cz";
+	
+	private static final String SOURCE_ATLANTIK_NAME = "Atlantik";
+	private static final String SOURCE_ATLANTIK = "http://www.atlantik.cz/rss/zpravy.xml";
+	private static final String SOURCE_ATLANTIK_COUNTRY = "cz";
 	
 	private static final int DEFAULT_ARTICLE_LIMIT = 20;
 	
@@ -53,10 +55,10 @@ public final class NewsSqlHelper extends DataSqlHelper {
 		// insert default data
 		try {
 			if (this.getFeeds().size() == 0) {
-				Log.d("cz.tomas.StockAnalyze.News.NewsSqlHelper", "Inserting default rss feed source..." + SOURCE_AKCIE_NAME);
+				Log.d("cz.tomas.StockAnalyze.News.NewsSqlHelper", "Inserting default rss feed source..." + SOURCE_ATLANTIK_NAME);
 //				if (! this.insertFeed(SOURCE_CYRRUS_NAME, new URL(SOURCE_CYRRUS), SOURCE_CYRRUS_COUNTRY))
 //					throw new SQLException("The feed record wasn't inserted.");
-				if (! this.insertFeed(SOURCE_AKCIE_NAME, new URL(SOURCE_AKCIE), SOURCE_AKCIE_COUNTRY))
+				if (! this.insertFeed(SOURCE_ATLANTIK_NAME, new URL(SOURCE_ATLANTIK), SOURCE_ATLANTIK_COUNTRY))
 					throw new SQLException("The feed record wasn't inserted.");
 			}
 		} catch (MalformedURLException e) {
@@ -74,7 +76,7 @@ public final class NewsSqlHelper extends DataSqlHelper {
 		
 	}
 	
-	/*
+	/**
 	 * insert new feed to db
 	 */
 	public boolean insertFeed(String title, URL url, String countryCode) throws SQLException {
@@ -86,7 +88,7 @@ public final class NewsSqlHelper extends DataSqlHelper {
 		return (super.getWritableDatabase().insert(FEEDS_TABLE_NAME, null, values) > 0);
 	}
 
-	/*
+	/**
 	 * delete rss feed from db
 	 */
 	public boolean deleteFeed(Long feedId) throws SQLException {
@@ -94,7 +96,7 @@ public final class NewsSqlHelper extends DataSqlHelper {
 				"feed_id=" + feedId.toString(), null) > 0);
 	}
 
-	/*
+	/**
 	 * insert one article to db
 	 */
 	public boolean insertArticle(Long feedId, String title, URL url,
@@ -111,7 +113,7 @@ public final class NewsSqlHelper extends DataSqlHelper {
 		return result;
 	}
 
-	/*
+	/**
 	 * delete articles from given feed
 	 */
 	public boolean deleteArticles(Long feedId) throws SQLException {
@@ -119,7 +121,7 @@ public final class NewsSqlHelper extends DataSqlHelper {
 				"feed_id=" + feedId.toString(), null) > 0);
 	}
 
-	/*
+	/**
 	 * get all feeds
 	 */
 	public List<Feed> getFeeds() {
@@ -151,7 +153,7 @@ public final class NewsSqlHelper extends DataSqlHelper {
 		return feeds;
 	}
 
-	/*
+	/**
 	 * read all articles from database that belongs to the feed
 	 * @returns list of articles, if no articles were found, list would be empty 
 	 */
@@ -159,7 +161,7 @@ public final class NewsSqlHelper extends DataSqlHelper {
 		return this.getArticles(feedId, DEFAULT_ARTICLE_LIMIT);
 	}
 	
-	/*
+	/**
 	 * read articles limited by limit from database that belongs to the feed
 	 * @returns list of articles limited by limit, 
 	 * if no articles were found, list would be empty 
@@ -194,7 +196,7 @@ public final class NewsSqlHelper extends DataSqlHelper {
 		return articles;
 	}
 
-	/*
+	/**
 	 * insert articles to the feed in transaction
 	 */
 	public void insertArticles(long feedId, List<Article> articles) {

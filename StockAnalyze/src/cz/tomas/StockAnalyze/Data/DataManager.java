@@ -32,6 +32,7 @@ import java.util.Map.Entry;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.SystemClock;
 import android.util.Log;
 import cz.tomas.StockAnalyze.NotificationSupervisor;
 import cz.tomas.StockAnalyze.Data.GaeData.GaeDataAdapter;
@@ -74,6 +75,7 @@ public class DataManager implements IStockDataListener {
 	
 	private Context context;
 	private static DataManager instance;
+	private long lastUpdateTime;
 	
 	public static DataManager getInstance(Context context) {
 		if (instance == null)
@@ -333,6 +335,7 @@ public class DataManager implements IStockDataListener {
 	}
 	
 	private void fireUpdateStockDataListenerUpdate(IStockDataProvider sender, Map<String, DayData> dataMap) {
+		this.lastUpdateTime = SystemClock.elapsedRealtime();
 		for (IStockDataListener listener : this.updateStockDataListeners) {
 			listener.OnStockDataUpdated(sender, dataMap);
 		}
@@ -427,5 +430,9 @@ public class DataManager implements IStockDataListener {
 	@Override
 	public void OnStockDataNoUpdate(IStockDataProvider sender) {
 
+	}
+
+	public long getLastUpdateTime() {
+		return this.lastUpdateTime;
 	}
 }

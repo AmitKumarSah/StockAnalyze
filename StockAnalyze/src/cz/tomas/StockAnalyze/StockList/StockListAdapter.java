@@ -56,7 +56,9 @@ import cz.tomas.StockAnalyze.utils.Utils;
 public class StockListAdapter extends ArrayAdapter<StockItem> {
 	 
 	private DataManager dataManager;
-	private LayoutInflater vi; 
+	private LayoutInflater vi;
+	
+	private static long lastUpdateLocalTime;
 	
 	/**
 	 * items of list view
@@ -109,6 +111,12 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 	 */
 	public void attachToData() {
 		this.dataManager.addStockDataListener(dataListener);
+		// check if our data got old
+		long time = this.dataManager.getLastUpdateTime();
+		if (lastUpdateLocalTime < time) {
+			this.refreshList();
+		}
+		lastUpdateLocalTime = time;
 	}
 	
 	/**

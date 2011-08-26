@@ -109,9 +109,9 @@ public class XmlFeedPullParseHandler {
 	        
 	        try {
 	        	stream = DownloadService.GetInstance().openHttpConnection(feed.getUrl().toString(), true);
-	        	if (feed.getCountryCode().equalsIgnoreCase("cz"))
-	        		parser.setInput(stream, "windows-1250");
-	        	else
+//	        	if (feed.getCountryCode().equalsIgnoreCase("cz"))
+//	        		parser.setInput(stream, "windows-1250");
+//	        	else
 	        		parser.setInput(stream, null);			// auto-detect the encoding from the stream
 	            int eventType = parser.getEventType();
 	            boolean done = false;
@@ -128,14 +128,16 @@ public class XmlFeedPullParseHandler {
 	                        if (name.equalsIgnoreCase(ITEM)){
 	                            currentMessage = new Article();
 	                        } else if (currentMessage != null){
-	                            if (name.equalsIgnoreCase(LINK)){
-	                                currentMessage.setUrl(new URL(parser.nextText()));
+	                            String text = parser.nextText();
+								if (name.equalsIgnoreCase(LINK)){
+	                                currentMessage.setUrl(new URL(text));
 	                            } else if (name.equalsIgnoreCase(DESCRIPTION)){
-	                                currentMessage.setDescription(parser.nextText());
+	                            	text = text.trim();
+	                                currentMessage.setDescription(text);
 	                            } else if (name.equalsIgnoreCase(PUB_DATE)){
-	                            	currentMessage.setDate(FormattingUtils.parse(parser.nextText()).getTime());
+	                            	currentMessage.setDate(FormattingUtils.parse(text).getTime());
 	                            } else if (name.equalsIgnoreCase(TITLE)){
-	                                currentMessage.setTitle(parser.nextText());
+	                                currentMessage.setTitle(text);
 	                            }    
 	                        }
 	                        break;

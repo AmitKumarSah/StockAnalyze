@@ -17,10 +17,14 @@
  ******************************************************************************/
 package cz.tomas.StockAnalyze.News;
 
+import java.io.Serializable;
 import java.net.URL;
 
-public class Article extends Object {
-    private long articleId;
+public class Article implements Serializable {
+    
+	private static final long serialVersionUID = 8350602351455117248L;
+	
+	private long articleId;
     private long feedId;
     private String title;
     private URL url;

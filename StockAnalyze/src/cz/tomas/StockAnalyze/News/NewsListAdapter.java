@@ -30,6 +30,7 @@ import cz.tomas.StockAnalyze.utils.Utils;
 import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -111,6 +112,7 @@ public class NewsListAdapter extends ArrayAdapter<Article> {
 									MAX_DESCRIPTION_LENGHT);
 							description += "...";
 						}
+						
 						txtPreview.setText(description);
 					}
 				}
