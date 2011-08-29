@@ -21,7 +21,6 @@
 package cz.tomas.StockAnalyze.activity;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -41,6 +40,7 @@ import cz.tomas.StockAnalyze.activity.base.BaseListActivity;
 public class NewsActivity extends BaseListActivity {
 	
 	public static final String EXTRA_NEWS_ARTICLE = "news-article";
+	public static final String EXTRA_NEWS_POSITION = "news-position";
 	private NewsListAdapter adapter;
 	
 	@Override
@@ -56,7 +56,8 @@ public class NewsActivity extends BaseListActivity {
 				
 				if (article != null) {
 					Intent intent = new Intent(NewsActivity.this, NewsDetailActivity.class);
-					intent.putExtra(EXTRA_NEWS_ARTICLE, article);
+					//intent.putExtra(EXTRA_NEWS_ARTICLE, article);
+					intent.putExtra(EXTRA_NEWS_POSITION, position);
 					startActivity(intent);
 				}
 				

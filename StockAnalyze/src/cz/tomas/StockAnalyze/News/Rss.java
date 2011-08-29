@@ -21,7 +21,6 @@
 package cz.tomas.StockAnalyze.News;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
 import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetNewsException;
@@ -38,7 +37,7 @@ public class Rss {
 	XmlFeedPullParseHandler handler;
 	NewsSqlHelper sqlHelper;
 
-	/*
+	/**
 	 * constructor, Context is required to connect to database
 	 */
 	public Rss(Context context) {
@@ -47,36 +46,36 @@ public class Rss {
 		this.sqlHelper = this.handler.getDbHelper();
 	}
 	
-	/*
+	/**
 	 * insert new feed to database - does NOT check for duplicates
 	 */
 	public boolean insertFeed(String title, URL url, String countryCode) {
 		return this.sqlHelper.insertFeed(title, url, countryCode);
 	}
 	
-	/*
+	/**
 	 * delete feed from database by its id
 	 */
 	public void deleteFeed(long feedId) {
 		this.sqlHelper.deleteFeed(feedId);
 	}
 	
-	/*
+	/**
 	 * delete all articles from given feed
 	 */
 	public void deleteArticles(long feedId) {
 		this.sqlHelper.deleteArticles(feedId);
 	}
+//	
+//	/**
+//	 * download and save articles from given feed to database
+//	 */
+//	@Deprecated
+//	public void updateArticles(Feed feed) throws Exception {
+//		this.handler.updateArticles(feed);
+//	}
 	
-	/*
-	 * download and save articles from given feed to database
-	 */
-	@Deprecated
-	public void updateArticles(Feed feed) throws Exception {
-		this.handler.updateArticles(feed);
-	}
-	
-	/*
+	/**
 	 * download and save new articles from given feed to database
 	 * @returns list of merged articles - downloaded + already present in database
 	 */
@@ -114,28 +113,28 @@ public class Rss {
 		return downloadedArticles;
 	}
 	
-	/*
+	/**
 	 * get all articles from given feed that are stored in database
 	 */
 	public List<Article> getArticles(long feedId) {
 		return this.sqlHelper.getArticles(feedId);
 	}
 	 
-	/*
+	/**
 	 * get articles from given feed, limited by limit
 	 */
 	public List<Article> getArticles(long feedId, int limit) {
 		return this.sqlHelper.getArticles(feedId, limit);
 	}
 
-	/*
+	/**
 	 * get all feeds stored in database
 	 */
 	public List<Feed> getFeeds() {
 		return this.sqlHelper.getFeeds();
 	}
 	
-	/*
+	/**
 	 * close database
 	 */
 	public void done() {

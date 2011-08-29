@@ -21,7 +21,6 @@
 package cz.tomas.StockAnalyze.News;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import cz.tomas.StockAnalyze.R;
@@ -29,8 +28,6 @@ import cz.tomas.StockAnalyze.utils.Utils;
 
 import android.app.Activity;
 import android.content.Context;
-import android.os.AsyncTask;
-import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -45,13 +42,11 @@ import android.widget.Toast;
  */
 public class NewsListAdapter extends ArrayAdapter<Article> {
 
-	private static List<Article> newsItems;
+	//private List<Article> newsItems;
 	
 	private LayoutInflater vi; 
 	private NewsItemsTask task;
 	private final int MAX_DESCRIPTION_LENGHT = 100;
-	
-	private final int DEFAULT_NEWS_LIMIT = 20;
 	
 	/**
 	 * @param context
@@ -63,22 +58,25 @@ public class NewsListAdapter extends ArrayAdapter<Article> {
 
 		this.vi = (LayoutInflater)this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		
-		if (newsItems == null) {
-			newsItems = new ArrayList<Article>();
-			getNewsData();
-		} else {
-			for (Article article : newsItems) {
-				this.add(article);
-			}
-		}
+		//this.newsItems = new ArrayList<Article>();
+		this.getNewsData();
+		
+//		if (newsItems == null) {
+//			newsItems = new ArrayList<Article>();
+//			getNewsData();
+//		} else {
+//			for (Article article : newsItems) {
+//				this.add(article);
+//			}
+//		}
 	}
 
 	private void getNewsData() {
-		task = new NewsItemsTask();
+		task = new NewsAdapterTask(this.getContext());
 		task.execute();
 	}
 	
-	/*
+	/**
 	 * fetch new data for rss feeds
 	 */
 	public void refresh() {
@@ -127,12 +125,13 @@ public class NewsListAdapter extends ArrayAdapter<Article> {
 		}
 		
 		return v;
-	}	
+	}
 	
-	private class NewsItemsTask extends AsyncTask<Void, Integer, List<Article>> {
-		
-		private Exception ex;
-		
+	class NewsAdapterTask extends NewsItemsTask {
+
+		NewsAdapterTask(Context context) {
+			super(context);
+		}
 		@Override
 		protected void onPreExecute() {
 			try {
@@ -141,31 +140,8 @@ public class NewsListAdapter extends ArrayAdapter<Article> {
 				Log.d(Utils.LOG_TAG, "failed to dissmis progess bar! " + e.getMessage());
 			}
 		}
-		
-		@Override
-		protected List<Article> doInBackground(Void... params) {
-			Rss rss = new Rss(getContext());
-			
-			try {
-				List<Feed> feeds = rss.getFeeds();
-				for (Feed feed : feeds) {
-					List<Article> articles = rss.fetchArticles(feed);
-					
-					for (Article a : articles) {
-						newsItems.add(a);
-					}
-				}
-			} catch (Exception e) {
-				Log.d(Utils.LOG_TAG, "failed to read news", e);
-				this.ex = e;
-			} finally {
-				rss.done();
-			}
-		
-			return newsItems;
-		}
-
 		protected void onPostExecute(List<Article> result) {
+			//newsItems = result;
 			clear();
 			for (int i = 0; i < result.size() && i < DEFAULT_NEWS_LIMIT; i++) {
 				add(result.get(i));
@@ -176,15 +152,15 @@ public class NewsListAdapter extends ArrayAdapter<Article> {
 				String message = "";
 				
 				if (this.ex != null && this.ex.getMessage() != null) {
-					message = getContext().getString(R.string.FailedGetNews);
+					message = this.context.getString(R.string.FailedGetNews);
 					message += (": " + this.ex.getMessage());
 				}
 				else
-					message = getContext().getString(R.string.NoNews);
-				Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+					message = this.context.getString(R.string.NoNews);
+				Toast.makeText(this.context, message, Toast.LENGTH_LONG).show();
 			}
 			try {
-				((Activity) getContext()).findViewById(R.id.progressNews).setVisibility(View.GONE);
+				((Activity) this.context).findViewById(R.id.progressNews).setVisibility(View.GONE);
 			} catch (Exception e) {
 				Log.d(Utils.LOG_TAG, "failed to dissmis progess bar! " + e.getMessage());
 			}

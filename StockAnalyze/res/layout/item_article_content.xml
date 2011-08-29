@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+ xmlns:android="http://schemas.android.com/apk/res/android"    android:id="@+id/newsArticlScrollView"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:padding="8dp">
+    <LinearLayout
+        android:id="@+id/newsArticleContainer"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" 
+        android:orientation="vertical">
+        <TextView android:id="@+id/newsArticleTitle"
+        	style="@style/titleText"
+        	android:paddingLeft="0dp"
+        		android:layout_width="wrap_content" 
+        		android:layout_height="wrap_content"/>
+        <TextView android:id="@+id/newsArticleDate"
+        	style="@style/subText"/>
+        <TextView android:id="@+id/newsArticleContent"
+        		android:layout_width="fill_parent" 
+        		android:layout_height="fill_parent"/>
+    </LinearLayout>
+</ScrollView>
+

@@ -6,5 +6,6 @@
 	<classpathentry kind="lib" path="/home/tomas/workspace/StockAnalyze/StockAnalyze/lib/FlurryAgent.jar"/>
 	<classpathentry kind="lib" path="lib/gson-1.7.1.jar"/>
 	<classpathentry kind="src" path="StockAnalyzeCharts_src"/>
+	<classpathentry kind="lib" path="lib/android-support-v4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
