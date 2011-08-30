@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 import android.app.TabActivity;
 import android.content.Intent;
@@ -197,8 +198,10 @@ public final class StockDetailActivity extends ChartActivity implements IActionB
 			Calendar cal = new GregorianCalendar(Utils.PRAGUE_TIME_ZONE);
 			cal.setTimeInMillis(this.dayData.getLastUpdate());
 			String time = FormattingUtils.formatStockDate(cal);
+			time += " " + cal.getTimeZone().getDisplayName(true, TimeZone.SHORT);
 			
 			txtHeader.setText(String.format("%s - %s - %s", time, stockItem.getTicker(), stockItem.getId()));
+			txtHeader.setSelected(true);
 		}
 		if (txtVolume != null) {
 			//String strVolume = priceFormat.format(this.dayData.getVolume());

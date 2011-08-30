@@ -20,13 +20,13 @@
  */
 package cz.tomas.StockAnalyze.News;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.concurrent.Semaphore;
 
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.News.NewsItemsTask.ITaskListener;
+import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 
 import android.content.Context;
@@ -110,11 +110,12 @@ public class NewsListAdapter extends ArrayAdapter<Article> {
 					}
 				}
 				if (txtInfo != null) {
-					Calendar cal = Calendar.getInstance();
+					Calendar cal = new GregorianCalendar(Utils.PRAGUE_TIME_ZONE);
 					long date = article.getDate();
 					cal.setTimeInMillis(date);
-					java.text.DateFormat frm = SimpleDateFormat.getDateTimeInstance();
-					txtInfo.setText(frm.format(cal.getTime()));
+					//java.text.DateFormat frm = SimpleDateFormat.getDateTimeInstance();
+					String dateText = FormattingUtils.formatDate(cal);
+					txtInfo.setText(dateText);
 				}
 			}
 		}

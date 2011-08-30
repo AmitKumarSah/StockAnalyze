@@ -43,9 +43,9 @@ public final class NewsSqlHelper extends DataSqlHelper {
 //	private static final String SOURCE_AKCIE_NAME = "Akcie.cz";
 //	private static final String SOURCE_AKCIE_COUNTRY = "cz";
 	
-	private static final String SOURCE_ATLANTIK_NAME = "Atlantik";
-	private static final String SOURCE_ATLANTIK = "http://www.atlantik.cz/rss/zpravy.xml";
-	private static final String SOURCE_ATLANTIK_COUNTRY = "cz";
+	private static final String SOURCE_NAME = "Atlantik";
+	private static final String SOURCE= "http://www.atlantik.cz/rss/zpravy.xml";
+	private static final String SOURCE_COUNTRY = "cz";
 	
 	private static final int DEFAULT_ARTICLE_LIMIT = 20;
 	
@@ -55,10 +55,10 @@ public final class NewsSqlHelper extends DataSqlHelper {
 		// insert default data
 		try {
 			if (this.getFeeds().size() == 0) {
-				Log.d("cz.tomas.StockAnalyze.News.NewsSqlHelper", "Inserting default rss feed source..." + SOURCE_ATLANTIK_NAME);
+				Log.d("cz.tomas.StockAnalyze.News.NewsSqlHelper", "Inserting default rss feed source..." + SOURCE_NAME);
 //				if (! this.insertFeed(SOURCE_CYRRUS_NAME, new URL(SOURCE_CYRRUS), SOURCE_CYRRUS_COUNTRY))
 //					throw new SQLException("The feed record wasn't inserted.");
-				if (! this.insertFeed(SOURCE_ATLANTIK_NAME, new URL(SOURCE_ATLANTIK), SOURCE_ATLANTIK_COUNTRY))
+				if (! this.insertFeed(SOURCE_NAME, new URL(SOURCE), SOURCE_COUNTRY))
 					throw new SQLException("The feed record wasn't inserted.");
 			}
 		} catch (MalformedURLException e) {

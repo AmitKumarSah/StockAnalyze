@@ -249,9 +249,7 @@ public class DataManager implements IStockDataListener {
 	 * @throws FailedToGetDataException
 	 * @throws IOException
 	 */
-	public synchronized Map<Long, Float> getDayDataSet(StockItem item, int timePeriod, boolean includeToday) throws FailedToGetDataException, IOException {
-		//DayData[] dataSet = new DayData[count];
-		
+	public Map<Long, Float> getDayDataSet(StockItem item, int timePeriod, boolean includeToday) throws FailedToGetDataException, IOException {
 		Calendar currentCal = Utils.getLastValidDate(Calendar.getInstance(Utils.PRAGUE_TIME_ZONE));
 		if (! includeToday) {
 			currentCal.roll(Calendar.DAY_OF_YEAR, false);

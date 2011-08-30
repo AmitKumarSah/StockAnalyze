@@ -159,4 +159,10 @@ public final class FormattingUtils {
 			formatter = DateFormat.getDateInstance(DateFormat.LONG);
 		return formatter.format(cal.getTime());
 	}
+	
+	public static String formatDate(Calendar cal) {
+		DateFormat formatter = null;
+		formatter = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.MEDIUM);
+		return formatter.format(cal.getTime());
+	}
 }

@@ -1,10 +1,11 @@
 package cz.tomas.StockAnalyze.fragments;
 
-import java.text.DateFormat;
-import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.News.ArticlePagerAdapter;
+import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Html;
@@ -27,7 +28,10 @@ public final class ArticleFragment extends Fragment {
 		if (arguments != null) {
 			String title = arguments.getString(ArticlePagerAdapter.ARTICLE_TITLE);
 			long date = arguments.getLong(ArticlePagerAdapter.ARTICLE_DATE);
-			String dateText = DateFormat.getDateTimeInstance().format(new Date(date));
+			GregorianCalendar cal = new GregorianCalendar();
+			cal.setTimeInMillis(date);
+			String dateText = FormattingUtils.formatDate(cal);
+			dateText += " " + cal.getTimeZone().getDisplayName(true, TimeZone.SHORT);
 			String content = arguments.getString(ArticlePagerAdapter.ARTICLE_CONTENT);
 			
 			TextView txtContent = (TextView) view.findViewById(R.id.newsArticleContent);
