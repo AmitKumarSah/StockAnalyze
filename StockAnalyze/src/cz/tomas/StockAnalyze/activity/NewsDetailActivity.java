@@ -3,11 +3,14 @@ package cz.tomas.StockAnalyze.activity;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.util.Log;
+import android.view.View;
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.News.ArticlePagerAdapter;
-import cz.tomas.StockAnalyze.News.NewsItemsTask.ITaskFinishedListener;
+import cz.tomas.StockAnalyze.News.NewsItemsTask.ITaskListener;
 import cz.tomas.StockAnalyze.activity.base.BaseFragmentActivity;
 import cz.tomas.StockAnalyze.ui.widgets.CirclesView;
+import cz.tomas.StockAnalyze.utils.Utils;
 
 public final class NewsDetailActivity extends BaseFragmentActivity implements OnPageChangeListener {
 
@@ -27,6 +30,7 @@ public final class NewsDetailActivity extends BaseFragmentActivity implements On
 		super.onCreate(savedInstanceState);
 		
 		this.setContentView(R.layout.news_detail_layout);
+		findViewById(R.id.progressNews).setVisibility(View.VISIBLE);
 		
 		Bundle extras = getIntent().getExtras();
 		final int initialPosition = extras != null ? extras.getInt(NewsActivity.EXTRA_NEWS_POSITION) : 0;
@@ -36,12 +40,26 @@ public final class NewsDetailActivity extends BaseFragmentActivity implements On
 		this.circlesView = (CirclesView) this.findViewById(R.id.newsCirclesView);
 		this.pager = (ViewPager) this.findViewById(R.id.newsArticleViewPager);
 		
-		this.adapter = new ArticlePagerAdapter(this, getSupportFragmentManager(), new ITaskFinishedListener() {
+		this.adapter = new ArticlePagerAdapter(this, getSupportFragmentManager(), new ITaskListener() {
 
 			@Override
 			public void onUpdateFinished() {
+
+				try {
+					findViewById(R.id.progressNews).setVisibility(View.GONE);
+				} catch (Exception e) {
+					Log.d(Utils.LOG_TAG, "failed to dissmis progess bar! " + e.getMessage());
+				}
 				circlesView.setCircles(pager.getAdapter().getCount());
 				pager.setCurrentItem(position);
+				// event isn't triggered if position is 0
+				if (position == 0) {
+					onPageSelected(position);
+				}
+			}
+
+			@Override
+			public void onUpdateStart() {
 			}
 		});
 		this.pager.setAdapter(adapter);

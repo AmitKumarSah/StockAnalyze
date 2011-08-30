@@ -22,21 +22,13 @@
          android:layout_height="fill_parent">
 	<cz.tomas.StockAnalyze.ui.widgets.ActionBar
 		xmlns:actionBar="http://schemas.android.com/apk/res/cz.tomas.StockAnalyze"
-		android:id="@+id/homeActionBar"
+		android:id="@+id/newsActionBar"
 		android:layout_width="fill_parent" 
 		android:layout_height="wrap_content"
 		actionBar:showRefreshButton="true"
 		actionBar:titleText="@string/activityNews" >
 	</cz.tomas.StockAnalyze.ui.widgets.ActionBar>
-	<ProgressBar
-	    android:layout_width="wrap_content" 
-	    android:layout_height="wrap_content" 
-	    android:id="@+id/progressNews"
-	    android:indeterminate="true"
-	 	android:layout_gravity="center_vertical|center_horizontal"
-	 	android:padding="12dp"
-	 	android:visibility="gone" />
-	 	
+		 	
      <ListView android:id="@id/android:list"
                android:layout_width="fill_parent"
                android:layout_height="fill_parent"

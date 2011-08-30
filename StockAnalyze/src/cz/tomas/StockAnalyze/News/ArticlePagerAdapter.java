@@ -3,7 +3,7 @@ package cz.tomas.StockAnalyze.News;
 import java.util.ArrayList;
 import java.util.List;
 
-import cz.tomas.StockAnalyze.News.NewsItemsTask.ITaskFinishedListener;
+import cz.tomas.StockAnalyze.News.NewsItemsTask.ITaskListener;
 import cz.tomas.StockAnalyze.fragments.ArticleFragment;
 
 import android.content.Context;
@@ -21,7 +21,7 @@ public final class ArticlePagerAdapter extends FragmentPagerAdapter {
 	//private Context context;
 	private List<Article> articles;
 	
-	public ArticlePagerAdapter(Context context, FragmentManager fm, ITaskFinishedListener listener) {
+	public ArticlePagerAdapter(Context context, FragmentManager fm, ITaskListener listener) {
 		super(fm);
 		//this.context = context;
 		this.articles = new ArrayList<Article>();

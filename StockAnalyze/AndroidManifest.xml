@@ -46,12 +46,12 @@
 			android:theme="@style/themeLightTitle"
 			android:screenOrientation="landscape"
 			android:label="@string/activityPortfolio" />
-		<activity android:name=".activity.PortfolioActivity"></activity>
+		<activity android:name=".activity.PortfolioActivity" android:launchMode="singleTop"></activity>
 		<activity android:name=".activity.PortfolioDetailActivity"></activity>
 		<activity android:name=".Portfolio.AddPortfolioItemActivity"
 			android:theme="@style/themeLightTitle"
 			android:label="@string/AddPortfolioItemActivityTitle"></activity>
-		<activity android:name=".activity.NewsActivity"></activity>
+		<activity android:name=".activity.NewsActivity" android:launchMode="singleTop"></activity>
 		<activity android:name=".activity.NewsDetailActivity"></activity>
 		<activity android:name=".activity.AppPreferencesActivity" 
 			android:label="@string/AppPreferencesActivityTitle"

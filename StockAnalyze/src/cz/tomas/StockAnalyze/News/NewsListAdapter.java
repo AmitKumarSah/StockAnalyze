@@ -23,10 +23,12 @@ package cz.tomas.StockAnalyze.News;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
+import java.util.concurrent.Semaphore;
+
 import cz.tomas.StockAnalyze.R;
+import cz.tomas.StockAnalyze.News.NewsItemsTask.ITaskListener;
 import cz.tomas.StockAnalyze.utils.Utils;
 
-import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -46,6 +48,7 @@ public class NewsListAdapter extends ArrayAdapter<Article> {
 	
 	private LayoutInflater vi; 
 	private NewsItemsTask task;
+	private ITaskListener listener;
 	private final int MAX_DESCRIPTION_LENGHT = 100;
 	
 	/**
@@ -53,34 +56,26 @@ public class NewsListAdapter extends ArrayAdapter<Article> {
 	 * @param textViewResourceId
 	 * @param objects
 	 */
-	public NewsListAdapter(Context context, int textViewResourceId) {
+	public NewsListAdapter(Context context, int textViewResourceId, ITaskListener listener) {
 		super(context, textViewResourceId);
 
+		this.listener = listener;
 		this.vi = (LayoutInflater)this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		
-		//this.newsItems = new ArrayList<Article>();
-		this.getNewsData();
-		
-//		if (newsItems == null) {
-//			newsItems = new ArrayList<Article>();
-//			getNewsData();
-//		} else {
-//			for (Article article : newsItems) {
-//				this.add(article);
-//			}
-//		}
+		this.getNewsData(false);
 	}
 
-	private void getNewsData() {
+	private void getNewsData(boolean download) {
 		task = new NewsAdapterTask(this.getContext());
-		task.execute(true);
+		task.listener = this.listener;
+		task.execute(download);
+		Log.d(Utils.LOG_TAG, "loading news data, fetch " + download);
 	}
 	
 	/**
 	 * fetch new data for rss feeds
 	 */
 	public void refresh() {
-		this.getNewsData();
+		this.getNewsData(true);
 	}
 	
 	@Override
@@ -132,14 +127,7 @@ public class NewsListAdapter extends ArrayAdapter<Article> {
 		NewsAdapterTask(Context context) {
 			super(context);
 		}
-		@Override
-		protected void onPreExecute() {
-			try {
-				((Activity) getContext()).findViewById(R.id.progressNews).setVisibility(View.VISIBLE);
-			} catch (Exception e) {
-				Log.d(Utils.LOG_TAG, "failed to dissmis progess bar! " + e.getMessage());
-			}
-		}
+
 		protected void onPostExecute(List<Article> result) {
 			//newsItems = result;
 			clear();
@@ -159,10 +147,8 @@ public class NewsListAdapter extends ArrayAdapter<Article> {
 					message = this.context.getString(R.string.NoNews);
 				Toast.makeText(this.context, message, Toast.LENGTH_LONG).show();
 			}
-			try {
-				((Activity) this.context).findViewById(R.id.progressNews).setVisibility(View.GONE);
-			} catch (Exception e) {
-				Log.d(Utils.LOG_TAG, "failed to dissmis progess bar! " + e.getMessage());
+			if (this.listener != null) {
+				this.listener.onUpdateFinished();
 			}
 		}
 	}

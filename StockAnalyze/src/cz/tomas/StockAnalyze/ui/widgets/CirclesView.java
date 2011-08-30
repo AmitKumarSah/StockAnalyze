@@ -73,7 +73,6 @@ public final class CirclesView extends LinearLayout {
 	
 	private View createCircleView() {
 		ImageView view = new ImageView(getContext());
-		//view.setPadding(18, 18, 18, 18);
 		view.setLayoutParams(LAYOUT_PARAMS);
 		view.setImageResource(R.drawable.circle_selector);
 		return view;
