@@ -11,18 +11,10 @@ public final class CirclesView extends LinearLayout {
 
 	private static final int CIRCLE_SIZE = 8;
 	private static final int CIRCLE_MARGIN = 2;
+	 
+	private final float SCALE = getContext().getResources().getDisplayMetrics().density;
 
-	private static final LayoutParams LAYOUT_PARAMS;
-	
-	static {
-		LAYOUT_PARAMS = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-		LAYOUT_PARAMS.width = CIRCLE_SIZE;
-		LAYOUT_PARAMS.height = CIRCLE_SIZE;
-		LAYOUT_PARAMS.leftMargin = CIRCLE_MARGIN;
-		LAYOUT_PARAMS.rightMargin = CIRCLE_MARGIN;
-		LAYOUT_PARAMS.topMargin = CIRCLE_MARGIN;
-		LAYOUT_PARAMS.bottomMargin = CIRCLE_MARGIN;
-	}
+	private final LayoutParams layoutParams;
 	
 	private View[] circles;
 	private int lastSelected = -1;
@@ -38,6 +30,14 @@ public final class CirclesView extends LinearLayout {
 		if (this.isInEditMode()) {
 			this.setCircles(6);
 		}
+
+		layoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+		layoutParams.width = (int) (CIRCLE_SIZE * SCALE);
+		layoutParams.height = (int) (CIRCLE_SIZE * SCALE);
+		layoutParams.leftMargin = (int) (CIRCLE_MARGIN * SCALE);
+		layoutParams.rightMargin = (int) (CIRCLE_MARGIN * SCALE);
+		layoutParams.topMargin = (int) (CIRCLE_MARGIN * SCALE);
+		layoutParams.bottomMargin = (int) (CIRCLE_MARGIN * SCALE);
 	}
 	
 	public void setSelected(int position) {
@@ -73,7 +73,7 @@ public final class CirclesView extends LinearLayout {
 	
 	private View createCircleView() {
 		ImageView view = new ImageView(getContext());
-		view.setLayoutParams(LAYOUT_PARAMS);
+		view.setLayoutParams(layoutParams);
 		view.setImageResource(R.drawable.circle_selector);
 		return view;
 		
