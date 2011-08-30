@@ -73,7 +73,7 @@ public class NewsListAdapter extends ArrayAdapter<Article> {
 
 	private void getNewsData() {
 		task = new NewsAdapterTask(this.getContext());
-		task.execute();
+		task.execute(true);
 	}
 	
 	/**

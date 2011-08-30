@@ -28,7 +28,7 @@ public final class ArticlePagerAdapter extends FragmentPagerAdapter {
 		
 		NewsTask task = new NewsTask(context);
 		task.setListener(listener);
-		task.execute((Void)null);
+		task.execute(false);
 	}
 
 	/* (non-Javadoc)
