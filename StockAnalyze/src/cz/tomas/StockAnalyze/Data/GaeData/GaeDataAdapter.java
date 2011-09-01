@@ -10,21 +10,21 @@ import java.util.Map;
 import android.util.Log;
 import cz.tomas.StockAnalyze.Data.DataProviderAdviser;
 import cz.tomas.StockAnalyze.Data.IStockDataProvider;
-import cz.tomas.StockAnalyze.Data.MarketFactory;
 import cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetDataException;
+import cz.tomas.StockAnalyze.utils.Markets;
 import cz.tomas.StockAnalyze.utils.Utils;
 
 
-public final class GaeDataAdapter implements IStockDataProvider {
+public class GaeDataAdapter implements IStockDataProvider {
 
 	public static final String ID = "GAE PSE Provider";
 	
-	private List<IStockDataListener> eventListeners;
-	private GaeDataProvider provider;
-	private boolean enabled;
+	protected List<IStockDataListener> eventListeners;
+	protected GaeDataProvider provider;
+	protected boolean enabled;
 	
 	public GaeDataAdapter() {
 		this.eventListeners = new ArrayList<IStockDataListener>();
@@ -121,7 +121,7 @@ public final class GaeDataAdapter implements IStockDataProvider {
 
 	@Override
 	public DataProviderAdviser getAdviser() {
-		DataProviderAdviser adviser = new DataProviderAdviser(true, true, true, MarketFactory.getCzechMarket());
+		DataProviderAdviser adviser = new DataProviderAdviser(true, true, true, Markets.CZ);
 		return adviser;
 	}
 

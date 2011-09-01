@@ -49,6 +49,7 @@ import cz.tomas.StockAnalyze.StockList.StockListAdapter;
 import cz.tomas.StockAnalyze.activity.base.BaseListActivity;
 import cz.tomas.StockAnalyze.ui.widgets.ActionBar;
 import cz.tomas.StockAnalyze.ui.widgets.ActionBar.IActionBarListener;
+import cz.tomas.StockAnalyze.utils.Markets;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 
@@ -62,7 +63,7 @@ public class StockListActivity extends BaseListActivity implements IActionBarLis
 	static final int UPDATE_DLG_FAIL = 1;
 	static final int NO_INTERNET = 2;
 	
-	private DataManager dataManager;
+	protected DataManager dataManager;
 	private View refreshButton;
 	private Animation refreshAnim; 
 	
@@ -122,9 +123,9 @@ public class StockListActivity extends BaseListActivity implements IActionBarLis
 	/**
 	 * fill list view
 	 */
-	private void fill() {
-		adapter = new StockListAdapter(this, R.layout.stock_list, this.dataManager, "*");	//TODO replace string with filter
-		adapter.addListAdapterListener( new IListAdapterListener<Object>() {
+	protected void fill() {
+		this.adapter = createListAdapter();
+		this.adapter.addListAdapterListener( new IListAdapterListener<Object>() {
 			
 			@Override
 			public void onListLoading() {
@@ -140,11 +141,19 @@ public class StockListActivity extends BaseListActivity implements IActionBarLis
 					refreshAnim.setDuration(0);
 			}
 		});
-		adapter.showIcons(false);
 
 		// in case of resuming when adapter is initialized but not set to list view
 		if (this.getListAdapter() == null) 
 			this.setListAdapter(adapter);
+	}
+
+	/**
+	 * create adapter instance
+	 */
+	protected StockListAdapter createListAdapter() {
+		StockListAdapter adapter = new StockListAdapter(this, R.layout.stock_list, this.dataManager, Markets.CZ, false);
+		adapter.showIcons(false);
+		return adapter;
 	}
 
 	@Override
@@ -229,10 +238,10 @@ public class StockListActivity extends BaseListActivity implements IActionBarLis
 	/**
 	 * call UpdateScheduller for immediate update
 	 */
-	private void updateImmediatly() {
+	protected void updateImmediatly() {
 		UpdateScheduler scheduler = 
 			(UpdateScheduler) this.getApplicationContext().getSystemService(Application.UPDATE_SCHEDULER_SERVICE);
-		scheduler.updateImmediatly();
+		scheduler.updateImmediatly(Markets.CZ);
 	}
 	
 	@Override

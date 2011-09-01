@@ -34,6 +34,7 @@ import android.util.Log;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
+import cz.tomas.StockAnalyze.utils.Markets;
 import cz.tomas.StockAnalyze.utils.Utils;
 
 
@@ -69,7 +70,11 @@ public class StockDataSqlStore extends DataSqlHelper {
 		super(context);
 	}
 
-
+	/**
+	 * check if stock with given id exists in database
+	 * @param id
+	 * @return
+	 */
 	boolean checkForStock(String id) {
 		if (id == null || id.length() == 0)
 			return false;
@@ -99,6 +104,11 @@ public class StockDataSqlStore extends DataSqlHelper {
 		return result;
 	}
 	
+	/**
+	 * check if stock exists in database
+	 * @param item
+	 * @return
+	 */
 	private boolean checkForStock(StockItem item) {
 		if (item == null || item.getId() == null)
 			return false;
@@ -106,17 +116,17 @@ public class StockDataSqlStore extends DataSqlHelper {
 		
 		return this.checkForStock(id);
 	}
+	/**
 	
-	public void insertStockItem(StockItem item) {
+	 * delete stock item from db 
+	 * @param stockId 
+	 */
+	public void deleteStockItem(String stockId) {
 		try {
-			Log.d(Utils.LOG_TAG, "inserting stockItem " + item.toString());
+			Log.d(Utils.LOG_TAG, "deleting stockItems");
+
 			SQLiteDatabase db = this.getWritableDatabase();
-			ContentValues values = new ContentValues();
-			values.put("id", item.getId());
-			values.put("ticker", item.getTicker());
-			values.put("name", item.getName());
-			
-			db.insert(STOCK_TABLE_NAME, null, values);
+			db.delete(STOCK_TABLE_NAME, "id=?", new String[] {stockId});
 		} catch (SQLException e) {
 			Log.e(Utils.LOG_TAG, "failed to insert data.", e);
 		} finally {
@@ -124,6 +134,76 @@ public class StockDataSqlStore extends DataSqlHelper {
 		}
 	}
 	
+	/**
+	 * delete stock items from db for given market
+	 * @param marketID 
+	 */
+	public void deleteStockItems(String marketId) {
+		try {
+			Log.d(Utils.LOG_TAG, "deleting stockItems");
+
+			SQLiteDatabase db = this.getWritableDatabase();
+			db.delete(STOCK_TABLE_NAME, "market_id=?", new String[] {marketId});
+		} catch (SQLException e) {
+			Log.e(Utils.LOG_TAG, "failed to insert data.", e);
+		} finally {
+			this.close();
+		}
+	}
+	
+	/**
+	 * insert new stock item record to database
+	 * @param item
+	 */
+	public void insertStockItem(StockItem item) {
+		try {
+			if (checkForStock(item.getId())) {
+				updateStockItem(item);
+				return;
+			}
+			Log.d(Utils.LOG_TAG, "inserting stockItem " + item.toString());
+			SQLiteDatabase db = this.getWritableDatabase();
+			ContentValues values = new ContentValues();
+			values.put("id", item.getId());
+			values.put("ticker", item.getTicker());
+			values.put("name", item.getName());
+			values.put("is_index", item.isIndex());
+			if (item.getMarket() != null) {
+				values.put("market_id", item.getMarket().getId());
+			} else {
+				Log.w(Utils.LOG_TAG, " stock item is without market " + item);
+			}
+			db.insert(STOCK_TABLE_NAME, null, values);
+		} catch (SQLException e) {
+			Log.e(Utils.LOG_TAG, "failed to insert stock item.", e);
+		} finally {
+			this.close();
+		}
+	}
+	
+	/**
+	 * update stock item
+	 * @param item
+	 */
+	private void updateStockItem(StockItem item) {
+		try {
+			Log.d(Utils.LOG_TAG, "updating stockItem " + item.toString());
+			SQLiteDatabase db = this.getWritableDatabase();
+			ContentValues values = new ContentValues();
+			values.put("ticker", item.getTicker());
+			values.put("name", item.getName());
+			values.put("is_index", item.isIndex());
+			if (item.getMarket() != null) {
+				values.put("market_id", item.getMarket().getId());
+			} else {
+				Log.w(Utils.LOG_TAG, " stock item is without market " + item);
+			}
+			db.update(STOCK_TABLE_NAME, values, "id=?", new String[] {item.getId()});
+		} catch (Exception e) {
+			Log.e(Utils.LOG_TAG, "failed to update stock item.", e);
+		}
+	}
+
 	public void insertDayData(String stockId, DayData newdata) {
 		try {
 			DayData currentData = getDayData(stockId);
@@ -211,21 +291,27 @@ public class StockDataSqlStore extends DataSqlHelper {
 	}
 
 
-	public Map<String, StockItem> getStockItems(Market market, String orderBy) {
+	public Map<String, StockItem> getStockItems(Market market, String orderBy, boolean includeIndeces) {
 		// LinkedHashMap preserve order of added items
 		Map<String, StockItem> items = new LinkedHashMap<String, StockItem>();
 		try {
 			SQLiteDatabase db = this.getWritableDatabase();
 			Cursor c = null;
 			try {
-				c = db.query(STOCK_TABLE_NAME, new String[] { "id", "ticker", "name" }, null, null, null, null, orderBy);
+				if (market != null) {
+					c = db.query(STOCK_TABLE_NAME, new String[] { "id", "ticker", "name", "market_id" }, "is_index=? AND market_id=?", 
+							new String[] { includeIndeces ? "1" : "0", market.getId() }, null, null, orderBy);
+				} else {
+					c = db.query(STOCK_TABLE_NAME, new String[] { "id", "ticker", "name", "market_id" }, "is_index=?", 
+							new String[] { includeIndeces ? "1" : "0" }, null, null, orderBy);
+				}
 				if (c.moveToFirst()) {
 					do {
 						String id = c.getString(0);
 						String ticker = c.getString(1);
-						String name = c.getString(2);
-						// FIXME market table
-						StockItem item = new StockItem(ticker, id, name, MarketFactory.getMarket("cz"));
+						String name = c.getString(2);	
+						String marketId = c.getString(3);
+						StockItem item = new StockItem(ticker, id, name, Markets.getMarket(marketId));
 						items.put(id, item);
 					} while (c.moveToNext());
 				}
@@ -257,12 +343,12 @@ public class StockDataSqlStore extends DataSqlHelper {
 			Cursor c = null;
 			try {
 				//c = db.query(STOCK_TABLE_NAME, new String[] { "id" }, "id='"+ item.getId() +"'", null, null, null, null);
-				c = db.query(STOCK_TABLE_NAME, new String[] { "id", "ticker", "name" }, "id=?", new String[] { id }, null, null, null);
+				c = db.query(STOCK_TABLE_NAME, new String[] { "id", "ticker", "name", "market_id" }, "id=?", new String[] { id }, null, null, null);
 				if (c.moveToFirst()) {
 					String ticker = c.getString(1);
 					String name = c.getString(2);
-					// FIXME market table
-					item = new StockItem(ticker, id, name, MarketFactory.getMarket("cz"));
+					String marketId = c.getString(3);
+					item = new StockItem(ticker, id, name, Markets.getMarket(marketId));
 				}
 				
 			} catch (SQLException e) {
@@ -393,7 +479,13 @@ public class StockDataSqlStore extends DataSqlHelper {
 		return data;
 	}
 
-	public Map<StockItem, DayData> getLastDataSet(Map<String, StockItem> stockItems, Market market, String orderBy) {
+	/**
+	 * get day datas for given stock items
+	 * @param stockItems
+	 * @param orderBy
+	 * @return
+	 */
+	public Map<StockItem, DayData> getLastDataSet(Map<String, StockItem> stockItems, String orderBy) {
 		Map<StockItem, DayData> dbData = new LinkedHashMap<StockItem, DayData>();
 		
 		try {

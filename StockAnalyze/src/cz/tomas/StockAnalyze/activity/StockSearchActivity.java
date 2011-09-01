@@ -39,10 +39,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.DataManager;
-import cz.tomas.StockAnalyze.Data.MarketFactory;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.StockList.StockListAdapter;
 import cz.tomas.StockAnalyze.activity.base.BaseActivity;
+import cz.tomas.StockAnalyze.utils.Markets;
 
 /**
  * @author tomas
@@ -69,7 +69,7 @@ public class StockSearchActivity extends BaseActivity {
 			@Override
 			public void onTextChanged(CharSequence s, int start, int count, int after) {
 				if (s.length() > 1) {
-					List<StockItem> stocks = StockSearchActivity.this.dataManger.search(s.toString(), MarketFactory.getMarket("cz"));
+					List<StockItem> stocks = StockSearchActivity.this.dataManger.search(s.toString(), Markets.CZ);
 					String[] displayResults = new String[stocks.size()];
 					
 					for (int i = 0; i < displayResults.length; i++) {
@@ -79,7 +79,7 @@ public class StockSearchActivity extends BaseActivity {
 					if (stocks != null) {
 						try {
 							//list.setAdapter(new ArrayAdapter<String>(StockSearchActivity.this, R.layout.stock_list, displayResults));
-							StockListAdapter adapter = new StockListAdapter(StockSearchActivity.this, R.id.toptext, dataManger, txtSearch.getText().toString());
+							StockListAdapter adapter = new StockListAdapter(StockSearchActivity.this, R.id.toptext, dataManger, null, true);
 							adapter.showIcons(false);
 							list.setAdapter(adapter);
 							list.setOnItemClickListener(new OnItemClickListener() {

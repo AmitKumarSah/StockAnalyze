@@ -41,6 +41,7 @@ import cz.tomas.StockAnalyze.ui.widgets.ActionBar;
 import cz.tomas.StockAnalyze.ui.widgets.ActionBar.IActionBarListener;
 import cz.tomas.StockAnalyze.ui.widgets.HomeBlockView;
 import cz.tomas.StockAnalyze.utils.DownloadService;
+import cz.tomas.StockAnalyze.utils.Markets;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 
@@ -64,7 +65,7 @@ public class HomeActivity extends ChartActivity implements OnClickListener, OnKe
 		this.dataManager = DataManager.getInstance(this);
 		
 		View[] blockViews = new View[4];
-		blockViews[0] = this.findViewById(R.id.homeBlockCurrencies);
+		blockViews[0] = this.findViewById(R.id.homeBlockIndeces);
 		blockViews[1] = this.findViewById(R.id.homeBlockNews);
 		blockViews[2] = this.findViewById(R.id.homeBlockPortfolio);
 		blockViews[3] = this.findViewById(R.id.homeBlockStockList);
@@ -77,7 +78,7 @@ public class HomeActivity extends ChartActivity implements OnClickListener, OnKe
 		}
 		final Runnable runnable = new Runnable() {
 			public void run() {
-				HomeActivity.this.stockItem = HomeActivity.this.dataManager.getStockItem("PX");
+				HomeActivity.this.stockItem = HomeActivity.this.dataManager.getStockItem("PX", Markets.CZ);
 				runOnUiThread(new Runnable() {
 					
 					@Override

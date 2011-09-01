@@ -38,6 +38,8 @@ public class StockItem implements Parcelable {
 	 * */
 	private Market market;
 	
+	private boolean isIndex;
+	
 	public static final Parcelable.Creator<StockItem> CREATOR = new Parcelable.Creator<StockItem>() {
 		public StockItem createFromParcel(Parcel in) {
 			return new StockItem(in);
@@ -53,6 +55,10 @@ public class StockItem implements Parcelable {
 		this.id = id;
 		this.name = name;
 		this.market = market;
+		
+		if (ticker.endsWith(":IND")){
+			isIndex = true;
+		}
 	}
 	
 	public StockItem(Parcel in) {
@@ -70,6 +76,10 @@ public class StockItem implements Parcelable {
 	}
 	public Market getMarket() {
 		return this.market;
+	}
+	
+	public boolean isIndex() {
+		return this.isIndex;
 	}
 	
 	@Override
@@ -116,6 +126,10 @@ public class StockItem implements Parcelable {
 		this.id = in.readString();
 		this.name = in.readString();
 		this.market = (Market) in.readSerializable();
+		
+		if (ticker.endsWith(":IND")) {
+			isIndex = true;
+		}
 	}
 	
 	@Override

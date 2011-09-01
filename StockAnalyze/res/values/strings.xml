@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
 <!--
   StockAnalyze for Android
       Copyright (C)  2011 Tomas Vondracek.
@@ -17,7 +17,7 @@
       along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <resources>
-    <string name="portfolioContextMenuSubtract"></string>
+    <string name="portfolioContextMenuSubtract"/>
     <string name="portfolioContextMenuAddMore">Add More</string>
     <string name="portfolioContextMenuRemove">Remove</string>
     <string name="portfolioContextMenuStockDetail">View Stock Detail</string>
@@ -55,6 +55,7 @@
 	<string name="homeStockList">Stock List</string>
 	<string name="homeNews">Market News</string>
 	<string name="homeCurrencies">World Currencies</string>
+	<string name="homeIndeces">Indeces</string>
 	<string name="homeMyPortfolio">My Portfolio</string>
 	<string name="homeChartTitle">Market Chart:</string>
 	<string name="disclaimerTitle">Disclaimer:</string>

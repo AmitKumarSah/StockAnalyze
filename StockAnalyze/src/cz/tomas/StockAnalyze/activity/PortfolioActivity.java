@@ -65,6 +65,7 @@ import cz.tomas.StockAnalyze.ui.widgets.ActionBar;
 import cz.tomas.StockAnalyze.ui.widgets.ActionBar.IActionBarListener;
 import cz.tomas.StockAnalyze.utils.Consts;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
+import cz.tomas.StockAnalyze.utils.Markets;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 
@@ -224,7 +225,7 @@ public class PortfolioActivity extends BaseListActivity implements OnSharedPrefe
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			try {
 				// TODO do it somehow asynchronously
-				final Map<String, StockItem> items = this.dataManager.getStockItems(null);
+				final Map<String, StockItem> items = this.dataManager.getStockItems(Markets.CZ, false);
 				final String[] stockNames = new String[items.size()];
 				final String[] stockIds = new String[items.size()];	// we need ids to get StockItem below
 				int index = 0;
@@ -273,7 +274,7 @@ public class PortfolioActivity extends BaseListActivity implements OnSharedPrefe
 			if (portfolioItem.getStockId() != null) {
 				new Thread(new Runnable() {
 					public void run() {
-						StockItem stock = PortfolioActivity.this.dataManager.getStockItem(portfolioItem.getStockId());
+						StockItem stock = PortfolioActivity.this.dataManager.getStockItem(portfolioItem.getStockId(), portfolioItem.getMarketId());
 						NavUtils.goToStockDetail(stock, PortfolioActivity.this);
 					}
 				}).start();
@@ -292,7 +293,7 @@ public class PortfolioActivity extends BaseListActivity implements OnSharedPrefe
 			case R.id.portfolio_item_context_menu_add_more:
 				new Thread(new Runnable() {
 					public void run() {
-						StockItem stock = PortfolioActivity.this.dataManager.getStockItem(portfolioItem.getStockId());
+						StockItem stock = PortfolioActivity.this.dataManager.getStockItem(portfolioItem.getStockId(), portfolioItem.getMarketId());
 						DayData data = PortfolioActivity.this.adapter.getData(portfolioItem);
 						
 						NavUtils.goToAddToPortfolio(PortfolioActivity.this, stock,data);

@@ -32,11 +32,12 @@ public class DataSqlHelper extends SQLiteOpenHelper {
 		
 		//private final String DATABASE_NAME = "cz.tomas.StockAnalyze.Data";
 		
-		private final static int DATABASE_VERSION_NUMBER = 10;
+		private final static int DATABASE_VERSION_NUMBER = 13;
 		
 		private final static String DATABASE_FILE_NAME = "cz.tomas.StockAnalyze.Data.db";
 		
 		protected static final String STOCK_TABLE_NAME = "stock_item";
+		protected static final String MARKET_TABLE_NAME = "market_item";
 		protected static final String DAY_DATA_TABLE_NAME = "stock_day_data";
 		protected static final String INTRADAY_DATA_TABLE_NAME = "stock_intraday_data";
 		protected static final String PORTFOLIO_TABLE_NAME = "portfolio_item";
@@ -46,7 +47,18 @@ public class DataSqlHelper extends SQLiteOpenHelper {
 	         "id varchar(50) PRIMARY KEY," +
 	         "ticker varchar(10) not null, " +
 	         "is_favourite integer, " +
-	         "name TEXT);";
+	         "is_index integer, " +
+	         "market_id varchar(50), " + 
+	         "name TEXT, " +
+	         "FOREIGN KEY(market_id) REFERENCES " + MARKET_TABLE_NAME + "(id)" +
+	         ");";
+		
+		private static final String MARKET_TABLE_CREATE =
+	         "CREATE TABLE " + MARKET_TABLE_NAME + " (" +
+	         "id varchar(50) PRIMARY KEY," +
+	         "name varchar(50) not null, " +
+	         "currency varchar(10) not null, " +
+	         "description TEXT);";
 		
 		private static final String INTRADAY_DATA_TABLE_CREATE = 
 			"CREATE TABLE " + INTRADAY_DATA_TABLE_NAME + " (" +
@@ -96,7 +108,7 @@ public class DataSqlHelper extends SQLiteOpenHelper {
 				+ "title text not null, url text not null, country text not null);";
 
 		private static final String CREATE_TABLE_ARTICLES = "create table articles (article_id integer primary key autoincrement, "
-				+ "feed_id int not null, title text not null, description text, url text not null, date int not null, read int);";
+				+ "feed_id int not null, title text not null, description text, tags text, url text not null, date int not null, read int);";
 
 		protected static final String FEEDS_TABLE_NAME = "feeds";
 		protected static final String ARTICLES_TABLE_NAME = "articles";
@@ -122,6 +134,8 @@ public class DataSqlHelper extends SQLiteOpenHelper {
 		@Override
 		public void onCreate(SQLiteDatabase db) {
 			try {
+				Log.d(Utils.LOG_TAG, "creating market table!");
+				db.execSQL(MARKET_TABLE_CREATE);
 				Log.d(Utils.LOG_TAG, "creating stock table!");
 				db.execSQL(STOCK_TABLE_CREATE);
 				Log.d(Utils.LOG_TAG, "creating day data table!");
@@ -137,8 +151,7 @@ public class DataSqlHelper extends SQLiteOpenHelper {
 				db.execSQL(CREATE_TABLE_ARTICLES);
 				
 			} catch (SQLException e) {
-				e.printStackTrace();
-				Log.d(Utils.LOG_TAG, "Failed to create database!\n" + e.getMessage());
+				Log.e(Utils.LOG_TAG, "Failed to create database!\n" + e.getMessage(), e);
 			}
 		}
 
@@ -151,6 +164,7 @@ public class DataSqlHelper extends SQLiteOpenHelper {
 			db.execSQL(TABLE_DROP + PORTFOLIO_TABLE_NAME);
 			db.execSQL(TABLE_DROP + ARTICLES_TABLE_NAME);
 			db.execSQL(TABLE_DROP + FEEDS_TABLE_NAME);
+			db.execSQL(TABLE_DROP + MARKET_TABLE_NAME);
 			onCreate(db);
 		}
 

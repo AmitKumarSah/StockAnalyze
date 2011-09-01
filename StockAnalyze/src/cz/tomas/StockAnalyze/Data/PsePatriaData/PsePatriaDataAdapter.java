@@ -39,6 +39,7 @@ import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetDataException;
+import cz.tomas.StockAnalyze.utils.Markets;
 import cz.tomas.StockAnalyze.utils.Utils;
 
 /**
@@ -121,8 +122,7 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 		this.tickerIsinMapping.put("BAAUNIPE", "CZ0009091500");
 		this.tickerIsinMapping.put("BAAVIG", "AT0000908504");
 		
-		market = new Market("PSE", "XPRA", "CZK", this.getDescriptiveName());
-
+		market = Markets.CZ;
 		this.eventListeners = new ArrayList<IStockDataListener>();
 		this.updateTask = new UpdateTask();
 	}

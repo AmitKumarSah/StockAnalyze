@@ -32,6 +32,7 @@ import android.util.Log;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.utils.DownloadService;
+import cz.tomas.StockAnalyze.utils.Markets;
 
 /**
  * Data provider for Prague Stock Exchange
@@ -73,7 +74,7 @@ class PseCsvDataProvider {
 		
 		//this.updateTimes = new HashMap<String, Long>();
 		this.lasUpdateTime = 0;
-		market = new Market("PSE", "XPRA", "CZK", this.getDescriptiveName());
+		market = Markets.CZ;
 	}
 
 	void setDownloadListener(IDownloadListener listener) {

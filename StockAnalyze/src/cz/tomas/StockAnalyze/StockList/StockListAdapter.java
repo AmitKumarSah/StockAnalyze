@@ -44,6 +44,7 @@ import cz.tomas.StockAnalyze.Data.IStockDataProvider;
 import cz.tomas.StockAnalyze.Data.Interfaces.IListAdapterListener;
 import cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
+import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
@@ -77,14 +78,21 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 	
 	//private Boolean showIcons = true;
 	
+	private Market market;
+	
+	private final boolean includeIndeces;
+	
 	/**
 	 * semaphore to synchronize updates to list in StockListTask
 	 */
 	private Semaphore semaphore;
 	
-	public StockListAdapter(Activity context, int textViewResourceId, final DataManager dataManager, final String filter) {
+	public StockListAdapter(Activity context, int textViewResourceId, final DataManager dataManager, final Market market, boolean includeIndeces) {
 		super(context, textViewResourceId);
 		this.dataManager = dataManager;
+		this.market = market;
+		this.includeIndeces = includeIndeces;
+		
 		//this.comparator = new StockComparator(StockCompareTypes.Name, dataManager);
 		this.listeners = new ArrayList<IListAdapterListener<Object>>();
 
@@ -297,7 +305,7 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 				dataManager.acquireDb(this.getClass().getName());
 				// first, get all stock items we need
 				try {
-					items = dataManager.getStockItems(null);
+					items = dataManager.getStockItems(market, includeIndeces);
 				} catch (Exception e) {
 					String message = "Failed to get stock list. ";
 					if (e.getMessage() != null)

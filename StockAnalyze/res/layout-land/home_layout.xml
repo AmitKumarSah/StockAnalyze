@@ -52,13 +52,18 @@
 					block:textId="@string/homeMyPortfolio"
 					block:imageId="@drawable/ic_business" 
 					block:target="cz.tomas.StockAnalyze.activity.PortfolioActivity"/>
+<!-- 					<cz.tomas.StockAnalyze.ui.widgets.HomeBlockView -->
+<!-- 						android:id="@+id/homeBlockCurrencies" -->
+<!-- 						style="@style/homeBlock" -->
+<!-- 						block:textId="@string/homeCurrencies"  -->
+<!-- 						block:imageId="@drawable/ic_globe" -->
+<!-- 						block:target="cz.tomas.StockAnalyze.activity.IndecesListActivity"/> -->
 				<cz.tomas.StockAnalyze.ui.widgets.HomeBlockView
-					android:id="@+id/homeBlockCurrencies"
-					android:layout_weight="1"
+					android:id="@+id/homeBlockIndeces"
 					style="@style/homeBlock"
-					block:textId="@string/homeCurrencies" 
+					block:textId="@string/homeIndeces" 
 					block:imageId="@drawable/ic_globe"
-					block:target="cz.tomas.StockAnalyze.activity.CurrenciesActivity"/>
+					block:target="cz.tomas.StockAnalyze.activity.IndecesListActivity"/>
 				<cz.tomas.StockAnalyze.ui.widgets.HomeBlockView 
 					android:id="@+id/homeBlockNews"
 					android:layout_weight="1"

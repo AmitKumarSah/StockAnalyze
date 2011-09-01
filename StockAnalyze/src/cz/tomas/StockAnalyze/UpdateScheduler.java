@@ -34,10 +34,10 @@ import android.util.Log;
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.DataProviderFactory;
 import cz.tomas.StockAnalyze.Data.IStockDataProvider;
-import cz.tomas.StockAnalyze.Data.MarketFactory;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.receivers.AlarmReceiver;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
+import cz.tomas.StockAnalyze.utils.Markets;
 import cz.tomas.StockAnalyze.utils.Utils;
 
 /**
@@ -99,8 +99,9 @@ public class UpdateScheduler {
 			public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 				// if there is change in update preferences, do an update or schedule new one
 				if (key.equals(Utils.PREF_ENABLE_BACKGROUND_UPDATE)) {
-					if (sharedPreferences.getBoolean(key, true))
-						updateImmediatly();
+					if (sharedPreferences.getBoolean(key, true)) {
+						perfromScheduledUpdate();
+					}
 					scheduleNextIntraDayUpdate();
 				}
 				else if (key.equals(Utils.PREF_INTERVAL_BACKGROUND_UPDATE)) {
@@ -124,7 +125,7 @@ public class UpdateScheduler {
 	 * if it is enabled in preferences
 	 */
 	public void scheduleNextIntraDayUpdate() {
-		this.scheduleNextIntraDayUpdate(MarketFactory.getCzechMarket());
+		this.scheduleNextIntraDayUpdate(Markets.CZ);
 	}
 	
 	/**
@@ -156,21 +157,30 @@ public class UpdateScheduler {
 //		pars.put(Consts.FLURRY_KEY_SCHEDULED_UPDATE_DAY, String.valueOf(Calendar.getInstance().get(Calendar.DAY_OF_WEEK)));
 //		FlurryAgent.onEvent(Consts.FLURRY_EVENT_SCHEDULED_UPDATE, pars);
 		
-		this.performUpdateInternal();
+		this.performUpdateInternal(Markets.CZ);
+		this.performUpdateInternal(Markets.GLOBAL);
 //		FlurryAgent.onEndSession(this.context);
 	}
 	
 	/**
-	 * update real time data immediately
+	 * update real time data immediately for all markets
 	 */
 	public void updateImmediatly() {
-		this.performUpdateInternal();
+		this.performUpdateInternal(Markets.CZ);
+		this.performUpdateInternal(Markets.GLOBAL);
+	}
+	
+	/**
+	 * update real time data immediately for given market
+	 */
+	public void updateImmediatly(Market market) {
+		this.performUpdateInternal(market);
 	}
 
 	/**
 	 * execute refresh task on realtime provider
 	 */
-	private void performUpdateInternal() {
+	private void performUpdateInternal(Market market) {
 		if (! Utils.isOnline(this.context)) {
 			Log.i(Utils.LOG_TAG, "Device is offline, canceling data update");
 			return;
@@ -181,7 +191,7 @@ public class UpdateScheduler {
 			// we need to initialize DataManager
 			DataManager.getInstance(this.context);
 		}
-		IStockDataProvider provider = DataProviderFactory.getRealTimeDataProvider(MarketFactory.getCzechMarket());
+		IStockDataProvider provider = DataProviderFactory.getRealTimeDataProvider(market);
 
 		RefreshTask task = new RefreshTask();
 		task.execute(provider);

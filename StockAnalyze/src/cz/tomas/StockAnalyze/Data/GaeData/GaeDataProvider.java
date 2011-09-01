@@ -8,6 +8,7 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.Type;
+import java.net.URLEncoder;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,8 @@ public final class GaeDataProvider {
 	private static final String URL_DDATA 			= "http://backend-stockanalyze.appspot.com/DData?stockId=%s";
 	private static final String URL_DDATA_MARKET 	= "http://backend-stockanalyze.appspot.com/DData?marketCode=cz";
 	private static final String URL_LIST 			= "http://backend-stockanalyze.appspot.com/DData?stockList=%s";
+	private static final String URL_INDECES_LIST	= "http://backend-stockanalyze.appspot.com/IndData?indList";
+	private static final String URL_INDECES_SET		= "http://backend-stockanalyze.appspot.com/IndData";
 	
 	private static final String[] TIME_PERIODS = { "", "1D", "1W", "1M", "3M", "6M", "1Y" };
 	
@@ -43,6 +46,18 @@ public final class GaeDataProvider {
 	Map<String, DayData> getDayDataSet() throws JsonSyntaxException, IOException {
 		String url = URL_DDATA_MARKET;
 		
+		Map<String, DayData> data = getDataSet(url);
+		return data;
+	}
+
+	/**
+	 * @param url
+	 * @return
+	 * @throws IOException
+	 * @throws JsonSyntaxException
+	 */
+	protected Map<String, DayData> getDataSet(String url) throws IOException,
+			JsonSyntaxException {
 		Log.d(Utils.LOG_TAG, "connecting to " + url);
 		Map<String, DayData> data = new LinkedHashMap<String, DayData>();
 		InputStream stream = null;
@@ -52,8 +67,6 @@ public final class GaeDataProvider {
 			//this.builder.setLength(0);
 			try {
 				content = readStream(stream);
-				//content = content.substring(content.indexOf("\n"));
-				//reader = new InputStreamReader(stream, "UTF-8");
 				Type listType = new TypeToken<Map<String, DayData>>() {}.getType();
 				data = gson.fromJson(content, listType);
 			} catch (IOException ex) {
@@ -98,12 +111,32 @@ public final class GaeDataProvider {
 		return data;
 	}
 
+	Map<String, DayData> getIndecesDataSet() throws JsonSyntaxException, IOException {
+		return getDataSet(URL_INDECES_SET);
+	}
+	
+	List<StockItem> getIndecesList() throws JsonSyntaxException, IOException {	
+		return getList(URL_INDECES_LIST);
+	}
+	
 	List<StockItem> getStockList(String countryCode) throws JsonSyntaxException, IOException {
 		if (TextUtils.isEmpty(countryCode)) {
 			throw new NullPointerException("stock can't be empty!");
 		}
 		String url = String.format(URL_LIST, countryCode);
 		
+		return getList(url);
+	}
+
+	/**
+	 * get equity list - stocks or indeces, depends on url
+	 * @param url
+	 * @return
+	 * @throws IOException
+	 * @throws JsonSyntaxException
+	 */
+	protected List<StockItem> getList(String url) throws IOException,
+			JsonSyntaxException {
 		Log.d(Utils.LOG_TAG, "connecting to " + url);
 		List<StockItem> data;
 		
@@ -143,7 +176,7 @@ public final class GaeDataProvider {
 			throw new NullPointerException("stock can't be null!");
 		}
 		
-		String urlString = String.format(URL_IDATA, ticker);
+		String urlString = String.format(URL_IDATA, URLEncoder.encode(ticker));
 		return getTextData(urlString);
 	}
 

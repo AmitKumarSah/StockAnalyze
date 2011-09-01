@@ -34,26 +34,21 @@ import java.util.Currency;
 @SuppressWarnings("serial")
 public class Market implements Serializable {
 	
-	String name;
-	String id;
-	String currency;
-	String description;
+	private String name;
+	private String id;
+	private String currency;
+	private String description;
+	private String country;
 
-	public Market(String name, String id, String currencyCode, String description) {
+	public Market(String name, String id, String currencyCode, String description, String country) {
 		super();
 		this.name = name;
 		this.id = id;
 		this.currency = currencyCode;
 		this.description = description;
+		this.country = country;
 	}
 	
-//	public Market(String name, String id, Currency currency, String description) {
-//		super();
-//		this.name = name;
-//		this.id = id;
-//		this.currency = currency;
-//		this.description = description;
-//	}
 	/**
 	 * name of market (e.g. New York Stock Exchange)
 	 * @return the name
@@ -104,7 +99,12 @@ public class Market implements Serializable {
 		this.description = description;
 	}
 
-	
+	/**
+	 * get country code
+	 */
+	public String getCountry() {
+		return this.country;
+	}
 
 	
 	/* 
@@ -142,11 +142,6 @@ public class Market implements Serializable {
 				return false;
 		} else if (!currency.equals(other.currency))
 			return false;
-//		if (description == null) {
-//			if (other.description != null)
-//				return false;
-//		} else if (!description.equals(other.description))
-//			return false;
 		if (id == null) {
 			if (other.id != null)
 				return false;

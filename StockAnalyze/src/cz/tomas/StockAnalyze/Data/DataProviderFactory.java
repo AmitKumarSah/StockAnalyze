@@ -21,13 +21,13 @@
 package cz.tomas.StockAnalyze.Data;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import android.util.Log;
 import cz.tomas.StockAnalyze.Data.GaeData.GaeDataAdapter;
+import cz.tomas.StockAnalyze.Data.GaeData.GaeIndecesDataAdapter;
 import cz.tomas.StockAnalyze.Data.Model.Market;
+import cz.tomas.StockAnalyze.Data.Model.StockItem;
 
 /**
  * Factory for data providers
@@ -75,7 +75,7 @@ public class DataProviderFactory {
 		for (Entry<String, IStockDataProvider> provider : providers.entrySet()) {
 			DataProviderAdviser providerAdviser =  provider.getValue().getAdviser();
 			
-			if (providerAdviser.getMarkets().contains(market))
+			if (market.equals(providerAdviser.getMarket()))
 				return provider.getValue();
 		}
 		
@@ -107,7 +107,7 @@ public class DataProviderFactory {
 		for (Entry<String, IStockDataProvider> provider : providers.entrySet()) {
 			DataProviderAdviser providerAdviser =  provider.getValue().getAdviser();
 			
-			if (providerAdviser.isRealTime() && providerAdviser.getMarkets().contains(market))
+			if (providerAdviser.isRealTime() && market.equals(providerAdviser.getMarket()))
 				return provider.getValue();
 		}
 		
@@ -118,33 +118,18 @@ public class DataProviderFactory {
 	 * get real time data provider for market specified
 	 * if no provider fits the condition, null is returned
 	 */
-	public static IStockDataProvider getHistoricalDataProvider(Market market) {
-		
+	public static IStockDataProvider getHistoricalDataProvider(StockItem item) {
+		if (item.isIndex()) {
+			return providers.get(GaeIndecesDataAdapter.ID);
+		}
+		Market market = item.getMarket();
 		for (Entry<String, IStockDataProvider> provider : providers.entrySet()) {
 			DataProviderAdviser providerAdviser =  provider.getValue().getAdviser();
 			
-			List<Market> markets = providerAdviser.getMarkets();
-			if (providerAdviser.supportHistorical() && markets.contains(market))
+			if (providerAdviser.supportHistorical() && market.equals(providerAdviser.getMarket()))
 				return provider.getValue();
 		}
 		
 		return null;
-	}
-	
-	/** 
-	 * refresh all registered data providers
-	 * @returns true if something was updated
-	 */
-	public static boolean refreshAll() throws Exception {
-		boolean result = false;
-		try {
-			for(IStockDataProvider p : providers.values()) {
-				result |= p.refresh();
-			}
-		} catch (Exception e) {
-			Log.d("DataProviderFactory", "Failed to refresh data! " + e.getMessage());
-			throw e;
-		}
-		return result;
 	}
 }

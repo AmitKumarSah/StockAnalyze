@@ -20,9 +20,6 @@
  */
 package cz.tomas.StockAnalyze.Data;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import cz.tomas.StockAnalyze.Data.Model.Market;
 
 /**
@@ -35,24 +32,14 @@ public class DataProviderAdviser {
 	boolean isRealTime;
 	boolean supportHistorical;
 	boolean supportStatistics;
-	List<Market> markets;
-	
-	
-	public DataProviderAdviser(boolean isRealTime, boolean supportHistorical,
-			boolean supportStatistics, List<Market> markets) {
-		this.isRealTime = isRealTime;
-		this.supportHistorical = supportHistorical;
-		this.supportStatistics = supportStatistics;
-		this.markets = markets;
-	}
+	Market market;
 	
 	public DataProviderAdviser(boolean isRealTime, boolean supportHistorical,
 			boolean supportStatistics, Market market) {
 		this.isRealTime = isRealTime;
 		this.supportHistorical = supportHistorical;
 		this.supportStatistics = supportStatistics;
-		this.markets = new ArrayList<Market>();
-		this.markets.add(market);
+		this.market = market;
 	}
 
 	/**
@@ -77,17 +64,7 @@ public class DataProviderAdviser {
 	 */
 	public boolean supportStatistics() {
 		return supportStatistics;
-	}
-
-	/**
-	 * Markets the provider covers
-	 * @return the market
-	 */
-	public List<Market> getMarkets() {
-		return markets;
-	}
-
-	
+	}	
 	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
@@ -97,7 +74,7 @@ public class DataProviderAdviser {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + (isRealTime ? 1231 : 1237);
-		result = prime * result + ((markets == null) ? 0 : markets.hashCode());
+		result = prime * result + ((market == null) ? 0 : market.hashCode());
 		result = prime * result + (supportHistorical ? 1231 : 1237);
 		result = prime * result + (supportStatistics ? 1231 : 1237);
 		return result;
@@ -117,10 +94,10 @@ public class DataProviderAdviser {
 		DataProviderAdviser other = (DataProviderAdviser) obj;
 		if (isRealTime != other.isRealTime)
 			return false;
-		if (markets == null) {
-			if (other.markets != null)
+		if (market == null) {
+			if (other.market != null)
 				return false;
-		} else if (!markets.equals(other.markets))
+		} else if (!market.equals(other.market))
 			return false;
 		if (supportHistorical != other.supportHistorical)
 			return false;
@@ -137,8 +114,12 @@ public class DataProviderAdviser {
 	public String toString() {
 		return "DataProviderAdviser [isRealTime=" + isRealTime
 				+ ", supportHistorical=" + supportHistorical
-				+ ", supportStatistics=" + supportStatistics + ", market count="
-				+ markets.size() + "]";
+				+ ", supportStatistics=" + supportStatistics + ", market="
+				+ market + "]";
+	}
+
+	public Market getMarket() {
+		return this.market;
 	}
 	
 	

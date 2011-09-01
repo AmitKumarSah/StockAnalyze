@@ -283,7 +283,7 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 							datas.put(portfolioItem, dayData);
 							
 							// load also needed stock items
-							StockItem stockItem = dataManager.getStockItem(portfolioItem.getStockId());
+							StockItem stockItem = dataManager.getStockItem(portfolioItem.getStockId(), portfolioItem.getMarketId());
 							stockItems.put(portfolioItem.getStockId(), stockItem);
 
 							float itemValue = portfolioItem.getCurrentStockCount() * dayData.getPrice();

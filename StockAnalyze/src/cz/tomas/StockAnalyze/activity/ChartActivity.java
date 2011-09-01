@@ -219,9 +219,7 @@ public abstract class ChartActivity extends BaseActivity {
 			IOException {
 		if (intent.hasExtra(NavUtils.STOCK_ITEM_OBJECT)) {
 			this.stockItem = intent.getExtras().getParcelable(NavUtils.STOCK_ITEM_OBJECT);
-			this.dayData = intent.getExtras().getParcelable(NavUtils.DAY_DATA_OBJECT);
-			//Market market = (Market) intent.getExtras().getSerializable("market_id");
-			
+			this.dayData = intent.getExtras().getParcelable(NavUtils.DAY_DATA_OBJECT);			
 			return true;
 		}
 		else {

@@ -101,7 +101,7 @@ public final class FormattingUtils {
 		return priceFormat;
 	}
 	
-	/*
+	/**
 	 * parse date string with predefined parser, preferring English parser
 	 * @return parsed Date or null if failed
 	 */
