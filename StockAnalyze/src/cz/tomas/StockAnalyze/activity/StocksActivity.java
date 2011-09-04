@@ -8,6 +8,9 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import cz.tomas.StockAnalyze.Application;
@@ -17,6 +20,7 @@ import cz.tomas.StockAnalyze.StockList.StocksPagerAdapter;
 import cz.tomas.StockAnalyze.activity.base.BaseFragmentActivity;
 import cz.tomas.StockAnalyze.ui.widgets.ActionBar;
 import cz.tomas.StockAnalyze.ui.widgets.ActionBar.IActionBarListener;
+import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 
 public final class StocksActivity extends BaseFragmentActivity implements IActionBarListener {
@@ -87,12 +91,41 @@ public final class StocksActivity extends BaseFragmentActivity implements IActio
 	}
 
 	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.stock_list_menu, menu);
+	    return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    // Handle item selection
+	    switch (item.getItemId()) {
+	    case R.id.menu_stock_list_refresh:
+	    	updateImmediatly();
+	        return true;
+	    case R.id.menu_stock_list_settings:
+	    	NavUtils.goToSettings(this);
+	        return true;
+	    default:
+	        return super.onOptionsItemSelected(item);
+	    }
+	}
+
+	@Override
 	public void onAction(int viewId) {
 		if (viewId == R.id.actionRefreshButton) {
-			UpdateScheduler scheduler = 
-				(UpdateScheduler) this.getApplicationContext().getSystemService(Application.UPDATE_SCHEDULER_SERVICE);
-			scheduler.updateImmediatly();
+			updateImmediatly();
 		}
+	}
+
+	/**
+	 * call {@link UpdateScheduler} to update data
+	 */
+	protected void updateImmediatly() {
+		UpdateScheduler scheduler = 
+			(UpdateScheduler) this.getApplicationContext().getSystemService(Application.UPDATE_SCHEDULER_SERVICE);
+		scheduler.updateImmediatly();
 	}
 	
 	
