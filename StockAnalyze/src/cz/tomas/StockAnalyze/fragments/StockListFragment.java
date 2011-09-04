@@ -3,24 +3,28 @@ package cz.tomas.StockAnalyze.fragments;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import cz.tomas.StockAnalyze.Application;
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.DataManager;
-import cz.tomas.StockAnalyze.Data.Interfaces.IListAdapterListener;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.StockList.StockListAdapter;
-import cz.tomas.StockAnalyze.utils.Markets;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 
+/**
+ * Fragment with list of stocks and their prices.
+ * It needs to have {@link Market} in arguments - see setArguments(Bundle b)
+ * @author tomas
+ *
+ */
 public class StockListFragment extends ListFragment {
 
 	public static String ARG_MARKET = "market";
@@ -55,30 +59,8 @@ public class StockListFragment extends ListFragment {
 		this.market = (Market) getArguments().get(ARG_MARKET);
 		this.adapter = createListAdapter();
 		this.setListAdapter(adapter);
-		//this.fill();
+		this.setEmptyText(getString(R.string.loading));
 	}
-	
-
-//	/**
-//	 * fill list view
-//	 */
-//	protected void fill() {
-//		this.adapter = createListAdapter();
-//		this.adapter.addListAdapterListener( new IListAdapterListener<Object>() {
-//			
-//			@Override
-//			public void onListLoading() {
-//			}
-//			
-//			@Override
-//			public void onListLoaded(Object data) {
-//			}
-//		});
-//
-//		// in case of resuming when adapter is initialized but not set to list view
-//		if (this.getListAdapter() == null) 
-//			this.setListAdapter(adapter);
-//	}
 
 	/**
 	 * create adapter instance

@@ -23,6 +23,12 @@ import cz.tomas.StockAnalyze.ui.widgets.ActionBar.IActionBarListener;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 
+/**
+ * activity containing {@link ViewPager} with stock list for market in each page
+ * 
+ * @author tomas
+ *
+ */
 public final class StocksActivity extends BaseFragmentActivity implements IActionBarListener {
 	
 	static final int UPDATE_DLG_SUCCES = 0;

@@ -14,6 +14,11 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+/**
+ * adapter creating {@link StockListFragment} for selected Markets
+ * @author tomas
+ *
+ */
 public final class StocksPagerAdapter extends FragmentPagerAdapter implements TitleProvider {
 
 	private List<Market> markets;

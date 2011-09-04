@@ -59,6 +59,9 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 	private DataManager dataManager;
 	private LayoutInflater vi;
 	
+	/**
+	 * field used to find out if our data is outdated in case of activity resume
+	 */
 	private static long lastUpdateLocalTime;
 	
 	/**
@@ -101,15 +104,7 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
         this.semaphore = new Semaphore(1);
        
     	dataSet = new LinkedHashMap<StockItem, DayData>();
-        // if we have already initialized dataset, just add stock items to adapter,
-        // otherwise start task to get it
-//        if (dataSet == null || stockListItems == null) {
-//        	dataSet = new LinkedHashMap<StockItem, DayData>();
-//        } else {
-//        	for (StockItem stockItem : stockListItems) {
-//				this.add(stockItem);
-//			}
-//        }
+        
     	this.refreshList();
 	}
 

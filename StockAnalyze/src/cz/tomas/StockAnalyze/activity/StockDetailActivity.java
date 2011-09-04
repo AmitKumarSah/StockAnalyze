@@ -175,6 +175,12 @@ public final class StockDetailActivity extends ChartActivity implements IActionB
 		TextView txtVolume = (TextView) this.findViewById(R.id.txtDetailVolume);
 		TextView txtMax = (TextView) this.findViewById(R.id.txtDetailMax);
 		TextView txtMin = (TextView) this.findViewById(R.id.txtDetailMin);
+		TextView txtActionBarTitle = (TextView) this.findViewById(R.id.actionTitle);
+		
+		if(txtActionBarTitle != null) {
+			// add ticker on action bar title
+			txtActionBarTitle.setText(txtActionBarTitle.getText() + ": " + stockItem.getTicker());
+		}
 		
 		final DataManager manager = DataManager.getInstance(this);
 		
@@ -188,23 +194,20 @@ public final class StockDetailActivity extends ChartActivity implements IActionB
 		
 		NumberFormat priceFormat = FormattingUtils.getPriceFormat(stockItem.getMarket().getCurrency());
 		NumberFormat percentFormat = FormattingUtils.getPercentFormat();
-		//NumberFormat volumeFormat = FormattingUtils.getVolumeFormat();
 
 		if (this.dayData == null)
 			throw new NullPointerException("Day data is null!");
 		
 		if (txtHeader != null) {
-			//Calendar cal = Calendar.getInstance();
-			Calendar cal = new GregorianCalendar(Utils.PRAGUE_TIME_ZONE);
+			Calendar cal = new GregorianCalendar();
 			cal.setTimeInMillis(this.dayData.getLastUpdate());
 			String time = FormattingUtils.formatStockDate(cal);
 			time += " " + cal.getTimeZone().getDisplayName(true, TimeZone.SHORT);
 			
-			txtHeader.setText(String.format("%s - %s - %s", time, stockItem.getTicker(), stockItem.getId()));
+			txtHeader.setText(String.format("%s - %s", time, /*stockItem.getTicker(), */stockItem.getId()));
 			txtHeader.setSelected(true);
 		}
 		if (txtVolume != null) {
-			//String strVolume = priceFormat.format(this.dayData.getVolume());
 			String strVolume = String.valueOf((int) dayData.getVolume()) + getString(R.string.pieces);
 			txtVolume.setText(strVolume);
 		}
