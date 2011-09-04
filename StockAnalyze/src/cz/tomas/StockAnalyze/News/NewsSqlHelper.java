@@ -43,8 +43,12 @@ public final class NewsSqlHelper extends DataSqlHelper {
 //	private static final String SOURCE_AKCIE_NAME = "Akcie.cz";
 //	private static final String SOURCE_AKCIE_COUNTRY = "cz";
 	
-	private static final String SOURCE_NAME = "Atlantik";
-	private static final String SOURCE= "http://www.atlantik.cz/rss/zpravy.xml";
+//	private static final String SOURCE_NAME = "Atlantik";
+//	private static final String SOURCE= "http://www.atlantik.cz/rss/zpravy.xml";
+//	private static final String SOURCE_COUNTRY = "cz";
+	
+	private static final String SOURCE_NAME = "fn";
+	private static final String SOURCE= "http://www.financninoviny.cz/sluzby/rss/zpravodajstvi.php";
 	private static final String SOURCE_COUNTRY = "cz";
 	
 	private static final int DEFAULT_ARTICLE_LIMIT = 20;

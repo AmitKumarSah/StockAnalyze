@@ -30,7 +30,7 @@ public final class GaeDataProvider {
 	private static final String URL_HDATA 			= "http://backend-stockanalyze.appspot.com/HData?stockId=%s&timePeriod=%s";
 	private static final String URL_IDATA			= "http://backend-stockanalyze.appspot.com/IData?stockId=%s";
 	private static final String URL_DDATA 			= "http://backend-stockanalyze.appspot.com/DData?stockId=%s";
-	private static final String URL_DDATA_MARKET 	= "http://backend-stockanalyze.appspot.com/DData?marketCode=cz";
+	private static final String URL_DDATA_MARKET 	= "http://backend-stockanalyze.appspot.com/DData?marketCode=%s";
 	private static final String URL_LIST 			= "http://backend-stockanalyze.appspot.com/DData?stockList=%s";
 	private static final String URL_INDECES_LIST	= "http://backend-stockanalyze.appspot.com/IndData?indList";
 	private static final String URL_INDECES_SET		= "http://backend-stockanalyze.appspot.com/IndData";
@@ -43,8 +43,8 @@ public final class GaeDataProvider {
 		this.gson = new Gson();
 	}
 
-	Map<String, DayData> getDayDataSet() throws JsonSyntaxException, IOException {
-		String url = URL_DDATA_MARKET;
+	Map<String, DayData> getDayDataSet(String countryCode) throws JsonSyntaxException, IOException {
+		String url = String.format(URL_DDATA_MARKET, countryCode);
 		
 		Map<String, DayData> data = getDataSet(url);
 		return data;

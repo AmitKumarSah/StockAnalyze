@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import cz.tomas.StockAnalyze.Data.GaeData.GaeDataAdapter;
+import cz.tomas.StockAnalyze.Data.GaeData.GaePseDataAdapter;
 import cz.tomas.StockAnalyze.Data.GaeData.GaeIndecesDataAdapter;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
@@ -51,7 +51,7 @@ public class DataProviderFactory {
 	public static IStockDataProvider getDataProvider(String ticker) {
 		if (ticker.toUpperCase().startsWith("BAA") || 
 				ticker.toUpperCase().equals("PX")) {
-			return providers.get(GaeDataAdapter.ID);
+			return providers.get(GaePseDataAdapter.ID);
 		}
 		
 		return null;
@@ -61,7 +61,7 @@ public class DataProviderFactory {
 	 * get default DataProvider
 	 */
 	public static IStockDataProvider getDataProvider() {
-		return providers.get(GaeDataAdapter.ID);
+		return providers.get(GaePseDataAdapter.ID);
 	}
 	
 	/**

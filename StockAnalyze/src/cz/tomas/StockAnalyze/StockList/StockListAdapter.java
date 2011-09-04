@@ -64,12 +64,12 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 	/**
 	 * items of list view
 	 */
-	private static StockItem[] stockListItems;
+	private StockItem[] stockListItems;
 	
 	/**
 	 * these are data to be used in views
 	 */
-	private static Map<StockItem, DayData> dataSet;
+	private Map<StockItem, DayData> dataSet;
 	//private StockComparator comparator;
 	/**
 	 * listeners for changes in this adapter
@@ -100,15 +100,16 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
         this.setNotifyOnChange(false);
         this.semaphore = new Semaphore(1);
        
+    	dataSet = new LinkedHashMap<StockItem, DayData>();
         // if we have already initialized dataset, just add stock items to adapter,
         // otherwise start task to get it
-        if (dataSet == null || stockListItems == null) {
-        	dataSet = new LinkedHashMap<StockItem, DayData>();
-        } else {
-        	for (StockItem stockItem : stockListItems) {
-				this.add(stockItem);
-			}
-        }
+//        if (dataSet == null || stockListItems == null) {
+//        	dataSet = new LinkedHashMap<StockItem, DayData>();
+//        } else {
+//        	for (StockItem stockItem : stockListItems) {
+//				this.add(stockItem);
+//			}
+//        }
     	this.refreshList();
 	}
 

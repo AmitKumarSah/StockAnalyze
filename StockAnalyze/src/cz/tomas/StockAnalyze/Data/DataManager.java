@@ -36,14 +36,14 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.SystemClock;
 import android.util.Log;
 import cz.tomas.StockAnalyze.NotificationSupervisor;
-import cz.tomas.StockAnalyze.Data.GaeData.GaeDataAdapter;
+import cz.tomas.StockAnalyze.Data.GaeData.GaePseDataAdapter;
 import cz.tomas.StockAnalyze.Data.GaeData.GaeIndecesDataAdapter;
+import cz.tomas.StockAnalyze.Data.GaeData.GaeXetraAdapter;
 import cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener;
 import cz.tomas.StockAnalyze.Data.Interfaces.IUpdateDateChangedListener;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
-import cz.tomas.StockAnalyze.Data.PsePatriaData.PsePatriaDataAdapter;
 import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetDataException;
 import cz.tomas.StockAnalyze.StockList.StockComparator;
 import cz.tomas.StockAnalyze.StockList.StockCompareTypes;
@@ -93,22 +93,28 @@ public class DataManager implements IStockDataListener {
 		this.sqlStore = new StockDataSqlStore(context);
 		
 		//IStockDataProvider pse = new PseCsvDataAdapter();
-		IStockDataProvider patriaPse = new PsePatriaDataAdapter();
-		IStockDataProvider gaePse = new GaeDataAdapter();
+		//IStockDataProvider patriaPse = new PsePatriaDataAdapter();
+		IStockDataProvider gaePse = new GaePseDataAdapter();
 		IStockDataProvider gaeIndeces = new GaeIndecesDataAdapter();
+		IStockDataProvider gaeXetra = new GaeXetraAdapter();
 		
 		//DataProviderFactory.registerDataProvider(pse);
 		DataProviderFactory.registerDataProvider(gaePse);
 		DataProviderFactory.registerDataProvider(gaeIndeces);
+		DataProviderFactory.registerDataProvider(gaeXetra);
 		//DataProviderFactory.registerDataProvider(patriaPse);
 		
 		this.updateDateChangedListeners = new ArrayList<IUpdateDateChangedListener>();
 		this.updateStockDataListeners = new ArrayList<IStockDataListener>();
 		
 		NotificationSupervisor supervisor = new NotificationSupervisor(context);
-		patriaPse.enable(true);
-		patriaPse.addListener(this);
-		patriaPse.addListener(supervisor);
+//		patriaPse.enable(true);
+//		patriaPse.addListener(this);
+//		patriaPse.addListener(supervisor);
+
+		gaeXetra.enable(true);
+		gaeXetra.addListener(this);
+		gaeXetra.addListener(supervisor);
 		
 		gaePse.enable(true);
 		gaePse.addListener(this);

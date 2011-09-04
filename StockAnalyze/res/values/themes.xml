@@ -17,10 +17,13 @@
       along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <resources>
-	    <style name="themeLight" parent="@android:style/Theme.Light.NoTitleBar" >
+	<style name="themeLight" parent="@android:style/Theme.Light.NoTitleBar" >
 <!--		<item name="android:layout_width">fill_parent</item>-->
 <!--        <item name="android:layout_height">wrap_content</item>-->
+
+    <item name="titlePageIndicatorStyle">@style/MyTitlePageIndicator</item>
     </style>
     <style name="themeLightTitle" parent="@android:style/Theme.Light">
+    
     </style>
 </resources>

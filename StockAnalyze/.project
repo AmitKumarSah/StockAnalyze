@@ -36,5 +36,10 @@
 			<type>2</type>
 			<locationURI>_android_StockAnalyzeCharts_8207ed6b/src</locationURI>
 		</link>
+		<link>
+			<name>ViewPagerIndicator_src</name>
+			<type>2</type>
+			<locationURI>_android_ViewPagerIndicator_c397b7b1/src</locationURI>
+		</link>
 	</linkedResources>
 </projectDescription>

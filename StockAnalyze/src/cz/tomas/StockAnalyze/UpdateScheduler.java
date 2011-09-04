@@ -158,6 +158,7 @@ public class UpdateScheduler {
 //		FlurryAgent.onEvent(Consts.FLURRY_EVENT_SCHEDULED_UPDATE, pars);
 		
 		this.performUpdateInternal(Markets.CZ);
+		this.performUpdateInternal(Markets.DE);
 		this.performUpdateInternal(Markets.GLOBAL);
 //		FlurryAgent.onEndSession(this.context);
 	}
@@ -167,6 +168,7 @@ public class UpdateScheduler {
 	 */
 	public void updateImmediatly() {
 		this.performUpdateInternal(Markets.CZ);
+		this.performUpdateInternal(Markets.DE);
 		this.performUpdateInternal(Markets.GLOBAL);
 	}
 	

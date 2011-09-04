@@ -24,8 +24,10 @@ import java.net.URL;
 import java.util.List;
 
 import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetNewsException;
+import cz.tomas.StockAnalyze.utils.Utils;
 
 import android.content.Context;
+import android.util.Log;
 
 /**
  * Facade for rss handling - using RssHandler and NewsSqlHelper
@@ -84,7 +86,7 @@ public class Rss {
 		try {
 			downloadedArticles = this.handler.fetchArticles(feed);
 		} catch (Exception e) {
-			e.printStackTrace();
+			Log.e(Utils.LOG_TAG, "failed to download new articles", e);
 			String message = "failed to download updated news: ";
 			if (e.getMessage() != null)
 				message += e.getMessage();

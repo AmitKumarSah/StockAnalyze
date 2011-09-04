@@ -41,6 +41,7 @@
 
 		<activity android:name=".activity.StockListActivity" android:launchMode="singleTop"></activity>
 		<activity android:name=".activity.IndecesListActivity" android:launchMode="singleTop"></activity>
+		<activity android:name=".activity.StocksActivity" android:launchMode="singleTop"></activity>
 		<activity android:name=".activity.StockSearchActivity"></activity>
 		<activity android:name=".activity.StockDetailActivity"></activity>
 		<activity android:name=".activity.StockChartActivity"	

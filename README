@@ -9,17 +9,20 @@ Feature highlights:
 	stock data and statistics
 	market news
 	interactive charts (in development)
-	portfolio management (in development)
+	portfolio management
 	currencies converter (in development)
 	custom stock alarms (in development)
 
-CZ edition is aimed to Prague Stock Exchange
+This software uses following libraries:
+https://github.com/JakeWharton/Android-ViewPagerIndicator
+http://code.google.com/p/google-gson/
 
 Project page at github: 
 https://github.com/tomas-vondracek/StockAnalyze
 
 For more info go to:
 http://tomas-vondracek.net/stockanalyze.aspx
+
 
 By Tomas Vondracek
 tomas.vondracek@gmail.com

@@ -44,7 +44,7 @@
 					style="@style/homeBlock"
 					block:textId="@string/homeStockList" 
 					block:imageId="@drawable/ic_launcher_list"
-					block:target="cz.tomas.StockAnalyze.activity.StockListActivity"/>
+					block:target="cz.tomas.StockAnalyze.activity.StocksActivity"/>
 				<cz.tomas.StockAnalyze.ui.widgets.HomeBlockView 
 					android:id="@+id/homeBlockPortfolio"
 					android:layout_weight="1"

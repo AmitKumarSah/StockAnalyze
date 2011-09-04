@@ -144,4 +144,12 @@
     	<item name="android:layout_height">wrap_content</item>
     	<item name="android:layout_margin">6dp</item>
     </style>
+    
+	<style name="MyTitlePageIndicator" parent="Widget.TitlePageIndicator">
+        <item name="footerColor">#AAAAAA</item>
+        <item name="footerPadding">4dp</item>
+        <item name="selectedColor">@android:color/black</item>
+        <item name="selectedBold">false</item>
+        <item name="textSize">12sp</item>
+    </style>
 </resources>

@@ -312,7 +312,7 @@ public class XmlFeedPullParseHandler {
 				}
 			}
 		} catch (MalformedURLException e) {
-			Log.e("cz.tomas.StockAnalyze.News.RssHandler", e.getMessage());
+			Log.e("cz.tomas.StockAnalyze.News.RssHandler", e.getMessage(), e);
 		}
 
 	}

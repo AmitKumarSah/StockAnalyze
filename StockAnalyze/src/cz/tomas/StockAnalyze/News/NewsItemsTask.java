@@ -76,7 +76,7 @@ public abstract class NewsItemsTask extends AsyncTask<Boolean, Integer, List<Art
 				}
 			}
 		} catch (Exception e) {
-			Log.d(Utils.LOG_TAG, "failed to read news", e);
+			Log.e(Utils.LOG_TAG, "failed to read news", e);
 			this.ex = e;
 		} finally {
 			rss.done();

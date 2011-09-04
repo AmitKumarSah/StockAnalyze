@@ -7,30 +7,24 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import android.util.Log;
-import cz.tomas.StockAnalyze.Data.DataProviderAdviser;
 import cz.tomas.StockAnalyze.Data.IStockDataProvider;
 import cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
-import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetDataException;
-import cz.tomas.StockAnalyze.utils.Markets;
-import cz.tomas.StockAnalyze.utils.Utils;
 
+public abstract class GaeDataAdapter implements IStockDataProvider {
 
-public class GaeDataAdapter implements IStockDataProvider {
-
-	public static final String ID = "GAE PSE Provider";
-	
 	protected List<IStockDataListener> eventListeners;
 	protected GaeDataProvider provider;
 	protected boolean enabled;
-	
+
 	public GaeDataAdapter() {
+		super();
+
 		this.eventListeners = new ArrayList<IStockDataListener>();
 		this.provider = new GaeDataProvider();
 	}
-	
+
 	@Override
 	public void addListener(IStockDataListener listener) {
 		this.eventListeners.add(listener);
@@ -48,9 +42,10 @@ public class GaeDataAdapter implements IStockDataProvider {
 	}
 
 	@Override
-	public DayData getDayData(String ticker, Calendar date) throws IOException, FailedToGetDataException {
-		return null;
-	}
+	public DayData getDayData(String ticker, Calendar date) throws IOException,
+			FailedToGetDataException {
+				return null;
+			}
 
 	/**
 	 * get intra day data for current day or last trading if today isn't trading day
@@ -64,65 +59,6 @@ public class GaeDataAdapter implements IStockDataProvider {
 			throw new FailedToGetDataException(e);
 		}
 		return data;
-	}
-
-	@Override
-	public List<StockItem> getAvailableStockList()
-			throws FailedToGetDataException {
-		List<StockItem> stockList;
-		try {
-			stockList = this.provider.getStockList("cz");
-		} catch (Exception e) {
-			throw new FailedToGetDataException("failed to get stock list", e);
-		}
-		return stockList;
-	}
-
-	@Override
-	public String getId() {
-		return ID;
-	}
-
-	@Override
-	public String getDescriptiveName() {
-		return "GAE data provider";
-	}
-
-	@Override
-	public boolean refresh() {
-		if (enabled) {
-			try {
-				try {
-					for (IStockDataListener listener : eventListeners) {
-						listener.OnStockDataUpdateBegin(this);
-					}
-				} catch (Exception e) {
-					Log.e(Utils.LOG_TAG, "OnStockDataUpdateBegin failed!", e);
-				}
-				// the market could be closed, so we don't neccessarly get updated data
-				if (provider.refresh()) {
-					// if refresh proceeded and the market is open, fire the event
-					Map<String, DayData> data = this.provider.getDayDataSet();
-					for (IStockDataListener listener : eventListeners) {
-						listener.OnStockDataUpdated(this, data);
-					}
-				} else {
-					for (IStockDataListener listener : eventListeners) {
-						listener.OnStockDataNoUpdate(this);
-					}
-				}
-				return true;
-			} catch (Exception e) {
-				Log.e(Utils.LOG_TAG, "Regular update failed!", e);
-			}
-		}
-		return false;
-	}
-
-	@Override
-	public DataProviderAdviser getAdviser() {
-		DataProviderAdviser adviser = new DataProviderAdviser(true, true, true, Markets.CZ);
-		return adviser;
 	}
 
 	@Override
@@ -140,5 +76,4 @@ public class GaeDataAdapter implements IStockDataProvider {
 		}
 		return data;
 	}
-
 }
