@@ -75,6 +75,7 @@ public class DataManager implements IStockDataListener {
 		
 	private List<IUpdateDateChangedListener> updateDateChangedListeners;
 	private List<IStockDataListener> updateStockDataListeners;
+	private List<Market> markets;
 	
 	private Context context;
 	private static DataManager instance;
@@ -91,6 +92,9 @@ public class DataManager implements IStockDataListener {
 		this.context = context;
 		
 		this.sqlStore = new StockDataSqlStore(context);
+		this.markets = new ArrayList<Market>();
+		this.markets.add(Markets.CZ);
+		this.markets.add(Markets.DE);
 		
 		//IStockDataProvider pse = new PseCsvDataAdapter();
 		//IStockDataProvider patriaPse = new PsePatriaDataAdapter();
@@ -127,6 +131,14 @@ public class DataManager implements IStockDataListener {
 	
 	public static boolean isInitialized() {
 		return instance != null;
+	}
+	
+	/**
+	 * get supported markets
+	 * @return
+	 */
+	public List<Market> getMarkets() {
+		return this.markets;
 	}
 
 	/**

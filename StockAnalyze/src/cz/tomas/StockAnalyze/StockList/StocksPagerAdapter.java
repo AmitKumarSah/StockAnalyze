@@ -1,18 +1,16 @@
 package cz.tomas.StockAnalyze.StockList;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import com.jakewharton.android.viewpagerindicator.TitleProvider;
-
-import cz.tomas.StockAnalyze.Data.Model.Market;
-import cz.tomas.StockAnalyze.fragments.StockListFragment;
-import cz.tomas.StockAnalyze.utils.Markets;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+
+import com.jakewharton.android.viewpagerindicator.TitleProvider;
+
+import cz.tomas.StockAnalyze.Data.Model.Market;
+import cz.tomas.StockAnalyze.fragments.StockListFragment;
 
 /**
  * adapter creating {@link StockListFragment} for selected Markets
@@ -23,12 +21,10 @@ public final class StocksPagerAdapter extends FragmentPagerAdapter implements Ti
 
 	private List<Market> markets;
 	
-	public StocksPagerAdapter(FragmentManager fm) {
+	public StocksPagerAdapter(FragmentManager fm, List<Market> markets) {
 		super(fm);
 		
-		this.markets = new ArrayList<Market>();
-		this.markets.add(Markets.CZ);
-		this.markets.add(Markets.DE);
+		this.markets = markets;
 	}
 
 	@Override

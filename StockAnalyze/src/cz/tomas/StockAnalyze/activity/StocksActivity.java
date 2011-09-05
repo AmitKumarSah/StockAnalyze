@@ -1,5 +1,7 @@
 package cz.tomas.StockAnalyze.activity;
 
+import java.util.List;
+
 import com.jakewharton.android.viewpagerindicator.TitlePageIndicator;
 
 import android.app.AlertDialog;
@@ -17,6 +19,8 @@ import android.view.animation.Animation;
 import cz.tomas.StockAnalyze.Application;
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.UpdateScheduler;
+import cz.tomas.StockAnalyze.Data.DataManager;
+import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.StockList.StocksPagerAdapter;
 import cz.tomas.StockAnalyze.activity.base.BaseFragmentActivity;
 import cz.tomas.StockAnalyze.ui.widgets.ActionBar;
@@ -59,7 +63,8 @@ public final class StocksActivity extends BaseFragmentActivity implements IActio
 			bar.setActionBarListener(this);
 		}
 		this.pager = (ViewPager) this.findViewById(R.id.stocksViewPager);
-		this.pager.setAdapter(new StocksPagerAdapter(getSupportFragmentManager()));
+		List<Market> markets = DataManager.getInstance(this).getMarkets();
+		this.pager.setAdapter(new StocksPagerAdapter(getSupportFragmentManager(), markets));
 		
 		//Bind the title indicator to the adapter
 		TitlePageIndicator titleIndicator = (TitlePageIndicator)findViewById(R.id.pagerTitles);

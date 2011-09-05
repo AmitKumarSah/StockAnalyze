@@ -33,7 +33,6 @@ import android.widget.RemoteViews;
 import cz.tomas.StockAnalyze.Data.IStockDataProvider;
 import cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
-import cz.tomas.StockAnalyze.activity.StockListActivity;
 import cz.tomas.StockAnalyze.activity.StocksActivity;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
