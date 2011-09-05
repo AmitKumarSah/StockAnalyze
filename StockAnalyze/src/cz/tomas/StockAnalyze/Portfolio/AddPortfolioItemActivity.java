@@ -23,6 +23,7 @@ package cz.tomas.StockAnalyze.Portfolio;
 import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.util.Calendar;
+import java.util.Currency;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -65,6 +66,9 @@ public final class AddPortfolioItemActivity extends BaseActivity {
 	
 	private static final int MINIMAL_FEE = 40;
 	private DataManager dataManager = null;
+	
+	private StockItem stockItem;
+	
 	private TextView totalValueView = null;
 	
 	private TextView feeView;
@@ -87,7 +91,7 @@ public final class AddPortfolioItemActivity extends BaseActivity {
 		Intent intent = this.getIntent();
 		if (intent != null && intent.hasExtra(Utils.EXTRA_STOCK_ITEM) && intent.hasExtra(Utils.EXTRA_MARKET_ID)) {
 			final Market market = (Market) intent.getExtras().getSerializable(Utils.EXTRA_MARKET_ID);
-			final StockItem stockItem = intent.getExtras().getParcelable(Utils.EXTRA_STOCK_ITEM);
+			stockItem = intent.getExtras().getParcelable(Utils.EXTRA_STOCK_ITEM);
 			final DayData data = intent.getExtras().getParcelable(Utils.EXTRA_DAY_DATA);
 			
 			this.totalValueView = (TextView) this.findViewById(R.id.portfolioAddTotalValue);
@@ -240,9 +244,9 @@ public final class AddPortfolioItemActivity extends BaseActivity {
 		final float value = price * count + fee;
 		
 		try {
-			NumberFormat priceFormatCzk = FormattingUtils.getPriceFormatCzk();
-			this.feeView.setText(priceFormatCzk.format(fee));
-			this.totalValueView.setText(priceFormatCzk.format(value));
+			NumberFormat priceFormat = FormattingUtils.getPriceFormat(this.stockItem.getMarket().getCurrency());
+			this.feeView.setText(priceFormat.format(fee));
+			this.totalValueView.setText(priceFormat.format(value));
 		} catch (Exception e) {
 			Log.e(Utils.LOG_TAG, "failed to set total fee and value", e);
 		}

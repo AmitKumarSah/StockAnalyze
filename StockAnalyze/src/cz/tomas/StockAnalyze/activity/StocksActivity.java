@@ -7,6 +7,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -29,7 +30,7 @@ import cz.tomas.StockAnalyze.utils.Utils;
  * @author tomas
  *
  */
-public final class StocksActivity extends BaseFragmentActivity implements IActionBarListener {
+public final class StocksActivity extends BaseFragmentActivity implements IActionBarListener, OnPageChangeListener {
 	
 	static final int UPDATE_DLG_SUCCES = 0;
 	static final int UPDATE_DLG_FAIL = 1;
@@ -37,6 +38,8 @@ public final class StocksActivity extends BaseFragmentActivity implements IActio
 	
 	private View refreshButton;
 	private Animation refreshAnim;
+	
+	private ViewPager pager;
 	
 	/* (non-Javadoc)
 	 * @see android.support.v4.app.FragmentActivity#onCreate(android.os.Bundle)
@@ -55,12 +58,13 @@ public final class StocksActivity extends BaseFragmentActivity implements IActio
 		if (bar != null) {
 			bar.setActionBarListener(this);
 		}
-		ViewPager pager = (ViewPager) this.findViewById(R.id.stocksViewPager);
-		pager.setAdapter(new StocksPagerAdapter(getSupportFragmentManager()));
+		this.pager = (ViewPager) this.findViewById(R.id.stocksViewPager);
+		this.pager.setAdapter(new StocksPagerAdapter(getSupportFragmentManager()));
 		
 		//Bind the title indicator to the adapter
 		TitlePageIndicator titleIndicator = (TitlePageIndicator)findViewById(R.id.pagerTitles);
 		titleIndicator.setViewPager(pager);
+		titleIndicator.setOnPageChangeListener(this);
 	}
 	
 	@Override
@@ -132,6 +136,19 @@ public final class StocksActivity extends BaseFragmentActivity implements IActio
 		UpdateScheduler scheduler = 
 			(UpdateScheduler) this.getApplicationContext().getSystemService(Application.UPDATE_SCHEDULER_SERVICE);
 		scheduler.updateImmediatly();
+	}
+
+	@Override
+	public void onPageScrollStateChanged(int arg0) {
+	}
+
+	@Override
+	public void onPageScrolled(int arg0, float arg1, int arg2) {
+	}
+
+	@Override
+	public void onPageSelected(int position) {
+		
 	}
 	
 	

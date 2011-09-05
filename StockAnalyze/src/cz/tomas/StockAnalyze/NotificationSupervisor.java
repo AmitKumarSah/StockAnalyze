@@ -34,6 +34,7 @@ import cz.tomas.StockAnalyze.Data.IStockDataProvider;
 import cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.activity.StockListActivity;
+import cz.tomas.StockAnalyze.activity.StocksActivity;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 
@@ -111,7 +112,7 @@ public class NotificationSupervisor implements IStockDataListener {
 		this.notification.contentView = this.currentNotificationView;
 		
 		// set intent to launch when the notification is tapped
-		Intent notificationIntent = new Intent(this.context, StockListActivity.class);
+		Intent notificationIntent = new Intent(this.context, StocksActivity.class);
 		PendingIntent contentIntent = PendingIntent.getActivity(this.context, 0, notificationIntent, 0);
 		this.notification.contentIntent = contentIntent;
 		

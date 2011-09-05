@@ -10,6 +10,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import cz.tomas.StockAnalyze.Application;
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.DataManager;
@@ -61,7 +63,7 @@ public class StockListFragment extends ListFragment {
 		this.setListAdapter(adapter);
 		this.setEmptyText(getString(R.string.loading));
 	}
-
+	
 	/**
 	 * create adapter instance
 	 */
@@ -87,19 +89,22 @@ public class StockListFragment extends ListFragment {
 		this.adapter.detachFromData();
 	}
 	
-	/* stock
+	/** stock
 	 * context menu for stock item
 	 * @see android.app.Activity#onContextItemSelected(android.view.MenuItem)
 	 */
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		
 		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-		StockItem stockItem = (StockItem) this.getListAdapter().getItem(info.position);
+		ListAdapter listAdapter = ((ListView) info.targetView.getParent()).getAdapter();
+		if (info.position >= listAdapter.getCount()) {
+			return false;
+		}
+		StockItem stockItem = (StockItem) listAdapter.getItem(info.position);
+		if (stockItem == null) {
+			return false;
+		}
 		DayData data = adapter.getDayData(stockItem);
-		
-		if (stockItem == null)
-			return true;
 		
 		switch (item.getItemId()) {
 			case R.id.stock_item_add_to_portfolio:
@@ -123,8 +128,8 @@ public class StockListFragment extends ListFragment {
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
-		super.onCreateContextMenu(menu, v, menuInfo);
 		MenuInflater inflater = getActivity().getMenuInflater();
 		inflater.inflate(R.menu.stock_item_context_menu, menu);
+		super.onCreateContextMenu(menu, v, menuInfo);
 	}
 }

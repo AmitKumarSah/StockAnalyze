@@ -4,9 +4,11 @@
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent" 
 	android:orientation="vertical">
-    <cz.tomas.StockAnalyze.ui.widgets.ActionBar android:id="@+id/portfolioDetailActionBar" 
+    <cz.tomas.StockAnalyze.ui.widgets.ActionBar xmlns:actionBar="http://schemas.android.com/apk/res/cz.tomas.StockAnalyze" 
+    	android:id="@+id/portfolioDetailActionBar" 
     	android:layout_width="fill_parent" 
-    	android:layout_height="wrap_content" />
+    	android:layout_height="wrap_content"
+    	actionBar:titleText="@string/activityPortfolioDetail" />
     
   	<TextView android:id="@+id/portfolioDetailTitle"
 		android:layout_width="fill_parent"
