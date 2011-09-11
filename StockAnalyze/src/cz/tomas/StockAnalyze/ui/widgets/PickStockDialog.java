@@ -42,7 +42,7 @@ public final class PickStockDialog extends Dialog implements IListAdapterListene
 	
 	private IStockDialogListener listener;
 	
-	public PickStockDialog(Context context, boolean includeIndeces) {
+	public PickStockDialog(Context context, final boolean indeces) {
 		super(context);
 		
 		list = new ListView(context);
@@ -66,7 +66,7 @@ public final class PickStockDialog extends Dialog implements IListAdapterListene
 		
 		this.setTitle(R.string.pickMarket);
 
-		this.marketAdapter = new SimpleMarketAdapter(context, includeIndeces);
+		this.marketAdapter = new SimpleMarketAdapter(context, indeces);
 		list.setAdapter(this.marketAdapter);
 		this.currentAdapter = ADAPTER_MARKETS;
 		list.setOnItemClickListener(new OnItemClickListener() {
@@ -78,7 +78,7 @@ public final class PickStockDialog extends Dialog implements IListAdapterListene
 					Market market = (Market) marketAdapter.getItem(position);
 					if (market != null) {
 						currentAdapter = ADAPTER_STOCKS;
-						stocksAdapter = new SimpleStockListAdapter(getContext(), market, PickStockDialog.this);
+						stocksAdapter = new SimpleStockListAdapter(getContext(), market, PickStockDialog.this, indeces);
 						setTitle(R.string.pickStock);
 						list.setAdapter(stocksAdapter);
 					} else {

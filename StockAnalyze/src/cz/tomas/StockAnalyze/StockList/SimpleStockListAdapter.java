@@ -25,16 +25,18 @@ public final class SimpleStockListAdapter extends BaseAdapter {
 	
 	private LayoutInflater inflater;
 	private IListAdapterListener<StockItem> listener;
+	private boolean indeces;
 	
 	/**
 	 * @param market
 	 */
-	public SimpleStockListAdapter(Context context, Market market, IListAdapterListener<StockItem> listener) {
+	public SimpleStockListAdapter(Context context, Market market, IListAdapterListener<StockItem> listener, boolean indeces) {
 		super();
 		//this.market = market;
 		this.context = context;
 		this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.listener = listener;
+		this.indeces = indeces;
 		
 		StockListTask task = new StockListTask();
 		task.execute(market);
@@ -101,7 +103,7 @@ public final class SimpleStockListAdapter extends BaseAdapter {
 			try {
 				Market market = params[0];
 				DataManager dataManager = (DataManager) context.getApplicationContext().getSystemService(Application.DATA_MANAGER_SERVICE);
-				stockItems = dataManager.getStockItems(market, true);
+				stockItems = dataManager.getStockItems(market, indeces);
 				
 				stocks = new StockItem[stockItems.size()];
 			} catch (Exception e) {
