@@ -90,6 +90,7 @@ Nikdy se nepouštějte do obchodů, jejichž podstatě plně nerozumíte. Obchod
     <string name="portfolioBalance">Balance:</string>
     <string name="portfolioBuyPrice">Buy price</string>
     <string name="portfolioSellPrice">Sell price</string>
+    <string name="noPortfolioItems">No portfolio items...</string>
     
     <string name="failedScheduleUpdate">Failed to schedule intraday update!</string>
     
@@ -149,4 +150,7 @@ Nikdy se nepouštějte do obchodů, jejichž podstatě plně nerozumíte. Obchod
     <string name="failedGetChart">Failed to get data for chart...</string>
     
     <string name="working">Processing...</string>
+    
+    <string name="pickMarket">Pick Market</string>
+    <string name="pickStock">Pick Stock</string>
 </resources>

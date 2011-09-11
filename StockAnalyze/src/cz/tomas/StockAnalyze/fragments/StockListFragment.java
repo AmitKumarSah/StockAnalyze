@@ -89,13 +89,14 @@ public class StockListFragment extends ListFragment {
 		this.adapter.detachFromData();
 	}
 	
-	/** stock
-	 * context menu for stock item
+	/** 
+	 * stock context menu for stock item
 	 * @see android.app.Activity#onContextItemSelected(android.view.MenuItem)
 	 */
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+		// we need to have adapter from this listview
 		ListAdapter listAdapter = ((ListView) info.targetView.getParent()).getAdapter();
 		if (info.position >= listAdapter.getCount()) {
 			return false;

@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -41,6 +40,7 @@ import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.Interfaces.IListAdapterListener;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
+import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.PortfolioItem;
 import cz.tomas.StockAnalyze.Data.Model.PortfolioSum;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
@@ -58,23 +58,29 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 	private DataManager dataManager;
 	private LayoutInflater vi; 
 	
-	private static Map<PortfolioItem, DayData> datas;
+	private Map<PortfolioItem, DayData> datas;
+	/**
+	 * array backed by the datas map
+	 */
+	private PortfolioItem[] portfolioItems;
 	
 	/**
 	 * portfolio item id is a key for stock items
 	 */
-	private static Map<String, StockItem> stockItems;
+	private Map<String, StockItem> stockItems;
 	
 	private Portfolio portfolio = null;
 	private List<IListAdapterListener<PortfolioSum>> portfolioListeners;
 	
-	private static PortfolioSum portfolioSummary;
+	private PortfolioSum portfolioSummary;
 	boolean includeFee = true;
 	private SharedPreferences prefs;
+	private Market market;
 	
-	public PortfolioListAdapter(Context context, int textViewResourceId, final DataManager dataManager, Portfolio portfolio) {
+	public PortfolioListAdapter(Context context, int textViewResourceId, final DataManager dataManager, Portfolio portfolio, Market market) {
 		super(context, textViewResourceId);
 		
+		this.market = market;
 		this.portfolio = portfolio;
 		this.dataManager = dataManager;
 
@@ -83,20 +89,39 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 		
         this.vi = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.prefs = getContext().getSharedPreferences(Utils.PREF_NAME, 0);
-		
-		if (datas == null || stockItems == null ) {
-			datas = new LinkedHashMap<PortfolioItem, DayData>();
-			stockItems = new LinkedHashMap<String, StockItem>();
+	
+		datas = new LinkedHashMap<PortfolioItem, DayData>();
+		stockItems = new LinkedHashMap<String, StockItem>();
 
-	        this.refresh();
-		} else {
-			for (Entry<PortfolioItem, DayData> entry : datas.entrySet()) {
-				this.add(entry.getKey());
-			}
-		}
+        this.refresh();
 	}
 	
+	/* (non-Javadoc)
+	 * @see android.widget.ArrayAdapter#getItem(int)
+	 */
+	@Override
+	public PortfolioItem getItem(int position) {
+		if (this.portfolioItems == null || position >= this.portfolioItems.length) {
+			return null;
+		}
+		return this.portfolioItems[position];
+		//return super.getItem(position);
+	}
 	
+
+
+
+	/* (non-Javadoc)
+	 * @see android.widget.ArrayAdapter#getCount()
+	 */
+	@Override
+	public int getCount() {
+		if (this.portfolioItems == null) {
+			return 0;
+		}
+		return this.portfolioItems.length;
+	}
+
 	/**
 	 * get portfolio summary calculated while last portfolio creation/refresh
 	 * @return the portfolioSummary
@@ -268,7 +293,7 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 			try {
 				dataManager.acquireDb(this.getClass().getName());
 				try {
-					items = portfolio.getGroupedPortfolioItems();
+					items = portfolio.getGroupedPortfolioItems(market);
 				} catch (Exception e) {
 					Log.e(Utils.LOG_TAG, "failed to get groupped portfolio items", e);
 					this.ex = e;
@@ -304,6 +329,8 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 							totalInvestedSum += investedValue;
 						}
 					}
+					portfolioItems = new PortfolioItem[datas.size()];
+					portfolioItems = datas.keySet().toArray(portfolioItems);
 				} catch (Exception e) {
 					String message = "Failed to get stock day data. ";
 					if (e.getMessage() != null)
@@ -335,12 +362,12 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 			if (totalInvestedSum > 0)
 				totalPercChange = (totalAbsChangeSum / totalInvestedSum)*100;
 			portfolioSummary = new PortfolioSum(this.totalValueSum, this.totalAbsChangeSum, totalPercChange);
-			clear();
+//			clear();
 			
-			// add portfolio items to the adapter list
-			for (PortfolioItem item : result) {
-				add(item);
-			}
+//			// add portfolio items to the adapter list
+//			for (PortfolioItem item : result) {
+//				add(item);
+//			}
 			
 			// populate the portfolio summary
 			for (IListAdapterListener<PortfolioSum> listener : portfolioListeners) {

@@ -24,12 +24,12 @@ import java.io.Serializable;
 import java.util.Currency;
 
 /**
- * @author tomas
- * 
  * represents market (e.g. NYSE, PSE,...)
- * is serializable so it can be pu in an Intent
+ * is serializable so it can be put in an Intent
  * 
- * StockItem has a reference to the Market
+ * {@link StockItem} has a reference to the Market
+ * 
+ * @author tomas
  */
 @SuppressWarnings("serial")
 public class Market implements Serializable {
@@ -104,6 +104,10 @@ public class Market implements Serializable {
 	 */
 	public String getCountry() {
 		return this.country;
+	}
+
+	public String getCurrencyCode() {
+		return this.currency;
 	}
 
 	

@@ -172,15 +172,6 @@ public class DataManager implements IStockDataListener {
 		return results;
 	}
 	
-//	public synchronized Map<String, StockItem> getIndecesItems() {
-//		boolean isStockListDirty = isStockListDirty();
-//		Map<String, StockItem> items = this.sqlStore.getStockItems(Markets.GLOBAL, "ticker", true);
-//		if (items == null || items.size() == 0 || isStockListDirty) {
-//			items = downloadStockItems(Markets.GLOBAL);
-//		}
-//			
-//		return items;
-//	}
 	/**
 	 * get all stock items from database for given Market,
 	 * if stock items weren't found, would try to download them

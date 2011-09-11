@@ -51,7 +51,7 @@
 					style="@style/homeBlock"
 					block:textId="@string/homeMyPortfolio"
 					block:imageId="@drawable/ic_business" 
-					block:target="cz.tomas.StockAnalyze.activity.PortfolioActivity"/>
+					block:target="cz.tomas.StockAnalyze.activity.PortfoliosActivity"/>
 <!-- 					<cz.tomas.StockAnalyze.ui.widgets.HomeBlockView -->
 <!-- 						android:id="@+id/homeBlockCurrencies" -->
 <!-- 						style="@style/homeBlock" -->

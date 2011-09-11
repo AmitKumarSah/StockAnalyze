@@ -49,6 +49,7 @@
 			android:screenOrientation="landscape"
 			android:label="@string/activityPortfolio" />
 		<activity android:name=".activity.PortfolioActivity" android:launchMode="singleTop"></activity>
+		<activity android:name=".activity.PortfoliosActivity" android:launchMode="singleTop"></activity>
 		<activity android:name=".activity.PortfolioDetailActivity"></activity>
 		<activity android:name=".Portfolio.AddPortfolioItemActivity"
 			android:theme="@style/themeLightTitle"

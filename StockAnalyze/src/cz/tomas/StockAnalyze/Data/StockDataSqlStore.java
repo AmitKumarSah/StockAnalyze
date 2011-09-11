@@ -96,8 +96,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 					c.close();
 			}
 		} catch (SQLException e) {
-			Log.d("StockDataSqlStore", "failed to get stock item." + e.getMessage());
-			e.printStackTrace();
+			Log.e("StockDataSqlStore", "failed to get stock item." + e.getMessage(), e);
 		} finally {
 			this.close();
 		}
@@ -305,6 +304,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 					c = db.query(STOCK_TABLE_NAME, new String[] { "id", "ticker", "name", "market_id" }, "is_index=?", 
 							new String[] { includeIndeces ? "1" : "0" }, null, null, orderBy);
 				}
+
 				if (c.moveToFirst()) {
 					do {
 						String id = c.getString(0);

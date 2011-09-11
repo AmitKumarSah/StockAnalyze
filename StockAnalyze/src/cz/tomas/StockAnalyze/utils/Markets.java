@@ -20,7 +20,7 @@ public class Markets {
 	/**
 	 * fake market used for global indeces
 	 */
-	public static final Market GLOBAL = new Market("Global", "GLOBAL", "", "Global Market", "world");
+	public static final Market GLOBAL = new Market("Global", "GLOBAL", "", "Indeces", "world");
 	
 	/**
 	 * get market based on the id

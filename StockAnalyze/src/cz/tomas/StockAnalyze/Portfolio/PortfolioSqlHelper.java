@@ -31,7 +31,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import cz.tomas.StockAnalyze.Data.DataSqlHelper;
+import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.PortfolioItem;
+import cz.tomas.StockAnalyze.utils.Markets;
 
 /*
  * 
@@ -99,7 +101,7 @@ public class PortfolioSqlHelper extends DataSqlHelper {
 	 * So for each stock, that is in portfolio, it will find all portfolio items
 	 * and group them to get total count and sum buy/sell prices
 	 */
-	public Map<String, PortfolioItem> getGroupedPortfolioItems(boolean bought) {
+	public Map<String, PortfolioItem> getGroupedPortfolioItems(boolean bought, Market market) {
 		Map<String, PortfolioItem> items = new HashMap<String, PortfolioItem>();
 		Cursor c = null;
 		SQLiteDatabase db = null;
@@ -113,7 +115,6 @@ public class PortfolioSqlHelper extends DataSqlHelper {
 			if (c.moveToFirst())
 				do {
 					String stockId = c.getString(0);
-					//int count = Math.abs(c.getInt(1));
 					int count = c.getInt(1);
 					float buyPrice = c.getFloat(2);
 					float sellPrice = c.getFloat(3);
@@ -124,9 +125,13 @@ public class PortfolioSqlHelper extends DataSqlHelper {
 					float sellFee = c.getFloat(8);
 					String marketId = c.getString(9);
 					int id = c.getInt(10);
-					PortfolioItem item = new PortfolioItem(id, stockId, name, count, buyPrice, sellPrice, 
-							buyDate, sellDate, buyFee, sellFee, marketId);
-					items.put(stockId, item);
+					// return only items that have same currency as requested
+					Market m = Markets.getMarket(marketId);
+					if (m.getCurrencyCode().equals(market.getCurrencyCode())) {
+						PortfolioItem item = new PortfolioItem(id, stockId, name, count, buyPrice, sellPrice, 
+								buyDate, sellDate, buyFee, sellFee, marketId);
+						items.put(stockId, item);
+					}
 				} while(c.moveToNext());
 		} finally {
 			if (c != null)

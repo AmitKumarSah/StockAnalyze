@@ -78,7 +78,11 @@ public class HomeActivity extends ChartActivity implements OnClickListener, OnKe
 		}
 		final Runnable runnable = new Runnable() {
 			public void run() {
-				HomeActivity.this.stockItem = HomeActivity.this.dataManager.getStockItem("PX", Markets.CZ);
+				try {
+					HomeActivity.this.stockItem = HomeActivity.this.dataManager.getStockItem("PX", Markets.CZ);
+				} catch (Exception e) {
+					Log.e(Utils.LOG_TAG, "filed to get stock item for home screen chart", e);
+				}
 				runOnUiThread(new Runnable() {
 					
 					@Override

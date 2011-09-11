@@ -336,7 +336,7 @@ public abstract class ChartActivity extends BaseActivity {
 
 		@Override
 		protected Void doInBackground(StockItem... params) {
-			if (params.length == 0) {
+			if (params.length == 0 || params[0] == null) {
 				return null;
 			}
 			final StockItem stockItem = params[0];

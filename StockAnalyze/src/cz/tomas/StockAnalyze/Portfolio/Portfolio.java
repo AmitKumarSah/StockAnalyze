@@ -30,6 +30,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 import android.util.Log;
+import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.PortfolioItem;
 import cz.tomas.StockAnalyze.utils.Utils;
 
@@ -61,15 +62,16 @@ public class Portfolio {
 	/**
 	 * get portfolio items grouped by stock id - sums up positions. So for each stock, that is in 
 	 * portfolio, it will find all portfolio items and group them to get total count and average buy/sell prices
+	 * @param market 
 	 * @return
 	 */
-	public List<PortfolioItem> getGroupedPortfolioItems() {
+	public List<PortfolioItem> getGroupedPortfolioItems(Market market) {
 		this.sqlHelper.acquireDb(this);
 		Map<String, PortfolioItem> bought;
 		Map<String, PortfolioItem> sold;
 		try {
-			bought = this.sqlHelper.getGroupedPortfolioItems(true);
-			sold = this.sqlHelper.getGroupedPortfolioItems(false);
+			bought = this.sqlHelper.getGroupedPortfolioItems(true, market);
+			sold = this.sqlHelper.getGroupedPortfolioItems(false, market);
 		} finally {
 			this.sqlHelper.releaseDb(true, this);
 		}

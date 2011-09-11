@@ -23,11 +23,8 @@ package cz.tomas.StockAnalyze.Portfolio;
 import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.util.Calendar;
-import java.util.Currency;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.flurry.android.FlurryAgent;
 
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -42,6 +39,9 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.flurry.android.FlurryAgent;
+
 import cz.tomas.StockAnalyze.Application;
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.DataManager;
@@ -49,7 +49,7 @@ import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.PortfolioItem;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
-import cz.tomas.StockAnalyze.activity.PortfolioActivity;
+import cz.tomas.StockAnalyze.activity.PortfoliosActivity;
 import cz.tomas.StockAnalyze.activity.base.BaseActivity;
 import cz.tomas.StockAnalyze.utils.Consts;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
@@ -151,7 +151,7 @@ public final class AddPortfolioItemActivity extends BaseActivity {
 									@Override
 									protected Void doInBackground(Void... params) {
 										try {
-											addPortfolioItem(stockItem.getId(), count, price, "default", market.getId(), fee, sell);
+											addPortfolioItem(stockItem.getId(), count, price, market.getCurrencyCode(), market.getId(), fee, sell);
 										} catch (SQLException e) {
 											ex = e;
 										}
@@ -168,7 +168,7 @@ public final class AddPortfolioItemActivity extends BaseActivity {
 											
 											Toast.makeText(AddPortfolioItemActivity.this, message, Toast.LENGTH_LONG).show();
 										} else {
-											Intent intent = new Intent(AddPortfolioItemActivity.this, PortfolioActivity.class);
+											Intent intent = new Intent(AddPortfolioItemActivity.this, PortfoliosActivity.class);
 											intent.putExtra("refresh", true);
 											AddPortfolioItemActivity.this.startActivity(intent);
 										}

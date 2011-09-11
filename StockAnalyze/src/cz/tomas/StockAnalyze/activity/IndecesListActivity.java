@@ -1,5 +1,7 @@
 package cz.tomas.StockAnalyze.activity;
 
+import android.os.Bundle;
+import android.widget.TextView;
 import cz.tomas.StockAnalyze.Application;
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.UpdateScheduler;
@@ -8,6 +10,17 @@ import cz.tomas.StockAnalyze.utils.Markets;
 
 public final class IndecesListActivity extends StockListActivity {
 	
+	/* (non-Javadoc)
+	 * @see cz.tomas.StockAnalyze.activity.StockListActivity#onCreate(android.os.Bundle)
+	 */
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		
+		TextView title = (TextView) this.findViewById(R.id.actionTitle);
+		title.setText(R.string.homeIndeces);
+	}
+
 	/* (non-Javadoc)
 	 * @see cz.tomas.StockAnalyze.activity.StockListActivity#createListAdapter()
 	 */
