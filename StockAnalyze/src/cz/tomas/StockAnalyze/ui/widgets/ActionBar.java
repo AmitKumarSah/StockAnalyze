@@ -96,8 +96,9 @@ public class ActionBar extends RelativeLayout {
         if (homeButton != null) {
 	        homeButton.setOnClickListener(homeClickListener);
         }
-        else
+        else {
         	Log.d(Utils.LOG_TAG, "action bar home button not found");
+        }
         
         final View textContainer = this.findViewById(R.id.actionTextContainer);
         textContainer.setOnClickListener(homeClickListener);
@@ -109,6 +110,7 @@ public class ActionBar extends RelativeLayout {
         boolean showSearch = attrs.getAttributeBooleanValue(ns, "showSearchButton", false);
         boolean showAdd = attrs.getAttributeBooleanValue(ns, "showAddButton", false);
         boolean showHelp = attrs.getAttributeBooleanValue(ns, "showHelpButton", false);
+        boolean showChart = attrs.getAttributeBooleanValue(ns, "showChartButton", false);
         //boolean showHome = attrs.getAttributeBooleanValue(ns, "showHomeButton", false);
         if (text != null && titleView != null) {
         	titleView.setText(text);
@@ -116,10 +118,12 @@ public class ActionBar extends RelativeLayout {
         View addButton = findViewById(R.id.actionAddButton);
         View refreshButton = findViewById(R.id.actionRefreshButton);
         View helpButton = findViewById(R.id.actionHelpButton);
+        View chartButton = findViewById(R.id.actionChartButton);
         
         addButton.setOnClickListener(this.actionClickListener);
         refreshButton.setOnClickListener(this.actionClickListener);
         helpButton.setOnClickListener(this.actionClickListener);
+        chartButton.setOnClickListener(this.actionClickListener);
         
         if (! showSearch)
         	searchButton.setVisibility(View.GONE);
@@ -129,6 +133,8 @@ public class ActionBar extends RelativeLayout {
         	refreshButton.setVisibility(View.GONE);
         if (! showHelp)
         	helpButton.setVisibility(View.GONE);
+        if (! showChart)
+        	chartButton.setVisibility(View.GONE);
 	}
 
 	/* (non-Javadoc)

@@ -33,6 +33,7 @@
 		<attr name="showSearchButton" format="boolean"/>
 		<attr name="showAddButton" format="boolean"/>
 		<attr name="showHomeButton" format="boolean"/>
+		<attr name="showChartButton" format="boolean"/>
 		<attr name="showHelpButton" format="boolean"/>
 		<attr name="subTitleText" format="string"/>
 	</declare-styleable>

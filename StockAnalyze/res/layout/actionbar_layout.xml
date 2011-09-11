@@ -68,6 +68,9 @@
     		<ImageButton android:id="@+id/actionSearchButton"
     			style="@style/actionBar.ImageButton"
     			android:src="@drawable/ic_tab_search" />
+			<ImageButton android:id="@+id/actionChartButton"
+    			style="@style/actionBar.ImageButton"
+    			android:src="@drawable/ic_top_chart" />
     		<ImageButton android:id="@+id/actionHelpButton"
     			style="@style/actionBar.ImageButton"
     			android:src="@drawable/ic_top_help" 

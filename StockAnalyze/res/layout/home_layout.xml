@@ -26,7 +26,8 @@
 		android:id="@+id/homeActionBar"
 		android:layout_width="fill_parent" 
 		android:layout_height="wrap_content"
-		actionBar:showHelpButton="true"/>
+		actionBar:showHelpButton="true"
+		actionBar:showChartButton="true" />
 		
 		<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
 			android:layout_width="fill_parent" 

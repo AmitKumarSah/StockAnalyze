@@ -17,12 +17,10 @@
  ******************************************************************************/
 package cz.tomas.StockAnalyze.activity;
 
-import java.io.IOException;
-
+import android.app.Dialog;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -32,28 +30,28 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
-import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
+import cz.tomas.StockAnalyze.Application;
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.DataManager;
+import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.charts.view.CompositeChartView;
 import cz.tomas.StockAnalyze.ui.widgets.ActionBar;
+import cz.tomas.StockAnalyze.ui.widgets.PickStockDialog;
 import cz.tomas.StockAnalyze.ui.widgets.ActionBar.IActionBarListener;
 import cz.tomas.StockAnalyze.ui.widgets.HomeBlockView;
-import cz.tomas.StockAnalyze.utils.DownloadService;
+import cz.tomas.StockAnalyze.ui.widgets.PickStockDialog.IStockDialogListener;
 import cz.tomas.StockAnalyze.utils.Markets;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 
 public class HomeActivity extends ChartActivity implements OnClickListener, OnKeyListener, IActionBarListener {
 
+	private static final int DIALOG_PICK_STOCK = 0;
+	
 	private DataManager dataManager;
-	@SuppressWarnings("unused")
-	private static Bitmap chartBitmap;
-	@SuppressWarnings("unused")
-	private static long chartLastUpdate;
-	@SuppressWarnings("unused")
-	private static long chartUpdateInterval = 1000 * 60 * 10;
+	private SharedPreferences pref;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +60,8 @@ public class HomeActivity extends ChartActivity implements OnClickListener, OnKe
 		this.setContentView(R.layout.home_layout);
 		
 		this.chartView = (CompositeChartView) this.findViewById(R.id.stockChartView);
-		this.dataManager = DataManager.getInstance(this);
+		this.dataManager = (DataManager) getApplicationContext().getSystemService(Application.DATA_MANAGER_SERVICE);
+		this.pref = getSharedPreferences(Utils.PREF_NAME, 0);
 		
 		View[] blockViews = new View[4];
 		blockViews[0] = this.findViewById(R.id.homeBlockIndeces);
@@ -76,30 +75,56 @@ public class HomeActivity extends ChartActivity implements OnClickListener, OnKe
 				view.setOnKeyListener(this);
 			}
 		}
-		final Runnable runnable = new Runnable() {
-			public void run() {
-				try {
-					HomeActivity.this.stockItem = HomeActivity.this.dataManager.getStockItem("PX", Markets.CZ);
-				} catch (Exception e) {
-					Log.e(Utils.LOG_TAG, "filed to get stock item for home screen chart", e);
-				}
-				runOnUiThread(new Runnable() {
-					
-					@Override
-					public void run() {
-						updateChart();
-					}
-				});
-			}
-		};
-		Thread thread = new Thread(runnable);
+
+		Thread thread = new Thread(chartRunnable);
 		thread.start();
+		final TextView txtChartDescription = (TextView) this.findViewById(R.id.detail_label_chart_description);
+		this.setChartActivityListener(new IChartActivityListener() {
+			
+			@Override
+			public void onChartUpdateFinish() {
+				int id = DAY_COUNT_MAP.get(timePeriod);
+				if (txtChartDescription != null) {
+					String text = String.format("%s %s", stockItem.getTicker(), getString(id));
+					txtChartDescription.setText(text);
+				}
+			}
+			
+			@Override
+			public void onChartUpdateBegin() {
+				if (txtChartDescription != null) {
+					String text = String.format("%s %s", stockItem.getTicker(), getString(R.string.loading));
+					txtChartDescription.setText(text);
+				}
+			}
+		});
+
 		ActionBar bar = (ActionBar) findViewById(R.id.homeActionBar);
 		if (bar != null)
 			bar.setActionBarListener(this);
 		
 		this.registerForContextMenu(this.chartView);
 	}
+	
+	private final Runnable chartRunnable = new Runnable() {
+		public void run() {
+			try {
+				String ticker = pref.getString(Utils.PREF_HOME_CHART_TICKER, "PX");
+				String marketId = pref.getString(Utils.PREF_HOME_CHART_MARKET_ID, Markets.CZ.getId());
+				
+				HomeActivity.this.stockItem = HomeActivity.this.dataManager.getStockItem(ticker, Markets.getMarket(marketId));
+			} catch (Exception e) {
+				Log.e(Utils.LOG_TAG, "filed to get stock item for home screen chart", e);
+			}
+			runOnUiThread(new Runnable() {
+				
+				@Override
+				public void run() {
+					updateChart();
+				}
+			});
+		}
+	};
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -122,6 +147,31 @@ public class HomeActivity extends ChartActivity implements OnClickListener, OnKe
 	    default:
 	        return super.onOptionsItemSelected(item);
 	    }
+	}
+
+	
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onCreateDialog(int)
+	 */
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		if (id == DIALOG_PICK_STOCK) {
+			final PickStockDialog dialog = new PickStockDialog(this, true);
+			dialog.setListener(new IStockDialogListener() {
+				
+				@Override
+				public void onStockSelected(StockItem item) {
+					Editor ed = pref.edit();
+					ed.putString(Utils.PREF_HOME_CHART_TICKER, item.getId());
+					ed.commit();
+					dialog.dismiss();
+					stockItem = item;
+					updateChart();
+				}
+			});
+			return dialog;
+		}
+		return super.onCreateDialog(id);
 	}
 
 	@Override
@@ -161,38 +211,12 @@ public class HomeActivity extends ChartActivity implements OnClickListener, OnKe
 		}
 	}
 
-	final class ChartUpdateTask extends AsyncTask<Void, Integer, Bitmap> {
-
-		@Override
-		protected Bitmap doInBackground(Void... params) {
-			String downloadUrl = "http://www.pse.cz/generated/a_indexy/X1_R.GIF";
-			byte[] chartArray = null;
-			Bitmap bmp = null;
-			try {
-				chartArray = DownloadService.GetInstance().DownloadFromUrl(downloadUrl, false);
-				
-				bmp = BitmapFactory.decodeByteArray(chartArray, 0, chartArray.length);
-
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			return bmp;
-		}
-
-		@Override
-		protected void onPostExecute(Bitmap result) {
-			super.onPostExecute(result);
-			ImageView chart = (ImageView) findViewById(R.id.home_chart);
-			chart.setImageBitmap(result);
-			chartBitmap = result;
-			chartLastUpdate = System.currentTimeMillis();
-		}
-		
-	}
-
 	@Override
 	public void onAction(int viewId) {
-		if (viewId == R.id.actionHelpButton)
+		if (viewId == R.id.actionHelpButton) {
 			NavUtils.gotToAbout(this);
+		} else if (viewId == R.id.actionChartButton) {
+			this.showDialog(DIALOG_PICK_STOCK);
+		}
 	}
 }
