@@ -22,23 +22,20 @@ package cz.tomas.StockAnalyze.test;
 
 import java.io.IOException;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import cz.tomas.StockAnalyze.Data.DataManager;
-import cz.tomas.StockAnalyze.Data.MarketFactory;
-import cz.tomas.StockAnalyze.Data.StockDataSqlStore;
-import cz.tomas.StockAnalyze.Data.Model.DayData;
-import cz.tomas.StockAnalyze.Data.Model.StockItem;
-import cz.tomas.StockAnalyze.activity.StockSearchActivity;
-import cz.tomas.StockAnalyze.utils.Utils;
 import android.content.Context;
 import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.test.AndroidTestCase;
 import android.test.IsolatedContext;
 import android.test.mock.MockContentResolver;
+import cz.tomas.StockAnalyze.Data.DataManager;
+import cz.tomas.StockAnalyze.Data.StockDataSqlStore;
+import cz.tomas.StockAnalyze.Data.Model.DayData;
+import cz.tomas.StockAnalyze.Data.Model.StockItem;
+import cz.tomas.StockAnalyze.utils.Markets;
+import cz.tomas.StockAnalyze.utils.Utils;
 
 /**
  * @author tomas
@@ -58,7 +55,7 @@ public class DataManagerTest extends AndroidTestCase {
 		super.setUp();
 		
 		this.context = new IsolatedContext(new MockContentResolver(), getContext());
-		sqlStore = new StockDataSqlStore(this.context);
+		sqlStore = StockDataSqlStore.getInstance(this.context);
 		ConnectivityManager connectivity = (ConnectivityManager) this.context.getSystemService(Context.CONNECTIVITY_SERVICE);
 		
 		this.dataManager = DataManager.getInstance(context);
@@ -72,7 +69,7 @@ public class DataManagerTest extends AndroidTestCase {
 	
 	public void testLastAvailableData() throws NullPointerException, IOException {
 		// get all items from prague stock exchange
-		List<StockItem> items = this.dataManager.search("*", MarketFactory.getMarket("cz"));
+		List<StockItem> items = this.dataManager.search("*", Markets.CZ);
 		Calendar yesterday = Calendar.getInstance();
 		yesterday.roll(Calendar.DAY_OF_MONTH, false);
 		
@@ -87,7 +84,7 @@ public class DataManagerTest extends AndroidTestCase {
 	}
 	
 	public void testAllData() {
-		Map<String, StockItem> items = this.dataManager.getStockItems(MarketFactory.getMarket("cz"));
+		Map<String, StockItem> items = this.dataManager.getStockItems(Markets.getMarket("cz"), true);
 		Calendar cal = Utils.createDateOnlyCalendar(Calendar.getInstance());
 		cal = Utils.getLastValidDate(cal);
 		for (StockItem stockItem : items.values()) {

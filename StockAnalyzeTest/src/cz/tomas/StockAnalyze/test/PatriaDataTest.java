@@ -103,15 +103,9 @@ public class PatriaDataTest extends AndroidTestCase {
         assertNotNull(this.parser);
     }
 
-	public void testParse() {
+	public void testParse() throws Exception {
 		List<PsePatriaDataItem> actualItems = null;
-		try {
-			actualItems = this.parser.parse();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			assertTrue(false);
-		}
+		actualItems = this.parser.parse();
 		
 		assertEquals(this.expectedItems.size(), actualItems.size());
 		
@@ -123,15 +117,9 @@ public class PatriaDataTest extends AndroidTestCase {
 	/*
 	 * test xml conf part - containing market phase and date
 	 */
-	public void testParseConf() {
-		try {
-			List<PsePatriaDataItem> actualItems = this.parser.parse();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			assertTrue(false);
-			e.printStackTrace();
-		}
-		
+	public void testParseConf() throws Exception {
+		List<PsePatriaDataItem> actualItems = this.parser.parse();
+				
 		assertEquals(true, this.parser.isClosePhase());
 		assertEquals(10, this.parser.getXmlRefreshInterval());
 		

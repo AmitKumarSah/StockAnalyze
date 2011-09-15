@@ -35,7 +35,7 @@ public class StockListActivityTest extends ActivityInstrumentationTestCase2<Stoc
 	ListView listView;
 	View progressView;
 	
-	private final int STOCK_COUNT = 17;
+	private final int STOCK_COUNT = 16;
 	private final int WAIT_TIME = 20000;
 	
 	/**

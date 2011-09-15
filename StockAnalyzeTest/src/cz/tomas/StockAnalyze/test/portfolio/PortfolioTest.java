@@ -26,6 +26,7 @@ import java.util.List;
 
 import cz.tomas.StockAnalyze.Data.Model.PortfolioItem;
 import cz.tomas.StockAnalyze.Portfolio.Portfolio;
+import cz.tomas.StockAnalyze.utils.Markets;
 import android.content.Context;
 import android.test.AndroidTestCase;
 import android.test.IsolatedContext;
@@ -72,8 +73,8 @@ public class PortfolioTest extends AndroidTestCase {
 		float price = 100.0f;
 		String marketId = "muj_market";
 		
-		PortfolioItem item = new PortfolioItem(stockId, portfoliName, count, price, 
-				Calendar.getInstance().getTimeInMillis(), marketId);
+		PortfolioItem item = new PortfolioItem(stockId, portfoliName, count, price, 0,  
+				Calendar.getInstance().getTimeInMillis(), 0, marketId);
 		
 		this.portfolio.addToPortfolio(item);
 		List<PortfolioItem> items = this.portfolio.getPortfolioItems();
@@ -96,13 +97,13 @@ public class PortfolioTest extends AndroidTestCase {
 		float price = 100.0f;
 		String marketId = "muj_market";
 		
-		PortfolioItem item = new PortfolioItem(stockId, portfoliName, count, price, 
-				Calendar.getInstance().getTimeInMillis(), marketId);
+		PortfolioItem item = new PortfolioItem(stockId, portfoliName, count, price, 0,
+				Calendar.getInstance().getTimeInMillis(), 0, marketId);
 		
 		this.portfolio.addToPortfolio(item);
 		this.portfolio.addToPortfolio(item);
 		
-		List<PortfolioItem> items = this.portfolio.getGroupedPortfolioItems();
+		List<PortfolioItem> items = this.portfolio.getGroupedPortfolioItems(Markets.CZ);
 		assertEquals(1, items.size());
 		
 		PortfolioItem actualItem = items.get(0);
@@ -117,15 +118,15 @@ public class PortfolioTest extends AndroidTestCase {
 		float price = 100.0f;
 		String marketId = "muj_market";
 		
-		PortfolioItem item1 = new PortfolioItem(stockId, portfoliName, count, price, 
-				Calendar.getInstance().getTimeInMillis(), marketId);
-		PortfolioItem item2 = new PortfolioItem(stockId, portfoliName, count, -price, 
-				Calendar.getInstance().getTimeInMillis(), marketId);
+		PortfolioItem item1 = new PortfolioItem(stockId, portfoliName, count, price, 0,
+				Calendar.getInstance().getTimeInMillis(), 0, marketId);
+		PortfolioItem item2 = new PortfolioItem(stockId, portfoliName, count, -price, 0,  
+				Calendar.getInstance().getTimeInMillis(), 0, marketId);
 		
 		this.portfolio.addToPortfolio(item1);
 		this.portfolio.addToPortfolio(item2);
 		
-		List<PortfolioItem> items = this.portfolio.getGroupedPortfolioItems();
+		List<PortfolioItem> items = this.portfolio.getGroupedPortfolioItems(Markets.CZ);
 		assertEquals(1, items.size());
 		
 		PortfolioItem actualItem = items.get(0);
@@ -140,15 +141,15 @@ public class PortfolioTest extends AndroidTestCase {
 		float price = 100.0f;
 		String marketId = "muj_market";
 		
-		PortfolioItem item1 = new PortfolioItem(stockId, portfoliName, count, price, 
-				Calendar.getInstance().getTimeInMillis(), marketId);
-		PortfolioItem item2 = new PortfolioItem(stockId, portfoliName, count, 2 * price, 
-				Calendar.getInstance().getTimeInMillis(), marketId);
+		PortfolioItem item1 = new PortfolioItem(stockId, portfoliName, count, price, 0, 
+				Calendar.getInstance().getTimeInMillis(), 0, marketId);
+		PortfolioItem item2 = new PortfolioItem(stockId, portfoliName, count, 2 * price, 0, 
+				Calendar.getInstance().getTimeInMillis(), 0, marketId);
 		
 		this.portfolio.addToPortfolio(item1);
 		this.portfolio.addToPortfolio(item2);
 		
-		List<PortfolioItem> items = this.portfolio.getGroupedPortfolioItems();
+		List<PortfolioItem> items = this.portfolio.getGroupedPortfolioItems(Markets.CZ);
 		assertEquals(1, items.size());
 		
 		PortfolioItem actualItem = items.get(0);
