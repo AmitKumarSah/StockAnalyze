@@ -59,14 +59,22 @@ import cz.tomas.StockAnalyze.utils.Utils;
  */
 
 
-
 /**
  * @author tomas
  *
  */
 public class StockDataSqlStore extends DataSqlHelper {
 	
-	public StockDataSqlStore(Context context) {
+	private static StockDataSqlStore instance;
+	
+	public static StockDataSqlStore getInstance(Context context) {
+		if (instance == null) {
+			instance = new StockDataSqlStore(context);
+		}
+		return instance;
+	}
+	
+	private StockDataSqlStore(Context context) {
 		super(context);
 	}
 
@@ -83,8 +91,8 @@ public class StockDataSqlStore extends DataSqlHelper {
 			SQLiteDatabase db = this.getWritableDatabase();
 			Cursor c = null;
 			try {
-				//c = db.query(STOCK_TABLE_NAME, new String[] { "id" }, "id='"+ item.getId() +"'", null, null, null, null);
-				c = db.query(STOCK_TABLE_NAME, new String[] { "id" }, "id=?", new String[] { id }, null, null, null);
+				//c = db.query(STOCK_TABLE_NAME, new String[] { "_id" }, "id='"+ item.getId() +"'", null, null, null, null);
+				c = db.query(STOCK_TABLE_NAME, new String[] { "_id" }, "id=?", new String[] { id }, null, null, null);
 				if (c.moveToFirst())
 					result = true;
 				
@@ -163,7 +171,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 			Log.d(Utils.LOG_TAG, "inserting stockItem " + item.toString());
 			SQLiteDatabase db = this.getWritableDatabase();
 			ContentValues values = new ContentValues();
-			values.put("id", item.getId());
+			values.put("_id", item.getId());
 			values.put("ticker", item.getTicker());
 			values.put("name", item.getName());
 			values.put("is_index", item.isIndex());
@@ -278,7 +286,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 			if (newData.getYearMinimum() > 0)
 				values.put("year_min", newData.getYearMinimum());
 			
-			db.update(DAY_DATA_TABLE_NAME, values,"id=?", new String[] { String.valueOf(currentData.getId()) });
+			db.update(DAY_DATA_TABLE_NAME, values,"_id=?", new String[] { String.valueOf(currentData.getId()) });
 		} catch (Exception e) {
 			String message =  "Failed to UPDATE stock item.";
 			if (e.getMessage() != null)
@@ -298,10 +306,10 @@ public class StockDataSqlStore extends DataSqlHelper {
 			Cursor c = null;
 			try {
 				if (market != null) {
-					c = db.query(STOCK_TABLE_NAME, new String[] { "id", "ticker", "name", "market_id" }, "is_index=? AND market_id=?", 
+					c = db.query(STOCK_TABLE_NAME, new String[] { "_id", "ticker", "name", "market_id" }, "is_index=? AND market_id=?", 
 							new String[] { includeIndeces ? "1" : "0", market.getId() }, null, null, orderBy);
 				} else {
-					c = db.query(STOCK_TABLE_NAME, new String[] { "id", "ticker", "name", "market_id" }, "is_index=?", 
+					c = db.query(STOCK_TABLE_NAME, new String[] { "_id", "ticker", "name", "market_id" }, "is_index=?", 
 							new String[] { includeIndeces ? "1" : "0" }, null, null, orderBy);
 				}
 
@@ -342,8 +350,8 @@ public class StockDataSqlStore extends DataSqlHelper {
 			SQLiteDatabase db = this.getWritableDatabase();
 			Cursor c = null;
 			try {
-				//c = db.query(STOCK_TABLE_NAME, new String[] { "id" }, "id='"+ item.getId() +"'", null, null, null, null);
-				c = db.query(STOCK_TABLE_NAME, new String[] { "id", "ticker", "name", "market_id" }, "id=?", new String[] { id }, null, null, null);
+				//c = db.query(STOCK_TABLE_NAME, new String[] { "_id" }, "id='"+ item.getId() +"'", null, null, null, null);
+				c = db.query(STOCK_TABLE_NAME, new String[] { "_id", "ticker", "name", "market_id" }, "id=?", new String[] { id }, null, null, null);
 				if (c.moveToFirst()) {
 					String ticker = c.getString(1);
 					String name = c.getString(2);
@@ -392,7 +400,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 			Cursor c = null;
 			try {
 				c = db.query(DAY_DATA_TABLE_NAME, new String[] {
-						"price", "change", "year_max", "year_min", "date", "volume", "id", "last_update" }, 
+						"price", "change", "year_max", "year_min", "date", "volume", "_id", "last_update" }, 
 						"stock_id=?", new String[] { stockId }, null, null, null);
 
 				if (c.moveToFirst()) {
@@ -448,7 +456,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 			Cursor c = null;
 			try {
 				c = db.query(DAY_DATA_TABLE_NAME, new String[] {
-						"price", "change", "year_max", "year_min", "date", "volume", "id", "last_update" }, 
+						"price", "change", "year_max", "year_min", "date", "volume", "_id", "last_update" }, 
 						"stock_id=?", new String[] { stockId }, null, null, "date");
 
 				if (c.moveToLast()) {
@@ -514,7 +522,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 				// data is grouped by stock-id and sorted by date, 
 				// so we get last result for all stock items
 				c = db.query(DAY_DATA_TABLE_NAME, new String[] {
-						"price", "change", "year_max", "year_min", "date", "volume", "id", "last_update", "stock_id" }, 
+						"price", "change", "year_max", "year_min", "date", "volume", "_id", "last_update", "stock_id" }, 
 						selectionBuilder.toString(), whereArgs, null, null, orderBy, String.valueOf(stockItems.size()));
 				
 				if (c.moveToFirst()) {

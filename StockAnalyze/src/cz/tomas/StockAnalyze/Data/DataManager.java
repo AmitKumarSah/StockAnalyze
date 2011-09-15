@@ -91,7 +91,7 @@ public class DataManager implements IStockDataListener {
 	private DataManager(Context context) {
 		this.context = context;
 		
-		this.sqlStore = new StockDataSqlStore(context);
+		this.sqlStore = StockDataSqlStore.getInstance(context);
 		this.markets = new ArrayList<Market>();
 		this.markets.add(Markets.CZ);
 		this.markets.add(Markets.DE);
@@ -181,10 +181,14 @@ public class DataManager implements IStockDataListener {
 		boolean isStockListDirty = isStockListDirty();
 		Map<String, StockItem> items = this.sqlStore.getStockItems(market, "ticker", includeIndeces);
 		if (items == null || items.size() <= 1 || isStockListDirty) {		// one item is not enough - might be the index
-			if (includeIndeces && market == null) {
-				items = downloadStockItems(Markets.GLOBAL, items);
-			} else {
-				items = downloadStockItems(market, items);
+			try {
+				if (includeIndeces && market == null) {
+					items = downloadStockItems(Markets.GLOBAL, items);
+				} else {
+					items = downloadStockItems(market, items);
+				}
+			} catch (Exception e) {
+				Log.e(Utils.LOG_TAG, "failed to download stock list for market " + market, e);
 			}
 		}
 			
@@ -285,7 +289,7 @@ public class DataManager implements IStockDataListener {
 	
 	/**
 	 * get last day data for set of stock items
-	 * Map of StockId: DayData
+	 * @return {@link Map} of {@link StockItem} vs. {@link DayData}
 	 */
 	public synchronized Map<StockItem,DayData>  getLastDataSet(Map<String, StockItem> stockItems) {
 		Map<StockItem,DayData> dbData = this.sqlStore.getLastDataSet(stockItems, null);

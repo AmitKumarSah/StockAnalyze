@@ -109,7 +109,11 @@ public final class SimpleStockListAdapter extends BaseAdapter {
 			} catch (Exception e) {
 				Log.e(Utils.LOG_TAG, "failed to get stock list from DataManager", e);
 			}
-			return stockItems.values().toArray(stocks);
+			if (stockItems != null) {
+				return stockItems.values().toArray(stocks);
+			} else {
+				return null;
+			}
 		}
 
 		/* (non-Javadoc)

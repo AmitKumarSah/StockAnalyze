@@ -50,6 +50,7 @@ public class NewsListAdapter extends ArrayAdapter<Article> {
 	private NewsItemsTask task;
 	private ITaskListener listener;
 	private final int MAX_DESCRIPTION_LENGHT = 100;
+	private Rss rss;
 	
 	/**
 	 * @param context
@@ -61,11 +62,12 @@ public class NewsListAdapter extends ArrayAdapter<Article> {
 
 		this.listener = listener;
 		this.vi = (LayoutInflater)this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		this.rss = new Rss(context);
 		this.getNewsData(false);
 	}
 
 	private void getNewsData(boolean download) {
-		task = new NewsAdapterTask(this.getContext());
+		task = new NewsAdapterTask(this.rss, this.getContext());
 		task.listener = this.listener;
 		task.execute(download);
 		Log.d(Utils.LOG_TAG, "loading news data, fetch " + download);
@@ -125,28 +127,27 @@ public class NewsListAdapter extends ArrayAdapter<Article> {
 	
 	class NewsAdapterTask extends NewsItemsTask {
 
-		NewsAdapterTask(Context context) {
-			super(context);
+		NewsAdapterTask(Rss rss, Context context) {
+			super(rss, context);
 		}
 
 		protected void onPostExecute(List<Article> result) {
-			//newsItems = result;
-			clear();
-			for (int i = 0; i < result.size() && i < DEFAULT_NEWS_LIMIT; i++) {
-				add(result.get(i));
-			}
-			notifyDataSetChanged();
-			
-			if (result.size() == 0) {
-				String message = "";
-				
-				if (this.ex != null && this.ex.getMessage() != null) {
-					message = this.context.getString(R.string.FailedGetNews);
-					message += (": " + this.ex.getMessage());
+			if (result != null) {
+				clear();
+				for (int i = 0; i < result.size() && i < DEFAULT_NEWS_LIMIT; i++) {
+					add(result.get(i));
 				}
-				else
-					message = this.context.getString(R.string.NoNews);
-				Toast.makeText(this.context, message, Toast.LENGTH_LONG).show();
+				notifyDataSetChanged();
+				if (result.size() == 0) {
+					String message = "";
+
+					if (this.ex != null && this.ex.getMessage() != null) {
+						message = this.context.getString(R.string.FailedGetNews);
+						message += (": " + this.ex.getMessage());
+					} else
+						message = this.context.getString(R.string.NoNews);
+					Toast.makeText(this.context, message, Toast.LENGTH_LONG).show();
+				}
 			}
 			if (this.listener != null) {
 				this.listener.onUpdateFinished();

@@ -28,6 +28,7 @@ public class Article implements Serializable {
     private long feedId;
     private String title;
     private URL url;
+    private String content;
     private String description;
     private long date;
     
@@ -141,6 +142,12 @@ public class Article implements Serializable {
 	public String toString() {
 		return "Article [articleId=" + articleId + ", feedId=" + feedId
 				+ ", title=" + title + "]";
+	}
+	public void setContent(String html) {
+		this.content = html;
+	}
+	public String getContent() {
+		return content;
 	}
 	
 }

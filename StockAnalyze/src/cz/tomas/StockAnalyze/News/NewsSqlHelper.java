@@ -29,11 +29,40 @@ import android.database.CursorIndexOutOfBoundsException;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
-import cz.tomas.StockAnalyze.Data.DataSqlHelper;
+import cz.tomas.StockAnalyze.Data.AbstractSqlHelper;
 import cz.tomas.StockAnalyze.utils.Utils;
 
-public final class NewsSqlHelper extends DataSqlHelper {
+public final class NewsSqlHelper extends AbstractSqlHelper {
 
+	private final static int DATABASE_VERSION_NUMBER = 2;
+	
+	private final static String DATABASE_FILE_NAME = "news.db";
+
+	protected static final String FEEDS_TABLE_NAME = "feeds";
+	protected static final String ARTICLES_TABLE_NAME = "articles";
+	
+	private static final String TABLE_DROP =
+		"DROP TABLE IF EXISTS ";
+	
+	private static final String CREATE_TABLE_FEEDS = "CREATE TABLE " + FEEDS_TABLE_NAME + " (" +
+			"_id integer PRIMARY KEY AUTOINCREMENT, " +
+			"title text not null," +
+			"url text not null, " +
+			"country text not null);";
+
+	private static final String CREATE_TABLE_ARTICLES = "CREATE TABLE " + ARTICLES_TABLE_NAME + " (" +
+			"_id integer PRIMARY KEY AUTOINCREMENT, " +
+			"feed_id integer not null, " +
+			"title text not null, " +
+			"description text, " +
+			"tags text, " +
+			"url text not null, " +
+			"date integer not null, " +
+			"content text, " +
+			"read integer, " +
+			"flag integer, " +
+			"FOREIGN KEY(feed_id) REFERENCES " + FEEDS_TABLE_NAME + "(id));";
+	
 //	private static final String SOURCE_CYRRUS = "http://www.cyrrus.cz/rss/cs";
 //	private static final String SOURCE_CYRRUS_NAME = "Cyrrus";
 //	private static final String SOURCE_CYRRUS_COUNTRY = "cz";
@@ -43,41 +72,64 @@ public final class NewsSqlHelper extends DataSqlHelper {
 //	private static final String SOURCE_AKCIE_NAME = "Akcie.cz";
 //	private static final String SOURCE_AKCIE_COUNTRY = "cz";
 	
-//	private static final String SOURCE_NAME = "Atlantik";
-//	private static final String SOURCE= "http://www.atlantik.cz/rss/zpravy.xml";
+//	private static final String SOURCE_NAME = "fn";
+//	private static final String SOURCE= "http://www.financninoviny.cz/sluzby/rss/zpravodajstvi.php";
 //	private static final String SOURCE_COUNTRY = "cz";
 	
-	private static final String SOURCE_NAME = "fn";
-	private static final String SOURCE= "http://www.financninoviny.cz/sluzby/rss/zpravodajstvi.php";
-	private static final String SOURCE_COUNTRY = "cz";
+	private static final String SOURCE_NAME = "bloomberg";
+	private static final String SOURCE= "http://m.bloomberg.com/android/apps/wds/news/regioneurope.xml.asp";
+	private static final String SOURCE_COUNTRY = "en";
+	
+//	private static final String SOURCE_NAME2 = "reuters";
+//	private static final String SOURCE2= "http://pub.rss.feedcry.com/fulltext/reuters/business";
 	
 	private static final int DEFAULT_ARTICLE_LIMIT = 20;
 	
-	NewsSqlHelper(Context context) {
-		super(context);
+	private static NewsSqlHelper instance;
+	
+	static NewsSqlHelper getInstance(Context context) {
+		if (instance == null) {
+			instance = new NewsSqlHelper(context);
+		}
+		return instance;
+	}
+	
+	private NewsSqlHelper(Context context) {
+		super(context, DATABASE_FILE_NAME, null, DATABASE_VERSION_NUMBER);
+	}
 
-		// insert default data
+	/**
+	 *insert default feed(s) 
+	 */
+	protected void insertDefaultFeed(SQLiteDatabase db) {
 		try {
-			if (this.getFeeds().size() == 0) {
-				Log.d("cz.tomas.StockAnalyze.News.NewsSqlHelper", "Inserting default rss feed source..." + SOURCE_NAME);
-//				if (! this.insertFeed(SOURCE_CYRRUS_NAME, new URL(SOURCE_CYRRUS), SOURCE_CYRRUS_COUNTRY))
-//					throw new SQLException("The feed record wasn't inserted.");
-				if (! this.insertFeed(SOURCE_NAME, new URL(SOURCE), SOURCE_COUNTRY))
-					throw new SQLException("The feed record wasn't inserted.");
-			}
-		} catch (MalformedURLException e) {
-			Log.d("cz.tomas.StockAnalyze.News.NewsSqlHelper", "Failed to insert default news data, check the address: " + e.getMessage());
+			Log.d(Utils.LOG_TAG, "Inserting default rss feed source..." + SOURCE_NAME);
+			
+			ContentValues values = new ContentValues();
+			values.put("title", SOURCE_NAME);
+			values.put("url", SOURCE);
+			values.put("country", SOURCE_COUNTRY);
+			db.insert(FEEDS_TABLE_NAME, null, values);
 		} catch (SQLException e) {
-			Log.d("cz.tomas.StockAnalyze.News.NewsSqlHelper", "Failed to insert default news data: " + e.getMessage());
-		} finally {
-			this.close();
+			Log.d(Utils.LOG_TAG, "Failed to insert default news data: " + e.getMessage());
 		}
 	}
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-		super.onCreate(db);
+		Log.d(Utils.LOG_TAG, "creating Feeds table!");
+		db.execSQL(CREATE_TABLE_FEEDS);
+		Log.d(Utils.LOG_TAG, "creating Articles table!");
+		db.execSQL(CREATE_TABLE_ARTICLES);
 		
+		this.insertDefaultFeed(db);
+	}
+
+	@Override
+	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+		db.execSQL(TABLE_DROP + ARTICLES_TABLE_NAME);
+		db.execSQL(TABLE_DROP + FEEDS_TABLE_NAME);		
+		onCreate(db);
 	}
 	
 	/**
@@ -89,31 +141,51 @@ public final class NewsSqlHelper extends DataSqlHelper {
 		values.put("url", url.toString());
 		values.put("country", countryCode);
 		
-		return (super.getWritableDatabase().insert(FEEDS_TABLE_NAME, null, values) > 0);
+		SQLiteDatabase db = null;
+		boolean inserted;
+		try {
+			db = super.getWritableDatabase();
+			inserted = db.insert(FEEDS_TABLE_NAME, null, values) > 0;
+		} finally {
+			if (db != null) {
+				db.close();
+			}
+		}
+		return inserted;
 	}
 
 	/**
 	 * delete rss feed from db
 	 */
 	public boolean deleteFeed(Long feedId) throws SQLException {
-		return (super.getWritableDatabase().delete(FEEDS_TABLE_NAME,
-				"feed_id=" + feedId.toString(), null) > 0);
+		SQLiteDatabase db = null;
+		boolean deleted;
+		try {
+			db = super.getWritableDatabase();
+			deleted = db.delete(FEEDS_TABLE_NAME,"_id=" + feedId.toString(), null) > 0;
+		} finally {
+			if (db != null) {
+				db.close();
+			}
+		}
+		return deleted;
 	}
 
 	/**
 	 * insert one article to db
 	 */
-	public boolean insertArticle(Long feedId, String title, URL url,
-			String description, long date) throws SQLException {
+	public boolean insertArticle(SQLiteDatabase db, Long feedId, String title, URL url,
+			String description, long date, String content) throws SQLException {
 		ContentValues values = new ContentValues();
 		values.put("feed_id", feedId);
 		values.put("title", title);
 		values.put("description", description);
 		values.put("url", url.toString());
 		values.put("date", date);
-		
-		SQLiteDatabase db = this.getWritableDatabase();
-		Boolean result = (db.insert(ARTICLES_TABLE_NAME, null, values) > 0);
+		if (content != null) {
+			values.put("content", content);
+		}
+		boolean result = (db.insert(ARTICLES_TABLE_NAME, null, values) > 0);
 		return result;
 	}
 
@@ -121,8 +193,17 @@ public final class NewsSqlHelper extends DataSqlHelper {
 	 * delete articles from given feed
 	 */
 	public boolean deleteArticles(Long feedId) throws SQLException {
-		return (this.getWritableDatabase().delete(ARTICLES_TABLE_NAME,
-				"feed_id=" + feedId.toString(), null) > 0);
+		SQLiteDatabase db = null;
+		int count;
+		try {
+			 db = this.getWritableDatabase();
+			count = db.delete(ARTICLES_TABLE_NAME, "_id=" + feedId.toString(), null);
+		} finally {
+			if (db != null) {
+				db.close();
+			}
+		}
+		return (count > 0);
 	}
 
 	/**
@@ -130,29 +211,35 @@ public final class NewsSqlHelper extends DataSqlHelper {
 	 */
 	public List<Feed> getFeeds() {
 		ArrayList<Feed> feeds = new ArrayList<Feed>();
+		SQLiteDatabase db = null;
 		Cursor c = null;
 		try {
-			c = this.getWritableDatabase().query(FEEDS_TABLE_NAME, new String[] {
-					"feed_id", "title", "url", "country" }, null, null, null, null, null);
+			db = this.getWritableDatabase();
+			c = db.query(FEEDS_TABLE_NAME, new String[] {
+					"_id", "title", "url", "country" }, null, null, null, null, null);
 
-			c.moveToFirst();
-			do {
-				Feed feed = new Feed();
-				feed.setFeedId(c.getLong(0));
-				feed.setTitle(c.getString(1));
-				feed.setUrl(new URL(c.getString(2)));
-				feed.setCountryCode(c.getString(3));
-				feeds.add(feed);
-			} while (c.moveToNext());
+			if (c.moveToFirst()) {
+				do {
+					Feed feed = new Feed();
+					feed.setFeedId(c.getLong(0));
+					feed.setTitle(c.getString(1));
+					feed.setUrl(new URL(c.getString(2)));
+					feed.setCountryCode(c.getString(3));
+					feeds.add(feed);
+				} while (c.moveToNext());
+			}
 		} catch (SQLException e) {
-			Log.e("NewsSqlHelper", e.toString());
+			Log.e(Utils.LOG_TAG, e.toString());
 		} catch (MalformedURLException e) {
-			Log.e("NewsSqlHelper", e.toString());
+			Log.e(Utils.LOG_TAG, e.toString());
 		} catch (CursorIndexOutOfBoundsException e) {
-			Log.e("NewsSqlHelper", e.toString());
+			Log.e(Utils.LOG_TAG, e.toString());
 		} finally {
-			if (c != null)
-				c.close();
+			if (db != null) {
+				if (c != null)
+					c.close();
+				db.close();
+			}
 		}
 		return feeds;
 	}
@@ -173,9 +260,11 @@ public final class NewsSqlHelper extends DataSqlHelper {
 	public List<Article> getArticles(Long feedId, int limit) {
 		ArrayList<Article> articles = new ArrayList<Article>();
 		Cursor c = null;
+		SQLiteDatabase db = null;
 		try {
-			c = this.getWritableDatabase().query(ARTICLES_TABLE_NAME, new String[] {
-					"article_id", "feed_id", "title", "description", "url", "date" }, "feed_id="
+			db = this.getWritableDatabase();
+			c = db.query(ARTICLES_TABLE_NAME, new String[] {
+					"_id", "feed_id", "title", "description", "url", "date", "content" }, "feed_id="
 					+ feedId.toString(), null, null, null, "date DESC", String.valueOf(limit));
 
 			if (c.moveToFirst())
@@ -187,6 +276,7 @@ public final class NewsSqlHelper extends DataSqlHelper {
 					article.setDescription(c.getString(3));
 					article.setUrl(new URL(c.getString(4)));
 					article.setDate(Long.parseLong(c.getString(5)));
+					article.setContent(c.getString(6));
 					articles.add(article);
 				} while (c.moveToNext());
 			else
@@ -194,8 +284,11 @@ public final class NewsSqlHelper extends DataSqlHelper {
 		} catch (Exception e) {
 			Log.e(Utils.LOG_TAG, e.toString());
 		} finally {
-			if (c != null)
-				c.close();
+			if (db != null) {
+				if (c != null)
+					c.close();
+				db.close();
+			}
 		}
 		return articles;
 	}
@@ -204,14 +297,19 @@ public final class NewsSqlHelper extends DataSqlHelper {
 	 * insert articles to the feed in transaction
 	 */
 	public void insertArticles(long feedId, List<Article> articles) {
-		this.getWritableDatabase().beginTransaction();
+		SQLiteDatabase db = null;
 		try {
+			db = this.getWritableDatabase();
+			db.beginTransaction();
 			for (Article article : articles) {
-				this.insertArticle(feedId, article.getTitle(), article.getUrl(), article.getDescription(), article.getDate());
+				this.insertArticle(db, feedId, article.getTitle(), article.getUrl(), article.getDescription(), article.getDate(), article.getContent());
 			}
-			this.getWritableDatabase().setTransactionSuccessful();
+			db.setTransactionSuccessful();
 		} finally {
-			this.getWritableDatabase().endTransaction();
+			if (db != null) {
+				db.endTransaction();
+				db.close();
+			}
 		}
 	}
 }

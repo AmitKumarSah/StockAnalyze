@@ -20,22 +20,26 @@
  */
 package cz.tomas.StockAnalyze.News;
 
+import java.io.IOException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.List;
-
-import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetNewsException;
-import cz.tomas.StockAnalyze.utils.Utils;
 
 import android.content.Context;
 import android.util.Log;
+import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetNewsException;
+import cz.tomas.StockAnalyze.utils.DownloadService;
+import cz.tomas.StockAnalyze.utils.Utils;
 
 /**
- * Facade for rss handling - using RssHandler and NewsSqlHelper
+ * Facade for rss handling - using {@link XmlFeedPullParseHandler} and {@link NewsSqlHelper}
  * @author tomas
  *
  */
 public class Rss {
-	//RSSHandler handler;
+	
+	private static final String GWT_URL = "http://google.com/gwt/x?ct=url&u=%s";
+	
 	XmlFeedPullParseHandler handler;
 	NewsSqlHelper sqlHelper;
 
@@ -45,7 +49,7 @@ public class Rss {
 	public Rss(Context context) {
 		//this.handler = new RSSHandler(context);
 		this.handler = new XmlFeedPullParseHandler(context);
-		this.sqlHelper = this.handler.getDbHelper();
+		this.sqlHelper = NewsSqlHelper.getInstance(context);
 	}
 	
 	/**
@@ -108,13 +112,22 @@ public class Rss {
 				}
 			}
 		
-		if (downloadedArticles.size() > 0)
+		if (downloadedArticles.size() > 0) {
+			for (Article article : downloadedArticles) {
+				try {
+					downloadContent(article);
+				} catch (IOException e) {
+					Log.e(Utils.LOG_TAG, "failed to download content of articles", e);
+				}
+			}
 			this.sqlHelper.insertArticles(feed.getFeedId(), downloadedArticles);
+		}
 		
 		downloadedArticles.addAll(presentArticles);
 		return downloadedArticles;
 	}
 	
+
 	/**
 	 * get all articles from given feed that are stored in database
 	 */
@@ -140,6 +153,15 @@ public class Rss {
 	 * close database
 	 */
 	public void done() {
-		this.handler.done();
+		this.sqlHelper.close();
+	}
+
+	private void downloadContent(Article article) throws IOException {
+		String url = String.format(GWT_URL, URLEncoder.encode(article.getUrl().toString()));
+		
+		//InputStream stream = DownloadService.GetInstance().openHttpConnection(url, true);
+		byte[] content = DownloadService.GetInstance().DownloadFromUrl(url, false);
+		String html = new String(content);
+		article.setContent(html);
 	}
 }

@@ -50,10 +50,11 @@ public final class NewsDetailActivity extends BaseFragmentActivity implements On
 				} catch (Exception e) {
 					Log.d(Utils.LOG_TAG, "failed to dissmis progess bar! " + e.getMessage());
 				}
-				circlesView.setCircles(pager.getAdapter().getCount());
+				int count = pager.getAdapter().getCount();
+				circlesView.setCircles(count);
 				pager.setCurrentItem(position);
 				// event isn't triggered if position is 0
-				if (position == 0) {
+				if (position == 0 && count > 0) {
 					onPageSelected(position);
 				}
 			}

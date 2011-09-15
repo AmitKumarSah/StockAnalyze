@@ -26,13 +26,15 @@ public abstract class NewsItemsTask extends AsyncTask<Boolean, Integer, List<Art
 	protected ITaskListener listener;
 	protected Exception ex;
 	private Semaphore semaphore;
+	private Rss rss;
 
 	/**
 	 * @param context
 	 */
-	NewsItemsTask(Context context) {
+	NewsItemsTask(Rss rss, Context context) {
 		this.context = context;
 		this.semaphore = new Semaphore(1);
+		this.rss = rss;
 	}
 	
 	public void setListener(ITaskListener listener) {
@@ -61,7 +63,7 @@ public abstract class NewsItemsTask extends AsyncTask<Boolean, Integer, List<Art
 			e1.printStackTrace();
 		}
 		boolean fetch = params[0];
-		Rss rss = new Rss(this.context);
+		//Rss rss = new Rss(this.context);
 		List<Article> articles = null;
 		rss.sqlHelper.acquireDb(this);
 		try {

@@ -38,7 +38,9 @@ public final class ArticleFragment extends Fragment {
 			TextView txtDate = (TextView) view.findViewById(R.id.newsArticleDate);
 			TextView txtTitle = (TextView) view.findViewById(R.id.newsArticleTitle);
 			
-			txtContent.setText(Html.fromHtml(content));
+			if (content != null) {
+				txtContent.setText(Html.fromHtml(content));
+			}
 			txtDate.setText(dateText);
 			txtTitle.setText(title);
 		}

@@ -110,7 +110,7 @@ public class PortfolioSqlHelper extends DataSqlHelper {
 			
 			String selection = bought ? "count > 0" : "count < 0";
 			c = db.query(PORTFOLIO_TABLE_NAME, new String [] {"stock_id", "SUM(count)", "AVG(buy_price)", "AVG(sell_price)",
-					"buy_date", "sell_date", "name", "SUM(buy_fee)", "SUM(sell_fee)", "market_id", "id" },
+					"buy_date", "sell_date", "name", "SUM(buy_fee)", "SUM(sell_fee)", "market_id", "_id" },
 					selection, null, "stock_id", null, "buy_date");
 			if (c.moveToFirst())
 				do {
@@ -153,7 +153,7 @@ public class PortfolioSqlHelper extends DataSqlHelper {
 			db = this.getWritableDatabase();
 			
 			c = db.query(PORTFOLIO_TABLE_NAME, new String [] {"stock_id", "count", "buy_price", "sell_price",
-					"buy_date", "sell_date", "name", "buy_fee", "sell_fee", "market_id", "id" },
+					"buy_date", "sell_date", "name", "buy_fee", "sell_fee", "market_id", "_id" },
 					null, null, null, null, null);
 			if (c.moveToFirst())
 				do {
@@ -192,7 +192,7 @@ public class PortfolioSqlHelper extends DataSqlHelper {
 			db = this.getWritableDatabase();
 			
 			c = db.query(PORTFOLIO_TABLE_NAME, new String [] {"count", "buy_price", "sell_price",
-					"buy_date", "sell_date", "name", "buy_fee", "sell_fee", "market_id", "id" },
+					"buy_date", "sell_date", "name", "buy_fee", "sell_fee", "market_id", "_id" },
 					"stock_id=?", new String[] { stockId }, null, null, null);
 			if (c.moveToFirst())
 				do {
@@ -224,7 +224,7 @@ public class PortfolioSqlHelper extends DataSqlHelper {
 		SQLiteDatabase db = null;
 		try {
 			db = this.getWritableDatabase();
-			db.delete(PORTFOLIO_TABLE_NAME, "id=?", new String[] { String.valueOf(id) });
+			db.delete(PORTFOLIO_TABLE_NAME, "_id=?", new String[] { String.valueOf(id) });
 		} finally {
 			this.close();
 		}

@@ -84,7 +84,7 @@ public class HomeActivity extends ChartActivity implements OnClickListener, OnKe
 			@Override
 			public void onChartUpdateFinish() {
 				int id = DAY_COUNT_MAP.get(timePeriod);
-				if (txtChartDescription != null) {
+				if (txtChartDescription != null && stockItem != null) {
 					String text = String.format("%s %s", stockItem.getTicker(), getString(id));
 					txtChartDescription.setText(text);
 				}
@@ -92,7 +92,7 @@ public class HomeActivity extends ChartActivity implements OnClickListener, OnKe
 			
 			@Override
 			public void onChartUpdateBegin() {
-				if (txtChartDescription != null) {
+				if (txtChartDescription != null && stockItem != null) {
 					String text = String.format("%s %s", stockItem.getTicker(), getString(R.string.loading));
 					txtChartDescription.setText(text);
 				}

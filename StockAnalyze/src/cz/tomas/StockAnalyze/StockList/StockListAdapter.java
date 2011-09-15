@@ -109,7 +109,7 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 	}
 
 	/**
-	 * register in DataManager for data updates
+	 * register in {@link DataManager} for data updates
 	 * 
 	 * @param context
 	 */
@@ -248,7 +248,7 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 	
     @Override
     public boolean areAllItemsEnabled() {
-        return false;
+        return true;
     }
 
     @Override

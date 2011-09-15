@@ -26,7 +26,7 @@ public final class ArticlePagerAdapter extends FragmentPagerAdapter {
 		//this.context = context;
 		this.articles = new ArrayList<Article>();
 		
-		NewsTask task = new NewsTask(context);
+		NewsTask task = new NewsTask(new Rss(context), context);
 		task.setListener(listener);
 		task.execute(false);
 	}
@@ -43,7 +43,11 @@ public final class ArticlePagerAdapter extends FragmentPagerAdapter {
 			Bundle bundle = new Bundle(3);
 			bundle.putString(ARTICLE_TITLE, article.getTitle());
 			bundle.putLong(ARTICLE_DATE, article.getDate());
-			bundle.putString(ARTICLE_CONTENT, article.getDescription());
+			if (article.getContent() != null) {
+				bundle.putString(ARTICLE_CONTENT, article.getContent());
+			} else {
+				bundle.putString(ARTICLE_CONTENT, article.getDescription());
+			}
 			fragment.setArguments(bundle);
 		}
 		return fragment;
@@ -66,8 +70,8 @@ public final class ArticlePagerAdapter extends FragmentPagerAdapter {
 	
 	class NewsTask extends NewsItemsTask {
 
-		NewsTask(Context context) {
-			super(context);
+		NewsTask(Rss rss, Context context) {
+			super(rss, context);
 		}
 
 		/* (non-Javadoc)
