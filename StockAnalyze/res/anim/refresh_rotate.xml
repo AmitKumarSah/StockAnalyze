@@ -17,6 +17,6 @@
 	android:pivotY="49%"
 	android:startOffset="0"
 	android:duration="1000" 
-	android:repeatCount="30"
+	android:repeatCount="100"
 	android:repeatMode="restart"/>
 

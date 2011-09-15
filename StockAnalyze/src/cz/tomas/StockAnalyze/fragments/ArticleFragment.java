@@ -3,16 +3,18 @@ package cz.tomas.StockAnalyze.fragments;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
-import cz.tomas.StockAnalyze.R;
-import cz.tomas.StockAnalyze.News.ArticlePagerAdapter;
-import cz.tomas.StockAnalyze.utils.FormattingUtils;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Html;
+import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import cz.tomas.StockAnalyze.R;
+import cz.tomas.StockAnalyze.News.ArticlePagerAdapter;
+import cz.tomas.StockAnalyze.utils.FormattingUtils;
 
 public final class ArticleFragment extends Fragment {
 
@@ -26,20 +28,39 @@ public final class ArticleFragment extends Fragment {
 		
 		Bundle arguments = getArguments();
 		if (arguments != null) {
-			String title = arguments.getString(ArticlePagerAdapter.ARTICLE_TITLE);
-			long date = arguments.getLong(ArticlePagerAdapter.ARTICLE_DATE);
-			GregorianCalendar cal = new GregorianCalendar();
+			final String title = arguments.getString(ArticlePagerAdapter.ARTICLE_TITLE);
+			final long date = arguments.getLong(ArticlePagerAdapter.ARTICLE_DATE);
+			final GregorianCalendar cal = new GregorianCalendar();
 			cal.setTimeInMillis(date);
 			String dateText = FormattingUtils.formatDate(cal);
 			dateText += " " + cal.getTimeZone().getDisplayName(true, TimeZone.SHORT);
-			String content = arguments.getString(ArticlePagerAdapter.ARTICLE_CONTENT);
+			final String content = arguments.getString(ArticlePagerAdapter.ARTICLE_CONTENT);
 			
-			TextView txtContent = (TextView) view.findViewById(R.id.newsArticleContent);
-			TextView txtDate = (TextView) view.findViewById(R.id.newsArticleDate);
-			TextView txtTitle = (TextView) view.findViewById(R.id.newsArticleTitle);
+			final TextView txtContent = (TextView) view.findViewById(R.id.newsArticleContent);
+			final TextView txtDate = (TextView) view.findViewById(R.id.newsArticleDate);
+			final TextView txtTitle = (TextView) view.findViewById(R.id.newsArticleTitle);
 			
 			if (content != null) {
-				txtContent.setText(Html.fromHtml(content));
+				txtContent.setText(R.string.loading);
+				AsyncTask<Void, Integer, Spanned> task = new AsyncTask<Void, Integer, Spanned>() {
+
+					@Override
+					protected Spanned doInBackground(Void... params) {
+						Spanned spanned = Html.fromHtml(content);
+						return spanned;
+					}
+
+					/* (non-Javadoc)
+					 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
+					 */
+					@Override
+					protected void onPostExecute(Spanned result) {
+						super.onPostExecute(result);
+						txtContent.setText(result);
+					}
+					
+				};
+				task.execute((Void)null);
 			}
 			txtDate.setText(dateText);
 			txtTitle.setText(title);

@@ -205,7 +205,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 			} else {
 				Log.w(Utils.LOG_TAG, " stock item is without market " + item);
 			}
-			db.update(STOCK_TABLE_NAME, values, "id=?", new String[] {item.getId()});
+			db.update(STOCK_TABLE_NAME, values, "_id=?", new String[] {item.getId()});
 		} catch (Exception e) {
 			Log.e(Utils.LOG_TAG, "failed to update stock item.", e);
 		}
@@ -351,7 +351,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 			Cursor c = null;
 			try {
 				//c = db.query(STOCK_TABLE_NAME, new String[] { "_id" }, "id='"+ item.getId() +"'", null, null, null, null);
-				c = db.query(STOCK_TABLE_NAME, new String[] { "_id", "ticker", "name", "market_id" }, "id=?", new String[] { id }, null, null, null);
+				c = db.query(STOCK_TABLE_NAME, new String[] { "_id", "ticker", "name", "market_id" }, "_id=?", new String[] { id }, null, null, null);
 				if (c.moveToFirst()) {
 					String ticker = c.getString(1);
 					String name = c.getString(2);

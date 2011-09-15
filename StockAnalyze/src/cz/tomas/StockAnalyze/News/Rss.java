@@ -117,7 +117,7 @@ public class Rss {
 				try {
 					downloadContent(article);
 				} catch (IOException e) {
-					Log.e(Utils.LOG_TAG, "failed to download content of articles", e);
+					Log.e(Utils.LOG_TAG, "failed to download content of article " + article, e);
 				}
 			}
 			this.sqlHelper.insertArticles(feed.getFeedId(), downloadedArticles);
