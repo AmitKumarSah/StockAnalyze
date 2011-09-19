@@ -13,8 +13,8 @@ import cz.tomas.StockAnalyze.utils.Utils;
  * @author tomas
  *
  */
-public abstract class NewsItemsTask extends AsyncTask<Boolean, Integer, List<Article>> {
 	
+public abstract class NewsItemsTask extends AsyncTask<Boolean, Integer, List<Article>> {
 	public interface ITaskListener {
 		void onUpdateStart();
 		void onUpdateFinished();
@@ -62,11 +62,10 @@ public abstract class NewsItemsTask extends AsyncTask<Boolean, Integer, List<Art
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
 		}
-		boolean fetch = params[0];
-		//Rss rss = new Rss(this.context);
+		final boolean fetch = params[0];
 		List<Article> articles = null;
-		rss.sqlHelper.acquireDb(this);
 		try {
+			rss.sqlHelper.acquireDb(this);
 			List<Feed> feeds = rss.getFeeds();
 			if (fetch) {
 				for (Feed feed : feeds) {
@@ -83,6 +82,7 @@ public abstract class NewsItemsTask extends AsyncTask<Boolean, Integer, List<Art
 		} finally {
 			rss.done();
 			rss.sqlHelper.releaseDb(true, this);
+			this.semaphore.release();
 		}
 	
 		return articles;
@@ -94,6 +94,5 @@ public abstract class NewsItemsTask extends AsyncTask<Boolean, Integer, List<Art
 	@Override
 	protected void onPostExecute(List<Article> result) {
 		super.onPostExecute(result);
-		this.semaphore.release();
 	}	
 }

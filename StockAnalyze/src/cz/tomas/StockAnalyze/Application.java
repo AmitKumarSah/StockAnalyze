@@ -61,7 +61,7 @@ public class Application extends android.app.Application {
 			if (! this.scheduler.isSchedulerRunnig()) {
 				this.scheduler.updateImmediatly();
 				this.scheduler.scheduleNextIntraDayUpdate();
-				this.scheduler.scheduleNextDayUpdate();
+				//this.scheduler.scheduleNextDayUpdate();
 			}
 		} catch (Exception e) {
 			Log.e(Utils.LOG_TAG, "Failed to schedule updates!", e);

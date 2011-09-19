@@ -20,6 +20,7 @@ package cz.tomas.StockAnalyze.News;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import android.content.ContentValues;
@@ -63,6 +64,9 @@ public final class NewsSqlHelper extends AbstractSqlHelper {
 			"flag integer, " +
 			"FOREIGN KEY(feed_id) REFERENCES " + FEEDS_TABLE_NAME + "(id));";
 	
+	public static final int FLAG_TO_DELETE = 11;
+	public static final int FLAG_FRESH = 0;
+	
 //	private static final String SOURCE_CYRRUS = "http://www.cyrrus.cz/rss/cs";
 //	private static final String SOURCE_CYRRUS_NAME = "Cyrrus";
 //	private static final String SOURCE_CYRRUS_COUNTRY = "cz";
@@ -80,12 +84,13 @@ public final class NewsSqlHelper extends AbstractSqlHelper {
 	private static final String SOURCE= "http://m.bloomberg.com/android/apps/wds/news/regioneurope.xml.asp";
 	private static final String SOURCE_COUNTRY = "en";
 	
-//	private static final String SOURCE_NAME2 = "reuters";
-//	private static final String SOURCE2= "http://pub.rss.feedcry.com/fulltext/reuters/business";
-	
 	private static final int DEFAULT_ARTICLE_LIMIT = 20;
 	
 	private static NewsSqlHelper instance;
+	/**
+	 * shared builder
+	 */
+	private StringBuilder builder;
 	
 	static NewsSqlHelper getInstance(Context context) {
 		if (instance == null) {
@@ -96,6 +101,7 @@ public final class NewsSqlHelper extends AbstractSqlHelper {
 	
 	private NewsSqlHelper(Context context) {
 		super(context, DATABASE_FILE_NAME, null, DATABASE_VERSION_NUMBER);
+		this.builder = new StringBuilder();
 	}
 
 	/**
@@ -199,9 +205,7 @@ public final class NewsSqlHelper extends AbstractSqlHelper {
 			 db = this.getWritableDatabase();
 			count = db.delete(ARTICLES_TABLE_NAME, "_id=" + feedId.toString(), null);
 		} finally {
-			if (db != null) {
-				db.close();
-			}
+			this.close();
 		}
 		return (count > 0);
 	}
@@ -238,7 +242,7 @@ public final class NewsSqlHelper extends AbstractSqlHelper {
 			if (db != null) {
 				if (c != null)
 					c.close();
-				db.close();
+				this.close();
 			}
 		}
 		return feeds;
@@ -287,7 +291,7 @@ public final class NewsSqlHelper extends AbstractSqlHelper {
 			if (db != null) {
 				if (c != null)
 					c.close();
-				db.close();
+				this.close();
 			}
 		}
 		return articles;
@@ -308,8 +312,56 @@ public final class NewsSqlHelper extends AbstractSqlHelper {
 		} finally {
 			if (db != null) {
 				db.endTransaction();
-				db.close();
 			}
+			this.close();
+		}
+	}
+
+	/**
+	 * mark all current articles with TO_DELETE flag
+	 */
+	public void markArticlesToDelete() {
+		SQLiteDatabase db = null;
+		ContentValues values = new ContentValues();
+		values.put("flag", FLAG_TO_DELETE);
+		try {
+			db = this.getWritableDatabase();
+			db.update(ARTICLES_TABLE_NAME, values, null, null);
+		} finally {
+			this.close();
+		}
+	}
+
+	public void markArticlesFresh(List<String> articleIds) {
+		SQLiteDatabase db = null;
+		ContentValues values = new ContentValues();
+		values.put("flag", FLAG_FRESH);
+		try {
+			db = this.getWritableDatabase();
+			String[] array = articleIds.toArray(new String[articleIds.size()]);
+			Log.d(Utils.LOG_TAG, "marking fresh articles: " + Arrays.toString(array));
+			builder.setLength(0);
+			for (int i = 0; i < array.length; i++) {
+				builder.append("?,");
+			}
+			builder.setLength(builder.length() - 1);
+			db.update(ARTICLES_TABLE_NAME, values, String.format("_id in (%s)", builder.toString()), array);
+		} finally {
+			this.close();
+		}
+	}
+	
+	/**
+	 * delete all articles marked with FLAG_TO_DELETE
+	 */
+	public void deleteOldArticles() {
+		SQLiteDatabase db = null;
+		try {
+			db = this.getWritableDatabase();
+			int deletedCount = db.delete(ARTICLES_TABLE_NAME, "flag=?", new String[] {String.valueOf(FLAG_TO_DELETE)});
+			Log.d(Utils.LOG_TAG, "deleted old articles: " + deletedCount);
+		} finally {
+			this.close();
 		}
 	}
 }

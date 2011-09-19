@@ -23,9 +23,13 @@ package cz.tomas.StockAnalyze.News;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetNewsException;
 import cz.tomas.StockAnalyze.utils.DownloadService;
@@ -47,7 +51,6 @@ public class Rss {
 	 * constructor, Context is required to connect to database
 	 */
 	public Rss(Context context) {
-		//this.handler = new RSSHandler(context);
 		this.handler = new XmlFeedPullParseHandler(context);
 		this.sqlHelper = NewsSqlHelper.getInstance(context);
 	}
@@ -72,14 +75,6 @@ public class Rss {
 	public void deleteArticles(long feedId) {
 		this.sqlHelper.deleteArticles(feedId);
 	}
-//	
-//	/**
-//	 * download and save articles from given feed to database
-//	 */
-//	@Deprecated
-//	public void updateArticles(Feed feed) throws Exception {
-//		this.handler.updateArticles(feed);
-//	}
 	
 	/**
 	 * download and save new articles from given feed to database
@@ -96,36 +91,63 @@ public class Rss {
 				message += e.getMessage();
 			throw new FailedToGetNewsException(message, e);
 		}
-		List<Article> presentArticles = this.getArticles(feed.getFeedId());
-		
-		// prevent duplicities
-		//int downloadedCount = downloadedArticles.size();
-		if (downloadedArticles.size() > 0)
-			for (Article article1 : presentArticles) {
-				for (int i = 0; i < downloadedArticles.size(); i++) {
-					Article article2 = downloadedArticles.get(i);
-					if (article1.getDate() == article2.getDate() &&
-							article1.getUrl().equals(article2.getUrl())) {
-						downloadedArticles.remove(i);
-						break;
+		List<Article> presentArticles;
+		List<String> presentFreshArticles = new ArrayList<String>();	// present articles, that were also downloaded
+		SQLiteDatabase db = null; 		
+		try {
+			db = this.sqlHelper.getWritableDatabase();
+			db.beginTransaction();
+			this.sqlHelper.deleteOldArticles();
+			presentArticles = this.getArticles(feed.getFeedId());
+			this.sqlHelper.markArticlesToDelete();
+			// prevent duplicities
+			if (downloadedArticles.size() > 0)
+				for (Article presentArticle : presentArticles) {
+					for (int i = 0; i < downloadedArticles.size(); i++) {
+						final Article downloadedArticle = downloadedArticles.get(i);
+						if (presentArticle.getUrl().equals(downloadedArticle.getUrl())) {
+							downloadedArticles.remove(i);
+							presentFreshArticles.add(String.valueOf(presentArticle.getArticleId()));
+							break;
+						}
 					}
 				}
-			}
-		
-		if (downloadedArticles.size() > 0) {
-			for (Article article : downloadedArticles) {
-				try {
-					downloadContent(article);
-				} catch (IOException e) {
-					Log.e(Utils.LOG_TAG, "failed to download content of article " + article, e);
+			if (downloadedArticles.size() > 0) {
+				Collections.sort(downloadedArticles, dateComparator);
+				for (Article article : downloadedArticles) {
+					try {
+						downloadContent(article);
+					} catch (IOException e) {
+						Log.e(Utils.LOG_TAG, "failed to download content of article " + article, e);
+					}
 				}
+				this.sqlHelper.insertArticles(feed.getFeedId(), downloadedArticles);
 			}
-			this.sqlHelper.insertArticles(feed.getFeedId(), downloadedArticles);
+			if (presentFreshArticles.size() > 0) {
+				this.sqlHelper.markArticlesFresh(presentFreshArticles);
+			}
+			db.setTransactionSuccessful();
+		} finally {
+			if (db != null) {
+				db.endTransaction();
+				db.close();
+			}
 		}
-		
 		downloadedArticles.addAll(presentArticles);
 		return downloadedArticles;
 	}
+	Comparator<Article> dateComparator = new Comparator<Article>() {
+
+		@Override
+		public int compare(Article object1, Article object2) {
+			if (object1.getDate() > object2.getDate()) {
+				return 1;
+			} else if (object1.getDate() < object2.getDate()) {
+				return -1;
+			}
+			return 0;
+		}
+	};
 	
 
 	/**

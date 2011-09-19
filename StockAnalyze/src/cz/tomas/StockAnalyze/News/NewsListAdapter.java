@@ -44,8 +44,6 @@ import android.widget.Toast;
  */
 public class NewsListAdapter extends ArrayAdapter<Article> {
 
-	//private List<Article> newsItems;
-	
 	private LayoutInflater vi; 
 	private NewsItemsTask task;
 	private ITaskListener listener;

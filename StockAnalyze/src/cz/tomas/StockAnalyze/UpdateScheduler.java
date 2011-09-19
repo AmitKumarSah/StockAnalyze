@@ -21,6 +21,7 @@
 package cz.tomas.StockAnalyze;
 
 import java.util.Calendar;
+import java.util.concurrent.Semaphore;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -75,8 +76,11 @@ public class UpdateScheduler {
 	private static PendingIntent intraUpdateIntent;
 	private static PendingIntent dayUpdateIntent;
 	
+	private Semaphore semaphore;
+	
 	UpdateScheduler(Context context) {
 		this.context = context;
+		this.semaphore = new Semaphore(1);
 		
 		if (intraUpdateIntent == null) {
 			Intent intent = new Intent(INTRA_UPDATE_ACTION, null, this.context, AlarmReceiver.class);
@@ -244,6 +248,7 @@ public class UpdateScheduler {
 		protected Boolean doInBackground(IStockDataProvider... params) {
 			if (params.length == 1)
 				try {
+					semaphore.acquire();	// synchronize updates, so there is only one active at the time (because backend instances)
 					IStockDataProvider provider = params[0];
 					if(provider != null) {
 						Log.d(Utils.LOG_TAG, provider.getDescriptiveName() + ": initiating provider refresh in UpdateScheduler");
@@ -253,6 +258,8 @@ public class UpdateScheduler {
 						throw new NullPointerException("IStockDataProvider is null");
 				} catch (Exception e) {
 					Log.e(Utils.LOG_TAG, "failed to refresh for provider", e);
+				} finally {
+					semaphore.release();
 				}
 			isSchedulerRunning = false;
 			return null;
