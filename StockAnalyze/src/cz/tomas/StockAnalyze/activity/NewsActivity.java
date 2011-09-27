@@ -32,9 +32,8 @@ import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import cz.tomas.StockAnalyze.R;
-import cz.tomas.StockAnalyze.News.Article;
-import cz.tomas.StockAnalyze.News.NewsListAdapter;
 import cz.tomas.StockAnalyze.News.NewsItemsTask.ITaskListener;
+import cz.tomas.StockAnalyze.News.NewsListAdapter;
 import cz.tomas.StockAnalyze.activity.base.BaseListActivity;
 import cz.tomas.StockAnalyze.ui.widgets.ActionBar;
 import cz.tomas.StockAnalyze.ui.widgets.ActionBar.IActionBarListener;
@@ -65,13 +64,9 @@ public class NewsActivity extends BaseListActivity implements ITaskListener {
 		this.getListView().setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long rowId) {
-				Article article = (Article) getListView().getItemAtPosition(position);
-				
-				if (article != null) {
-					Intent intent = new Intent(NewsActivity.this, NewsDetailActivity.class);
-					intent.putExtra(EXTRA_NEWS_POSITION, position);
-					startActivity(intent);
-				}
+				Intent intent = new Intent(NewsActivity.this, NewsDetailActivity.class);
+				intent.putExtra(EXTRA_NEWS_POSITION, position);
+				startActivity(intent);
 			}
 		});
 		
@@ -93,7 +88,7 @@ public class NewsActivity extends BaseListActivity implements ITaskListener {
 		super.onResume();
 		
 		if (adapter == null) {
-			adapter = new NewsListAdapter(this, R.layout.news_layout, this);
+			adapter = new NewsListAdapter(this, this);
 		}
 		
 		this.setListAdapter(adapter);

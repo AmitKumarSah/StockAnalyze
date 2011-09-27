@@ -7,7 +7,6 @@
 	<classpathentry kind="lib" path="lib/android-support-v4.jar"/>
 	<classpathentry kind="lib" path="lib/FlurryAgent.jar"/>
 	<classpathentry kind="src" path="StockAnalyzeCharts_src"/>
-	<classpathentry kind="src" path="wheel_src"/>
 	<classpathentry kind="src" path="ViewPagerIndicator_src"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

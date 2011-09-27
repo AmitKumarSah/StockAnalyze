@@ -24,11 +24,10 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetNewsException;
@@ -113,9 +112,10 @@ public class Rss {
 					}
 				}
 			if (downloadedArticles.size() > 0) {
-				Collections.sort(downloadedArticles, dateComparator);
+				//Collections.sort(downloadedArticles, dateComparator);
 				for (Article article : downloadedArticles) {
 					try {
+						article.getDescription().replace('\n', ' ');
 						downloadContent(article);
 					} catch (IOException e) {
 						Log.e(Utils.LOG_TAG, "failed to download content of article " + article, e);
@@ -136,19 +136,22 @@ public class Rss {
 		downloadedArticles.addAll(presentArticles);
 		return downloadedArticles;
 	}
-	Comparator<Article> dateComparator = new Comparator<Article>() {
-
-		@Override
-		public int compare(Article object1, Article object2) {
-			if (object1.getDate() > object2.getDate()) {
-				return 1;
-			} else if (object1.getDate() < object2.getDate()) {
-				return -1;
-			}
-			return 0;
-		}
-	};
+//	Comparator<Article> dateComparator = new Comparator<Article>() {
+//
+//		@Override
+//		public int compare(Article object1, Article object2) {
+//			if (object1.getDate() > object2.getDate()) {
+//				return 1;
+//			} else if (object1.getDate() < object2.getDate()) {
+//				return -1;
+//			}
+//			return 0;
+//		}
+//	};
 	
+	public Cursor getAllArticlesCursor() {
+		return this.sqlHelper.getAllArticlesCursor();
+	}
 
 	/**
 	 * get all articles from given feed that are stored in database

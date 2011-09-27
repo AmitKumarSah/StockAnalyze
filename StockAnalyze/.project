@@ -41,10 +41,5 @@
 			<type>2</type>
 			<locationURI>_android_ViewPagerIndicator_c397b7b1/src</locationURI>
 		</link>
-		<link>
-			<name>wheel_src</name>
-			<type>2</type>
-			<locationURI>_android_wheel_6bdbb5b/src</locationURI>
-		</link>
 	</linkedResources>
 </projectDescription>

@@ -35,6 +35,26 @@ import cz.tomas.StockAnalyze.utils.Utils;
 
 public final class NewsSqlHelper extends AbstractSqlHelper {
 
+	public static final class FeedColumns {
+		public static final String ID = "_id";
+		public static final String TITLE = "title";
+		public static final String URL = "url";
+		public static final String COUNTRY = "country";
+	}
+	
+	public static final class ArticleColumns {
+		public static final String ID = "_id";
+		public static final String TITLE = "title";
+		public static final String URL = "url";
+		public static final String FEED_ID = "feed_id";
+		public static final String DESCRIPTION = "description";
+		public static final String TAGS = "tags";
+		public static final String DATE = "date";
+		public static final String CONTENT = "content";
+		public static final String FLAG = "flag";
+		public static final String READ = "read";
+	}
+	
 	private final static int DATABASE_VERSION_NUMBER = 2;
 	
 	private final static String DATABASE_FILE_NAME = "news.db";
@@ -46,23 +66,23 @@ public final class NewsSqlHelper extends AbstractSqlHelper {
 		"DROP TABLE IF EXISTS ";
 	
 	private static final String CREATE_TABLE_FEEDS = "CREATE TABLE " + FEEDS_TABLE_NAME + " (" +
-			"_id integer PRIMARY KEY AUTOINCREMENT, " +
-			"title text not null," +
-			"url text not null, " +
-			"country text not null);";
+			FeedColumns.ID + " integer PRIMARY KEY AUTOINCREMENT, " +
+			FeedColumns.TITLE + " text not null," +
+			FeedColumns.URL + " text not null, " +
+			FeedColumns.COUNTRY + " text not null);";
 
 	private static final String CREATE_TABLE_ARTICLES = "CREATE TABLE " + ARTICLES_TABLE_NAME + " (" +
-			"_id integer PRIMARY KEY AUTOINCREMENT, " +
-			"feed_id integer not null, " +
-			"title text not null, " +
-			"description text, " +
-			"tags text, " +
-			"url text not null, " +
-			"date integer not null, " +
-			"content text, " +
-			"read integer, " +
-			"flag integer, " +
-			"FOREIGN KEY(feed_id) REFERENCES " + FEEDS_TABLE_NAME + "(id));";
+			ArticleColumns.ID + " integer PRIMARY KEY AUTOINCREMENT, " +
+			ArticleColumns.FEED_ID + " integer not null, " +
+			ArticleColumns.TITLE + " text not null, " +
+			ArticleColumns.DESCRIPTION + " text, " +
+			ArticleColumns.TAGS + " text, " +
+			ArticleColumns.URL + " text not null, " +
+			ArticleColumns.DATE + " integer not null, " +
+			ArticleColumns.CONTENT + " text, " +
+			ArticleColumns.READ + " integer, " +
+			ArticleColumns.FLAG + " integer, " +
+			"FOREIGN KEY(" + ArticleColumns.ID + ") REFERENCES " + FEEDS_TABLE_NAME + "(" + FeedColumns.ID + "));";
 	
 	public static final int FLAG_TO_DELETE = 11;
 	public static final int FLAG_FRESH = 0;
@@ -143,9 +163,9 @@ public final class NewsSqlHelper extends AbstractSqlHelper {
 	 */
 	public boolean insertFeed(String title, URL url, String countryCode) throws SQLException {
 		ContentValues values = new ContentValues();
-		values.put("title", title);
-		values.put("url", url.toString());
-		values.put("country", countryCode);
+		values.put(FeedColumns.TITLE, title);
+		values.put(FeedColumns.URL, url.toString());
+		values.put(FeedColumns.COUNTRY, countryCode);
 		
 		SQLiteDatabase db = null;
 		boolean inserted;
@@ -183,11 +203,11 @@ public final class NewsSqlHelper extends AbstractSqlHelper {
 	public boolean insertArticle(SQLiteDatabase db, Long feedId, String title, URL url,
 			String description, long date, String content) throws SQLException {
 		ContentValues values = new ContentValues();
-		values.put("feed_id", feedId);
-		values.put("title", title);
-		values.put("description", description);
-		values.put("url", url.toString());
-		values.put("date", date);
+		values.put(ArticleColumns.FEED_ID, feedId);
+		values.put(ArticleColumns.TITLE, title);
+		values.put(ArticleColumns.DESCRIPTION, description);
+		values.put(ArticleColumns.URL, url.toString());
+		values.put(ArticleColumns.DATE, date);
 		if (content != null) {
 			values.put("content", content);
 		}
@@ -203,7 +223,7 @@ public final class NewsSqlHelper extends AbstractSqlHelper {
 		int count;
 		try {
 			 db = this.getWritableDatabase();
-			count = db.delete(ARTICLES_TABLE_NAME, "_id=" + feedId.toString(), null);
+			count = db.delete(ARTICLES_TABLE_NAME, ArticleColumns.ID + "=" + feedId.toString(), null);
 		} finally {
 			this.close();
 		}
@@ -220,7 +240,7 @@ public final class NewsSqlHelper extends AbstractSqlHelper {
 		try {
 			db = this.getWritableDatabase();
 			c = db.query(FEEDS_TABLE_NAME, new String[] {
-					"_id", "title", "url", "country" }, null, null, null, null, null);
+					FeedColumns.ID, FeedColumns.TITLE, FeedColumns.URL, FeedColumns.COUNTRY }, null, null, null, null, null);
 
 			if (c.moveToFirst()) {
 				do {
@@ -257,6 +277,33 @@ public final class NewsSqlHelper extends AbstractSqlHelper {
 	}
 	
 	/**
+	 * get cursor of articles that belongs to given feed
+	 * @returns cusor at first position
+	 */
+	public Cursor getAllArticlesCursor() {
+		Cursor c = null;
+		SQLiteDatabase db = null;
+		try {
+			db = this.getWritableDatabase();
+			c = db.query(ARTICLES_TABLE_NAME, new String[] {
+					ArticleColumns.ID, ArticleColumns.FEED_ID, ArticleColumns.TITLE, ArticleColumns.DESCRIPTION, 
+					ArticleColumns.URL, ArticleColumns.DATE, ArticleColumns.CONTENT, ArticleColumns.READ }, 
+					null, null, null, null, ArticleColumns.DATE + " DESC", null);
+			
+			if (!c.moveToFirst()) {
+				Log.w(Utils.LOG_TAG, "articles cursor is empty");
+			}
+		} catch (Exception e) {
+			Log.e(Utils.LOG_TAG, e.toString());
+		} finally {
+			if (db != null) {
+				this.close();
+			}
+		}
+		return c;
+	}
+	
+	/**
 	 * read articles limited by limit from database that belongs to the feed
 	 * @returns list of articles limited by limit, 
 	 * if no articles were found, list would be empty 
@@ -268,8 +315,10 @@ public final class NewsSqlHelper extends AbstractSqlHelper {
 		try {
 			db = this.getWritableDatabase();
 			c = db.query(ARTICLES_TABLE_NAME, new String[] {
-					"_id", "feed_id", "title", "description", "url", "date", "content" }, "feed_id="
-					+ feedId.toString(), null, null, null, "date DESC", String.valueOf(limit));
+					ArticleColumns.ID, ArticleColumns.FEED_ID, ArticleColumns.TITLE, ArticleColumns.DESCRIPTION, 
+					ArticleColumns.URL, ArticleColumns.DATE, ArticleColumns.CONTENT }, 
+					ArticleColumns.FEED_ID + "="
+					+ feedId.toString(), null, null, null, ArticleColumns.DATE + " DESC", String.valueOf(limit));
 
 			if (c.moveToFirst())
 				do {
@@ -323,7 +372,7 @@ public final class NewsSqlHelper extends AbstractSqlHelper {
 	public void markArticlesToDelete() {
 		SQLiteDatabase db = null;
 		ContentValues values = new ContentValues();
-		values.put("flag", FLAG_TO_DELETE);
+		values.put(ArticleColumns.FLAG, FLAG_TO_DELETE);
 		try {
 			db = this.getWritableDatabase();
 			db.update(ARTICLES_TABLE_NAME, values, null, null);
@@ -335,7 +384,7 @@ public final class NewsSqlHelper extends AbstractSqlHelper {
 	public void markArticlesFresh(List<String> articleIds) {
 		SQLiteDatabase db = null;
 		ContentValues values = new ContentValues();
-		values.put("flag", FLAG_FRESH);
+		values.put(ArticleColumns.FLAG, FLAG_FRESH);
 		try {
 			db = this.getWritableDatabase();
 			String[] array = articleIds.toArray(new String[articleIds.size()]);
@@ -345,7 +394,8 @@ public final class NewsSqlHelper extends AbstractSqlHelper {
 				builder.append("?,");
 			}
 			builder.setLength(builder.length() - 1);
-			db.update(ARTICLES_TABLE_NAME, values, String.format("_id in (%s)", builder.toString()), array);
+			db.update(ARTICLES_TABLE_NAME, values, String.format("%s in (%s)", 
+					ArticleColumns.ID, builder.toString()), array);
 		} finally {
 			this.close();
 		}
@@ -358,7 +408,7 @@ public final class NewsSqlHelper extends AbstractSqlHelper {
 		SQLiteDatabase db = null;
 		try {
 			db = this.getWritableDatabase();
-			int deletedCount = db.delete(ARTICLES_TABLE_NAME, "flag=?", new String[] {String.valueOf(FLAG_TO_DELETE)});
+			int deletedCount = db.delete(ARTICLES_TABLE_NAME, ArticleColumns.FLAG + "=?", new String[] {String.valueOf(FLAG_TO_DELETE)});
 			Log.d(Utils.LOG_TAG, "deleted old articles: " + deletedCount);
 		} finally {
 			this.close();
