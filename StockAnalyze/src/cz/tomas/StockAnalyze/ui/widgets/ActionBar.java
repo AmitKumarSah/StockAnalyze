@@ -193,6 +193,7 @@ public class ActionBar extends RelativeLayout {
 		public void onClick(View v) {
 			Intent intent = new Intent();
 			intent.setClass(getContext(), HomeActivity.class);
+			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			getContext().startActivity(intent);
 			
 			FlurryAgent.logEvent(Consts.FLURRY_EVENT_ACTION_HOME);

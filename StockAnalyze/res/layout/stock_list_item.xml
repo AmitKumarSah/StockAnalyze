@@ -35,16 +35,17 @@
         android:layout_height="fill_parent"
         android:layout_gravity="left"
         android:layout_marginLeft="6dp">
-        <TextView
+        <TextView style="@style/text"
             android:id="@+id/toptext"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="50"
-            android:singleLine="true"
             android:layout_gravity="center_vertical"/>
         <TextView
             android:id="@+id/bottomtext"
-            style="@style/subText.Small"
+            style="@style/text"
+        	android:layout_width="fill_parent"
+        	android:layout_height="wrap_content"
             android:layout_weight="50"
             android:layout_gravity="center" />
     </LinearLayout>
@@ -52,21 +53,19 @@
 		style="@style/priceInfoBlock"
 		android:orientation="vertical"
 		android:layout_weight="1"
+		android:gravity="right"
 		android:layout_gravity="right" >
-		<TextView
+		<TextView android:id="@+id/righttext"
 			style="@style/moneyText"
-        	android:id="@+id/righttext"
-        	android:layout_width="fill_parent"
+        	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
         	android:layout_weight="1"
-        	android:layout_gravity="right"
         	android:textColor="@color/money_item_text"/>
-	    <TextView
-	        android:id="@+id/righttext2"
+	    <TextView android:id="@+id/righttext2"
+			style="@style/text"
 	        android:layout_weight="1"
-	        android:layout_gravity="right"
-	        android:gravity="right"
-	        android:textColor="@color/money_item_text"
-			style="@style/subText.Small"/>
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+	        android:textColor="@color/money_item_text" />
 	</LinearLayout>
 </LinearLayout>

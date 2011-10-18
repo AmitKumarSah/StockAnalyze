@@ -49,6 +49,7 @@ import cz.tomas.StockAnalyze.utils.Utils;
 
 public final class PortfolioListFragment extends ListFragment implements IActionBarListener, OnSharedPreferenceChangeListener {
 	
+	public static final String EXTRA_REFRESH = "portfolioRefresh";
 	public static final String EXTRA_STOCK_ITEM = "portfolioStockItem";
 	
 	private DataManager dataManager;
@@ -92,7 +93,7 @@ public final class PortfolioListFragment extends ListFragment implements IAction
 		this.dataManager = DataManager.getInstance(getActivity());
 		
 		FragmentActivity activity = this.getActivity();
-		isDirty |= activity.getIntent().getBooleanExtra("refresh", false);
+		//isDirty |= activity.getIntent().getBooleanExtra(EXTRA_REFRESH, false);
 		
 		this.refreshButton = getActivity().findViewById(R.id.actionRefreshButton);
 		ActionBar bar = (ActionBar) getActivity().findViewById(R.id.portfolioActionBar);
@@ -135,6 +136,7 @@ public final class PortfolioListFragment extends ListFragment implements IAction
 			this.setListAdapter(adapter);
 		}
 
+		isDirty |= getActivity().getIntent().getBooleanExtra(EXTRA_REFRESH, false);
 		if (isDirty) {
 			adapter.refresh();
 			isDirty = false;

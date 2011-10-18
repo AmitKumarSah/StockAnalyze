@@ -16,9 +16,7 @@
       You should have received a copy of the GNU General Public License
       along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-<merge xmlns:android="http://schemas.android.com/apk/res/android">
-	<RelativeLayout
-	  xmlns:android="http://schemas.android.com/apk/res/android"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
 	  android:layout_width="fill_parent"
 	  android:layout_height="wrap_content">
 	  
@@ -27,12 +25,13 @@
 	  	android:layout_height="wrap_content" 
 		android:clickable="false"
 		android:focusable="false"/>
-	  <TextView android:id="@+id/homeBlockItemTextView" 
+	  <TextView android:id="@+id/homeBlockItemTextView"
+	  	style="@style/text"
+	  	android:textStyle="bold"
 	  	android:layout_below="@id/homeBlockItemImage"
 	  	android:layout_width="fill_parent"
 	  	android:layout_height="wrap_content"
 	  	android:gravity="center_horizontal"
 	  	android:clickable="false"
-	  	android:focusable="false" />
-	</RelativeLayout>
+	  	android:focusable="false"/>
 </merge>

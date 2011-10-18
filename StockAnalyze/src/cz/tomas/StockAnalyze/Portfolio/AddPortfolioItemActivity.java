@@ -51,6 +51,7 @@ import cz.tomas.StockAnalyze.Data.Model.PortfolioItem;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.activity.PortfoliosActivity;
 import cz.tomas.StockAnalyze.activity.base.BaseActivity;
+import cz.tomas.StockAnalyze.fragments.PortfolioListFragment;
 import cz.tomas.StockAnalyze.utils.Consts;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
@@ -136,8 +137,8 @@ public final class AddPortfolioItemActivity extends BaseActivity {
 							try {
 								addButton.setEnabled(false);
 								final int count = Integer.parseInt(countView.getText().toString());
-								String deal = dealSpinner.getSelectedItem().toString();
-								String[] deals = getResources().getStringArray(R.array.portfolioDealArray);
+								final String deal = dealSpinner.getSelectedItem().toString();
+								final String[] deals = getResources().getStringArray(R.array.portfolioDealArray);
 								final boolean sell = deal.equals(deals[1]);
 									
 								final float price = Float.parseFloat(priceView.getText().toString());
@@ -169,8 +170,10 @@ public final class AddPortfolioItemActivity extends BaseActivity {
 											Toast.makeText(AddPortfolioItemActivity.this, message, Toast.LENGTH_LONG).show();
 										} else {
 											Intent intent = new Intent(AddPortfolioItemActivity.this, PortfoliosActivity.class);
-											intent.putExtra("refresh", true);
+											intent.putExtra(PortfolioListFragment.EXTRA_REFRESH, true);
+											intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 											AddPortfolioItemActivity.this.startActivity(intent);
+											finish();
 										}
 										super.onPostExecute(result);
 									}

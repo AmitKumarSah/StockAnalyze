@@ -4,6 +4,7 @@ import java.util.List;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
@@ -88,6 +89,12 @@ public final class PortfoliosActivity extends BaseFragmentActivity implements On
 	    return true;
 	}
 	
+	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		this.setIntent(intent);
+	}
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    // Handle item selection
