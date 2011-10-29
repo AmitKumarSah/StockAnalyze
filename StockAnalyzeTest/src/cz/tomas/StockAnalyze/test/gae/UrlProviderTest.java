@@ -16,7 +16,7 @@ public final class UrlProviderTest extends AndroidTestCase {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		this.provider = UrlProvider.getInstance();
+		this.provider = UrlProvider.getInstance(getContext());
 	}
 
 	public void testDDataUrl1() {
