@@ -30,19 +30,9 @@
         android:startColor="@color/actionbar_color_start"
         android:centerColor="@color/actionbar_color"
         android:type="linear" />
-<!--	<solid-->
-<!--        android:color="@color/actionbar_color" />-->
     <padding
         android:left="2dp"
         android:top="2dp"
         android:right="2dp"
         android:bottom="2dp" />
-<!--    <size
-	        android:width="integer"
-	        android:color="color"
-	        android:dashWidth="integer"
-			android:dashGap="integer" />-->
-<!--    <stroke-->
-<!--        android:width="0.1dp"-->
-<!--        android:color="#F0F0F0"/>-->
 </shape>

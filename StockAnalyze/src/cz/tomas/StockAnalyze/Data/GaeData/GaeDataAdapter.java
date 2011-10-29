@@ -12,6 +12,12 @@ import cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetDataException;
 
+/**
+ * Base class for adpaters working with own backend providers.
+ * Subclasses should give concrete info about the concrete provider.
+ * @author tomas
+ *
+ */
 public abstract class GaeDataAdapter implements IStockDataProvider {
 
 	protected List<IStockDataListener> eventListeners;

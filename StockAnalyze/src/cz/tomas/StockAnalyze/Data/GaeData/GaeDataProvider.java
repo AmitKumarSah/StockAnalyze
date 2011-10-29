@@ -27,30 +27,38 @@ import cz.tomas.StockAnalyze.utils.Utils;
 
 public final class GaeDataProvider {
 
-	private static final String URL_HDATA 			= "http://backend-stockanalyze.appspot.com/HData?stockId=%s&timePeriod=%s";
-	private static final String URL_IDATA			= "http://backend-stockanalyze.appspot.com/IData?stockId=%s";
-	private static final String URL_DDATA 			= "http://backend-stockanalyze.appspot.com/DData?stockId=%s";
-	private static final String URL_DDATA_MARKET 	= "http://backend-stockanalyze.appspot.com/DData?marketCode=%s";
-	private static final String URL_LIST 			= "http://backend-stockanalyze.appspot.com/DData?stockList=%s";
-	private static final String URL_INDECES_LIST	= "http://backend-stockanalyze.appspot.com/IndData?indList";
-	private static final String URL_INDECES_SET		= "http://backend-stockanalyze.appspot.com/IndData";
-	
 	private static final String[] TIME_PERIODS = { "", "1D", "1W", "1M", "3M", "6M", "1Y" };
 	
 	private Gson gson;
+	private UrlProvider urls;
 	
 	GaeDataProvider() {
 		this.gson = new Gson();
+		this.urls = UrlProvider.getInstance();
 	}
 
+	/**
+	 * get day data for whole market
+	 * 
+	 * @param countryCode e.g. "cz" or "de"
+	 * @return
+	 * @throws JsonSyntaxException
+	 * @throws IOException
+	 */
 	Map<String, DayData> getDayDataSet(String countryCode) throws JsonSyntaxException, IOException {
-		String url = String.format(URL_DDATA_MARKET, countryCode);
+		if (TextUtils.isEmpty(countryCode)) {
+			throw new NullPointerException("country code can't be empty!");
+		}
+		String baseUrl = this.urls.getUrl(UrlProvider.TYPE_DDATA, UrlProvider.ARG_MARKET);
+		String url = String.format(baseUrl, countryCode);
 		
 		Map<String, DayData> data = getDataSet(url);
 		return data;
 	}
 
 	/**
+	 * generic method to get {@link DayData} for list of equities
+	 * 
 	 * @param url
 	 * @return
 	 * @throws IOException
@@ -81,11 +89,18 @@ public final class GaeDataProvider {
 		return data;
 	}
 
+	/**
+	 * get last available data for given {@link StockItem#getTicker()}
+	 * @param ticker
+	 * @return
+	 * @throws IOException
+	 */
 	DayData getLastData(String ticker) throws IOException {
 		if (TextUtils.isEmpty(ticker)) {
 			throw new NullPointerException("stock can't be empty!");
 		}
-		String url = String.format(URL_DDATA, ticker);
+		String baseUrl = this.urls.getUrl(UrlProvider.TYPE_DDATA, UrlProvider.ARG_STOCK);
+		String url = String.format(baseUrl, ticker);
 		
 		Log.d(Utils.LOG_TAG, "connecting to " + url);
 		DayData data;
@@ -112,18 +127,21 @@ public final class GaeDataProvider {
 	}
 
 	Map<String, DayData> getIndecesDataSet() throws JsonSyntaxException, IOException {
-		return getDataSet(URL_INDECES_SET);
+		String url = this.urls.getUrl(UrlProvider.TYPE_INDATA, (String) null);
+		return getDataSet(url);
 	}
 	
-	List<StockItem> getIndecesList() throws JsonSyntaxException, IOException {	
-		return getList(URL_INDECES_LIST);
+	List<StockItem> getIndecesList() throws JsonSyntaxException, IOException {
+		String url = this.urls.getUrl(UrlProvider.TYPE_INDATA, UrlProvider.ARG_IND_LIST);
+		return getList(url);
 	}
 	
 	List<StockItem> getStockList(String countryCode) throws JsonSyntaxException, IOException {
 		if (TextUtils.isEmpty(countryCode)) {
-			throw new NullPointerException("stock can't be empty!");
+			throw new NullPointerException("country code can't be empty!");
 		}
-		String url = String.format(URL_LIST, countryCode);
+		String baseUrl = this.urls.getUrl(UrlProvider.TYPE_DDATA, UrlProvider.ARG_LIST);
+		String url = String.format(baseUrl, countryCode);
 		
 		return getList(url);
 	}
@@ -166,7 +184,8 @@ public final class GaeDataProvider {
 			throw new NullPointerException("stock ticker can't be empty!");
 		}
 		
-		String urlString = String.format(URL_HDATA, stockTicker, TIME_PERIODS[timePeriod]);
+		String baseUrl = this.urls.getUrl(UrlProvider.TYPE_HDATA, UrlProvider.ARG_STOCK, UrlProvider.ARG_TIME);
+		String urlString = String.format(baseUrl, stockTicker, TIME_PERIODS[timePeriod]);
 		
 		return getTextData(urlString);
 	}
@@ -175,8 +194,8 @@ public final class GaeDataProvider {
 		if (TextUtils.isEmpty(ticker)) {
 			throw new NullPointerException("stock can't be null!");
 		}
-		
-		String urlString = String.format(URL_IDATA, URLEncoder.encode(ticker));
+		String baseUrl = this.urls.getUrl(UrlProvider.TYPE_IDATA, UrlProvider.ARG_STOCK);
+		String urlString = String.format(baseUrl, URLEncoder.encode(ticker));
 		return getTextData(urlString);
 	}
 
@@ -232,7 +251,6 @@ public final class GaeDataProvider {
 	        return "";
 	    }
 	}
-
 
 	public boolean refresh() {
 		

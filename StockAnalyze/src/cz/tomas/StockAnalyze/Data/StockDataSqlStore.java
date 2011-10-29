@@ -92,7 +92,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 			Cursor c = null;
 			try {
 				//c = db.query(STOCK_TABLE_NAME, new String[] { "_id" }, "id='"+ item.getId() +"'", null, null, null, null);
-				c = db.query(STOCK_TABLE_NAME, new String[] { "_id" }, "id=?", new String[] { id }, null, null, null);
+				c = db.query(STOCK_TABLE_NAME, new String[] { "_id" }, "_id=?", new String[] { id }, null, null, null);
 				if (c.moveToFirst())
 					result = true;
 				

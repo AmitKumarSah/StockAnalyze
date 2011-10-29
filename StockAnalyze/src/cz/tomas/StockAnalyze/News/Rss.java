@@ -96,6 +96,7 @@ public class Rss {
 		try {
 			db = this.sqlHelper.getWritableDatabase();
 			db.beginTransaction();
+			this.sqlHelper.acquireDb(this);
 			this.sqlHelper.deleteOldArticles();
 			presentArticles = this.getArticles(feed.getFeedId());
 			this.sqlHelper.markArticlesToDelete();
@@ -130,7 +131,8 @@ public class Rss {
 		} finally {
 			if (db != null) {
 				db.endTransaction();
-				db.close();
+				this.sqlHelper.releaseDb(true, this);
+				this.sqlHelper.close();
 			}
 		}
 		downloadedArticles.addAll(presentArticles);

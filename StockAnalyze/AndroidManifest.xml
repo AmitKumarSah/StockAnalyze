@@ -62,12 +62,12 @@
 		<activity android:name=".activity.AboutActivity" 
 			android:label="@string/appAbout"
 			android:theme="@style/themeLightTitle"></activity>
-		<receiver android:enabled="true" android:permission="android.permission.ACCESS_NETWORK_STATE" android:name=".receivers.NetworkBroadcastReceiver">
-			<intent-filter>
-				<action android:name="android.net.conn.BACKGROUND_DATA_SETTING_CHANGED"/>
-				<action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
-			</intent-filter>
-		</receiver>
+<!-- 		<receiver android:enabled="true" android:permission="android.permission.ACCESS_NETWORK_STATE" android:name=".receivers.NetworkBroadcastReceiver"> -->
+<!-- 			<intent-filter> -->
+<!-- 				<action android:name="android.net.conn.BACKGROUND_DATA_SETTING_CHANGED"/> -->
+<!-- 				<action android:name="android.net.conn.CONNECTIVITY_CHANGE"/> -->
+<!-- 			</intent-filter> -->
+<!-- 		</receiver> -->
 		<receiver android:name=".receivers.AlarmReceiver"></receiver>
 	
 	</application>
