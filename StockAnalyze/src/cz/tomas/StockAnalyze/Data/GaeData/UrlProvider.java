@@ -55,7 +55,7 @@ public final class UrlProvider {
 	static final String TYPE_INDATA = "INDATA";
 	
 	private static final String URL_CROSSROAD = "http://stockanalyzeserverenv-upk2bxu5a5.elasticbeanstalk.com/Crossroads";
-	
+	private static final String URL_CROSSROAD_BACKUP = "http://backend-stockanalyze.appspot.com/Crossroads";	
 
 	private Gson gson;
 	private Map<String, String> urls;
@@ -101,9 +101,19 @@ public final class UrlProvider {
 		return url;
 	}
 
+	/**
+	 * ask {@link #URL_CROSSROAD} or {@link #URL_CROSSROAD_BACKUP} 
+	 * to URLs to get data from
+	 */
 	private void downloadUrls() {
 		try {
-			InputStream stream = DownloadService.GetInstance().openHttpConnection(URL_CROSSROAD, false);
+			InputStream stream = null;
+			try {
+				stream = DownloadService.GetInstance().openHttpConnection(URL_CROSSROAD, false);
+			} catch (Exception e) {
+				Log.w(Utils.LOG_TAG, "failed to get URLs from priamry crossroad, trying backup");
+				stream = DownloadService.GetInstance().openHttpConnection(URL_CROSSROAD_BACKUP, false);
+			}
 			
 			Type listType = new TypeToken<Map<String, String>>() {}.getType();
 			Map<String, String> downloadedUrls = gson.fromJson(new InputStreamReader(stream), listType);
