@@ -25,7 +25,7 @@ import android.util.Log;
 
 /**
  * Provides access to acquirable database.
- * Also initialize database - create all basic tables we need. 
+ * Also initialize database - create all basic tables we need for stocks. 
  */
 public class DataSqlHelper extends AbstractSqlHelper {
 		

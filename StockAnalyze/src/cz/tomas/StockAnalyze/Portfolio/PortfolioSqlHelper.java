@@ -54,6 +54,9 @@ import cz.tomas.StockAnalyze.utils.Markets;
 */
 
 /**
+ * Extension to {@link DataSqlHelper} for access to portfolio.
+ * Database is of course shared with stocks
+ * 
  * @author tomas
  *
  */

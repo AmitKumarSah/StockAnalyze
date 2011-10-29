@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import android.content.Context;
+
 import cz.tomas.StockAnalyze.Data.IStockDataProvider;
 import cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
@@ -24,11 +26,11 @@ public abstract class GaeDataAdapter implements IStockDataProvider {
 	protected GaeDataProvider provider;
 	protected boolean enabled;
 
-	public GaeDataAdapter() {
+	public GaeDataAdapter(Context context) {
 		super();
 
 		this.eventListeners = new ArrayList<IStockDataListener>();
-		this.provider = new GaeDataProvider();
+		this.provider = new GaeDataProvider(context);
 	}
 
 	@Override

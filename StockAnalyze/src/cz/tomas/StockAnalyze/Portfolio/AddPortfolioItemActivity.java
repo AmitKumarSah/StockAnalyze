@@ -278,14 +278,11 @@ public final class AddPortfolioItemActivity extends BaseActivity {
 			item.setSellFee(fee);
 
 		try {
-			dataManager.acquireDb(this.getClass().getName());
 			portfolio.addToPortfolio(item);
 			Log.i(Utils.LOG_TAG, "adding new portfolio item for " + stockId);
 		} catch (SQLException e) {
 			Log.e(Utils.LOG_TAG, "failed to add portoflio item to db", e);
 			throw e;
-		} finally {
-			this.dataManager.releaseDb(true, this.getClass().getName());
 		}
 		Map<String, String> pars = new HashMap<String, String>();
 		pars.put(Consts.FLURRY_KEY_PORTFOLIO_NEW_SOURCE, getIntent().getStringExtra(Utils.EXTRA_SOURCE));

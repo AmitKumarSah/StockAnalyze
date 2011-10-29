@@ -35,6 +35,7 @@ import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.SystemClock;
 import android.util.Log;
+import cz.tomas.StockAnalyze.Application;
 import cz.tomas.StockAnalyze.NotificationSupervisor;
 import cz.tomas.StockAnalyze.Data.GaeData.GaePseDataAdapter;
 import cz.tomas.StockAnalyze.Data.GaeData.GaeIndecesDataAdapter;
@@ -52,7 +53,8 @@ import cz.tomas.StockAnalyze.utils.Utils;
 
 /**
  * main class for managing stock data, 
- * this class is singleton
+ * this class is singleton and accessible from 
+ * {@link Application#getSystemService(String)}
  * 
  * @author tomas
  *
@@ -98,9 +100,9 @@ public class DataManager implements IStockDataListener {
 		
 		//IStockDataProvider pse = new PseCsvDataAdapter();
 		//IStockDataProvider patriaPse = new PsePatriaDataAdapter();
-		IStockDataProvider gaePse = new GaePseDataAdapter();
-		IStockDataProvider gaeIndeces = new GaeIndecesDataAdapter();
-		IStockDataProvider gaeXetra = new GaeXetraAdapter();
+		IStockDataProvider gaePse = new GaePseDataAdapter(context);
+		IStockDataProvider gaeIndeces = new GaeIndecesDataAdapter(context);
+		IStockDataProvider gaeXetra = new GaeXetraAdapter(context);
 		
 		//DataProviderFactory.registerDataProvider(pse);
 		DataProviderFactory.registerDataProvider(gaePse);
@@ -231,7 +233,7 @@ public class DataManager implements IStockDataListener {
 		Log.i(Utils.LOG_TAG, "storing stock items to db ... " + items.size());
 		
 		if (stocks != null && stocks.size() > 0) {
-			this.acquireDb(this);
+			this.sqlStore.acquireDb(this);
 			SQLiteDatabase db = this.sqlStore.getWritableDatabase();
 			try {
 				db.beginTransaction();
@@ -253,7 +255,7 @@ public class DataManager implements IStockDataListener {
 			} finally {
 				db.endTransaction();
 			}
-			this.releaseDb(true, this);
+			this.sqlStore.releaseDb(true, this);
 		}
 		SharedPreferences prefs = this.context.getSharedPreferences(Utils.PREF_NAME, 0);
 		prefs.edit().putLong(Utils.PREF_LAST_STOCK_LIST_UPDATE_TIME, System.currentTimeMillis()).commit();
@@ -437,7 +439,7 @@ public class DataManager implements IStockDataListener {
 	@Override
 	public void OnStockDataUpdated(IStockDataProvider sender, Map<String, DayData> dataMap) {
 		Log.i(Utils.LOG_TAG, "received stock data update event from " + sender.getId());
-		this.acquireDb(sender.getId());
+		this.sqlStore.acquireDb(sender.getId());
 		try {
 			if (dataMap == null || dataMap.size() == 0) {
 				Map<String, DayData> receivedData = new HashMap<String, DayData>();
@@ -460,7 +462,7 @@ public class DataManager implements IStockDataListener {
 			this.fireUpdateDateChanged(Calendar.getInstance().getTimeInMillis());
 			this.fireUpdateStockDataListenerUpdate(sender, dataMap);
 		} finally {
-			this.releaseDb(true, sender.getId());
+			this.sqlStore.releaseDb(true, sender.getId());
 		}
 	}
 	

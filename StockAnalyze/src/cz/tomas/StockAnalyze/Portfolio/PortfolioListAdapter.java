@@ -335,7 +335,7 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 					String message = "Failed to get stock day data. ";
 					if (e.getMessage() != null)
 						message += e.getMessage();
-					Log.e("StockListAdapter", message, e);
+					Log.e(Utils.LOG_TAG, message, e);
 				}
 			} finally {
 				dataManager.releaseDb(true, this.getClass().getName());

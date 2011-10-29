@@ -5,8 +5,8 @@ import cz.tomas.StockAnalyze.Data.Model.Market;
 
 public class Markets {
 
-	public static final Market CZ = new Market("PSE SPAD", "PSE", "CZK", "Prague Stock Exchange, SPAD market", "cz");
-	public static final Market DE = new Market("XETRA", "XETRA", "EUR", "Deutsche Borse", "de");
+	public static final Market CZ = new Market("PX", "PSE", "CZK", "Prague Stock Exchange, SPAD market", "cz");
+	public static final Market DE = new Market("DAX", "XETRA", "EUR", "Deutsche Borse", "de");
 	public static final Market US_NYSE = new Market("Dow Jones Industrial Avrg.", "NYSE", "USD", "Dow Jones", "us");
 	public static final Market US_NASDAQ = new Market("US - Nasdaq - Composite", "NASDAQ", "USD", "NASDAQ", "us");
 	public static final Market EU = new Market("EU", "EU", "EUR", "Euro Stocks", "eu");

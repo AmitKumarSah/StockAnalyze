@@ -3,6 +3,7 @@ package cz.tomas.StockAnalyze.Data.GaeData;
 import java.util.List;
 import java.util.Map;
 
+import android.content.Context;
 import android.util.Log;
 import cz.tomas.StockAnalyze.Data.DataProviderAdviser;
 import cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener;
@@ -14,6 +15,10 @@ import cz.tomas.StockAnalyze.utils.Utils;
 
 
 public final class GaeIndecesDataAdapter extends GaeDataAdapter {
+
+	public GaeIndecesDataAdapter(Context context) {
+		super(context);
+	}
 
 	public static final String ID = "GAE Indeces Provider";
 

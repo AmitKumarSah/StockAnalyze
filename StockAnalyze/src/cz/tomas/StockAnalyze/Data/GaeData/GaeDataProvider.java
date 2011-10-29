@@ -13,6 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -32,9 +33,9 @@ public final class GaeDataProvider {
 	private Gson gson;
 	private UrlProvider urls;
 	
-	GaeDataProvider() {
+	GaeDataProvider(Context context) {
 		this.gson = new Gson();
-		this.urls = UrlProvider.getInstance();
+		this.urls = UrlProvider.getInstance(context);
 	}
 
 	/**

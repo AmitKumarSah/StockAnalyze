@@ -47,6 +47,7 @@ public class Utils {
 	public static final String PREF_CHART_TIME_PERIOD = "prefChartTimePeriod";
 	public static final String PREF_HOME_CHART_TICKER = "prefHomeChartTicker";
 	public static final String PREF_HOME_CHART_MARKET_ID = "prefHomeChartMarketId";
+	public static final String PREF_URLS_TIME = "prefGaeUrlUpdate";
 	
 	public static final TimeZone PRAGUE_TIME_ZONE = TimeZone.getTimeZone("Europe/Prague");
 	
