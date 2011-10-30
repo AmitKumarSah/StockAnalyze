@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="chartGrid">#903570E7</color>
+    <color name="chartFill">#3440C840</color>
+    <color name="chartLine">#F000EF00</color>
+    
+</resources>
