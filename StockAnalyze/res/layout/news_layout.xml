@@ -26,6 +26,7 @@
 		android:layout_width="fill_parent" 
 		android:layout_height="wrap_content"
 		actionBar:showRefreshButton="true"
+		android:visibility="gone"
 		actionBar:titleText="@string/activityNews" >
 	</cz.tomas.StockAnalyze.ui.widgets.ActionBar>
 		 	

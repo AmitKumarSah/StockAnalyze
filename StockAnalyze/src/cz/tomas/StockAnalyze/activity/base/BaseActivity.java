@@ -4,10 +4,9 @@ import com.flurry.android.FlurryAgent;
 
 import cz.tomas.StockAnalyze.utils.Utils;
 
-import android.app.Activity;
 import android.util.Log;
 
-public abstract class BaseActivity extends Activity {
+public abstract class BaseActivity extends ActionBarActivity {
 
 	public void onStart()
 	{

@@ -34,7 +34,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -84,8 +83,6 @@ public final class AddPortfolioItemActivity extends BaseActivity {
 		super.onCreate(savedInstanceState);
 		
 		this.dataManager = (DataManager) this.getApplicationContext().getSystemService(Application.DATA_MANAGER_SERVICE);
-		this.requestWindowFeature(Window.FEATURE_PROGRESS);
-		this.requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		this.setContentView(R.layout.portfolio_add_item_layout);
 		this.setProgressBarVisibility(false);
 		

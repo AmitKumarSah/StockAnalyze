@@ -25,6 +25,7 @@
 		android:id="@+id/stockListActionBar"
 		android:layout_width="fill_parent" 
 		android:layout_height="wrap_content"
+		android:visibility="gone"
 		actionBar:showRefreshButton="true"
 		actionBar:titleText="@string/activityStockList" />
 	<com.jakewharton.android.viewpagerindicator.TitlePageIndicator

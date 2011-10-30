@@ -10,6 +10,7 @@
 		android:id="@+id/homeActionBar"
 		android:layout_width="fill_parent" 
 		android:layout_height="wrap_content"
+		android:visibility="gone"
 		actionBar:showRefreshButton="false"
 		actionBar:titleText="@string/activityNews" />
 		

@@ -26,6 +26,7 @@
 		android:id="@+id/homeActionBar"
 		android:layout_width="fill_parent" 
 		android:layout_height="wrap_content"
+		android:visibility="gone"
 		actionBar:showHelpButton="true"
 		actionBar:showChartButton="true" />
 		<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
@@ -44,14 +45,14 @@
 					android:layout_weight="1"
 					style="@style/homeBlock"
 					block:textId="@string/homeStockList" 
-					block:imageId="@drawable/ic_launcher_list"
+					block:imageId="@drawable/ic_home_list"
 					block:target="cz.tomas.StockAnalyze.activity.StocksActivity"/>
 				<cz.tomas.StockAnalyze.ui.widgets.HomeBlockView 
 					android:id="@+id/homeBlockPortfolio"
 					android:layout_weight="1"
 					style="@style/homeBlock"
 					block:textId="@string/homeMyPortfolio"
-					block:imageId="@drawable/ic_business" 
+					block:imageId="@drawable/ic_home_portfolio" 
 					block:target="cz.tomas.StockAnalyze.activity.PortfoliosActivity"/>
 <!-- 					<cz.tomas.StockAnalyze.ui.widgets.HomeBlockView -->
 <!-- 						android:id="@+id/homeBlockCurrencies" -->
@@ -63,14 +64,14 @@
 					android:id="@+id/homeBlockIndeces"
 					style="@style/homeBlock"
 					block:textId="@string/homeIndeces" 
-					block:imageId="@drawable/ic_globe"
+					block:imageId="@drawable/ic_home_indeces"
 					block:target="cz.tomas.StockAnalyze.activity.IndecesListActivity"/>
 				<cz.tomas.StockAnalyze.ui.widgets.HomeBlockView 
 					android:id="@+id/homeBlockNews"
 					android:layout_weight="1"
 					style="@style/homeBlock"
 					block:textId="@string/homeNews"
-					block:imageId="@drawable/ic_rss_simple" 
+					block:imageId="@drawable/ic_home_rss" 
 					block:target="cz.tomas.StockAnalyze.activity.NewsActivity"/>
 			</TableRow>
 				<View android:id="@+id/homeSeparator1" 
@@ -88,8 +89,7 @@
 					android:layout_height="wrap_content"/>
 				<ImageView android:id="@+id/home_chart" 
 					style="@style/homeBlock"
-					android:visibility="gone"
-					android:src="@drawable/chart_preview"/>
+					android:visibility="gone"/>
 				<include layout="@layout/part_chart_with_header"
 					style="@style/homeBlock"  
 					android:layout_width="fill_parent" 

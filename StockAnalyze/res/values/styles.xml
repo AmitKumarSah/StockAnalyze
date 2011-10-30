@@ -158,4 +158,41 @@
         <item name="textColor">#707070</item>
         <item name="textSize">12sp</item>
     </style>
+    
+	
+	
+	<style name="ActionBarCompat">
+        <item name="android:background">#eee</item>
+    </style>
+
+    <style name="ActionBarCompatItemBase">
+        <!-- layout_width/height must be set in code -->
+        <item name="android:scaleType">center</item>
+        <item name="android:background">@drawable/actionbar_compat_item</item>
+    </style>
+
+    <style name="ActionBarCompatProgressIndicator" parent="android:style/Widget.ProgressBar.Large">
+        <item name="android:indeterminate">true</item>
+    </style>
+
+    <style name="ActionBarCompatTitleBase">
+        <item name="android:id">@id/actionbar_compat_title</item>
+        <!-- layout_width/height/weight must be set in code -->
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:paddingLeft">6dp</item>
+        <item name="android:paddingRight">6dp</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">marquee</item>
+    </style>
+
+    <style name="ActionBarCompatTitle" parent="style/ActionBarCompatTitleBase">
+        <item name="android:textColor">@color/actionbar_title_color</item>
+    </style>
+
+    <style name="ActionBarCompatItem" parent="style/ActionBarCompatItemBase">
+    </style>
+
+    <style name="ActionBarCompatHomeItem" parent="style/ActionBarCompatItemBase">
+    </style>
 </resources>

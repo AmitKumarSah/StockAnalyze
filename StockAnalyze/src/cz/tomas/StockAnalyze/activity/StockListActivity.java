@@ -175,7 +175,7 @@ public class StockListActivity extends BaseListActivity implements IActionBarLis
 	public boolean onCreateOptionsMenu(Menu menu) {
 	    MenuInflater inflater = getMenuInflater();
 	    inflater.inflate(R.menu.stock_list_menu, menu);
-	    return true;
+	    return super.onCreateOptionsMenu(menu);
 	}
 	
 	

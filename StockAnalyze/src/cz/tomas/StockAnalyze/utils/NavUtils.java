@@ -17,6 +17,8 @@
  ******************************************************************************/
 package cz.tomas.StockAnalyze.utils;
 
+import com.flurry.android.FlurryAgent;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -25,6 +27,7 @@ import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.Portfolio.AddPortfolioItemActivity;
 import cz.tomas.StockAnalyze.activity.AboutActivity;
 import cz.tomas.StockAnalyze.activity.AppPreferencesActivity;
+import cz.tomas.StockAnalyze.activity.HomeActivity;
 import cz.tomas.StockAnalyze.activity.StockDetailActivity;
 
 /*
@@ -83,5 +86,13 @@ public class NavUtils {
 	public static void gotToAbout(Context context) {
 		Intent intent = new Intent(context, AboutActivity.class);
     	context.startActivity(intent);
+	}
+	public static void goHome(Context context) {
+		Intent intent = new Intent();
+		intent.setClass(context, HomeActivity.class);
+		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		context.startActivity(intent);
+		
+		FlurryAgent.logEvent(Consts.FLURRY_EVENT_ACTION_HOME);
 	}
 }

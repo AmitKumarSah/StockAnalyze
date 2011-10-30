@@ -84,7 +84,7 @@ public class ChartView extends View {
 		
 		this.paint = new Paint();
 		this.paint.setStrokeWidth(2*SCALE);
-		this.paint.setColor(Color.BLUE);
+		this.paint.setColor(0xFF3570e7);
 		this.paint.setAntiAlias(true);
 		
 		this.chartPaint = new Paint(this.paint);
@@ -99,7 +99,7 @@ public class ChartView extends View {
 		
 		this.gridFillPaint = new Paint();
 		this.gridFillPaint.setStyle(Style.FILL_AND_STROKE);
-		this.gridFillPaint.setColor(Color.argb(100, 64, 200, 64));
+		this.gridFillPaint.setColor(Color.argb(32, 64, 200, 64));
 		
 //		boolean i = Log.isLoggable(Utils.LOG_TAG, Log.VERBOSE);
 //		String result = System.setProperty("log.tag.StockAnalyze", "VERBOSE");

@@ -25,6 +25,7 @@
 		android:id="@+id/portfolioActionBar"
 		android:layout_width="fill_parent" 
 		android:layout_height="wrap_content"
+		android:visibility="gone"
 		actionBar:titleText="@string/activityPortfolio"
 		actionBar:showAddButton="true"
 		actionBar:showRefreshButton="true" />

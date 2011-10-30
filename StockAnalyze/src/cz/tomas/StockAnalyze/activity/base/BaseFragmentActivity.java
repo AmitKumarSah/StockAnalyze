@@ -1,12 +1,13 @@
 package cz.tomas.StockAnalyze.activity.base;
 
+import android.util.Log;
+
 import com.flurry.android.FlurryAgent;
 
 import cz.tomas.StockAnalyze.utils.Utils;
-import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 
-public class BaseFragmentActivity extends FragmentActivity {
+public class BaseFragmentActivity extends ActionBarFragmentActivity {
+	
 	public void onStart()
 	{
 		long kb = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024L;

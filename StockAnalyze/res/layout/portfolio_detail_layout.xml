@@ -8,16 +8,19 @@
     	android:id="@+id/portfolioDetailActionBar" 
     	android:layout_width="fill_parent" 
     	android:layout_height="wrap_content"
+    	android:visibility="gone"
     	actionBar:titleText="@string/activityPortfolioDetail" />
     
   	<TextView android:id="@+id/portfolioDetailTitle"
 		android:layout_width="fill_parent"
-		android:layout_height="wrap_content" 
+		android:layout_height="wrap_content"
+		android:layout_margin="8dp" 
 		android:textAppearance="?android:attr/textAppearanceMedium"
 		android:text="TextView"  />
 	<ExpandableListView android:id="@+id/portfolioDetailList"
 	  	android:layout_width="fill_parent"
-	  	android:layout_height="fill_parent" >
+	  	android:layout_height="fill_parent" 
+		android:layout_margin="8dp">
 	      <!-- Preview: listitem=@android:layout/simple_expandable_list_item_1 -->
 	</ExpandableListView>
 </LinearLayout>

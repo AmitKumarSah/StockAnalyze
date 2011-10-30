@@ -26,6 +26,7 @@
 		android:id="@+id/detailActionBar"
 		android:layout_width="fill_parent" 
 		android:layout_height="wrap_content"
+		android:visibility="gone"
 		actionBar:showAddButton="true"
 		actionBar:titleText="@string/activityStockDetail" />
 		

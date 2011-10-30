@@ -130,7 +130,7 @@ public class HomeActivity extends ChartActivity implements OnClickListener, OnKe
 	public boolean onCreateOptionsMenu(Menu menu) {
 	    MenuInflater inflater = getMenuInflater();
 	    inflater.inflate(R.menu.app_menu, menu);
-	    return true;
+        return super.onCreateOptionsMenu(menu);
 	}
 
 
@@ -144,6 +144,9 @@ public class HomeActivity extends ChartActivity implements OnClickListener, OnKe
 	    case R.id.menu_app_about:
 	    	NavUtils.gotToAbout(this);
 	    	return true;
+	    case R.id.menu_app_pick_stock:
+			this.showDialog(DIALOG_PICK_STOCK);
+			return true;
 	    default:
 	        return super.onOptionsItemSelected(item);
 	    }

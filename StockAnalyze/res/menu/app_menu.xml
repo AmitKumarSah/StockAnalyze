@@ -19,7 +19,20 @@
 <menu
   xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:title="@string/settings" 
-    android:id="@+id/menu_app_settings"
-    android:icon="@drawable/ic_menu_settings"></item>
-    <item android:id="@+id/menu_app_about" android:title="@string/appAbout" android:icon="@drawable/ic_menu_about"/>
+	    android:id="@+id/menu_app_settings"
+	    android:icon="@drawable/ic_menu_settings"
+	    android:orderInCategory="0"
+        android:showAsAction="collapseActionView"/>
+    
+    <item android:id="@+id/menu_app_about"
+        android:orderInCategory="1"
+        android:showAsAction="collapseActionView"
+        android:title="@string/appAbout" 
+        android:icon="@drawable/ic_menu_about"/>
+    
+    <item android:id="@+id/menu_app_pick_stock"
+        android:orderInCategory="2"
+        android:showAsAction="always"
+        android:title="@string/pickStock" 
+        android:icon="@drawable/ic_action_chart"/>
 </menu>

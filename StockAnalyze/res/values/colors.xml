@@ -17,43 +17,46 @@
       along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <resources>
-<color name="list_item_background">#EDEFFF</color>
-<color name="font_color">#101010</color>
-<color name="news_item_unread_color">#00EE00</color>
-<color name="news_item_read_color">#DDDDDD</color>
-<color name="separator_color">#AAAAAA</color>
+	<color name="list_item_background">#EDEFFF</color>
+	<color name="font_color">#101010</color>
+	<color name="news_item_unread_color">#00EE00</color>
+	<color name="news_item_read_color">#DDDDDD</color>
+	<color name="separator_color">#AAAAAA</color>
+	
+	<color name="actionbar_separator_color">#505050</color>
+	<!--<color name="actionbar_color">#CED2FF</color>-->
+	<color name="actionbar_color">#080808</color>
+	<color name="actionbar_color_start">#080808</color>
+	<!-- this is on top of bar -->
+	<color name="actionbar_color_end">#292929</color> 		
+	
+	
+	<!-- <color name="actionbar_color">#121212</color> -->
+	<!-- <color name="actionbar_color_start">#121212</color> -->
+	<!-- <color name="actionbar_color_end">#393939</color> -->
+	
+	<!-- <color name="actionbar_color">#101040</color> -->
+	<!-- <color name="actionbar_color_start">#101040</color> -->
+	<!-- <color name="actionbar_color_end">#203040</color>	this is on top of bar -->
+	
+	<color name="groubox_header_color_start">#101040</color>
+	<color name="groubox_header_color_end">#203040</color>
+	<color name="groubox_header_color_font">#FFFFFF</color>
+	
+	<color name="money_item_text">#FFFFFF</color>
+	
+	<color name="money_item_red_center">#ED3333</color>
+	<color name="money_item_red_start">#CB3333</color>
+	<color name="money_item_red_end">#FE6262</color>
+	<color name="money_item_green_center">#33ED33</color>
+	<color name="money_item_green_start">#33CB33</color>
+	<color name="money_item_green_end">#62FE62</color>
+	<color name="money_item_dark_center">#444444</color>
+	<color name="money_item_dark_start">#333333</color>
+	<color name="money_item_dark_end">#555555</color>
+	
+	<color name="home_block_color">#FFFFFF</color>
 
-<color name="actionbar_separator_color">#505050</color>
-<!--<color name="actionbar_color">#CED2FF</color>-->
-<color name="actionbar_color">#080808</color>
-<color name="actionbar_color_start">#080808</color>
-<!-- this is on top of bar -->
-<color name="actionbar_color_end">#292929</color> 		
-
-
-<!-- <color name="actionbar_color">#121212</color> -->
-<!-- <color name="actionbar_color_start">#121212</color> -->
-<!-- <color name="actionbar_color_end">#393939</color> -->
-
-<!-- <color name="actionbar_color">#101040</color> -->
-<!-- <color name="actionbar_color_start">#101040</color> -->
-<!-- <color name="actionbar_color_end">#203040</color>	this is on top of bar -->
-
-<color name="groubox_header_color_start">#101040</color>
-<color name="groubox_header_color_end">#203040</color>
-<color name="groubox_header_color_font">#FFFFFF</color>
-
-<color name="money_item_text">#FFFFFF</color>
-
-<color name="money_item_red_center">#ED3333</color>
-<color name="money_item_red_start">#CB3333</color>
-<color name="money_item_red_end">#FE6262</color>
-<color name="money_item_green_center">#33ED33</color>
-<color name="money_item_green_start">#33CB33</color>
-<color name="money_item_green_end">#62FE62</color>
-<color name="money_item_dark_center">#444444</color>
-<color name="money_item_dark_start">#333333</color>
-<color name="money_item_dark_end">#555555</color>
-
-<color name="home_block_color">#FFFFFF</color>
+	
+    <color name="actionbar_title_color">#224894</color>
 </resources>

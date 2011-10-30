@@ -1,12 +1,12 @@
 package cz.tomas.StockAnalyze.activity.base;
 
+import android.util.Log;
+
 import com.flurry.android.FlurryAgent;
 
 import cz.tomas.StockAnalyze.utils.Utils;
-import android.app.ListActivity;
-import android.util.Log;
 
-public abstract class BaseListActivity extends ListActivity {
+public abstract class BaseListActivity extends ActionBarListActivity{
 
 	public void onStart()
 	{

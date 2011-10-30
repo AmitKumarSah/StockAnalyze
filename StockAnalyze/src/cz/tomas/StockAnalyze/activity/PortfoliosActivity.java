@@ -86,7 +86,7 @@ public final class PortfoliosActivity extends BaseFragmentActivity implements On
 	public boolean onCreateOptionsMenu(Menu menu) {
 	    MenuInflater inflater = getMenuInflater();
 	    inflater.inflate(R.menu.portfolio_menu, menu);
-	    return true;
+	    return super.onCreateOptionsMenu(menu);
 	}
 	
 	@Override

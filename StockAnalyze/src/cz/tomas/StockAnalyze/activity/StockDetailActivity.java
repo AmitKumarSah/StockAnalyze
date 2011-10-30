@@ -31,6 +31,9 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TabHost.OnTabChangeListener;
@@ -133,6 +136,20 @@ public final class StockDetailActivity extends ChartActivity implements IActionB
 		bar.setActionBarListener(this);
 	}
 		
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.stock_detail_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		this.onAction(item.getItemId());
+		return super.onOptionsItemSelected(item);
+	}
+
 
 	private void fill() throws NullPointerException, IOException {
 		this.updateChart();
@@ -242,8 +259,8 @@ public final class StockDetailActivity extends ChartActivity implements IActionB
 
 
 	@Override
-	public void onAction(int viewId) {
-		if(viewId == R.id.actionAddButton) {
+	public void onAction(int id) {
+		if(id == R.id.actionAddButton || id == R.id.menu_stock_detail_add) {
 			NavUtils.goToAddToPortfolio(this, this.stockItem, this.dayData);
 		}
 	}	

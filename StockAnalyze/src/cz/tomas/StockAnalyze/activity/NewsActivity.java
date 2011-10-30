@@ -37,6 +37,7 @@ import cz.tomas.StockAnalyze.News.NewsListAdapter;
 import cz.tomas.StockAnalyze.activity.base.BaseListActivity;
 import cz.tomas.StockAnalyze.ui.widgets.ActionBar;
 import cz.tomas.StockAnalyze.ui.widgets.ActionBar.IActionBarListener;
+import cz.tomas.StockAnalyze.utils.NavUtils;
 
 /**
  * @author tomas
@@ -103,7 +104,7 @@ public class NewsActivity extends BaseListActivity implements ITaskListener {
 	public boolean onCreateOptionsMenu(Menu menu) {
 	    MenuInflater inflater = getMenuInflater();
 	    inflater.inflate(R.menu.stock_list_menu, menu);
-	    return true;
+	    return super.onCreateOptionsMenu(menu);
 	}
 	
 	@Override
@@ -114,6 +115,7 @@ public class NewsActivity extends BaseListActivity implements ITaskListener {
 	    	refresh();
 	        return true;
 	    case R.id.menu_stock_list_settings:
+	    	NavUtils.goToSettings(this);
 	        return true;
 	    default:
 	        return super.onOptionsItemSelected(item);
