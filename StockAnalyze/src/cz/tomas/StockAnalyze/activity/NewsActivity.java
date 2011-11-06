@@ -20,9 +20,6 @@
  */
 package cz.tomas.StockAnalyze.activity;
 
-import com.markupartist.android.widget.PullToRefreshListView;
-import com.markupartist.android.widget.PullToRefreshListView.OnRefreshListener;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -34,7 +31,10 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ListView;
+
+import com.markupartist.android.widget.PullToRefreshListView;
+import com.markupartist.android.widget.PullToRefreshListView.OnRefreshListener;
+
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.News.NewsItemsTask.ITaskListener;
 import cz.tomas.StockAnalyze.News.NewsListAdapter;
@@ -56,6 +56,7 @@ public class NewsActivity extends BaseListActivity implements ITaskListener {
 	private NewsListAdapter adapter;
 	private View refreshButoon;
 	private Animation refreshAnimation;
+	private PullToRefreshListView listView;
 	private static long lastUpdateTime = 0;
 	
 	@Override
@@ -65,12 +66,14 @@ public class NewsActivity extends BaseListActivity implements ITaskListener {
 		this.refreshAnimation = AnimationUtils.loadAnimation(this, R.anim.refresh_rotate);
 		
 		this.setContentView(R.layout.news_layout);
-		final PullToRefreshListView listView = (PullToRefreshListView) this.getListView();
+		this.listView = (PullToRefreshListView) this.getListView();
 		listView.setOnRefreshListener(new OnRefreshListener() {
 			
 			@Override
 			public void onRefresh() {
-				listView.onRefreshComplete();
+				if (adapter != null) {
+					adapter.refresh();
+				}
 			}
 		});
 		listView.setTextFilterEnabled(true);
@@ -142,6 +145,8 @@ public class NewsActivity extends BaseListActivity implements ITaskListener {
 	public void onUpdateFinished() {
 		//this.refreshAnimation.setDuration(0);
 		this.refreshButoon.setAnimation(null);
+
+		listView.onRefreshComplete();
 	}
 
 	@Override

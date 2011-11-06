@@ -33,7 +33,7 @@
 	    android:layout_height="wrap_content"
 	    android:layout_width="fill_parent"
 	    android:background="#DDDDDD"
-	    android:layout_marginBottom="2dp" />
+	    android:paddingBottom="2dp" />
 	<android.support.v4.view.ViewPager android:id="@+id/stocksViewPager" 
 		android:layout_width="fill_parent" 
 		android:layout_height="fill_parent" />

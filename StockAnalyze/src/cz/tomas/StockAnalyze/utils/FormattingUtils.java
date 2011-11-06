@@ -153,10 +153,11 @@ public final class FormattingUtils {
 
 	public static String formatStockDate(Calendar cal) {
 		DateFormat formatter = null;
-		if (cal.get(Calendar.HOUR_OF_DAY) != 0 && cal.get(Calendar.MINUTE) != 0)
-			formatter = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.MEDIUM);
-		else
-			formatter = DateFormat.getDateInstance(DateFormat.LONG);
+//		if (cal.get(Calendar.HOUR_OF_DAY) != 0 && cal.get(Calendar.MINUTE) != 0)
+//			formatter = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.MEDIUM);
+//		else
+//			formatter = DateFormat.getDateInstance(DateFormat.LONG);
+		formatter = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.MEDIUM);
 		return formatter.format(cal.getTime());
 	}
 	

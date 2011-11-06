@@ -17,8 +17,8 @@ public final class IndecesListActivity extends StockListActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		TextView title = (TextView) this.findViewById(R.id.actionTitle);
-		title.setText(R.string.homeIndeces);
+//		TextView title = (TextView) this.findViewById(R.id.actionTitle);
+//		title.setText(R.string.homeIndeces);
 	}
 
 	/* (non-Javadoc)

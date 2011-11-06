@@ -29,7 +29,7 @@ import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 
 /**
- * activity containing {@link ViewPager} with stock list for market in each page
+ * activity containing {@link ViewPager} with stock list for {@link Market} on each page
  * 
  * @author tomas
  *
