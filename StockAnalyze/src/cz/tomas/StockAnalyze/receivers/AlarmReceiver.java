@@ -49,7 +49,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 			if (e.getMessage() != null)
 				message += "\n" + e.getMessage();
 			
-			Log.d(Utils.LOG_TAG, message, e);
+			Log.e(Utils.LOG_TAG, message, e);
 			Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
 		}
 	}

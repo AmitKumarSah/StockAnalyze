@@ -52,13 +52,12 @@ public class Application extends android.app.Application {
 	@Override
 	public void onCreate() {
 		Log.i(Utils.LOG_TAG, "STARTING THE APPLICATION");
-		
 		this.scheduler = new UpdateScheduler(this);
 		this.dataManager = DataManager.getInstance(this);
 
 		// do immediate update and schedule next one
 		try {
-			if (! this.scheduler.isSchedulerRunnig()) {
+			if (! this.scheduler.isSchedulerRunning()) {
 				this.scheduler.updateImmediatly();
 				this.scheduler.scheduleNextIntraDayUpdate();
 				//this.scheduler.scheduleNextDayUpdate();

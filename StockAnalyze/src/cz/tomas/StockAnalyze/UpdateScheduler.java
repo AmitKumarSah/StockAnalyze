@@ -25,12 +25,14 @@ import java.util.concurrent.Semaphore;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.AsyncTask;
+import android.provider.Settings;
 import android.util.Log;
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.DataProviderFactory;
@@ -120,23 +122,16 @@ public class UpdateScheduler {
 	 * check whether the scheduler is currently actively updating data
 	 * @return
 	 */
-	boolean isSchedulerRunnig() {
-		return isSchedulerRunning;
-	}
-
-	/**
-	 * Schedule next update with real time data provider,
-	 * if it is enabled in preferences
-	 */
-	public void scheduleNextIntraDayUpdate() {
-		this.scheduleNextIntraDayUpdate(Markets.CZ);
+	boolean isSchedulerRunning() {
+		return this.semaphore.availablePermits() == 0;
+		//return isSchedulerRunning;
 	}
 	
 	/**
 	 * Schedule next update with real time data provider for given market,
 	 * if it is enabled in preferences
 	 */
-	public void scheduleNextIntraDayUpdate(Market market) {
+	public void scheduleNextIntraDayUpdate() {
 		boolean enabled = this.preferences.getBoolean(Utils.PREF_ENABLE_BACKGROUND_UPDATE, true);
 		if (enabled)
 			this.scheduleAlarm(true);
@@ -155,16 +150,20 @@ public class UpdateScheduler {
 	 * send event to flurry analysis
 	 */
 	public void perfromScheduledUpdate() {
-		Log.i(Utils.LOG_TAG, "going to perform scheduled update");
-//		FlurryAgent.onStartSession(this.context, "UpdateSheduler");
-//		Map<String, String> pars = new HashMap<String, String>();
-//		pars.put(Consts.FLURRY_KEY_SCHEDULED_UPDATE_DAY, String.valueOf(Calendar.getInstance().get(Calendar.DAY_OF_WEEK)));
-//		FlurryAgent.onEvent(Consts.FLURRY_EVENT_SCHEDULED_UPDATE, pars);
-		
-		this.performUpdateInternal(Markets.CZ);
-		this.performUpdateInternal(Markets.DE);
-		this.performUpdateInternal(Markets.GLOBAL);
-//		FlurryAgent.onEndSession(this.context);
+		final boolean isSynchronizationEnabled = ContentResolver.getMasterSyncAutomatically();
+		if (! isSchedulerRunning() && isSynchronizationEnabled) {
+			Log.i(Utils.LOG_TAG, "going to perform scheduled update");
+			//		FlurryAgent.onStartSession(this.context, "UpdateSheduler");
+			//		Map<String, String> pars = new HashMap<String, String>();
+			//		pars.put(Consts.FLURRY_KEY_SCHEDULED_UPDATE_DAY, String.valueOf(Calendar.getInstance().get(Calendar.DAY_OF_WEEK)));
+			//		FlurryAgent.onEvent(Consts.FLURRY_EVENT_SCHEDULED_UPDATE, pars);
+			this.performUpdateInternal(Markets.CZ);
+			this.performUpdateInternal(Markets.DE);
+			this.performUpdateInternal(Markets.GLOBAL);
+			//		FlurryAgent.onEndSession(this.context);
+		} else {
+			Log.i(Utils.LOG_TAG, "skipping scheduled update because one is already running");
+		}
 	}
 	
 	/**
@@ -191,7 +190,6 @@ public class UpdateScheduler {
 			Log.i(Utils.LOG_TAG, "Device is offline, canceling data update");
 			return;
 		}
-		this.isSchedulerRunning = true;
 		if (!DataManager.isInitialized()) {
 			// if process was started by alarm and the rest of the application isn't initialized, 
 			// we need to initialize DataManager
@@ -247,6 +245,7 @@ public class UpdateScheduler {
 		@Override
 		protected Boolean doInBackground(IStockDataProvider... params) {
 			if (params.length == 1)
+				isSchedulerRunning = true;
 				try {
 					semaphore.acquire();	// synchronize updates, so there is only one active at the time (because backend instances)
 					IStockDataProvider provider = params[0];
