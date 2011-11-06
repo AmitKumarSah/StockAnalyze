@@ -42,6 +42,7 @@ public final class StocksActivity extends BaseFragmentActivity implements IActio
 	
 	private View refreshButton;
 	private Animation refreshAnim;
+	private Market selectedMarket;
 	
 	private ViewPager pager;
 	
@@ -65,7 +66,9 @@ public final class StocksActivity extends BaseFragmentActivity implements IActio
 		this.pager = (ViewPager) this.findViewById(R.id.stocksViewPager);
 		List<Market> markets = DataManager.getInstance(this).getMarkets();
 		this.pager.setAdapter(new StocksPagerAdapter(getSupportFragmentManager(), markets));
-		
+		if (markets != null) {
+			this.selectedMarket = markets.get(0);
+		}
 		//Bind the title indicator to the adapter
 		TitlePageIndicator titleIndicator = (TitlePageIndicator)findViewById(R.id.pagerTitles);
 		titleIndicator.setViewPager(pager);
@@ -140,7 +143,11 @@ public final class StocksActivity extends BaseFragmentActivity implements IActio
 	protected void updateImmediatly() {
 		UpdateScheduler scheduler = 
 			(UpdateScheduler) this.getApplicationContext().getSystemService(Application.UPDATE_SCHEDULER_SERVICE);
-		scheduler.updateImmediatly();
+		if (this.selectedMarket == null) {
+			scheduler.updateImmediatly();
+		} else {
+			scheduler.updateImmediatly(this.selectedMarket);
+		}
 	}
 
 	@Override
@@ -153,7 +160,8 @@ public final class StocksActivity extends BaseFragmentActivity implements IActio
 
 	@Override
 	public void onPageSelected(int position) {
-		
+		Market market = ((StocksPagerAdapter) this.pager.getAdapter()).getMarketByPosition(position);
+		this.selectedMarket = market;
 	}
 	
 	

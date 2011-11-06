@@ -27,6 +27,14 @@ public final class StocksPagerAdapter extends FragmentPagerAdapter implements Ti
 		this.markets = markets;
 	}
 
+	public Market getMarketByPosition(int position) {
+		if (this.markets == null || position >= this.markets.size()) {
+			return null;
+		}
+		Market market = this.markets.get(position);
+		return market;
+	}
+	
 	@Override
 	public Fragment getItem(int position) {
 		StockListFragment fragment = new StockListFragment();
