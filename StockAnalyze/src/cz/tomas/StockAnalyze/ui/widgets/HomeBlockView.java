@@ -58,8 +58,7 @@ public class HomeBlockView extends RelativeLayout {
         try {
 			this.init(context, attrs);
 		} catch (Exception e) {
-			e.printStackTrace();
-			Log.d("HomeBlockView", "Failed to init Block item");
+			Log.w("HomeBlockView", "Failed to init Block item", e);
 		}
 	}
 

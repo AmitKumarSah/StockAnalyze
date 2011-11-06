@@ -44,11 +44,13 @@ import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.PortfolioItem;
 import cz.tomas.StockAnalyze.Data.Model.PortfolioSum;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
+import cz.tomas.StockAnalyze.activity.PortfoliosActivity;
+import cz.tomas.StockAnalyze.fragments.PortfolioListFragment;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 
 /**
- * adapter for portfolio items list in PortfolioActivity
+ * adapter for portfolio items list in {@link PortfoliosActivity} ({@link PortfolioListFragment})
  * 
  * @author tomas
  * 

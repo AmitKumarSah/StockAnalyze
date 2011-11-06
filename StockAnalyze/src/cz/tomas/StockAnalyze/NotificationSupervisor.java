@@ -32,16 +32,20 @@ import android.widget.RemoteViews;
 
 import cz.tomas.StockAnalyze.Data.IStockDataProvider;
 import cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener;
+import cz.tomas.StockAnalyze.Data.Interfaces.IUpdateSchedulerListener;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
+import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.activity.StocksActivity;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 
 /**
+ * Supervisor over notifications from application
+ * 
  * @author tomas
  *
  */
-public class NotificationSupervisor implements IStockDataListener {
+public class NotificationSupervisor implements IUpdateSchedulerListener, IStockDataListener {
 
 	private Context context;
 	private NotificationManager notificationManager;
@@ -50,7 +54,9 @@ public class NotificationSupervisor implements IStockDataListener {
 	private CharSequence updateFinishedMessage;
 	private CharSequence noUpdateMessage;
 	private RemoteViews currentNotificationView;
+	
 	private Notification notification;
+	private PendingIntent contentIntent;
 	
 	private static final int UPDATE_DATA_ID = 1;
 	
@@ -69,20 +75,7 @@ public class NotificationSupervisor implements IStockDataListener {
 	 */
 	@Override
 	public void OnStockDataUpdated(IStockDataProvider sender, Map<String,DayData> dataMap) {
-		if (this.currentNotificationView != null) {
-			this.stringBuilder.setLength(0);
-			this.stringBuilder.append(this.updateFinishedMessage);
-			this.stringBuilder.append(": ");
-			this.stringBuilder.append(FormattingUtils.formatStockDate(Calendar.getInstance()));
-			
-
-			if (this.context.getSharedPreferences(Utils.PREF_NAME, 0).getBoolean(Utils.PREF_PERMANENT_NOTIF, true)) {
-				this.currentNotificationView.setTextViewText(R.id.notification_text, this.stringBuilder.toString());
-				this.notificationManager.notify(UPDATE_DATA_ID, this.notification);
-			} else {
-				this.notificationManager.cancel(UPDATE_DATA_ID);
-			}
-		}
+		showFinishNotification();
 	}
 
 	/** 
@@ -91,48 +84,100 @@ public class NotificationSupervisor implements IStockDataListener {
 	 */
 	@Override
 	public void OnStockDataUpdateBegin(IStockDataProvider sender) {
-		boolean enableNotif = this.context.getSharedPreferences(Utils.PREF_NAME, 0).getBoolean(Utils.PREF_UPDATE_NOTIF, true);
+		showStartNotfication(sender.getAdviser().getMarket());
+
+	}
+
+	private void showStartNotfication(Market... markets) {
+		final boolean enableNotif = this.context.getSharedPreferences(Utils.PREF_NAME, 0).getBoolean(Utils.PREF_UPDATE_NOTIF, true);
 		
-		if (sender == null || enableNotif == false)
+		if (markets == null || enableNotif == false)
 			return;
 		if (this.currentNotificationView == null)
 			this.currentNotificationView = new RemoteViews(this.context.getPackageName(), R.layout.custom_update_notification_layout);
 		this.currentNotificationView.setImageViewResource(R.id.notification_image, R.drawable.ic_stat_arrow);
 		this.stringBuilder.setLength(0);
 		this.stringBuilder.append(this.updateBeginMessage);
-		this.stringBuilder.append(" from ").append(sender.getDescriptiveName());
-		
-		this.currentNotificationView.setTextViewText(R.id.notification_text, this.stringBuilder.toString());
-		this.currentNotificationView.setTextViewText(R.id.notification_subtext, this.context.getText(R.string.app_name));
+		this.stringBuilder.append(" from ");
+		int index = 0;
+		for (Market market : markets) {
+			if (market != null) {
+				if (index > 0) {
+					this.stringBuilder.append(", ");
+				}
+				this.stringBuilder.append(market.getId());
+				index++;
+			}
+		}
+//		this.currentNotificationView.setTextViewText(R.id.notification_text, this.stringBuilder.toString());
+//		this.currentNotificationView.setTextViewText(R.id.notification_subtext, this.context.getText(R.string.app_name));
 		
 		this.notification = new Notification(R.drawable.ic_stat_arrow, this.updateBeginMessage, System.currentTimeMillis());
 		//notification.defaults |= Notification.DEFAULT_SOUND;
 		this.notification.flags |= Notification.FLAG_AUTO_CANCEL;
-		this.notification.contentView = this.currentNotificationView;
+		//this.notification.contentView = this.currentNotificationView;
 		
 		// set intent to launch when the notification is tapped
 		Intent notificationIntent = new Intent(this.context, StocksActivity.class);
-		PendingIntent contentIntent = PendingIntent.getActivity(this.context, 0, notificationIntent, 0);
-		this.notification.contentIntent = contentIntent;
+		this.contentIntent = PendingIntent.getActivity(this.context, 0, notificationIntent, 0);
+		//this.notification.contentIntent = contentIntent;
+		this.notification.setLatestEventInfo(this.context, this.context.getText(R.string.app_name), this.stringBuilder.toString(), contentIntent);
 		
 		notificationManager.notify(UPDATE_DATA_ID, this.notification);
-
 	}
 
-	@Override
-	public void OnStockDataNoUpdate(IStockDataProvider sender) {
+	private void showFinishNotification() {
+		if (this.currentNotificationView != null) {
+			this.stringBuilder.setLength(0);
+			this.stringBuilder.append(this.updateFinishedMessage);
+			this.stringBuilder.append(": ");
+			this.stringBuilder.append(FormattingUtils.formatStockDate(Calendar.getInstance()));
+			
+
+			if (this.context.getSharedPreferences(Utils.PREF_NAME, 0).getBoolean(Utils.PREF_PERMANENT_NOTIF, true)) {
+				//this.currentNotificationView.setTextViewText(R.id.notification_text, this.stringBuilder.toString());
+				this.notification.setLatestEventInfo(this.context, this.context.getText(R.string.app_name), this.stringBuilder.toString(), this.contentIntent);
+				this.notificationManager.notify(UPDATE_DATA_ID, this.notification);
+			} else {
+				this.notificationManager.cancel(UPDATE_DATA_ID);
+			}
+		}
+	}
+
+	private void showNoUpdateNotification() {
 		if (this.currentNotificationView != null) {
 			this.stringBuilder.setLength(0);
 			this.stringBuilder.append(this.noUpdateMessage);
 			this.stringBuilder.append(": ");
 			this.stringBuilder.append(FormattingUtils.formatStockDate(Calendar.getInstance()));
 			
-			if (this.context.getSharedPreferences(Utils.PREF_NAME, 0).getBoolean(Utils.PREF_PERMANENT_NOTIF, true)) {
-				this.currentNotificationView.setTextViewText(R.id.notification_text, this.stringBuilder.toString());
+			final boolean permNotif = this.context.getSharedPreferences(Utils.PREF_NAME, 0).getBoolean(Utils.PREF_PERMANENT_NOTIF, true);
+			if (permNotif) {
+				//this.currentNotificationView.setTextViewText(R.id.notification_text, this.stringBuilder.toString());
+				this.notification.setLatestEventInfo(this.context, this.context.getText(R.string.app_name), this.stringBuilder.toString(), this.contentIntent);
 				this.notificationManager.notify(UPDATE_DATA_ID, this.notification);
 			} else {
 				this.notificationManager.cancel(UPDATE_DATA_ID);
 			}
+		}
+	}
+
+	@Override
+	public void OnStockDataNoUpdate(IStockDataProvider sender) {
+		showNoUpdateNotification();
+	}
+
+	@Override
+	public void onUpdateBegin(Market... markets) {
+		this.showStartNotfication(markets);
+	}
+
+	@Override
+	public void onUpdateFinished(boolean succes) {
+		if (succes) {
+			this.showFinishNotification();
+		} else {
+			this.showNoUpdateNotification();
 		}
 	}
 

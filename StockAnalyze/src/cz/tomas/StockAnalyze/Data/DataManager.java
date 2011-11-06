@@ -36,9 +36,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.SystemClock;
 import android.util.Log;
 import cz.tomas.StockAnalyze.Application;
-import cz.tomas.StockAnalyze.NotificationSupervisor;
-import cz.tomas.StockAnalyze.Data.GaeData.GaePseDataAdapter;
 import cz.tomas.StockAnalyze.Data.GaeData.GaeIndecesDataAdapter;
+import cz.tomas.StockAnalyze.Data.GaeData.GaePseDataAdapter;
 import cz.tomas.StockAnalyze.Data.GaeData.GaeXetraAdapter;
 import cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener;
 import cz.tomas.StockAnalyze.Data.Interfaces.IUpdateDateChangedListener;
@@ -113,22 +112,21 @@ public class DataManager implements IStockDataListener {
 		this.updateDateChangedListeners = new ArrayList<IUpdateDateChangedListener>();
 		this.updateStockDataListeners = new ArrayList<IStockDataListener>();
 		
-		NotificationSupervisor supervisor = new NotificationSupervisor(context);
 //		patriaPse.enable(true);
 //		patriaPse.addListener(this);
 //		patriaPse.addListener(supervisor);
 
 		gaeXetra.enable(true);
 		gaeXetra.addListener(this);
-		gaeXetra.addListener(supervisor);
+		//gaeXetra.addListener(supervisor);
 		
 		gaePse.enable(true);
 		gaePse.addListener(this);
-		gaePse.addListener(supervisor);
+		//gaePse.addListener(supervisor);
 		
 		gaeIndeces.enable(true);
 		gaeIndeces.addListener(this);
-		gaeIndeces.addListener(supervisor);
+		//gaeIndeces.addListener(supervisor);
 	}
 	
 	public static boolean isInitialized() {

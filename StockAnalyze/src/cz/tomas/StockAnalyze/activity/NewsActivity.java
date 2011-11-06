@@ -20,6 +20,9 @@
  */
 package cz.tomas.StockAnalyze.activity;
 
+import com.markupartist.android.widget.PullToRefreshListView;
+import com.markupartist.android.widget.PullToRefreshListView.OnRefreshListener;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -31,6 +34,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListView;
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.News.NewsItemsTask.ITaskListener;
 import cz.tomas.StockAnalyze.News.NewsListAdapter;
@@ -61,8 +65,16 @@ public class NewsActivity extends BaseListActivity implements ITaskListener {
 		this.refreshAnimation = AnimationUtils.loadAnimation(this, R.anim.refresh_rotate);
 		
 		this.setContentView(R.layout.news_layout);
-		this.getListView().setTextFilterEnabled(true);
-		this.getListView().setOnItemClickListener(new OnItemClickListener() {
+		final PullToRefreshListView listView = (PullToRefreshListView) this.getListView();
+		listView.setOnRefreshListener(new OnRefreshListener() {
+			
+			@Override
+			public void onRefresh() {
+				listView.onRefreshComplete();
+			}
+		});
+		listView.setTextFilterEnabled(true);
+		listView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long rowId) {
 				Intent intent = new Intent(NewsActivity.this, NewsDetailActivity.class);

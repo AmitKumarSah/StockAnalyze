@@ -20,22 +20,22 @@
  */
 package cz.tomas.StockAnalyze.charts.view;
 
-import cz.tomas.StockAnalyze.charts.Utils;
-import cz.tomas.StockAnalyze.charts.interfaces.IChartTextFormatter;
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
+import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
 import android.graphics.Path;
-import android.graphics.Paint.Align;
 import android.graphics.Typeface;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TimingLogger;
 import android.view.View;
+import cz.tomas.StockAnalyze.charts.R;
+import cz.tomas.StockAnalyze.charts.Utils;
+import cz.tomas.StockAnalyze.charts.interfaces.IChartTextFormatter;
 
 /**
  * @author tomas
@@ -84,11 +84,11 @@ public class ChartView extends View {
 		
 		this.paint = new Paint();
 		this.paint.setStrokeWidth(2*SCALE);
-		this.paint.setColor(0xFF3570e7);
+		this.paint.setColor(getResources().getColor(R.color.chartGrid));
 		this.paint.setAntiAlias(true);
 		
 		this.chartPaint = new Paint(this.paint);
-		this.chartPaint.setColor(Color.GREEN);
+		this.chartPaint.setColor(getResources().getColor(R.color.chartLine));
 		this.gridPaint = new Paint(this.paint);
 		this.gridPaint.setStrokeWidth(0.4f*SCALE);
 		this.gridPaint.setPathEffect(new DashPathEffect( new float[] {5f,5f}, 5f));
@@ -99,7 +99,7 @@ public class ChartView extends View {
 		
 		this.gridFillPaint = new Paint();
 		this.gridFillPaint.setStyle(Style.FILL_AND_STROKE);
-		this.gridFillPaint.setColor(Color.argb(32, 64, 200, 64));
+		this.gridFillPaint.setColor(getResources().getColor(R.color.chartFill));
 		
 //		boolean i = Log.isLoggable(Utils.LOG_TAG, Log.VERBOSE);
 //		String result = System.setProperty("log.tag.StockAnalyze", "VERBOSE");

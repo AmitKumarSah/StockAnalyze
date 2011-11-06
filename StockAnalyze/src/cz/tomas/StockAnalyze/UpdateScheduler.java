@@ -32,11 +32,11 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.AsyncTask;
-import android.provider.Settings;
 import android.util.Log;
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.DataProviderFactory;
 import cz.tomas.StockAnalyze.Data.IStockDataProvider;
+import cz.tomas.StockAnalyze.Data.Interfaces.IUpdateSchedulerListener;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.receivers.AlarmReceiver;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
@@ -73,10 +73,9 @@ public class UpdateScheduler {
 	private final int DAY_UPDATE_HOUR = 18;
 	private final int INTRADAY_START_UPDATE_HOUR = 9;
 	
-	private boolean isSchedulerRunning = false;
-	
 	private static PendingIntent intraUpdateIntent;
 	private static PendingIntent dayUpdateIntent;
+	private IUpdateSchedulerListener listener;
 	
 	private Semaphore semaphore;
 	
@@ -157,6 +156,10 @@ public class UpdateScheduler {
 			//		Map<String, String> pars = new HashMap<String, String>();
 			//		pars.put(Consts.FLURRY_KEY_SCHEDULED_UPDATE_DAY, String.valueOf(Calendar.getInstance().get(Calendar.DAY_OF_WEEK)));
 			//		FlurryAgent.onEvent(Consts.FLURRY_EVENT_SCHEDULED_UPDATE, pars);
+
+			if (listener != null) {
+				listener.onUpdateBegin(Markets.CZ, Markets.DE, Markets.GLOBAL);
+			}
 			this.performUpdateInternal(Markets.CZ);
 			this.performUpdateInternal(Markets.DE);
 			this.performUpdateInternal(Markets.GLOBAL);
@@ -170,6 +173,9 @@ public class UpdateScheduler {
 	 * update real time data immediately for all markets
 	 */
 	public void updateImmediatly() {
+		if (listener != null) {
+			listener.onUpdateBegin(Markets.CZ, Markets.DE, Markets.GLOBAL);
+		}
 		this.performUpdateInternal(Markets.CZ);
 		this.performUpdateInternal(Markets.DE);
 		this.performUpdateInternal(Markets.GLOBAL);
@@ -179,6 +185,9 @@ public class UpdateScheduler {
 	 * update real time data immediately for given market
 	 */
 	public void updateImmediatly(Market market) {
+		if (listener != null) {
+			listener.onUpdateBegin(market);
+		}
 		this.performUpdateInternal(market);
 	}
 
@@ -237,15 +246,23 @@ public class UpdateScheduler {
 		am.set(AlarmManager.RTC, cal.getTimeInMillis(), pendingIntent);
 	}
 	
+	public void setListener(IUpdateSchedulerListener listener) {
+		this.listener = listener;
+	}
+
 	/**
 	 * do the refresh on given StockDataProvider
 	 */
 	class RefreshTask extends AsyncTask<IStockDataProvider, Integer, Boolean> {
 
 		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+		}
+
+		@Override
 		protected Boolean doInBackground(IStockDataProvider... params) {
 			if (params.length == 1)
-				isSchedulerRunning = true;
 				try {
 					semaphore.acquire();	// synchronize updates, so there is only one active at the time (because backend instances)
 					IStockDataProvider provider = params[0];
@@ -260,7 +277,6 @@ public class UpdateScheduler {
 				} finally {
 					semaphore.release();
 				}
-			isSchedulerRunning = false;
 			return null;
 		}
 
@@ -269,10 +285,15 @@ public class UpdateScheduler {
 		 */
 		@Override
 		protected void onPostExecute(Boolean result) {
+			super.onPostExecute(result);
 			Editor editor = preferences.edit();
 			editor.putLong(Utils.PREF_LAST_UPDATE_TIME, System.currentTimeMillis());
 			editor.commit();
-			super.onPostExecute(result);
+			
+
+			if (listener != null && result != null) {
+				listener.onUpdateFinished(result);
+			}
 		}
 		
 	}

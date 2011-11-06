@@ -54,6 +54,8 @@ public class Application extends android.app.Application {
 		Log.i(Utils.LOG_TAG, "STARTING THE APPLICATION");
 		this.scheduler = new UpdateScheduler(this);
 		this.dataManager = DataManager.getInstance(this);
+		NotificationSupervisor supervisor = new NotificationSupervisor(this);
+		this.scheduler.setListener(supervisor);
 
 		// do immediate update and schedule next one
 		try {
