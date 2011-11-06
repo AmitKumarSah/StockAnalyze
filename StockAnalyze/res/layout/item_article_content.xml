@@ -11,6 +11,7 @@
         android:orientation="vertical">
         <TextView android:id="@+id/newsArticleTitle"
         	style="@style/titleText"
+        	android:focusable="true"
         	android:paddingLeft="0dp"
         	android:paddingTop="0dp"
         	android:paddingBottom="2dp"
@@ -20,10 +21,9 @@
         	style="@style/subText"
         	android:layout_marginTop="4dp"
         	android:layout_marginBottom="6dp"/>
-        <TextView android:id="@+id/newsArticleContent"
-        	android:linksClickable="true"
-       		android:layout_width="fill_parent" 
-       		android:layout_height="fill_parent"/>
+        <FrameLayout android:id="@+id/newsArticleContentContainer" 
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" />
     </LinearLayout>
 </ScrollView>
 

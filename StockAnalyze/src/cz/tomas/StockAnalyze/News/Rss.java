@@ -41,7 +41,8 @@ import cz.tomas.StockAnalyze.utils.Utils;
  */
 public class Rss {
 	
-	private static final String GWT_URL = "http://google.com/gwt/x?ct=url&u=%s";
+	public static final String BASE_URL = "http://google.com/";
+	private static final String GWT_URL = BASE_URL + "gwt/x?ct=url&u=%s";
 	
 	XmlFeedPullParseHandler handler;
 	NewsSqlHelper sqlHelper;
@@ -100,11 +101,13 @@ public class Rss {
 			this.sqlHelper.deleteOldArticles();
 			presentArticles = this.getArticles(feed.getFeedId());
 			this.sqlHelper.markArticlesToDelete();
+			
 			// prevent duplicities
-			if (downloadedArticles.size() > 0)
+			if (downloadedArticles.size() > 0) {
 				for (Article presentArticle : presentArticles) {
 					for (int i = 0; i < downloadedArticles.size(); i++) {
 						final Article downloadedArticle = downloadedArticles.get(i);
+						
 						if (presentArticle.getUrl().equals(downloadedArticle.getUrl())) {
 							downloadedArticles.remove(i);
 							presentFreshArticles.add(String.valueOf(presentArticle.getArticleId()));
@@ -112,8 +115,8 @@ public class Rss {
 						}
 					}
 				}
+			}
 			if (downloadedArticles.size() > 0) {
-				//Collections.sort(downloadedArticles, dateComparator);
 				for (Article article : downloadedArticles) {
 					try {
 						article.getDescription().replace('\n', ' ');

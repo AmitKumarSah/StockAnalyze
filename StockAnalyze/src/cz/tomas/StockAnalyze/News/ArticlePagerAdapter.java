@@ -3,20 +3,20 @@ package cz.tomas.StockAnalyze.News;
 import java.util.ArrayList;
 import java.util.List;
 
-import cz.tomas.StockAnalyze.News.NewsItemsTask.ITaskListener;
-import cz.tomas.StockAnalyze.fragments.ArticleFragment;
-
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import cz.tomas.StockAnalyze.News.NewsItemsTask.ITaskListener;
+import cz.tomas.StockAnalyze.fragments.WebArticleFragment;
 
 public final class ArticlePagerAdapter extends FragmentPagerAdapter {
 
 	public static final String ARTICLE_TITLE = "article-title";
 	public static final String ARTICLE_DATE = "article-date";
 	public static final String ARTICLE_CONTENT = "article-content";
+	public static final String ARTICLE_URL = "article-url";
 	
 	//private Context context;
 	private List<Article> articles;
@@ -36,7 +36,7 @@ public final class ArticlePagerAdapter extends FragmentPagerAdapter {
 	 */
 	@Override
 	public Fragment getItem(int position) {
-		ArticleFragment fragment = new ArticleFragment();
+		WebArticleFragment fragment = new WebArticleFragment();
 		
 		Article article = this.articles.get(position);
 		if (article != null) {
@@ -48,6 +48,7 @@ public final class ArticlePagerAdapter extends FragmentPagerAdapter {
 			} else {
 				bundle.putString(ARTICLE_CONTENT, article.getDescription());
 			}
+			bundle.putString(ARTICLE_URL, article.getUrl().toString());
 			fragment.setArguments(bundle);
 		}
 		return fragment;

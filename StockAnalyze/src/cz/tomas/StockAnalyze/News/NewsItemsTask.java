@@ -15,6 +15,7 @@ import cz.tomas.StockAnalyze.utils.Utils;
  */
 	
 public abstract class NewsItemsTask extends AsyncTask<Boolean, Integer, List<Article>> {
+	
 	public interface ITaskListener {
 		void onUpdateStart();
 		void onUpdateFinished();
@@ -62,8 +63,10 @@ public abstract class NewsItemsTask extends AsyncTask<Boolean, Integer, List<Art
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
 		}
+		
 		final boolean fetch = params[0];
 		List<Article> articles = null;
+		
 		try {
 			rss.sqlHelper.acquireDb(this);
 			List<Feed> feeds = rss.getFeeds();

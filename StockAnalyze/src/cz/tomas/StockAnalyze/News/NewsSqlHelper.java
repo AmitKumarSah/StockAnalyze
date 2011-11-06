@@ -367,7 +367,7 @@ public final class NewsSqlHelper extends AbstractSqlHelper {
 	}
 
 	/**
-	 * mark all current articles with TO_DELETE flag
+	 * mark all current articles with {@link #FLAG_TO_DELETE}
 	 */
 	public void markArticlesToDelete() {
 		SQLiteDatabase db = null;
