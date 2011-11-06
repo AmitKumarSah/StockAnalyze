@@ -46,10 +46,14 @@ import cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
+import cz.tomas.StockAnalyze.fragments.PortfolioListFragment;
+import cz.tomas.StockAnalyze.fragments.StockListFragment;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 
 /**
+ * Adapter for list of stocks - used in {@link StockListFragment}, {@link PortfolioListFragment}
+ * 
  * @author tomas
  *
  */
@@ -171,6 +175,7 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
         View v = convertView;
+        StockItemViewHolder holder = null;
      // Handle dividers
         if(this.isDivider(position)) {
             View divider = this.vi.inflate(R.layout.stock_list_divider, null);
@@ -180,6 +185,15 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
         }
         if (v == null) {
             v = vi.inflate(R.layout.stock_list_item, null);
+            holder = new StockItemViewHolder();
+            holder.txtTicker = (TextView) v.findViewById(R.id.bottomtext);
+            holder.txtName = (TextView) v.findViewById(R.id.toptext);
+            holder.txtPrice = (TextView) v.findViewById(R.id.righttext);
+            holder.txtChange = (TextView) v.findViewById(R.id.righttext2);
+            holder.priceGroupView = v.findViewById(R.id.pricelayout);
+            v.setTag(holder);
+        } else {
+        	holder = (StockItemViewHolder) v.getTag();
         }
 //        View iconView = v.findViewById(R.id.iconStockItem);
 //        if (! this.showIcons) {
@@ -187,9 +201,9 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 //        		 iconView.setVisibility(View.GONE);
 //        }
         
-        StockItem stock = this.getItem(position);
+        final StockItem stock = this.getItem(position);
         if (stock != null)
-        	fillView(v, stock);
+        	fillView(holder, stock);
         else {
         	Log.d(Utils.LOG_TAG, "stock is null, cannot create list's view at position " + position);
         }
@@ -199,49 +213,49 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 
 	/**
 	 * Get data for stock item and write them to the view
-	 * @param v View to fill
+	 * @param holder View to fill
 	 * @param stock stock to access data to write to view
 	 */
-	private void fillView(View v, StockItem stock) {
-		TextView txtTicker = (TextView) v.findViewById(R.id.bottomtext);
-        TextView txtName = (TextView) v.findViewById(R.id.toptext);
-        TextView txtPrice = (TextView) v.findViewById(R.id.righttext);
-        TextView txtChange = (TextView) v.findViewById(R.id.righttext2);
-        View priceGroupView = v.findViewById(R.id.pricelayout);
+	private void fillView(StockItemViewHolder holder, StockItem stock) {
+//		TextView txtTicker = (TextView) holder.findViewById(R.id.bottomtext);
+//        TextView txtName = (TextView) holder.findViewById(R.id.toptext);
+//        TextView txtPrice = (TextView) holder.findViewById(R.id.righttext);
+//        TextView txtChange = (TextView) holder.findViewById(R.id.righttext2);
+//        View priceGroupView = holder.findViewById(R.id.pricelayout);
         
-        if (txtName != null) 
-        	txtName.setText(stock.getName());
-        if(txtTicker != null)
-        	txtTicker.setText(stock.getTicker());
-        if(txtPrice != null && txtChange != null) {
+        if (holder.txtName != null) 
+        	holder.txtName.setText(stock.getName());
+        if(holder.txtTicker != null)
+        	holder.txtTicker.setText(stock.getTicker());
+        if(holder.txtPrice != null && holder.txtChange != null) {
         	DayData data = null;
 			try {
 				data = dataSet.get(stock);
 			} catch (Exception e) {
-				txtPrice.setText("Fail");
+				holder.txtPrice.setText("Fail");
 				if (e.getMessage() != null) {
-					Log.d(Utils.LOG_TAG, e.getMessage());
+					Log.d(Utils.LOG_TAG, e.getMessage(), e);
 				}
 			}
         	if (data != null) {
-				txtPrice.setText(String.valueOf(data.getPrice()));
+        		holder.txtPrice.setText(String.valueOf(data.getPrice()));
 				NumberFormat percentFormat = FormattingUtils.getPercentFormat();
 				String strChange = percentFormat.format(data.getChange());
 				String strAbsChange = percentFormat.format(data.getAbsChange());
-				txtChange.setText(String.format("%s (%s%%)", strAbsChange, strChange));
+				holder.txtChange.setText(String.format("%s (%s%%)", strAbsChange, strChange));
 				
 				// set background drawable according to positive/negative price change
-				if (data.getChange() > 0 && priceGroupView != null) {
-					priceGroupView.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.groupbox_green_shape));
+				if (data.getChange() > 0 && holder.priceGroupView != null) {
+					holder.priceGroupView.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.groupbox_green_shape));
 				}
-				else if (data.getChange() < 0 && priceGroupView != null) {
-					priceGroupView.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.groupbox_red_shape));
+				else if (data.getChange() < 0 && holder.priceGroupView != null) {
+					holder.priceGroupView.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.groupbox_red_shape));
 				}
-				else if (priceGroupView != null) {
-					priceGroupView.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.groupbox_dark_shape));
+				else if (holder.priceGroupView != null) {
+					holder.priceGroupView.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.groupbox_dark_shape));
 				}
 			} else {
-				txtPrice.setText(R.string.InvalidData);
+				holder.txtPrice.setText(R.string.InvalidData);
 			}
         }
 	}
@@ -277,7 +291,7 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 		this.listeners.add(listener);
 	}
 	
-	/*
+	/**
 	 * this task load all stocks from DataManager and notify the ListView,
 	 * it also takes care about the progress view
 	 */
@@ -363,7 +377,13 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 		protected void onProgressUpdate(Integer... values) {
 			super.onProgressUpdate(values);
 		}
-		
-		 
+	}
+	
+	private static class StockItemViewHolder {
+		TextView txtTicker;
+        TextView txtName;
+        TextView txtPrice;
+        TextView txtChange;
+        View priceGroupView;
 	}
 }
