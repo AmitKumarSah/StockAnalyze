@@ -41,7 +41,11 @@
 
 		<activity android:name=".activity.StockListActivity" android:launchMode="singleTop"></activity>
 		<activity android:name=".activity.IndecesListActivity" android:launchMode="singleTop"  android:label="@string/homeIndeces"/>
-		<activity android:name=".activity.StocksActivity" android:launchMode="singleTop" android:label="@string/homeStockList"/>
+		<activity android:name=".activity.StocksActivity" 
+		    android:launchMode="singleTop" 
+		    android:label="@string/homeStockList"
+		    android:taskAffinity=""
+		    android:excludeFromRecents="true" />
 		<activity android:name=".activity.StockSearchActivity"></activity>
 		<activity android:name=".activity.StockDetailActivity"  android:label="@string/activityStockDetail"/>
 		<activity android:name=".activity.StockChartActivity"	

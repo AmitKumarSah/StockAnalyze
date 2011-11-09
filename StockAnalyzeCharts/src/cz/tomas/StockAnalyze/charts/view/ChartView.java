@@ -23,10 +23,12 @@ package cz.tomas.StockAnalyze.charts.view;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.DashPathEffect;
+import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
 import android.graphics.Path;
+import android.graphics.Shader.TileMode;
 import android.graphics.Typeface;
 import android.text.TextPaint;
 import android.util.AttributeSet;
@@ -227,6 +229,13 @@ public class ChartView extends View {
 		path.lineTo(originX, originY);
 		
 		canvas.drawLines(points, this.chartPaint);
+		if (this.gridFillPaint.getShader() == null) {
+			int color = this.gridFillPaint.getColor();
+			int opaque = color & 0x92ffffff;
+			int transparent = color & 0x10ffffff;
+			
+			this.gridFillPaint.setShader(new LinearGradient(0, 0, 0, getHeight(), transparent, opaque, TileMode.CLAMP));
+		}
 		canvas.drawPath(path, this.gridFillPaint);
 
 		//Log.d(Utils.LOG_TAG, "finished drawing chart, last point: " + (step*(data.length -1)));
