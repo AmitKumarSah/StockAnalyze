@@ -234,7 +234,7 @@ public class ChartView extends View {
 			int opaque = color & 0x92ffffff;
 			int transparent = color & 0x10ffffff;
 			
-			this.gridFillPaint.setShader(new LinearGradient(0, 0, 0, getHeight(), transparent, opaque, TileMode.CLAMP));
+			this.gridFillPaint.setShader(new LinearGradient(0, 0, 0, getHeight(), opaque, transparent, TileMode.CLAMP));
 		}
 		canvas.drawPath(path, this.gridFillPaint);
 

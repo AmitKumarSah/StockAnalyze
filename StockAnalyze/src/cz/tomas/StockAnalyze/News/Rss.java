@@ -29,6 +29,7 @@ import java.util.List;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.text.TextUtils;
 import android.util.Log;
 import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetNewsException;
 import cz.tomas.StockAnalyze.utils.DownloadService;
@@ -42,7 +43,7 @@ import cz.tomas.StockAnalyze.utils.Utils;
 public class Rss {
 	
 	public static final String BASE_URL = "http://google.com/";
-	private static final String GWT_URL = BASE_URL + "gwt/x?ct=url&u=%s";
+	static final String GWT_URL = BASE_URL + "gwt/x?ct=url&u=%s";
 	
 	XmlFeedPullParseHandler handler;
 	NewsSqlHelper sqlHelper;
@@ -112,19 +113,21 @@ public class Rss {
 							downloadedArticles.remove(i);
 							presentFreshArticles.add(String.valueOf(presentArticle.getArticleId()));
 							break;
+						} else {
+							downloadedArticle.getDescription().replace('\n', ' ');
 						}
 					}
 				}
 			}
 			if (downloadedArticles.size() > 0) {
-				for (Article article : downloadedArticles) {
-					try {
-						article.getDescription().replace('\n', ' ');
-						downloadContent(article);
-					} catch (IOException e) {
-						Log.e(Utils.LOG_TAG, "failed to download content of article " + article, e);
-					}
-				}
+//				for (Article article : downloadedArticles) {
+//					try {
+//						article.getDescription().replace('\n', ' ');
+//						downloadContent(article);
+//					} catch (IOException e) {
+//						Log.e(Utils.LOG_TAG, "failed to download content of article " + article, e);
+//					}
+//				}
 				this.sqlHelper.insertArticles(feed.getFeedId(), downloadedArticles);
 			}
 			if (presentFreshArticles.size() > 0) {
@@ -153,7 +156,31 @@ public class Rss {
 //			return 0;
 //		}
 //	};
-	
+
+	private void downloadContent(Article article) throws IOException {
+		String url = String.format(Rss.GWT_URL, URLEncoder.encode(article.getUrl().toString()));
+		
+		//InputStream stream = DownloadService.GetInstance().openHttpConnection(url, true);
+		byte[] content = DownloadService.GetInstance().DownloadFromUrl(url, false);
+		String html = new String(content);
+		article.setContent(html);
+		this.sqlHelper.updateArticleContent(article);
+	}
+
+	public void downloadContent(List<Article> list) {
+		for (Article article : list) {
+			try {
+				this.sqlHelper.acquireDb(this);
+				if (TextUtils.isEmpty(article.getContent())) {
+					this.downloadContent(article);
+				}
+			} catch (Exception e) {
+				Log.e(Utils.LOG_TAG, "failed to download content of article " + article, e);
+			} finally {
+				this.sqlHelper.releaseDb(true, this);
+			}
+		}
+	}
 	public Cursor getAllArticlesCursor() {
 		return this.sqlHelper.getAllArticlesCursor();
 	}
@@ -184,14 +211,5 @@ public class Rss {
 	 */
 	public void done() {
 		this.sqlHelper.close();
-	}
-
-	private void downloadContent(Article article) throws IOException {
-		String url = String.format(GWT_URL, URLEncoder.encode(article.getUrl().toString()));
-		
-		//InputStream stream = DownloadService.GetInstance().openHttpConnection(url, true);
-		byte[] content = DownloadService.GetInstance().DownloadFromUrl(url, false);
-		String html = new String(content);
-		article.setContent(html);
 	}
 }

@@ -81,12 +81,12 @@ public class NewsActivity extends BaseListActivity implements ITaskListener {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long rowId) {
 				Intent intent = new Intent(NewsActivity.this, NewsDetailActivity.class);
-				intent.putExtra(EXTRA_NEWS_POSITION, position);
+				intent.putExtra(EXTRA_NEWS_POSITION, rowId);
 				startActivity(intent);
 			}
 		});
 		
-		ActionBar bar = (ActionBar) this.findViewById(R.id.newsActionBar);
+		final ActionBar bar = (ActionBar) this.findViewById(R.id.newsActionBar);
 		this.refreshButoon = bar.findViewById(R.id.actionRefreshButton);
 		bar.setActionBarListener(new IActionBarListener() {
 			
@@ -108,7 +108,7 @@ public class NewsActivity extends BaseListActivity implements ITaskListener {
 		}
 		
 		this.setListAdapter(adapter);
-		long current = SystemClock.elapsedRealtime();
+		final long current = SystemClock.elapsedRealtime();
 		if (current - lastUpdateTime > UPDATE_INTERVAL) {
 			this.refresh();
 			lastUpdateTime = current;
@@ -117,7 +117,7 @@ public class NewsActivity extends BaseListActivity implements ITaskListener {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-	    MenuInflater inflater = getMenuInflater();
+	    final MenuInflater inflater = getMenuInflater();
 	    inflater.inflate(R.menu.stock_list_menu, menu);
 	    return super.onCreateOptionsMenu(menu);
 	}

@@ -32,10 +32,10 @@ public final class NewsDetailActivity extends BaseFragmentActivity implements On
 		this.setContentView(R.layout.news_detail_layout);
 		findViewById(R.id.progressNews).setVisibility(View.VISIBLE);
 		
-		Bundle extras = getIntent().getExtras();
+		final Bundle extras = getIntent().getExtras();
 		final int initialPosition = extras != null ? extras.getInt(NewsActivity.EXTRA_NEWS_POSITION) : 0;
 		final boolean restorePosition = savedInstanceState != null && savedInstanceState.containsKey(STATE_CURRENT_POSITION);
-		final int position =  restorePosition ? savedInstanceState.getInt(STATE_CURRENT_POSITION) : initialPosition;
+		final int position =  (int) (restorePosition ? savedInstanceState.getLong(STATE_CURRENT_POSITION) : initialPosition);
 
 		this.circlesView = (CirclesView) this.findViewById(R.id.newsCirclesView);
 		this.pager = (ViewPager) this.findViewById(R.id.newsArticleViewPager);

@@ -366,6 +366,18 @@ public final class NewsSqlHelper extends AbstractSqlHelper {
 		}
 	}
 
+	public void updateArticleContent(Article article) {
+		SQLiteDatabase db = null;
+		try {
+			db = this.getWritableDatabase();
+			ContentValues values = new ContentValues();
+			values.put(ArticleColumns.CONTENT, article.getContent());
+			db.update(ARTICLES_TABLE_NAME, values, ArticleColumns.ID + "=?", 
+					new String[] { String.valueOf(article.getArticleId()) });
+		} finally {
+			this.close();
+		}
+	}
 	/**
 	 * mark all current articles with {@link #FLAG_TO_DELETE}
 	 */

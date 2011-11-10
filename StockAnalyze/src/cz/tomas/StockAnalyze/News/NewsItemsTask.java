@@ -27,7 +27,7 @@ public abstract class NewsItemsTask extends AsyncTask<Boolean, Integer, List<Art
 	protected ITaskListener listener;
 	protected Exception ex;
 	private Semaphore semaphore;
-	private Rss rss;
+	protected Rss rss;
 
 	/**
 	 * @param context

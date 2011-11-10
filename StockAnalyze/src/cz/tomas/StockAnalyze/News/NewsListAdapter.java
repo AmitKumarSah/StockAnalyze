@@ -78,53 +78,6 @@ public class NewsListAdapter extends SimpleCursorAdapter {
 		Log.d(Utils.LOG_TAG, "loading news data");
 	}
 	
-	
-	
-//	@Override
-//	public View getView(int position, View convertView, ViewGroup parent) {
-//		View v = convertView;
-//		if (v == null) {
-//			v = vi.inflate(R.layout.news_list_item, null);
-//		}
-//		
-//		if (this.getCount() > position) {
-//			TextView txtTitle = (TextView) v.findViewById(R.id.txtNewsItemTitle);
-//			TextView txtPreview = (TextView) v.findViewById(R.id.txtNewsItemContentPreview);
-//			TextView txtInfo = (TextView) v.findViewById(R.id.txtNewsItemBottomInfo);
-//			
-//			Article article = this.getItem(position);
-//			if (article != null) {
-//				//Log.d(Utils.LOG_TAG, article.toString());
-//				if (txtTitle != null)
-//					txtTitle.setText(article.getTitle());
-//				else
-//					Log.d(Utils.LOG_TAG, "can't set title text - TextView is null");	
-//				if (txtPreview != null) {
-//					String description = article.getEscapedDescription();
-//					if (description != null) {
-//						if (description.length() > MAX_DESCRIPTION_LENGHT) {
-//							description = description.substring(0,
-//									MAX_DESCRIPTION_LENGHT);
-//							description += "...";
-//						}
-//						
-//						txtPreview.setText(description);
-//					}
-//				}
-//				if (txtInfo != null) {
-//					Calendar cal = new GregorianCalendar(Utils.PRAGUE_TIME_ZONE);
-//					long date = article.getDate();
-//					cal.setTimeInMillis(date);
-//					//java.text.DateFormat frm = SimpleDateFormat.getDateTimeInstance();
-//					String dateText = FormattingUtils.formatDate(cal);
-//					txtInfo.setText(dateText);
-//				}
-//			}
-//		}
-//		
-//		return v;
-//	}
-	
 	@Override
 	public void bindView(View view, Context arg1, Cursor cursor) {
 		super.bindView(view, arg1, cursor);
@@ -165,6 +118,7 @@ public class NewsListAdapter extends SimpleCursorAdapter {
 			super(rss, context);
 		}
 
+		@SuppressWarnings("unchecked")
 		protected void onPostExecute(List<Article> result) {
 			if (result != null) {
 //				clear();
@@ -178,16 +132,37 @@ public class NewsListAdapter extends SimpleCursorAdapter {
 					if (this.ex != null && this.ex.getMessage() != null) {
 						message = this.context.getString(R.string.FailedGetNews);
 						message += (": " + this.ex.getMessage());
-					} else
+					} else {
 						message = this.context.getString(R.string.NoNews);
+					}
 					Toast.makeText(this.context, message, Toast.LENGTH_LONG).show();
 				}
+				final FetchContentTask task = new FetchContentTask(this.rss);
+				task.execute(result);
 			}
 			if (this.listener != null) {
 				this.listener.onUpdateFinished();
 			}
-			CursorTask task = new CursorTask();
+			final CursorTask task = new CursorTask();
 			task.execute((Void)null);
+		}
+	}
+	
+	private class FetchContentTask extends AsyncTask<List<Article>, Integer, Void> {
+
+		private final Rss rss;
+		public FetchContentTask(Rss rss) {
+			this.rss = rss;
+		}
+
+		@Override
+		protected Void doInBackground(List<Article>... params) {
+			if (params == null || params.length != 1) {
+				return null;
+			}
+			
+			this.rss.downloadContent(params[0]);
+			return null;
 		}
 	}
 }
