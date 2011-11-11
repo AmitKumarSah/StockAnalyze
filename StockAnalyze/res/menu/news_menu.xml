@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+	<item android:id="@+id/menu_browser"
+	    android:icon="@android:drawable/ic_menu_view"
+        android:title="@string/viewInBrowser"
+	    android:orderInCategory="0"
+        android:showAsAction="never"/>
+	
+	<item android:id="@+id/menu_share"
+	    android:icon="@drawable/ic_action_share"
+        android:title="@string/share"
+	    android:orderInCategory="1"
+        android:showAsAction="ifRoom"/>
+
+</menu>
