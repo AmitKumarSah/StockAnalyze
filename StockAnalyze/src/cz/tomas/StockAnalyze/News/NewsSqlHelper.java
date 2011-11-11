@@ -294,7 +294,7 @@ public final class NewsSqlHelper extends AbstractSqlHelper {
 				Log.w(Utils.LOG_TAG, "articles cursor is empty");
 			}
 		} catch (Exception e) {
-			Log.e(Utils.LOG_TAG, e.toString());
+			Log.e(Utils.LOG_TAG, "failed to read articles cursor", e);
 		} finally {
 			if (db != null) {
 				this.close();

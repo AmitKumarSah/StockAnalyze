@@ -81,7 +81,7 @@ public class NewsActivity extends BaseListActivity implements ITaskListener {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long rowId) {
 				Intent intent = new Intent(NewsActivity.this, NewsDetailActivity.class);
-				intent.putExtra(EXTRA_NEWS_POSITION, rowId);
+				intent.putExtra(EXTRA_NEWS_POSITION, position - listView.getHeaderViewsCount());
 				startActivity(intent);
 			}
 		});

@@ -113,21 +113,11 @@ public class Rss {
 							downloadedArticles.remove(i);
 							presentFreshArticles.add(String.valueOf(presentArticle.getArticleId()));
 							break;
-						} else {
-							downloadedArticle.getDescription().replace('\n', ' ');
 						}
 					}
 				}
 			}
 			if (downloadedArticles.size() > 0) {
-//				for (Article article : downloadedArticles) {
-//					try {
-//						article.getDescription().replace('\n', ' ');
-//						downloadContent(article);
-//					} catch (IOException e) {
-//						Log.e(Utils.LOG_TAG, "failed to download content of article " + article, e);
-//					}
-//				}
 				this.sqlHelper.insertArticles(feed.getFeedId(), downloadedArticles);
 			}
 			if (presentFreshArticles.size() > 0) {

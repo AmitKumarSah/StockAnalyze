@@ -90,6 +90,7 @@ public class XmlFeedPullParseHandler {
 	                                currentMessage.setUrl(new URL(text));
 	                            } else if (name.equalsIgnoreCase(DESCRIPTION)){
 	                            	text = text.trim();
+	                            	text = text.replaceAll("<[^>]+>", " ").replace('\n', ' ');
 	                                currentMessage.setDescription(text);
 	                            } else if (name.equalsIgnoreCase(PUB_DATE)){
 	                            	currentMessage.setDate(FormattingUtils.parse(text).getTime());
