@@ -1,11 +1,17 @@
 package cz.tomas.StockAnalyze.activity;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import cz.tomas.StockAnalyze.R;
+import cz.tomas.StockAnalyze.News.Article;
 import cz.tomas.StockAnalyze.News.ArticlePagerAdapter;
 import cz.tomas.StockAnalyze.News.NewsItemsTask.ITaskListener;
 import cz.tomas.StockAnalyze.activity.base.BaseFragmentActivity;
@@ -71,6 +77,31 @@ public final class NewsDetailActivity extends BaseFragmentActivity implements On
 	public void onSaveInstanceState(Bundle outState) {
 		outState.putInt(STATE_CURRENT_POSITION, this.currentPosition);
 		super.onSaveInstanceState(outState);
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.news_menu, menu);
+		return super.onCreateOptionsMenu(menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if (item.getItemId() == R.id.menu_share) {
+			Article article = adapter.getArticle(this.currentPosition);
+			Intent intent = new Intent(Intent.ACTION_SEND);
+			intent.setType("text/plain");
+			intent.putExtra(Intent.EXTRA_SUBJECT, article.getTitle());
+			intent.putExtra(Intent.EXTRA_TEXT, article.getUrl().toString());
+			startActivity(Intent.createChooser(intent, getText(R.string.share)));
+		} else if (item.getItemId() == R.id.menu_browser) {
+			Article article = adapter.getArticle(this.currentPosition);
+			Intent intent = new Intent(Intent.ACTION_VIEW);
+			intent.setData(Uri.parse(article.getUrl().toString()));
+			startActivity(Intent.createChooser(intent, getText(R.string.share)));
+		}
+		return super.onOptionsItemSelected(item);
 	}
 
 	@Override

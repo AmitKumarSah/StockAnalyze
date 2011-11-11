@@ -105,6 +105,9 @@ public final class PortfoliosActivity extends BaseFragmentActivity implements On
 	    case R.id.menu_portfolio_settings:
 	    	NavUtils.goToSettings(this);
 	        return true;
+	    case R.id.menu_portfolio_add:
+	    	this.showDialog(DIALOG_ADD_NEW);
+	    	return true;
 	    default:
 	        return super.onOptionsItemSelected(item);
 	    }

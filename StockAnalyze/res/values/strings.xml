@@ -51,6 +51,8 @@
 	<string name="InvalidData">Invalid data</string>
 	<string name="Statistics">Statistics</string>
 	<string name="pieces">pcs</string>
+	<string name="share">Sdílet</string>
+	<string name="viewInBrowser">Zobrazit v prohlížeči</string>
 	
 	<string name="homeStockList">Stocks</string>
 	<string name="homeNews">Market News</string>
