@@ -102,6 +102,7 @@ public class ActionBarHelperBase extends ActionBarHelper {
 
         // Add title text
         TextView titleText = new TextView(mActivity, null, R.attr.actionbarCompatTitleStyle);
+        titleText.setId(R.id.actionbar_compat_title);
         titleText.setLayoutParams(springLayoutParams);
         titleText.setText(mActivity.getTitle());
         actionBarCompat.addView(titleText);

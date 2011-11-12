@@ -20,7 +20,9 @@
  */
 package cz.tomas.StockAnalyze;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.concurrent.Semaphore;
 
 import android.app.AlarmManager;
@@ -75,13 +77,14 @@ public class UpdateScheduler {
 	
 	private static PendingIntent intraUpdateIntent;
 	private static PendingIntent dayUpdateIntent;
-	private IUpdateSchedulerListener listener;
+	private List<IUpdateSchedulerListener> listeners;
 	
 	private Semaphore semaphore;
 	
 	UpdateScheduler(Context context) {
 		this.context = context;
 		this.semaphore = new Semaphore(1);
+		this.listeners = new ArrayList<IUpdateSchedulerListener>();
 		
 		if (intraUpdateIntent == null) {
 			Intent intent = new Intent(INTRA_UPDATE_ACTION, null, this.context, AlarmReceiver.class);
@@ -157,8 +160,10 @@ public class UpdateScheduler {
 			//		pars.put(Consts.FLURRY_KEY_SCHEDULED_UPDATE_DAY, String.valueOf(Calendar.getInstance().get(Calendar.DAY_OF_WEEK)));
 			//		FlurryAgent.onEvent(Consts.FLURRY_EVENT_SCHEDULED_UPDATE, pars);
 
-			if (listener != null) {
-				listener.onUpdateBegin(Markets.CZ, Markets.DE, Markets.GLOBAL);
+			for (IUpdateSchedulerListener listener : this.listeners) {
+				if (listener != null) {
+					listener.onUpdateBegin(Markets.CZ, Markets.DE, Markets.GLOBAL);
+				}
 			}
 			this.performUpdateInternal(Markets.CZ);
 			this.performUpdateInternal(Markets.DE);
@@ -173,8 +178,10 @@ public class UpdateScheduler {
 	 * update real time data immediately for all markets
 	 */
 	public void updateImmediatly() {
-		if (listener != null) {
-			listener.onUpdateBegin(Markets.CZ, Markets.DE, Markets.GLOBAL);
+		for (IUpdateSchedulerListener listener : this.listeners) {
+			if (listener != null) {
+				listener.onUpdateBegin(Markets.CZ, Markets.DE, Markets.GLOBAL);
+			}
 		}
 		this.performUpdateInternal(Markets.CZ);
 		this.performUpdateInternal(Markets.DE);
@@ -185,8 +192,10 @@ public class UpdateScheduler {
 	 * update real time data immediately for given market
 	 */
 	public void updateImmediatly(Market market) {
-		if (listener != null) {
-			listener.onUpdateBegin(market);
+		for (IUpdateSchedulerListener listener : this.listeners) {
+			if (listener != null) {
+				listener.onUpdateBegin(market);
+			}
 		}
 		this.performUpdateInternal(market);
 	}
@@ -246,8 +255,12 @@ public class UpdateScheduler {
 		am.set(AlarmManager.RTC, cal.getTimeInMillis(), pendingIntent);
 	}
 	
-	public void setListener(IUpdateSchedulerListener listener) {
-		this.listener = listener;
+	public void addListener(IUpdateSchedulerListener listener) {
+		this.listeners.add(listener);
+	}
+	
+	public boolean removeListener(IUpdateSchedulerListener listener) {
+		return this.listeners.remove(listener);
 	}
 
 	/**
@@ -286,13 +299,16 @@ public class UpdateScheduler {
 		@Override
 		protected void onPostExecute(Boolean result) {
 			super.onPostExecute(result);
-			Editor editor = preferences.edit();
+			final Editor editor = preferences.edit();
 			editor.putLong(Utils.PREF_LAST_UPDATE_TIME, System.currentTimeMillis());
 			editor.commit();
 			
-
-			if (listener != null && result != null) {
-				listener.onUpdateFinished(result);
+			final boolean succeeded = result == null ? false : true;
+			
+			for (IUpdateSchedulerListener listener : listeners) {
+				if (listener != null) {
+					listener.onUpdateFinished(succeeded);
+				}
 			}
 		}
 		

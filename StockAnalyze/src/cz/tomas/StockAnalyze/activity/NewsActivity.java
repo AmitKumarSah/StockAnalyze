@@ -27,8 +27,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 
@@ -54,16 +52,12 @@ public class NewsActivity extends BaseListActivity implements ITaskListener {
 	private static final long UPDATE_INTERVAL = 60 * 1000;
 	
 	private NewsListAdapter adapter;
-	private View refreshButoon;
-	private Animation refreshAnimation;
 	private PullToRefreshListView listView;
 	private static long lastUpdateTime = 0;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		this.refreshAnimation = AnimationUtils.loadAnimation(this, R.anim.refresh_rotate);
 		
 		this.setContentView(R.layout.news_layout);
 		this.listView = (PullToRefreshListView) this.getListView();
@@ -87,7 +81,6 @@ public class NewsActivity extends BaseListActivity implements ITaskListener {
 		});
 		
 		final ActionBar bar = (ActionBar) this.findViewById(R.id.newsActionBar);
-		this.refreshButoon = bar.findViewById(R.id.actionRefreshButton);
 		bar.setActionBarListener(new IActionBarListener() {
 			
 			@Override
@@ -126,7 +119,7 @@ public class NewsActivity extends BaseListActivity implements ITaskListener {
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    // Handle item selection
 	    switch (item.getItemId()) {
-	    case R.id.menu_stock_list_refresh:	    	
+	    case R.id.menu_refresh:	    	
 	    	refresh();
 	        return true;
 	    case R.id.menu_stock_list_settings:
@@ -143,15 +136,13 @@ public class NewsActivity extends BaseListActivity implements ITaskListener {
 	
 	@Override
 	public void onUpdateFinished() {
-		//this.refreshAnimation.setDuration(0);
-		this.refreshButoon.setAnimation(null);
+		this.getActionBarHelper().setRefreshActionItemState(false);
 
-		listView.onRefreshComplete();
+		this.listView.onRefreshComplete();
 	}
 
 	@Override
 	public void onUpdateStart() {
-		this.refreshAnimation.reset();
-		this.refreshButoon.startAnimation(this.refreshAnimation);
+		this.getActionBarHelper().setRefreshActionItemState(true);
 	}
 }

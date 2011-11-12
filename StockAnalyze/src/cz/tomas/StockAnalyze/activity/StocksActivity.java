@@ -2,31 +2,28 @@ package cz.tomas.StockAnalyze.activity;
 
 import java.util.List;
 
-import com.jakewharton.android.viewpagerindicator.TitlePageIndicator;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.animation.Animation;
+
+import com.jakewharton.android.viewpagerindicator.TitlePageIndicator;
+
 import cz.tomas.StockAnalyze.Application;
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.UpdateScheduler;
 import cz.tomas.StockAnalyze.Data.DataManager;
+import cz.tomas.StockAnalyze.Data.Interfaces.IUpdateSchedulerListener;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.StockList.StocksPagerAdapter;
 import cz.tomas.StockAnalyze.activity.base.BaseFragmentActivity;
-import cz.tomas.StockAnalyze.ui.widgets.ActionBar;
 import cz.tomas.StockAnalyze.ui.widgets.ActionBar.IActionBarListener;
 import cz.tomas.StockAnalyze.utils.NavUtils;
-import cz.tomas.StockAnalyze.utils.Utils;
 
 /**
  * activity containing {@link ViewPager} with stock list for {@link Market} on each page
@@ -40,9 +37,8 @@ public final class StocksActivity extends BaseFragmentActivity implements IActio
 	static final int UPDATE_DLG_FAIL = 1;
 	static final int NO_INTERNET = 2;
 	
-	private View refreshButton;
-	private Animation refreshAnim;
 	private Market selectedMarket;
+	private UpdateScheduler sheduler;
 	
 	private ViewPager pager;
 	
@@ -54,15 +50,12 @@ public final class StocksActivity extends BaseFragmentActivity implements IActio
 		super.onCreate(arg0);
 		
 		this.setContentView(R.layout.stocks);
-		try {
-			this.refreshButton = findViewById(R.id.actionRefreshButton);
-		} catch (Exception e) {
-			Log.e(Utils.LOG_TAG, "failed to find refresh button", e);
-		}
-		ActionBar bar = (ActionBar) findViewById(R.id.stockListActionBar);
-		if (bar != null) {
-			bar.setActionBarListener(this);
-		}
+		this.sheduler = (UpdateScheduler) this.getApplicationContext().getSystemService(Application.UPDATE_SCHEDULER_SERVICE);
+		
+//		ActionBar bar = (ActionBar) findViewById(R.id.stockListActionBar);
+//		if (bar != null) {
+//			bar.setActionBarListener(this);
+//		}
 		this.pager = (ViewPager) this.findViewById(R.id.stocksViewPager);
 		List<Market> markets = DataManager.getInstance(this).getMarkets();
 		this.pager.setAdapter(new StocksPagerAdapter(getSupportFragmentManager(), markets));
@@ -119,7 +112,7 @@ public final class StocksActivity extends BaseFragmentActivity implements IActio
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    // Handle item selection
 	    switch (item.getItemId()) {
-	    case R.id.menu_stock_list_refresh:
+	    case R.id.menu_refresh:
 	    	updateImmediatly();
 	        return true;
 	    case R.id.menu_stock_list_settings:
@@ -128,6 +121,31 @@ public final class StocksActivity extends BaseFragmentActivity implements IActio
 	    default:
 	        return super.onOptionsItemSelected(item);
 	    }
+	}
+	
+	private final IUpdateSchedulerListener updateListener = new IUpdateSchedulerListener() {
+		
+		@Override
+		public void onUpdateFinished(boolean succes) {
+			getActionBarHelper().setRefreshActionItemState(false);
+		}
+		
+		@Override
+		public void onUpdateBegin(Market... markets) {
+			getActionBarHelper().setRefreshActionItemState(true);
+		}
+	};
+	
+	@Override
+	public void onStart() {
+		super.onStart();
+		this.sheduler.addListener(this.updateListener);
+	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
+		this.sheduler.removeListener(this.updateListener);
 	}
 
 	@Override

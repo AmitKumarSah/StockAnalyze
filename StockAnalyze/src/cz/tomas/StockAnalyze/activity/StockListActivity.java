@@ -139,6 +139,7 @@ public class StockListActivity extends BaseListActivity implements IActionBarLis
 			public void onListLoaded(Object data) {
 				if (refreshAnim != null)
 					refreshAnim.setDuration(0);
+				
 			}
 		});
 
@@ -224,7 +225,7 @@ public class StockListActivity extends BaseListActivity implements IActionBarLis
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    // Handle item selection
 	    switch (item.getItemId()) {
-	    case R.id.menu_stock_list_refresh:
+	    case R.id.menu_refresh:
 	    	updateImmediatly();
 	        return true;
 	    case R.id.menu_stock_list_settings:
