@@ -168,8 +168,19 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 	}
 	
 	@Override
+	public StockItem getItem(int position) {
+		if (this.stockListItems == null || position >= this.stockListItems.length) {
+			return null;
+		}
+		return this.stockListItems[position];
+	}
+
+	@Override
 	public int getCount() {
-		return super.getCount();
+		if (this.stockListItems == null) {
+			return 0;
+		}
+		return this.stockListItems.length;
 	}
 	
 	@Override
@@ -261,6 +272,11 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 	}
 	
     @Override
+	public boolean hasStableIds() {
+    	return true;
+	}
+
+	@Override
     public boolean areAllItemsEnabled() {
         return true;
     }
@@ -344,7 +360,7 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 			return items;
 		}
 
-		/* 
+		/** 
 		 * notify list and hide progress bar
 		 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
 		 */
@@ -354,12 +370,12 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 			if (result == null || result.size() == 0)
 				Toast.makeText(getContext(), R.string.update_fail, Toast.LENGTH_LONG).show();
 			else {
-				clear();
+				//clear();
 				
 				stockListItems = new StockItem[result.size()];
 				int index = 0;
 				for (Entry<String, StockItem> entry : result.entrySet()) {
-					add(entry.getValue());
+					//add(entry.getValue());
 					stockListItems[index] = entry.getValue();
 					index++;
 				}
