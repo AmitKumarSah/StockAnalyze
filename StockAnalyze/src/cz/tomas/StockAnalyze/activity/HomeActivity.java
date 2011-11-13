@@ -103,7 +103,7 @@ public class HomeActivity extends ChartActivity implements OnClickListener, OnKe
 		if (bar != null)
 			bar.setActionBarListener(this);
 		
-		this.registerForContextMenu(this.chartView);
+		//this.registerForContextMenu(this.chartView);
 	}
 	
 	private final Runnable chartRunnable = new Runnable() {

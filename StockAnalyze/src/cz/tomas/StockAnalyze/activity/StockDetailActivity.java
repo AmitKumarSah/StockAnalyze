@@ -65,6 +65,7 @@ public final class StockDetailActivity extends ChartActivity implements IActionB
 		this.chartView = (CompositeChartView) findViewById(R.id.stockChartView);
 		if (chartView != null) {
 			this.registerForContextMenu(this.chartView);
+			this.chartView.setEnableTracking(false);
 			this.chartView.setOnClickListener(new OnClickListener() {
 
 				@Override

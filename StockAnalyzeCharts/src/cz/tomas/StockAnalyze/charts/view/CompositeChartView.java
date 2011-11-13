@@ -67,6 +67,12 @@ public class CompositeChartView extends RelativeLayout {
 		else
 			Log.w(Utils.LOG_TAG, "chart in CompositeChartView is null! Can't set axis data.");
 	}
+	
+	public void setEnableTracking(boolean enabled) {
+		if (this.chart != null) {
+			this.chart.setEnableTracking(enabled);
+		}
+	}
 
 	public void setLoading(boolean loading) {
 		if (this.progressBar != null)

@@ -21,6 +21,8 @@
 package cz.tomas.StockAnalyze.charts.view;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.DashPathEffect;
 import android.graphics.LinearGradient;
@@ -28,13 +30,16 @@ import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
 import android.graphics.Path;
+import android.graphics.PixelFormat;
 import android.graphics.Shader.TileMode;
 import android.graphics.Typeface;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TimingLogger;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import cz.tomas.StockAnalyze.charts.R;
 import cz.tomas.StockAnalyze.charts.Utils;
 import cz.tomas.StockAnalyze.charts.interfaces.IChartTextFormatter;
@@ -54,15 +59,20 @@ public class ChartView extends View {
 	private float max;
 	private float min;
 	
-	private Paint paint;
-	private Paint chartPaint;
-	private Paint gridPaint;
-	private Paint gridFillPaint;
-	private TextPaint textPaint;
+	private final Paint paint;
+	private final Paint chartPaint;
+	private final Paint gridPaint;
+	private final Paint gridFillPaint;
+	private final TextPaint textPaint;
+	
+	private Bitmap chartBitmap;
 	
 	private boolean disableRedraw = false;
+	private boolean drawTracking = true;
 	
-	private TimingLogger logger; 
+	private float trackingValueX = -1;
+	
+	private TimingLogger logger;
 	
 	/**
 	 *  Convert the dps to pixels
@@ -72,6 +82,7 @@ public class ChartView extends View {
 	 * offset for whole chart (padding)
 	 */
 	private final float OFFSET = 12 * SCALE;
+	private final Bitmap.Config bmpConfig;
 	
 	/**
 	 * pixels between axis text and axis itself
@@ -107,13 +118,20 @@ public class ChartView extends View {
 //		String result = System.setProperty("log.tag.StockAnalyze", "VERBOSE");
 //		i = Log.isLoggable(Utils.LOG_TAG, Log.VERBOSE);
 		logger = new TimingLogger(Utils.LOG_TAG, "chart drawing");
+		
+		final WindowManager manager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+		final int format = manager.getDefaultDisplay().getPixelFormat();
+		if (format == PixelFormat.RGBA_4444) {
+			bmpConfig = Config.ARGB_4444;
+		} else {
+			bmpConfig = Config.ARGB_8888;
+		}
 	}
-
 
 	/**
 	 * @param disableRedraw the disableRedraw to set
 	 */
-	public void setDisableRedraw(boolean disableRedraw) {
+	void setDisableRedraw(boolean disableRedraw) {
 		this.disableRedraw = disableRedraw;
 	}
 
@@ -123,7 +141,6 @@ public class ChartView extends View {
 	 */
 	@Override
 	protected void onDraw(Canvas canvas) {
-		//super.onDraw(canvas);
 		if (this.disableRedraw)
 			return;
 		this.logger.reset();
@@ -138,8 +155,8 @@ public class ChartView extends View {
 		// originX & originY give us the start point of the chart,
 		// it is the lower left corner
 		
-		float chartWidth = this.getWidth() - 2 * OFFSET -offsetNextToYAxis ;
-		float chartHeight = this.getHeight() - 2 * OFFSET - offsetBelowXAxis;
+		final float chartWidth = this.getWidth() - 2 * OFFSET -offsetNextToYAxis ;
+		final float chartHeight = this.getHeight() - 2 * OFFSET - offsetBelowXAxis;
 		
 		drawAxis(canvas, originX, originY, chartWidth);
 		drawAxisDescription(canvas, offsetBelowXAxis, offsetNextToYAxis, chartWidth, chartHeight);
@@ -147,11 +164,34 @@ public class ChartView extends View {
 		drawGrid(canvas,originX, originY, chartWidth, chartHeight);
 		
 		this.logger.addSplit("draw DATA");
-		if (this.data != null && this.data.length > 1)
-			this.drawData(canvas, originX, originY, chartWidth, chartHeight);
+		if (this.data != null && this.data.length > 1) {
+			if (this.chartBitmap == null) {
+				// cache bitmap with full chart
+				this.chartBitmap = Bitmap.createBitmap(getWidth(), getHeight(), this.bmpConfig);
+				this.drawData(new Canvas(this.chartBitmap), originX, originY, chartWidth, chartHeight);
+			}
+			canvas.drawBitmap(this.chartBitmap, 0, 0, this.chartPaint);
+			
+			if (this.drawTracking) {
+				this.drawTracking(canvas, originX, originY, chartWidth, chartHeight);
+			}
+		}
 		
 		this.logger.dumpToLog();
 	}
+
+	private void drawTracking(Canvas canvas, float originX, float originY, float chartWidth, float chartHeight) {
+		if (this.trackingValueX > originX && this.trackingValueX - originX < chartWidth) {
+			canvas.drawLine(this.trackingValueX, 0, this.trackingValueX, this.getHeight(), this.paint);
+			
+			final float step = chartWidth / (float) (this.data.length -1);
+			final int index = (int) ((this.trackingValueX - originX) / step);
+			final float value = chartHeight - preparedData[index] + OFFSET;
+			
+			canvas.drawLine(0, value, this.getWidth(), value, this.paint);
+		}
+	}
+
 
 	private int calculateYAxisDescriptionOffset() {
 		if (this.data != null && this.data.length > 0) {
@@ -191,14 +231,14 @@ public class ChartView extends View {
 	private void drawData(Canvas canvas, float originX,
 			float originY, float chartWidth, float chartHeight) {
 		
-		float step = chartWidth / (float) (this.data.length -1);
+		final float step = chartWidth / (float) (this.data.length -1);
 		if (this.preparedData == null || this.preparedData.length == 0)
 			this.preparedData = prepareDataValues(chartHeight);
 		// 
 		// for one line we need 4 points
 		// startX, startY, stopX, stopY
 		//
-		float[] points = new float[this.data.length * 4];
+		final float[] points = new float[this.data.length * 4];
 //		Log.d(Utils.LOG_TAG, "drawing chart data " + this.data.length + " with step " + step + " in chart width " + chartWidth + 
 //				" from origin " + originX + "; " + originY);
 		// first value
@@ -207,15 +247,15 @@ public class ChartView extends View {
 		points[2] = originX;
 		points[3] = chartHeight - preparedData[0] + OFFSET;
 
-		Path path = new Path();
+		final Path path = new Path();
 		path.moveTo(originX, originX);
 		path.lineTo(points[0], points[1]);
 		
 		for (int i = 1; i < data.length; i++) {
-			float value = preparedData[i];
+			final float value = preparedData[i];
 
-			float x = step * (float)i + originX;
-			float y = chartHeight - value + OFFSET;
+			final float x = step * (float)i + originX;
+			final float y = chartHeight - value + OFFSET;
 			
 			points[i * 4] = points[i * 4 - 2];
 			points[i * 4 + 1] = points[i * 4 - 1];
@@ -258,7 +298,7 @@ public class ChartView extends View {
 		return preparedData;
 	}
 	
-	float scaleRange(float in, float oldMin, float oldMax, float newMin, float newMax)
+	private float scaleRange(float in, float oldMin, float oldMax, float newMin, float newMax)
 	{
 		return ( ((newMax - newMin) * (in - oldMin)) / (oldMax - oldMin) ) + newMin;
 	}
@@ -316,7 +356,11 @@ public class ChartView extends View {
 			return val.toString();
 	}
 	
-	public void setData(float[] data, float max, float min) {
+	void setEnableTracking(boolean enabled) {
+		this.drawTracking = enabled;
+	}
+	
+	void setData(float[] data, float max, float min) {
 		this.max = max;
 		this.min = min;
 		this.data = data;
@@ -331,8 +375,22 @@ public class ChartView extends View {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public <T extends Number>void setAxisX(T[] xAxisPoints, IChartTextFormatter<T> formatter) {
+	<T extends Number>void setAxisX(T[] xAxisPoints, IChartTextFormatter<T> formatter) {
 		this.axisX = xAxisPoints;
 		this.formatter = (IChartTextFormatter<Number>) formatter;
+	}
+
+
+	@Override
+	public boolean onTouchEvent(MotionEvent event) {
+		if (this.drawTracking && this.preparedData != null && (
+				event.getAction() == MotionEvent.ACTION_DOWN || 
+				event.getAction() == MotionEvent.ACTION_MOVE) && 
+				this.trackingValueX != event.getX()) {
+			this.trackingValueX = event.getX();
+			this.invalidate();
+			return true;
+		}
+		return super.onTouchEvent(event);
 	}
 }
