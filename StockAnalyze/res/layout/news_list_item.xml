@@ -19,6 +19,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+	android:paddingLeft="6dp"
+	android:paddingRight="6dp"
     android:orientation="horizontal" >
 
     <View android:id="@+id/viewReadMark"
@@ -52,7 +54,7 @@
             android:maxLines="3" />
 
         <TextView android:id="@+id/txtNewsItemBottomInfo"
-            style="@style/subText.Small"
+            style="@style/subText"
             android:paddingTop="4dp"
             android:layout_gravity="bottom" />
     </LinearLayout>

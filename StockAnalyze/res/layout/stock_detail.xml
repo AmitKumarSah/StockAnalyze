@@ -92,7 +92,8 @@
 				android:shrinkColumns="0">
 				<TableRow>
 					<TextView android:id="@+id/lblDetailMin"
-					    style="@style/subText"
+					    style="@style/text"
+        				android:textSize="14sp"
 						android:layout_height="fill_parent"
 						android:layout_width="fill_parent" 
 						android:text="@string/LabelDetailMin" 
@@ -100,7 +101,8 @@
 						android:gravity="left" 
 						android:layout_marginLeft="2dp"></TextView>
 					<TextView android:id="@+id/txtDetailMin"
-					    style="@style/subText"
+					    style="@style/text"
+        				android:textSize="14sp"
 						android:text="txtDetailClosingPriceyear_min" 
 						android:lines="1" 
 						android:layout_height="fill_parent"
@@ -111,7 +113,8 @@
 				</TableRow>
 				<TableRow>
 					<TextView android:id="@+id/lblDetailMax"
-					    style="@style/subText"
+					    style="@style/text"
+        				android:textSize="14sp"
 						android:layout_height="wrap_content"
 						android:text="@string/LabelDetailMax"
 						android:layout_marginRight="5dp"
@@ -119,7 +122,8 @@
 						android:gravity="left"
 						android:layout_marginLeft="2dp"></TextView>
 					<TextView android:id="@+id/txtDetailMax"
-					    style="@style/subText"
+					    style="@style/text"
+        				android:textSize="14sp"
 						android:text="year_max"
 						android:lines="1" 
 						android:layout_height="fill_parent"
@@ -130,7 +134,8 @@
 				</TableRow>
 				<TableRow>
 					<TextView android:id="@+id/lblDetailVolume"
-					    style="@style/subText"
+					    style="@style/text"
+        				android:textSize="14sp"
 					    android:layout_height="wrap_content"
 						android:text="@string/LabelDetailVolume" 
 						android:layout_marginRight="5dp"
@@ -139,7 +144,8 @@
 						android:layout_marginLeft="2dp">
 					</TextView>
 					<TextView android:id="@+id/txtDetailVolume"
-					    style="@style/subText"
+					    style="@style/text"
+        				android:textSize="14sp"
 						android:lines="1" 
 						android:layout_width="fill_parent"
 						android:layout_height="fill_parent"

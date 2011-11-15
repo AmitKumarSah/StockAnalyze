@@ -31,11 +31,11 @@
 	</cz.tomas.StockAnalyze.ui.widgets.ActionBar>
 		 	
      <com.markupartist.android.widget.PullToRefreshListView android:id="@id/android:list"
-               android:layout_width="fill_parent"
-               android:layout_height="fill_parent"
-               android:layout_weight="1"
-               android:layout_marginTop="4dp"
-               android:drawSelectorOnTop="false"/>
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:layout_weight="1"
+		android:layout_marginTop="4dp"
+		android:drawSelectorOnTop="false"/>
 <!--     <TextView android:id="@id/android:empty"-->
 <!--		android:layout_width="fill_parent"-->
 <!--		android:layout_height="fill_parent"-->

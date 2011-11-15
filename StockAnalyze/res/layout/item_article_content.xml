@@ -3,7 +3,7 @@
  xmlns:android="http://schemas.android.com/apk/res/android"    android:id="@+id/newsArticlScrollView"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:padding="8dp">
+    android:padding="4dp">
     <LinearLayout
         android:id="@+id/newsArticleContainer"
         android:layout_width="fill_parent"
@@ -12,13 +12,17 @@
         <TextView android:id="@+id/newsArticleTitle"
         	style="@style/titleText"
         	android:focusable="true"
-        	android:paddingLeft="0dp"
-        	android:paddingTop="0dp"
+        	android:paddingRight="7dp"
+        	android:paddingLeft="7dp"
+        	android:paddingTop="2dp"
         	android:paddingBottom="2dp"
        		android:layout_width="wrap_content" 
        		android:layout_height="wrap_content"/>
         <TextView android:id="@+id/newsArticleDate"
         	style="@style/subText"
+        	android:paddingRight="7dp"
+        	android:paddingLeft="7dp"
+        	android:paddingTop="4dp"
         	android:layout_marginTop="4dp"
         	android:layout_marginBottom="6dp"/>
         <FrameLayout android:id="@+id/newsArticleContentContainer" 

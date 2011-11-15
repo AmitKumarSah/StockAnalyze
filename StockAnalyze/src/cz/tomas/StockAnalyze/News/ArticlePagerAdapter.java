@@ -36,18 +36,19 @@ public final class ArticlePagerAdapter extends FragmentPagerAdapter {
 	 */
 	@Override
 	public Fragment getItem(int position) {
-		WebArticleFragment fragment = new WebArticleFragment();
+		final WebArticleFragment fragment = new WebArticleFragment();
 		
 		Article article = this.articles.get(position);
 		if (article != null) {
-			Bundle bundle = new Bundle(3);
+			final Bundle bundle = new Bundle(3);
 			bundle.putString(ARTICLE_TITLE, article.getTitle());
 			bundle.putLong(ARTICLE_DATE, article.getDate());
-			if (article.getContent() != null) {
-				bundle.putString(ARTICLE_CONTENT, article.getContent());
-			} else {
-				bundle.putString(ARTICLE_CONTENT, article.getDescription());
-			}
+			bundle.putString(ARTICLE_CONTENT, article.getContent());
+//			if (article.getContent() != null) {
+//				bundle.putString(ARTICLE_CONTENT, article.getContent());
+//			} else {
+//				bundle.putString(ARTICLE_CONTENT, article.getDescription());
+//			}
 			bundle.putString(ARTICLE_URL, article.getUrl().toString());
 			fragment.setArguments(bundle);
 		}

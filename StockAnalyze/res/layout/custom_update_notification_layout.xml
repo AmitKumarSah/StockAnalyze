@@ -39,7 +39,7 @@
 	              />
 		<TextView android:id="@+id/notification_subtext"
 	              android:textColor="#000"
-	              style="@style/subText.Small"
+	              style="@style/subText"
 	              />
 	</LinearLayout>
 </LinearLayout>

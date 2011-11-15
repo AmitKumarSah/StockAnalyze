@@ -52,9 +52,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:singleLine">true</item>
         <item name="android:ellipsize">marquee</item>
-	</style>
-	<style name="subText.Small">
-		<item name="android:textSize">14sp</item>
+        <item name="android:textColor">#555555</item>
 	</style>
 	<style name="text" parent="@android:style/TextAppearance.Medium">
 		<item name="android:singleLine">true</item>
