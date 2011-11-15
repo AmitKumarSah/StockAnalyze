@@ -41,8 +41,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="50"
             android:layout_gravity="center_vertical"/>
-        <TextView
-            android:id="@+id/bottomtext"
+        <TextView android:id="@+id/bottomtext"
             style="@style/text"
         	android:layout_width="fill_parent"
         	android:layout_height="wrap_content"
@@ -62,7 +61,8 @@
         	android:layout_weight="1"
         	android:textColor="@color/money_item_text"/>
 	    <TextView android:id="@+id/righttext2"
-			style="@style/text"
+			style="@style/moneyText"
+			android:textSize="14sp"
 	        android:layout_weight="1"
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"

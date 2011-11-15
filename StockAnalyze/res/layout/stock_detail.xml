@@ -54,29 +54,32 @@
 				xmlns:android="http://schemas.android.com/apk/res/android"
 				android:orientation="vertical">
 				<TextView android:id="@+id/txtDetailName" 
-					android:text="@+id/TextView01"
-					android:layout_height="wrap_content" android:layout_width="fill_parent"
-					android:textStyle="bold"
+					style="@style/titleText"
+					android:layout_height="wrap_content" 
+					android:layout_width="fill_parent"
 					android:gravity="center" 
 					android:textSize="20dp"
 					android:layout_margin="4dp" />
 			
-				<TextView android:id="@+id/txtDetailClosingPrice"
-					android:textStyle="bold" 
-					android:layout_height="wrap_content" 
+				<TextView android:id="@+id/txtDetailClosingPrice" 
 					android:text="@string/failed_price_update"
-					style="@style/moneyText"
-					android:ellipsize="marquee" android:fadeScrollbars="true"
-					android:layout_margin="2dp" android:gravity="center"
-					android:textSize="24dp" android:lines="1" 
-					android:layout_width="fill_parent">
+					style="@style/titleText"
+					android:layout_height="wrap_content"
+					android:layout_width="fill_parent"
+					android:ellipsize="marquee"
+					android:layout_margin="2dp" 
+					android:gravity="center"
+					android:textSize="24dp" 
+					android:lines="1" >
 				</TextView>
-				<TextView android:layout_height="wrap_content" android:text="change"
-					style="@style/moneyText"
-					android:id="@+id/txtDetailChange"
-					android:layout_margin="2dp" android:gravity="center"
-					android:textSize="22dp" android:lines="1" 
-					android:layout_width="fill_parent">
+				<TextView android:id="@+id/txtDetailChange"
+					style="@style/titleText" 
+					android:layout_height="wrap_content"
+					android:layout_width="fill_parent"
+					android:layout_margin="2dp" 
+					android:gravity="center"
+					android:textSize="22dp" 
+					android:lines="1" >
 				</TextView>
 			</LinearLayout>
 			<TextView android:id="@+id/label_stats"
@@ -87,9 +90,9 @@
 			 	android:stretchColumns="1"
 			 	android:minHeight="60dp"
 				android:shrinkColumns="0">
-				<TableRow android:id="@+id/TableDetailRow01"
-					android:layout_width="fill_parent" android:layout_height="fill_parent">
+				<TableRow>
 					<TextView android:id="@+id/lblDetailMin"
+					    style="@style/subText"
 						android:layout_height="fill_parent"
 						android:layout_width="fill_parent" 
 						android:text="@string/LabelDetailMin" 
@@ -97,6 +100,7 @@
 						android:gravity="left" 
 						android:layout_marginLeft="2dp"></TextView>
 					<TextView android:id="@+id/txtDetailMin"
+					    style="@style/subText"
 						android:text="txtDetailClosingPriceyear_min" 
 						android:lines="1" 
 						android:layout_height="fill_parent"
@@ -105,9 +109,9 @@
 						android:layout_gravity="right" 
 						android:layout_width="fill_parent"></TextView>
 				</TableRow>
-				<TableRow android:layout_height="wrap_content" android:id="@+id/tableDetailRow02"
-					android:layout_width="fill_parent">
+				<TableRow>
 					<TextView android:id="@+id/lblDetailMax"
+					    style="@style/subText"
 						android:layout_height="wrap_content"
 						android:text="@string/LabelDetailMax"
 						android:layout_marginRight="5dp"
@@ -115,6 +119,7 @@
 						android:gravity="left"
 						android:layout_marginLeft="2dp"></TextView>
 					<TextView android:id="@+id/txtDetailMax"
+					    style="@style/subText"
 						android:text="year_max"
 						android:lines="1" 
 						android:layout_height="fill_parent"
@@ -123,23 +128,24 @@
 						android:layout_gravity="right" 
 						android:layout_width="fill_parent"></TextView>
 				</TableRow>
-				<TableRow android:layout_height="wrap_content" android:id="@+id/tableDetailRow03"
-					android:layout_width="fill_parent">
-					<TextView android:layout_height="wrap_content"
-						android:id="@+id/lblDetailVolume"
+				<TableRow>
+					<TextView android:id="@+id/lblDetailVolume"
+					    style="@style/subText"
+					    android:layout_height="wrap_content"
 						android:text="@string/LabelDetailVolume" 
 						android:layout_marginRight="5dp"
 						android:layout_width="fill_parent" 
 						android:gravity="left"
 						android:layout_marginLeft="2dp">
 					</TextView>
-					<TextView android:text="volume" android:id="@+id/txtDetailVolume"
+					<TextView android:id="@+id/txtDetailVolume"
+					    style="@style/subText"
 						android:lines="1" 
+						android:layout_width="fill_parent"
 						android:layout_height="fill_parent"
 						android:gravity="right" 
 						android:layout_marginRight="5dp"
-						android:layout_gravity="right"
-						android:layout_width="fill_parent">
+						android:layout_gravity="right">
 					</TextView>
 				</TableRow>
 			</TableLayout>

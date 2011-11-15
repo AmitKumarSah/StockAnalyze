@@ -26,8 +26,8 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1.2">
-        <TextView
-            android:id="@+id/portfolioStockName"
+        <TextView android:id="@+id/portfolioStockName"
+            style="@style/text"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="50"
@@ -52,7 +52,8 @@
         	android:layout_gravity="right"
         	android:textColor="@color/money_item_text"/>
 	    <TextView android:id="@+id/portfolioValueChange"
-			style="@style/subText.Small"
+			style="@style/moneyText"
+			android:textSize="12sp"
 	        android:layout_weight="1"
 	        android:layout_gravity="right"
 	        android:textColor="@color/money_item_text" 
@@ -70,12 +71,14 @@
         	android:layout_weight="1"
         	android:layout_gravity="right"
         	android:textColor="@color/money_item_text"/>
-	    <TextView
-	        android:id="@+id/portfolioCurrentStockChange"
+	    <TextView android:id="@+id/portfolioCurrentStockChange"
+			style="@style/moneyText"
+        	android:layout_width="fill_parent"
+        	android:layout_height="wrap_content"
+			android:textSize="12sp"
 	        android:layout_weight="1"
 	        android:layout_gravity="right"
 	        android:gravity="right"
-	        android:textColor="@color/money_item_text"
-			style="@style/subText.Small"/>
+	        android:textColor="@color/money_item_text"/>
 	</LinearLayout>
 </LinearLayout>

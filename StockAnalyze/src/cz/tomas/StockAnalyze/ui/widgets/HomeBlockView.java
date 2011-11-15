@@ -74,7 +74,7 @@ public class HomeBlockView extends RelativeLayout {
 				R.styleable.HomeBlockItemAtts);
 
 		if (textView != null)
-			textView.setText(a.getResourceId(2, R.string.hello));
+			textView.setText(a.getResourceId(2, R.string.app_name));
 		if (image != null)
 			image.setImageResource(a.getResourceId(3, R.drawable.ic_launcher));
 		this.target = a.getString(4);

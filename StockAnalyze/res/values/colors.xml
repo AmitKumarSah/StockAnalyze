@@ -56,7 +56,7 @@
 	<color name="money_item_dark_end">#555555</color>
 	
 	<color name="home_block_color">#FFFFFF</color>
-
+	<color name="shadow_dark">#222222</color>
 	
     <color name="actionbar_title_color">#224894</color>
 </resources>
