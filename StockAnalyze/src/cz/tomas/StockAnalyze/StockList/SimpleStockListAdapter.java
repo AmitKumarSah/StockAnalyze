@@ -7,6 +7,7 @@ import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.Interfaces.IListAdapterListener;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
+import cz.tomas.StockAnalyze.utils.Markets;
 import cz.tomas.StockAnalyze.utils.Utils;
 import android.content.Context;
 import android.os.AsyncTask;
@@ -17,15 +18,20 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+/**
+ * adapter for pick stock dialog on home screen
+ * @author tomas
+ *
+ */
 public final class SimpleStockListAdapter extends BaseAdapter {
 
 	private StockItem[] stocks;
 	//private Market market;
-	private Context context;
+	private final Context context;
 	
-	private LayoutInflater inflater;
+	private final LayoutInflater inflater;
 	private IListAdapterListener<StockItem> listener;
-	private boolean indeces;
+	private final boolean indeces;
 	
 	/**
 	 * @param market
@@ -38,8 +44,10 @@ public final class SimpleStockListAdapter extends BaseAdapter {
 		this.listener = listener;
 		this.indeces = indeces;
 		
-		StockListTask task = new StockListTask();
-		task.execute(market);
+		final StockListTask task = new StockListTask();
+		// indeces have market of their country, so we can't use it,
+		// to get indeces only from db
+		task.execute(indeces ? null : market);
 	}
 
 	@Override
@@ -101,8 +109,8 @@ public final class SimpleStockListAdapter extends BaseAdapter {
 			
 			Map<String, StockItem> stockItems = null;
 			try {
-				Market market = params[0];
-				DataManager dataManager = (DataManager) context.getApplicationContext().getSystemService(Application.DATA_MANAGER_SERVICE);
+				final Market market = params[0];
+				final DataManager dataManager = (DataManager) context.getApplicationContext().getSystemService(Application.DATA_MANAGER_SERVICE);
 				stockItems = dataManager.getStockItems(market, indeces);
 				
 				stocks = new StockItem[stockItems.size()];

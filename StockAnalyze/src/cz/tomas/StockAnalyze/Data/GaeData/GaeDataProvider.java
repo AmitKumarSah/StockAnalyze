@@ -127,21 +127,41 @@ public final class GaeDataProvider {
 		return data;
 	}
 
+	/**
+	 * get day data for indeces 
+	 * @return
+	 * @throws JsonSyntaxException
+	 * @throws IOException
+	 */
 	Map<String, DayData> getIndecesDataSet() throws JsonSyntaxException, IOException {
-		String url = this.urls.getUrl(UrlProvider.TYPE_INDATA, (String) null);
+		final String url = this.urls.getUrl(UrlProvider.TYPE_INDATA, (String) null);
 		return getDataSet(url);
 	}
 	
+	/**
+	 * get list of indeces, in other words, all stocks from "GLOBAL" market.
+	 * @return
+	 * @throws JsonSyntaxException
+	 * @throws IOException
+	 */
 	List<StockItem> getIndecesList() throws JsonSyntaxException, IOException {
 		String url = this.urls.getUrl(UrlProvider.TYPE_INDATA, UrlProvider.ARG_IND_LIST);
+		url = String.format(url, "");
 		return getList(url);
 	}
 	
+	/**
+	 * get list of stocks for given country code
+	 * @param countryCode e.g. "cz", "de"
+	 * @return
+	 * @throws JsonSyntaxException
+	 * @throws IOException
+	 */
 	List<StockItem> getStockList(String countryCode) throws JsonSyntaxException, IOException {
 		if (TextUtils.isEmpty(countryCode)) {
 			throw new NullPointerException("country code can't be empty!");
 		}
-		String baseUrl = this.urls.getUrl(UrlProvider.TYPE_DDATA, UrlProvider.ARG_LIST);
+		final String baseUrl = this.urls.getUrl(UrlProvider.TYPE_DDATA, UrlProvider.ARG_LIST);
 		String url = String.format(baseUrl, countryCode);
 		
 		return getList(url);

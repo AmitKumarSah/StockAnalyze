@@ -62,23 +62,23 @@ public class DataManager implements IStockDataListener {
 
 	private static final int DAY_IN_MILISECONDS = 1000 * 60 * 60 * 24;
 
-	private int STOCK_LIST_EXPIRATION_DAYS = 2;
+	private final int STOCK_LIST_EXPIRATION_DAYS = 2;
 	
-	public static int TIME_PERIOD_NONE = 0;
-	public static int TIME_PERIOD_DAY = 1;
-	public static int TIME_PERIOD_WEEK = 2;
-	public static int TIME_PERIOD_MONTH = 3;
-	public static int TIME_PERIOD_QUARTER = 4;
-	public static int TIME_PERIOD_HALF_YEAR = 5;
-	public static int TIME_PERIOD_YEAR = 6;
+	public static final int TIME_PERIOD_NONE = 0;
+	public static final int TIME_PERIOD_DAY = 1;
+	public static final int TIME_PERIOD_WEEK = 2;
+	public static final int TIME_PERIOD_MONTH = 3;
+	public static final int TIME_PERIOD_QUARTER = 4;
+	public static final int TIME_PERIOD_HALF_YEAR = 5;
+	public static final int TIME_PERIOD_YEAR = 6;
 	
-	private StockDataSqlStore sqlStore;
+	private final StockDataSqlStore sqlStore;
 		
 	private List<IUpdateDateChangedListener> updateDateChangedListeners;
 	private List<IStockDataListener> updateStockDataListeners;
-	private List<Market> markets;
+	private final List<Market> markets;
 	
-	private Context context;
+	private final Context context;
 	private static DataManager instance;
 	private long lastUpdateTime;
 	
@@ -178,7 +178,7 @@ public class DataManager implements IStockDataListener {
 	 * @returns map stock id vs StockItem,
 	 */
 	public synchronized Map<String, StockItem> getStockItems(Market market, boolean includeIndeces) {
-		boolean isStockListDirty = isStockListDirty();
+		final boolean isStockListDirty = isStockListDirty();
 		Map<String, StockItem> items = this.sqlStore.getStockItems(market, "ticker", includeIndeces);
 		if (items == null || items.size() <= 1 || isStockListDirty) {		// one item is not enough - might be the index
 			try {

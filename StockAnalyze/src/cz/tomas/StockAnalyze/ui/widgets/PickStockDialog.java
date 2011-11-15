@@ -1,13 +1,5 @@
 package cz.tomas.StockAnalyze.ui.widgets;
 
-import cz.tomas.StockAnalyze.R;
-import cz.tomas.StockAnalyze.Data.Interfaces.IListAdapterListener;
-import cz.tomas.StockAnalyze.Data.Model.Market;
-import cz.tomas.StockAnalyze.Data.Model.StockItem;
-import cz.tomas.StockAnalyze.StockList.SimpleMarketAdapter;
-import cz.tomas.StockAnalyze.StockList.SimpleStockListAdapter;
-import cz.tomas.StockAnalyze.utils.Utils;
-
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
@@ -22,6 +14,14 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RadioGroup.LayoutParams;
 import android.widget.TextView;
+import cz.tomas.StockAnalyze.R;
+import cz.tomas.StockAnalyze.Data.Interfaces.IListAdapterListener;
+import cz.tomas.StockAnalyze.Data.Model.Market;
+import cz.tomas.StockAnalyze.Data.Model.StockItem;
+import cz.tomas.StockAnalyze.StockList.SimpleMarketAdapter;
+import cz.tomas.StockAnalyze.StockList.SimpleStockListAdapter;
+import cz.tomas.StockAnalyze.utils.Markets;
+import cz.tomas.StockAnalyze.utils.Utils;
 
 public final class PickStockDialog extends Dialog implements IListAdapterListener<StockItem> {
 
@@ -42,14 +42,18 @@ public final class PickStockDialog extends Dialog implements IListAdapterListene
 	
 	private IStockDialogListener listener;
 	
-	public PickStockDialog(Context context, final boolean indeces) {
+	public PickStockDialog(final Context context, final boolean indeces) {
 		super(context);
-		
+
+		final FrameLayout.LayoutParams listLayoutParams = new FrameLayout.LayoutParams(
+				LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
+
 		list = new ListView(context);
+		list.setLayoutParams(listLayoutParams);
 		list.setBackgroundColor(Color.WHITE);
 		list.setCacheColorHint(Color.WHITE);
 		
-		TextView emtyView = new TextView(context);
+		final TextView emtyView = new TextView(context);
 		emtyView.setText(R.string.loading);
 		list.setEmptyView(emtyView);
 		list.setMinimumHeight(200);
@@ -60,7 +64,7 @@ public final class PickStockDialog extends Dialog implements IListAdapterListene
 		this.progressBar.setVisibility(View.GONE);
 		
 		this.setContentView(list);
-		FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+		final FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 		layoutParams.gravity = Gravity.CENTER;
 		this.addContentView(this.progressBar, layoutParams);
 		
@@ -75,17 +79,18 @@ public final class PickStockDialog extends Dialog implements IListAdapterListene
 			public void onItemClick(AdapterView<?> arg0, View view, int position,
 					long id) {
 				if (currentAdapter == ADAPTER_MARKETS) {
-					Market market = (Market) marketAdapter.getItem(position);
+					final Market market = (Market) marketAdapter.getItem(position);
 					if (market != null) {
+						final boolean indecesMarket = market.equals(Markets.GLOBAL);
 						currentAdapter = ADAPTER_STOCKS;
-						stocksAdapter = new SimpleStockListAdapter(getContext(), market, PickStockDialog.this, indeces);
+						stocksAdapter = new SimpleStockListAdapter(getContext(), market, PickStockDialog.this, indecesMarket);
 						setTitle(R.string.pickStock);
 						list.setAdapter(stocksAdapter);
 					} else {
 						Log.w(Utils.LOG_TAG, "market as result from adapter is null");
 					}
 				} else if (currentAdapter == ADAPTER_STOCKS) {
-					StockItem stockItem = (StockItem) stocksAdapter.getItem(position);
+					final StockItem stockItem = (StockItem) stocksAdapter.getItem(position);
 					if (listener != null) {
 						listener.onStockSelected(stockItem);
 					}

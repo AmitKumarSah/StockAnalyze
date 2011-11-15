@@ -137,7 +137,7 @@ public final class UrlProvider {
 	 * @return url ready to be formatted in {@link String#format(String, Object...)} with arguments values
 	 */
 	public synchronized String getUrl(String type, String... args) {
-		long diff = System.currentTimeMillis() - this.pref.getLong(Utils.PREF_URLS_TIME, 0);
+		final long diff = System.currentTimeMillis() - this.pref.getLong(Utils.PREF_URLS_TIME, 0);
 
 		if (this.urls == null || this.urls.size() == 0 || 
 				diff > MAX_URL_VALID_TIME) {

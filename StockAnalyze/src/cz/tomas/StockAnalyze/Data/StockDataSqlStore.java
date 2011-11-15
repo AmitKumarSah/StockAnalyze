@@ -300,7 +300,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 
 	public Map<String, StockItem> getStockItems(Market market, String orderBy, boolean includeIndeces) {
 		// LinkedHashMap preserve order of added items
-		Map<String, StockItem> items = new LinkedHashMap<String, StockItem>();
+		final Map<String, StockItem> items = new LinkedHashMap<String, StockItem>();
 		try {
 			SQLiteDatabase db = this.getWritableDatabase();
 			Cursor c = null;
