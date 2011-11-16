@@ -97,7 +97,7 @@ public class NewsListAdapter extends SimpleCursorAdapter {
 
 
 
-	class CursorTask extends AsyncTask<Void, Integer, Cursor> {
+	final class CursorTask extends AsyncTask<Void, Integer, Cursor> {
 
 		@Override
 		protected Cursor doInBackground(Void... params) {
@@ -112,7 +112,7 @@ public class NewsListAdapter extends SimpleCursorAdapter {
 		}
 	}
 	
-	class NewsAdapterTask extends NewsItemsTask {
+	final class NewsAdapterTask extends NewsItemsTask {
 
 		NewsAdapterTask(Rss rss, Context context) {
 			super(rss, context);
@@ -121,11 +121,6 @@ public class NewsListAdapter extends SimpleCursorAdapter {
 		@SuppressWarnings("unchecked")
 		protected void onPostExecute(List<Article> result) {
 			if (result != null) {
-//				clear();
-//				for (int i = 0; i < result.size() && i < DEFAULT_NEWS_LIMIT; i++) {
-//					add(result.get(i));
-//				}
-//				notifyDataSetChanged();
 				if (result.size() == 0) {
 					String message = "";
 
@@ -137,8 +132,10 @@ public class NewsListAdapter extends SimpleCursorAdapter {
 					}
 					Toast.makeText(this.context, message, Toast.LENGTH_LONG).show();
 				}
-				final FetchContentTask task = new FetchContentTask(this.rss);
-				task.execute(result);
+				if (result != null && result.size() > 0) {
+					final FetchContentTask task = new FetchContentTask(this.rss);
+					task.execute(result);
+				}
 			}
 			if (this.listener != null) {
 				this.listener.onUpdateFinished();
@@ -148,7 +145,7 @@ public class NewsListAdapter extends SimpleCursorAdapter {
 		}
 	}
 	
-	private class FetchContentTask extends AsyncTask<List<Article>, Integer, Void> {
+	private final class FetchContentTask extends AsyncTask<List<Article>, Integer, Void> {
 
 		private final Rss rss;
 		public FetchContentTask(Rss rss) {
@@ -161,7 +158,8 @@ public class NewsListAdapter extends SimpleCursorAdapter {
 				return null;
 			}
 			
-			this.rss.downloadContent(params[0]);
+			final List<Article> list = params[0];
+			this.rss.downloadContent(list);
 			return null;
 		}
 	}

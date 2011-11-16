@@ -96,13 +96,13 @@ public final class NewsSqlHelper extends AbstractSqlHelper {
 //	private static final String SOURCE_AKCIE_NAME = "Akcie.cz";
 //	private static final String SOURCE_AKCIE_COUNTRY = "cz";
 	
-//	private static final String SOURCE_NAME = "fn";
-//	private static final String SOURCE= "http://www.financninoviny.cz/sluzby/rss/zpravodajstvi.php";
-//	private static final String SOURCE_COUNTRY = "cz";
+	private static final String SOURCE_NAME2 = "reuters";
+	private static final String SOURCE2= "http://feeds.reuters.com/reuters/globalmarketsNews";
+	private static final String SOURCE_COUNTRY2 = "en";
 	
-	private static final String SOURCE_NAME = "bloomberg";
-	private static final String SOURCE= "http://m.bloomberg.com/android/apps/wds/news/regioneurope.xml.asp";
-	private static final String SOURCE_COUNTRY = "en";
+	private static final String SOURCE_NAME1 = "bloomberg";
+	private static final String SOURCE1 = "http://m.bloomberg.com/android/apps/wds/news/regioneurope.xml.asp";
+	private static final String SOURCE_COUNTRY1 = "en";
 	
 	private static final int DEFAULT_ARTICLE_LIMIT = 20;
 	
@@ -129,12 +129,19 @@ public final class NewsSqlHelper extends AbstractSqlHelper {
 	 */
 	protected void insertDefaultFeed(SQLiteDatabase db) {
 		try {
-			Log.d(Utils.LOG_TAG, "Inserting default rss feed source..." + SOURCE_NAME);
+			Log.d(Utils.LOG_TAG, "Inserting default rss feed source..." + SOURCE_NAME1);
 			
-			ContentValues values = new ContentValues();
-			values.put("title", SOURCE_NAME);
-			values.put("url", SOURCE);
-			values.put("country", SOURCE_COUNTRY);
+			final ContentValues values = new ContentValues();
+			values.put("title", SOURCE_NAME1);
+			values.put("url", SOURCE1);
+			values.put("country", SOURCE_COUNTRY1);
+			db.insert(FEEDS_TABLE_NAME, null, values);
+
+			Log.d(Utils.LOG_TAG, "Inserting default rss feed source..." + SOURCE_NAME2);
+			values.clear();
+			values.put("title", SOURCE_NAME2);
+			values.put("url", SOURCE2);
+			values.put("country", SOURCE_COUNTRY2);
 			db.insert(FEEDS_TABLE_NAME, null, values);
 		} catch (SQLException e) {
 			Log.d(Utils.LOG_TAG, "Failed to insert default news data: " + e.getMessage());
@@ -277,6 +284,47 @@ public final class NewsSqlHelper extends AbstractSqlHelper {
 	}
 	
 	/**
+	 * get all articles from all feeds
+	 * @return
+	 */
+	public List<Article> getArticles() {
+		ArrayList<Article> articles = new ArrayList<Article>();
+		Cursor c = null;
+		SQLiteDatabase db = null;
+		try {
+			db = this.getWritableDatabase();
+			c = db.query(ARTICLES_TABLE_NAME, new String[] {
+					ArticleColumns.ID, ArticleColumns.FEED_ID, ArticleColumns.TITLE, ArticleColumns.DESCRIPTION, 
+					ArticleColumns.URL, ArticleColumns.DATE, ArticleColumns.CONTENT }, 
+					null, null, null, null, ArticleColumns.DATE + " DESC", null);
+
+			if (c.moveToFirst())
+				do {
+					Article article = new Article();
+					article.setArticleId(c.getLong(0));
+					article.setFeedId(c.getLong(1));
+					article.setTitle(c.getString(2));
+					article.setDescription(c.getString(3));
+					article.setUrl(new URL(c.getString(4)));
+					article.setDate(Long.parseLong(c.getString(5)));
+					article.setContent(c.getString(6));
+					articles.add(article);
+				} while (c.moveToNext());
+			else
+				Log.d(Utils.LOG_TAG, "no articles present");
+		} catch (Exception e) {
+			Log.e(Utils.LOG_TAG, e.toString());
+		} finally {
+			if (c != null) {
+				if (c != null)
+					c.close();
+				this.close();
+			}
+		}
+		return articles;
+	}
+	
+	/**
 	 * get cursor of articles that belongs to given feed
 	 * @returns cusor at first position
 	 */
@@ -296,9 +344,7 @@ public final class NewsSqlHelper extends AbstractSqlHelper {
 		} catch (Exception e) {
 			Log.e(Utils.LOG_TAG, "failed to read articles cursor", e);
 		} finally {
-			if (db != null) {
-				this.close();
-			}
+			this.close();
 		}
 		return c;
 	}
@@ -415,12 +461,15 @@ public final class NewsSqlHelper extends AbstractSqlHelper {
 	
 	/**
 	 * delete all articles marked with FLAG_TO_DELETE
+	 * @param feedId 
 	 */
-	public void deleteOldArticles() {
+	public void deleteOldArticles(long feedId) {
 		SQLiteDatabase db = null;
 		try {
 			db = this.getWritableDatabase();
-			int deletedCount = db.delete(ARTICLES_TABLE_NAME, ArticleColumns.FLAG + "=?", new String[] {String.valueOf(FLAG_TO_DELETE)});
+			final String where = String.format("%s=? AND %s=?", ArticleColumns.FLAG, ArticleColumns.FEED_ID);
+			int deletedCount = db.delete(ARTICLES_TABLE_NAME, where, 
+					new String[] {String.valueOf(FLAG_TO_DELETE), String.valueOf(feedId)});
 			Log.d(Utils.LOG_TAG, "deleted old articles: " + deletedCount);
 		} finally {
 			this.close();

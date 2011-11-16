@@ -45,8 +45,8 @@ public class Rss {
 	public static final String BASE_URL = "http://google.com/";
 	static final String GWT_URL = BASE_URL + "gwt/x?ct=url&u=%s";
 	
-	XmlFeedPullParseHandler handler;
-	NewsSqlHelper sqlHelper;
+	final XmlFeedPullParseHandler handler;
+	final NewsSqlHelper sqlHelper;
 
 	/**
 	 * constructor, Context is required to connect to database
@@ -99,7 +99,6 @@ public class Rss {
 			db = this.sqlHelper.getWritableDatabase();
 			db.beginTransaction();
 			this.sqlHelper.acquireDb(this);
-			this.sqlHelper.deleteOldArticles();
 			presentArticles = this.getArticles(feed.getFeedId());
 			this.sqlHelper.markArticlesToDelete();
 			
@@ -123,6 +122,7 @@ public class Rss {
 			if (presentFreshArticles.size() > 0) {
 				this.sqlHelper.markArticlesFresh(presentFreshArticles);
 			}
+			this.sqlHelper.deleteOldArticles(feed.getFeedId());
 			db.setTransactionSuccessful();
 		} finally {
 			if (db != null) {
@@ -158,23 +158,33 @@ public class Rss {
 	}
 
 	public void downloadContent(List<Article> list) {
-		for (Article article : list) {
-			try {
-				this.sqlHelper.acquireDb(this);
-				if (TextUtils.isEmpty(article.getContent())) {
-					this.downloadContent(article);
+		try {
+			this.sqlHelper.acquireDb(this);
+			for (Article article : list) {
+				try {
+					if (TextUtils.isEmpty(article.getContent())) {
+						this.downloadContent(article);
+					}
+				} catch (Exception e) {
+					Log.e(Utils.LOG_TAG, "failed to download content of article " + article, e);
 				}
-			} catch (Exception e) {
-				Log.e(Utils.LOG_TAG, "failed to download content of article " + article, e);
-			} finally {
-				this.sqlHelper.releaseDb(true, this);
 			}
+		} finally {
+			this.sqlHelper.releaseDb(true, this);
 		}
 	}
 	public Cursor getAllArticlesCursor() {
 		return this.sqlHelper.getAllArticlesCursor();
 	}
 
+	/**
+	 * get all articles in database
+	 * @return
+	 */
+	public List<Article> getArticles() {
+		return this.sqlHelper.getArticles();
+	}
+	
 	/**
 	 * get all articles from given feed that are stored in database
 	 */
@@ -202,4 +212,5 @@ public class Rss {
 	public void done() {
 		this.sqlHelper.close();
 	}
+
 }

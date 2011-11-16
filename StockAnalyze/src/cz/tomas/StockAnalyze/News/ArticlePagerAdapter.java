@@ -26,7 +26,7 @@ public final class ArticlePagerAdapter extends FragmentPagerAdapter {
 		//this.context = context;
 		this.articles = new ArrayList<Article>();
 		
-		NewsTask task = new NewsTask(new Rss(context), context);
+		final NewsTask task = new NewsTask(new Rss(context), context);
 		task.setListener(listener);
 		task.execute(false);
 	}

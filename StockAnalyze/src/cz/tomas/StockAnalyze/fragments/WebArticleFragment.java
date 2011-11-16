@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.FrameLayout.LayoutParams;
 import android.widget.TextView;
@@ -36,7 +37,7 @@ public final class WebArticleFragment extends Fragment {
 			String dateText = FormattingUtils.formatDate(cal);
 			dateText += " " + cal.getTimeZone().getDisplayName(true, TimeZone.SHORT);
 			final String content = arguments.getString(ArticlePagerAdapter.ARTICLE_CONTENT);
-			final String url = arguments.getString(ArticlePagerAdapter.ARTICLE_URL);
+			final String articleUrl = arguments.getString(ArticlePagerAdapter.ARTICLE_URL);
 			
 			final FrameLayout articleContainer = (FrameLayout) view.findViewById(R.id.newsArticleContentContainer);
 			final TextView txtDate = (TextView) view.findViewById(R.id.newsArticleDate);
@@ -52,7 +53,21 @@ public final class WebArticleFragment extends Fragment {
 			if (content != null) {
 				webContent.loadDataWithBaseURL(Rss.BASE_URL,content, "text/html", "utf-8", null);
 			} else {
-				webContent.loadUrl(url);
+				webContent.loadUrl(articleUrl);
+				webContent.setWebViewClient(new WebViewClient() {
+			        @Override
+			        public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+			        }
+
+			        @Override
+			        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+			            if (url.equals(articleUrl)) {
+							view.loadUrl(url);
+							return true;
+						}
+			            return false;
+			        }
+			    });
 			}
 			txtDate.setText(dateText);
 			txtTitle.setText(title);

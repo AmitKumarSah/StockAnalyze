@@ -9,7 +9,10 @@ import android.util.Log;
 import cz.tomas.StockAnalyze.utils.Utils;
 
 /**
- * task to load articles from database or fetch and merge new articles
+ * Task to load articles from database or fetch and merge new articles.
+ * Execution has boolean parameter to determine whether to fetch new data or
+ * just load them from db.
+ * 
  * @author tomas
  *
  */
@@ -72,13 +75,10 @@ public abstract class NewsItemsTask extends AsyncTask<Boolean, Integer, List<Art
 			List<Feed> feeds = rss.getFeeds();
 			if (fetch) {
 				for (Feed feed : feeds) {
-					articles = rss.fetchArticles(feed);
-				}
-			} else {
-				for (Feed feed : feeds) {
-					articles = rss.getArticles(feed.getFeedId());
+					rss.fetchArticles(feed);
 				}
 			}
+			articles = rss.getArticles();
 		} catch (Exception e) {
 			Log.e(Utils.LOG_TAG, "failed to read news", e);
 			this.ex = e;
