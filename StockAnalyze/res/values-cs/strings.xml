@@ -1,0 +1,154 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!--
+  StockAnalyze for Android
+      Copyright (C)  2011 Tomas Vondracek.
+  
+      This program is free software: you can redistribute it and/or modify
+      it under the terms of the GNU General Public License as published by
+      the Free Software Foundation, either version 3 of the License, or
+      (at your option) any later version.
+  
+      This program is distributed in the hope that it will be useful,
+      but WITHOUT ANY WARRANTY; without even the implied warranty of
+      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+      GNU General Public License for more details.
+  
+      You should have received a copy of the GNU General Public License
+      along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<resources>
+    <string name="portfolioContextMenuSubtract"/>
+    <string name="portfolioContextMenuAddMore">Přidat další</string>
+    <string name="portfolioContextMenuRemove">Odebrat</string>
+    <string name="portfolioContextMenuStockDetail">Zobzrazit detail akcie</string>
+    <string name="PortfolioContextViewDetail">Detail portfolia</string>
+    <string name="addStockItemToFavourite">Přidat do oblíbených</string>
+    <string name="addStockItemToPortfolio">Přidat do portfolia</string>
+    <string name="stockItemView">Zobrazit detaily</string>
+    <string name="refresh">Aktualizovat</string>
+    <string name="settings">Nastavení</string>
+    <string name="app_name">StockAnalyze</string>
+    <string name="appAuthor">Tomáš Vondráček\ntomas.vondracek@gmail.com</string>
+    <string name="appWww">http://tomas-vondracek.net</string>
+    <string name="SearchTextView">Napište ticker nebo jméno</string>
+	<string name="update_succes">Data byla úspěšně aktualizována!</string>
+	<string name="update_fail">nastala chyba při aktualizaci dat. Zkontrolujete své připojení.</string>
+	<string name="noOfflineData">Žádná off-line data přístupná,stahuju...</string>
+	<string name="NoRefresh">"Žádná data nebyla aktualizována."</string>
+	<string name="failed_price_update">Selhala aktualizace kurzu!</string>
+	<string name="loading">Načítám...</string>
+	<string name="NoInternet">Potřebujete připojení k iternetu pro získání posledních dat!</string>
+	<string name="LabelDetailMin">Roční minimum</string>
+	<string name="LabelDetailMax">Roční maximum</string>
+	<string name="LabelDetailVolume">Objem</string>
+	<string name="NoStockSelected">Nejsou vybrány žádné akcie.Prosím označte nebo přidejte jednu.</string>
+	<string name="FailedGetNews">"Chyba při stahování zpráv"</string>
+	<string name="NoNews">"Nejsou zde žádné nové zprávy."</string>
+	<string name="InvalidData">Neplatná data</string>
+	<string name="Statistics">Statistiky</string>
+	<string name="pieces">ks</string>
+	<string name="share">Sdílet</string>
+	<string name="viewInBrowser">Zobrazit v prohlížeči</string>
+	
+	<string name="homeStockList">Akcie</string>
+	<string name="homeNews">Zprávy</string>
+	<string name="homeCurrencies">Světové měny</string>
+	<string name="homeIndeces">Indexy</string>
+	<string name="homeMyPortfolio">Portfolio</string>
+	<string name="homeChartTitle">Graf:</string>
+	<string name="disclaimerTitle">Disclaimer:</string>
+	<string name="disclaimerText">Upozornění: Všechny informace poskytované aplikací jsou poskytovány zdarma a neslouží v žádném případě jako konkrétní investiční či obchodní doporučení. Využití těchto informací je výhradně věc odpovědnosti a uvážení uživatele, stejně tak jako rozhodnutí obchodovat. Provozovatel aplikace není zodpovědný za konkrétní rozhodnutí jednotlivých uživatelů. Provozovatel není zodpovědný za nefunkčnost stránek, ani chyby v datech. Veškeré zdroje jsou pouze informační. Provozovatel aplikace ani jednotliví autoři nejsou registrovaným brokerem či investičním poradcem ani makléřem. 
+Nikdy se nepouštějte do obchodů, jejichž podstatě plně nerozumíte. Obchodování a investování s finančními instrumenty je vysoce rizikové.</string>
+	<string name="disclaimerShortText">Information is provided "as is" and solely for informational purposes, not for trading purposes or advice, and may be delayed.</string>
+	<string name="dataUpdating">Aktualizuji data</string>
+	<string name="dataUpdated">Data aktualizována</string>
+	<string name="lastDataUpdated">Čas poslední aktualizace:</string>
+	<string name="noDataUpdated">Žádná data nebyla aktualizována.</string>
+	
+	<string name="portfolioTickerLabel">Ticker akcie</string>
+	<string name="portfolioCountLabel">Počet</string>
+	<string name="portfolioPriceLabel">Cena za akcii</string>
+	<string name="portfolioMarketLabel">Trh</string>
+	<string name="portfolioDefaultStockCount">100</string>
+	<string name="portfolioValidationMessage">Vyplňte všechna pole správnými hodnotami.</string>
+	<string name="portfolioFailedToAdd">Selhalo přidání položky do portfolia!</string>
+	<string name="portfolioDealPrompt">Obchod</string>
+	<string name="portfolioDealFee">Poplatek</string>
+	<string name="portfolioDealTotalValue">Celková hodnota</string>
+    <string-array name="portfolioDealArray">
+        <item>Koupit</item>
+        <item>Prodat</item>
+    </string-array>
+    <string name="portfolioListHeader1">Jméno akcie\nTicker</string>
+    <string name="portfolioListHeader2">Celková hodnota\nZměna</string>
+    <string name="portfolioListHeader3">Cena akcie\nZměna</string>
+    <string name="portfolioFooterSum">Suma:"</string>
+    <string name="AddPortfolioItemActivityTitle">Přidat akcii do portfolia</string>
+    <string name="portfolioPickStock">Vyberte akcii</string>
+    <string name="portfolioBalance">Bilance:</string>
+    <string name="portfolioBuyPrice">Kupní cena</string>
+    <string name="portfolioSellPrice">Prodejní cena</string>
+    <string name="noPortfolioItems">V portfoliu nejsou žádné položky...</string>
+    
+    <string name="failedScheduleUpdate">Chyba při plánování denní aktualizace!</string>
+    
+    <string name="prefPermanentNotification">Povolte pro zobrazení trvalé notifikace pro rychlý přístup</string>
+    <string name="prefUpdateNotification">Ukázat notifikace během aktualizace.</string>
+    <string name="prefPortfolioIncludeFeeSummary">Zaškrtněte pro zapořítání poplatků</string>
+    
+    <string name="prefGroupPortfolio">Portfolio</string>
+    <string name="prefGroupNotifications">Notifikace</string>
+    <string name="prefGroupAutoUpdates">Automatické aktualizace</string>
+    <string name="prefPortfolioIncludeFeeTitle">Započítat poplatek</string>
+    <string name="prefAutoBackgroundUpdatesTitle">Aktualizace na pozadí</string>
+    <string name="prefAutoUpdateIntervalTitle">Interval aktualizace</string>
+    <string name="prefNotifUpdateTitle">Notifikace aktualizace</string>
+    <string name="prefNotifPermaTitle">Trvalé notifikace</string>
+    
+    <string name="AppPreferencesActivityTitle">Nastavení aplikace</string>
+    
+    <string-array name="prefListUpdateIntervalEntries">
+        <item>10 minut</item>
+        <item>30 minut</item>
+        <item>1 hodina</item>
+        <item>2 hodiny</item>
+        <item>6 hodin</item>
+        <item>12 hodin</item>
+    </string-array>
+    <string-array name="prefListUpdateIntervalValues">
+        <item>10</item>
+        <item>30</item>
+        <item>60</item>
+        <item>120</item>
+        <item>360</item>
+        <item>720</item>
+    </string-array>
+    
+    <string name="prefBackgroundUpdate">Povolí aktualizace na pozadí.</string>
+    <string name="prefUpdateInterval">Nastaví časový interval pro aktualizace na pozadí.</string>
+    
+    <string name="appAbout">O aplikaci</string>
+    
+    <!-- names for activities to display in ActionBar -->
+    <string name="activityStockList">Akcie</string>
+    <string name="activityStockDetail">Detail akcie</string>
+    <string name="activityPortfolio">Portfolio</string>
+    <string name="activityPortfolioDetail">Detail</string>
+    <string name="activityNews">Zprávy</string>
+    <string name="activityCurrencies">Měny</string>
+    <string name="activityStockChart">Graf akcie</string>
+    <string name="chartDay">Den</string>
+    <string name="chart5days">1 týden</string>
+    <string name="chart10days">2 týdny</string>
+    <string name="chartMonth">1 Měsíc</string>
+    <string name="chart3months">3 Měsíce</string>
+    <string name="chart6months">6 Měsíce</string>
+    <string name="chartYear">Rok</string>
+    
+    <string name="failedGetChart">Selhalo stažení dat pro graf...</string>
+    
+    <string name="working">pracuji...</string>
+    
+    <string name="pickMarket">Vyberte trh</string>
+    <string name="pickStock">Vyberte akcii</string>
+</resources>

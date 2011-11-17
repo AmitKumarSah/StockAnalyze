@@ -181,7 +181,7 @@ public class ChartView extends View {
 	}
 
 	private void drawTracking(Canvas canvas, float originX, float originY, float chartWidth, float chartHeight) {
-		if (this.trackingValueX > originX && this.trackingValueX - originX < chartWidth) {
+		if (this.trackingValueX > originX && this.trackingValueX - originX < chartWidth && this.preparedData != null) {
 			canvas.drawLine(this.trackingValueX, 0, this.trackingValueX, this.getHeight(), this.paint);
 			
 			final float step = chartWidth / (float) (this.data.length -1);

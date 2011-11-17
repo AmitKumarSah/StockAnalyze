@@ -39,7 +39,7 @@
 			android:title="@string/prefAutoUpdateIntervalTitle"
 			android:summary="@string/prefUpdateInterval"
 			android:key="prefUpdateTimeInterval"
-			android:defaultValue="30"
+			android:defaultValue="120"
 			android:entries="@array/prefListUpdateIntervalEntries"
 			android:entryValues="@array/prefListUpdateIntervalValues" />
 		</PreferenceCategory>
