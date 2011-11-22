@@ -193,8 +193,16 @@ public class ChartView extends View {
 			
 			final String value = String.valueOf(this.data[index]);
 			final String text = String.format("%s - %s", getFormattedValue(this.axisX[index]), value);
-			canvas.drawText(text, this.trackingValueX + AXIS_TEXT_PADDING, 
-					yValue - AXIS_TEXT_PADDING, this.textPaint);
+			if (this.trackingValueX - originX < chartWidth / 2) {
+				// draw text on right to the line
+				canvas.drawText(text, this.trackingValueX + AXIS_TEXT_PADDING, 
+						yValue - AXIS_TEXT_PADDING, this.textPaint);
+			} else {
+				// draw text to left of the line
+				float textWidth = textPaint.measureText(text);
+				canvas.drawText(text, this.trackingValueX - AXIS_TEXT_PADDING - textWidth,
+						yValue - AXIS_TEXT_PADDING, this.textPaint);
+			}
 		}
 	}
 
