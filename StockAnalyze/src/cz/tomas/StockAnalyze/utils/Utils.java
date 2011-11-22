@@ -49,6 +49,10 @@ public class Utils {
 	public static final String PREF_HOME_CHART_MARKET_ID = "prefHomeChartMarketId";
 	public static final String PREF_URLS_TIME = "prefGaeUrlUpdate";
 	
+	public static final boolean PREF_DEF_PERMANENT_NOTIF = false;
+	public static final boolean PREF_DEF_UPDATE_NOTIF = true;
+	public static final boolean PREF_DEF_ENABLE_BACKGROUND_UPDATE = true;
+	
 	public static final TimeZone PRAGUE_TIME_ZONE = TimeZone.getTimeZone("Europe/Prague");
 	
 	public static final String EXTRA_STOCK_ITEM = "cz.tomas.StockAnalyze:StockItem";

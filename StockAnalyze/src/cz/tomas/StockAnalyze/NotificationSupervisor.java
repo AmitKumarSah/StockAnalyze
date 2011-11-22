@@ -28,6 +28,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.widget.RemoteViews;
 
 import cz.tomas.StockAnalyze.Data.IStockDataProvider;
@@ -48,15 +49,16 @@ import cz.tomas.StockAnalyze.utils.Utils;
 public class NotificationSupervisor implements IUpdateSchedulerListener, IStockDataListener {
 
 	private Context context;
-	private NotificationManager notificationManager;
+	private final NotificationManager notificationManager;
 	private StringBuilder stringBuilder;
-	private CharSequence updateBeginMessage;
-	private CharSequence updateFinishedMessage;
-	private CharSequence noUpdateMessage;
+	private final CharSequence updateBeginMessage;
+	private final CharSequence updateFinishedMessage;
+	private final CharSequence noUpdateMessage;
 	private RemoteViews currentNotificationView;
 	
 	private Notification notification;
 	private PendingIntent contentIntent;
+	final SharedPreferences pref;
 	
 	private static final int UPDATE_DATA_ID = 1;
 	
@@ -67,6 +69,7 @@ public class NotificationSupervisor implements IUpdateSchedulerListener, IStockD
 		this.updateBeginMessage = this.context.getText(R.string.dataUpdating);
 		this.updateFinishedMessage = this.context.getText(R.string.dataUpdated);
 		this.noUpdateMessage = this.context.getText(R.string.noDataUpdated);
+		this.pref = this.context.getSharedPreferences(Utils.PREF_NAME, 0);
 	}
 
 	/** 
@@ -89,7 +92,7 @@ public class NotificationSupervisor implements IUpdateSchedulerListener, IStockD
 	}
 
 	private void showStartNotfication(Market... markets) {
-		final boolean enableNotif = this.context.getSharedPreferences(Utils.PREF_NAME, 0).getBoolean(Utils.PREF_UPDATE_NOTIF, true);
+		final boolean enableNotif = this.pref.getBoolean(Utils.PREF_UPDATE_NOTIF,  Utils.PREF_DEF_UPDATE_NOTIF);
 		
 		if (markets == null || enableNotif == false)
 			return;
@@ -134,7 +137,7 @@ public class NotificationSupervisor implements IUpdateSchedulerListener, IStockD
 			this.stringBuilder.append(FormattingUtils.formatStockDate(Calendar.getInstance()));
 			
 
-			if (this.context.getSharedPreferences(Utils.PREF_NAME, 0).getBoolean(Utils.PREF_PERMANENT_NOTIF, true)) {
+			if (this.pref.getBoolean(Utils.PREF_PERMANENT_NOTIF, Utils.PREF_DEF_PERMANENT_NOTIF)) {
 				//this.currentNotificationView.setTextViewText(R.id.notification_text, this.stringBuilder.toString());
 				this.notification.setLatestEventInfo(this.context, this.context.getText(R.string.app_name), this.stringBuilder.toString(), this.contentIntent);
 				this.notificationManager.notify(UPDATE_DATA_ID, this.notification);

@@ -31,6 +31,7 @@ import java.util.Map.Entry;
 
 import com.flurry.android.FlurryAgent;
 
+import cz.tomas.StockAnalyze.Application;
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
@@ -135,8 +136,8 @@ public abstract class ChartActivity extends BaseActivity {
 		} else {
 			this.timePeriod = this.prefs.getInt(Utils.PREF_CHART_TIME_PERIOD, DataManager.TIME_PERIOD_MONTH);
 		}
-		
-		this.dataManager = DataManager.getInstance(this);		
+
+		this.dataManager = (DataManager) getApplicationContext().getSystemService(Application.DATA_MANAGER_SERVICE);	
 	}
 	
 	/* (non-Javadoc)
@@ -237,11 +238,8 @@ public abstract class ChartActivity extends BaseActivity {
 	}
 	
 	protected boolean isChartUpdating() {
-		if (this.chartTask != null && this.chartTask.getStatus() == AsyncTask.Status.RUNNING || 
-				this.chartTask.getStatus() == AsyncTask.Status.PENDING)
-			return true;
-		else
-			return false;
+        return this.chartTask != null && this.chartTask.getStatus() == AsyncTask.Status.RUNNING ||
+                this.chartTask.getStatus() == AsyncTask.Status.PENDING;
 	}
 
 

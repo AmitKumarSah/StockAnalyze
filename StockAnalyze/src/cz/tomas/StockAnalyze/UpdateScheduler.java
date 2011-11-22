@@ -63,10 +63,10 @@ import cz.tomas.StockAnalyze.utils.Utils;
  */
 public class UpdateScheduler {
 	
-	private Context context;
-	private SharedPreferences preferences;
+	private final Context context;
+	private final SharedPreferences preferences;
 	
-	private final int DEFAULT_REFRESH_INTERVAL = 10;		//minutes
+	private final int DEFAULT_REFRESH_INTERVAL = 120;		//minutes
 	private final int REQUEST_CODE = 13215564;
 	
 	public static final String INTRA_UPDATE_ACTION = "cz.tomas.StockAnalyze.INTRADAY_DATA_UPDATE";
@@ -75,9 +75,9 @@ public class UpdateScheduler {
 	private final int DAY_UPDATE_HOUR = 18;
 	private final int INTRADAY_START_UPDATE_HOUR = 9;
 	
-	private static PendingIntent intraUpdateIntent;
-	private static PendingIntent dayUpdateIntent;
-	private List<IUpdateSchedulerListener> listeners;
+	private final PendingIntent intraUpdateIntent;
+	private final PendingIntent dayUpdateIntent;
+	private final List<IUpdateSchedulerListener> listeners;
 	
 	private Semaphore semaphore;
 	
@@ -86,18 +86,15 @@ public class UpdateScheduler {
 		this.semaphore = new Semaphore(1);
 		this.listeners = new ArrayList<IUpdateSchedulerListener>();
 		
-		if (intraUpdateIntent == null) {
-			Intent intent = new Intent(INTRA_UPDATE_ACTION, null, this.context, AlarmReceiver.class);
-			intent.putExtra("intraday", true);
-			intraUpdateIntent = PendingIntent.getBroadcast(this.context,
-					REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-		}
-		if (dayUpdateIntent == null) {
-			Intent intent = new Intent(DAY_UPDATE_ACTION, null, this.context, AlarmReceiver.class);
-			intent.putExtra("intraday", false);
-			dayUpdateIntent = PendingIntent.getBroadcast(this.context,
-					REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-		}
+		Intent intent = new Intent(INTRA_UPDATE_ACTION, null, this.context, AlarmReceiver.class);
+		intent.putExtra("intraday", true);
+		intraUpdateIntent = PendingIntent.getBroadcast(this.context,
+				REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+		
+		intent = new Intent(DAY_UPDATE_ACTION, null, this.context, AlarmReceiver.class);
+		intent.putExtra("intraday", false);
+		dayUpdateIntent = PendingIntent.getBroadcast(this.context,
+				REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 		Log.i(Utils.LOG_TAG, "update intents equality: " + dayUpdateIntent.equals(intraUpdateIntent));
 		this.preferences = context.getSharedPreferences(Utils.PREF_NAME, 0);
 		
@@ -134,7 +131,7 @@ public class UpdateScheduler {
 	 * if it is enabled in preferences
 	 */
 	public void scheduleNextIntraDayUpdate() {
-		boolean enabled = this.preferences.getBoolean(Utils.PREF_ENABLE_BACKGROUND_UPDATE, true);
+		boolean enabled = this.preferences.getBoolean(Utils.PREF_ENABLE_BACKGROUND_UPDATE, Utils.PREF_DEF_ENABLE_BACKGROUND_UPDATE);
 		if (enabled)
 			this.scheduleAlarm(true);
 	}
@@ -226,7 +223,7 @@ public class UpdateScheduler {
 	private void scheduleAlarm(boolean intraDay) {
 		// get a Calendar object with current time
 		Calendar cal = Calendar.getInstance(Utils.PRAGUE_TIME_ZONE);
-		int today = cal.get(Calendar.DAY_OF_YEAR);
+		final int today = cal.get(Calendar.DAY_OF_YEAR);
 		cal = Utils.getNextValidDate(cal);
 		PendingIntent pendingIntent = null;
 		if (intraDay) {
@@ -251,7 +248,7 @@ public class UpdateScheduler {
 		Log.d(Utils.LOG_TAG, "SHEDULING " + (intraDay? "intraday" : "day") + " ALARM TO " + FormattingUtils.formatStockDate(cal));
 		
 		// Get the AlarmManager service
-		AlarmManager am = (AlarmManager) this.context.getSystemService(Context.ALARM_SERVICE);
+		final AlarmManager am = (AlarmManager) this.context.getSystemService(Context.ALARM_SERVICE);
 		am.set(AlarmManager.RTC, cal.getTimeInMillis(), pendingIntent);
 	}
 	
@@ -278,7 +275,7 @@ public class UpdateScheduler {
 			if (params.length == 1)
 				try {
 					semaphore.acquire();	// synchronize updates, so there is only one active at the time (because backend instances)
-					IStockDataProvider provider = params[0];
+					final IStockDataProvider provider = params[0];
 					if(provider != null) {
 						Log.d(Utils.LOG_TAG, provider.getDescriptiveName() + ": initiating provider refresh in UpdateScheduler");
 						return provider.refresh();
@@ -303,7 +300,7 @@ public class UpdateScheduler {
 			editor.putLong(Utils.PREF_LAST_UPDATE_TIME, System.currentTimeMillis());
 			editor.commit();
 			
-			final boolean succeeded = result == null ? false : true;
+			final boolean succeeded = result != null;
 			
 			for (IUpdateSchedulerListener listener : listeners) {
 				if (listener != null) {

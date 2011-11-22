@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -32,15 +33,14 @@ import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
 import android.widget.TextView;
 import android.widget.Toast;
-import cz.tomas.StockAnalyze.Application;
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.charts.view.CompositeChartView;
 import cz.tomas.StockAnalyze.ui.widgets.ActionBar;
-import cz.tomas.StockAnalyze.ui.widgets.PickStockDialog;
 import cz.tomas.StockAnalyze.ui.widgets.ActionBar.IActionBarListener;
 import cz.tomas.StockAnalyze.ui.widgets.HomeBlockView;
+import cz.tomas.StockAnalyze.ui.widgets.PickStockDialog;
 import cz.tomas.StockAnalyze.ui.widgets.PickStockDialog.IStockDialogListener;
 import cz.tomas.StockAnalyze.utils.Markets;
 import cz.tomas.StockAnalyze.utils.NavUtils;
@@ -50,17 +50,17 @@ public class HomeActivity extends ChartActivity implements OnClickListener, OnKe
 
 	private static final int DIALOG_PICK_STOCK = 0;
 	
-	private DataManager dataManager;
 	private SharedPreferences pref;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
+		// this will set default values for first use
+		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 		this.setContentView(R.layout.home_layout);
-		
+				
 		this.chartView = (CompositeChartView) this.findViewById(R.id.stockChartView);
-		this.dataManager = (DataManager) getApplicationContext().getSystemService(Application.DATA_MANAGER_SERVICE);
 		this.pref = getSharedPreferences(Utils.PREF_NAME, 0);
 		
 		View[] blockViews = new View[4];
@@ -127,10 +127,22 @@ public class HomeActivity extends ChartActivity implements OnClickListener, OnKe
 	};
 	
 	@Override
+	
 	public boolean onCreateOptionsMenu(Menu menu) {
 	    MenuInflater inflater = getMenuInflater();
 	    inflater.inflate(R.menu.app_menu, menu);
         return super.onCreateOptionsMenu(menu);
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		// change chart in case something changed the time period
+		final int period = this.prefs.getInt(Utils.PREF_CHART_TIME_PERIOD, DataManager.TIME_PERIOD_MONTH);
+		if (period != this.timePeriod && this.stockItem != null) {
+			this.timePeriod = period;
+			this.updateChart();
+		}
 	}
 
 

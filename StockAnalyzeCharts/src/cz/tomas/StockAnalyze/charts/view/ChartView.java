@@ -87,7 +87,7 @@ public class ChartView extends View {
 	/**
 	 * pixels between axis text and axis itself
 	 */
-	private final int AXIS_TEXT_PADDING = 2;
+	private final int AXIS_TEXT_PADDING = (int) (4 * SCALE);
 	
 	private final int GRID_HORIZONTAL_LINES = 5;
 	private final int GRID_VERTICAL_LINES = 5;
@@ -182,13 +182,19 @@ public class ChartView extends View {
 
 	private void drawTracking(Canvas canvas, float originX, float originY, float chartWidth, float chartHeight) {
 		if (this.trackingValueX > originX && this.trackingValueX - originX < chartWidth && this.preparedData != null) {
-			canvas.drawLine(this.trackingValueX, 0, this.trackingValueX, this.getHeight(), this.paint);
+			// vertical line
+			canvas.drawLine(this.trackingValueX, OFFSET, this.trackingValueX, originY, this.paint);
 			
 			final float step = chartWidth / (float) (this.data.length -1);
 			final int index = (int) ((this.trackingValueX - originX) / step);
-			final float value = chartHeight - preparedData[index] + OFFSET;
+			final float yValue = chartHeight - preparedData[index] + OFFSET;
+			// horizontal line
+			canvas.drawLine(originX, yValue, this.getWidth() - OFFSET, yValue, this.paint);
 			
-			canvas.drawLine(0, value, this.getWidth(), value, this.paint);
+			final String value = String.valueOf(this.data[index]);
+			final String text = String.format("%s - %s", getFormattedValue(this.axisX[index]), value);
+			canvas.drawText(text, this.trackingValueX + AXIS_TEXT_PADDING, 
+					yValue - AXIS_TEXT_PADDING, this.textPaint);
 		}
 	}
 
@@ -329,9 +335,9 @@ public class ChartView extends View {
 		if (this.data != null && this.data.length > 0) {
 			// bottom text is right above x=0 value to the left of y axis
 			canvas.drawText(String.valueOf(this.min), OFFSET, 
-					this.getHeight() - OFFSET - offsetBelowXAxis, this.textPaint);
+					this.getHeight() - OFFSET - offsetBelowXAxis - AXIS_TEXT_PADDING, this.textPaint);
 			
-			String lastTickText = String.valueOf(max);
+			final String lastTickText = String.valueOf(max);
 			canvas.drawText(lastTickText, OFFSET, OFFSET + this.textPaint.getTextSize(),
 					this.textPaint);
 		}
@@ -339,12 +345,12 @@ public class ChartView extends View {
 		// description under the x axis
 		if (this.axisX != null && this.axisX.length > 0) {
 			String text = this.getFormattedValue(this.axisX[0]);
-			canvas.drawText(text, OFFSET + offsetNextToYAxis, 
+			canvas.drawText(text, OFFSET + offsetNextToYAxis + AXIS_TEXT_PADDING, 
 					this.getHeight() - OFFSET - this.textPaint.getTextSize(), this.textPaint);
 			
 			text = this.getFormattedValue(this.axisX[this.axisX.length - 1]);
 			float textWidth = this.textPaint.measureText(text);
-			canvas.drawText(text, 2*OFFSET + chartWidth - textWidth, 
+			canvas.drawText(text, OFFSET + offsetNextToYAxis + chartWidth - textWidth, 
 					this.getHeight() - OFFSET - this.textPaint.getTextSize(), this.textPaint);
 		}
 	}
@@ -392,5 +398,14 @@ public class ChartView extends View {
 			return true;
 		}
 		return super.onTouchEvent(event);
+	}
+
+	@Override
+	protected void onDetachedFromWindow() {
+		super.onDetachedFromWindow();
+		if (this.chartBitmap != null) {
+			this.chartBitmap.recycle();
+			this.chartBitmap = null;
+		}
 	}
 }

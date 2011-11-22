@@ -316,8 +316,7 @@ public final class NewsSqlHelper extends AbstractSqlHelper {
 			Log.e(Utils.LOG_TAG, e.toString());
 		} finally {
 			if (c != null) {
-				if (c != null)
-					c.close();
+                c.close();
 				this.close();
 			}
 		}
