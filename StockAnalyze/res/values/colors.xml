@@ -19,6 +19,8 @@
 <resources>
 	<color name="list_item_background">#EDEFFF</color>
 	<color name="font_color">#101010</color>
+	<color name="font_color_selected">#EEEEEE</color>
+	<color name="font_color_focused">#AAAAAA</color>
 	<color name="news_item_unread_color">#00EE00</color>
 	<color name="news_item_read_color">#DDDDDD</color>
 	<color name="separator_color">#AAAAAA</color>
@@ -59,4 +61,5 @@
 	<color name="shadow_dark">#222222</color>
 	
     <color name="actionbar_title_color">#224894</color>
+    <color name="icon_main_color">#3570e7</color>
 </resources>

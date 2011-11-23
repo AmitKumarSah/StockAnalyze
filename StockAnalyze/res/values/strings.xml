@@ -148,6 +148,14 @@ Nikdy se nepouštějte do obchodů, jejichž podstatě plně nerozumíte. Obchod
     <string name="chart6months">6 Months</string>
     <string name="chartYear">Year</string>
     
+    <string name="chartDayShort">1d</string>
+    <string name="chart5daysShort">1w</string>
+    <string name="chart10daysShort">2w</string>
+    <string name="chartMonthShort">1m</string>
+    <string name="chart3monthsShort">3m</string>
+    <string name="chart6monthsShort">6m</string>
+    <string name="chartYearShort">1y</string>
+    
     <string name="failedGetChart">Failed to get data for chart...</string>
     
     <string name="working">Processing...</string>

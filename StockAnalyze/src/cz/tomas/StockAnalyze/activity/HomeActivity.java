@@ -31,7 +31,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
-import android.widget.TextView;
 import android.widget.Toast;
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.DataManager;
@@ -78,26 +77,26 @@ public class HomeActivity extends ChartActivity implements OnClickListener, OnKe
 
 		Thread thread = new Thread(chartRunnable);
 		thread.start();
-		final TextView txtChartDescription = (TextView) this.findViewById(R.id.detail_label_chart_description);
-		this.setChartActivityListener(new IChartActivityListener() {
-			
-			@Override
-			public void onChartUpdateFinish() {
-				int id = DAY_COUNT_MAP.get(timePeriod);
-				if (txtChartDescription != null && stockItem != null) {
-					String text = String.format("%s (%s)", stockItem.getName(), getString(id));
-					txtChartDescription.setText(text);
-				}
-			}
-			
-			@Override
-			public void onChartUpdateBegin() {
-				if (txtChartDescription != null && stockItem != null) {
-					String text = String.format("%s %s", stockItem.getTicker(), getString(R.string.loading));
-					txtChartDescription.setText(text);
-				}
-			}
-		});
+		//final TextView txtChartDescription = (TextView) this.findViewById(R.id.chartDescription);
+//		this.setChartActivityListener(new IChartActivityListener() {
+//			
+//			@Override
+//			public void onChartUpdateFinish() {
+//				int id = DAY_COUNT_MAP.get(timePeriod);
+//				if (txtChartDescription != null && stockItem != null) {
+//					String text = String.format("%s (%s)", stockItem.getName(), getString(id));
+//					txtChartDescription.setText(text);
+//				}
+//			}
+//			
+//			@Override
+//			public void onChartUpdateBegin() {
+//				if (txtChartDescription != null && stockItem != null) {
+//					String text = String.format("%s %s", stockItem.getTicker(), getString(R.string.loading));
+//					txtChartDescription.setText(text);
+//				}
+//			}
+//		});
 
 		ActionBar bar = (ActionBar) findViewById(R.id.homeActionBar);
 		if (bar != null)
@@ -140,11 +139,10 @@ public class HomeActivity extends ChartActivity implements OnClickListener, OnKe
 		// change chart in case something changed the time period
 		final int period = this.prefs.getInt(Utils.PREF_CHART_TIME_PERIOD, DataManager.TIME_PERIOD_MONTH);
 		if (period != this.timePeriod && this.stockItem != null) {
-			this.timePeriod = period;
-			this.updateChart();
+			this.updateTimePeriod(period, true);
 		}
+		this.setDescriptionVisibility(View.VISIBLE);
 	}
-
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {

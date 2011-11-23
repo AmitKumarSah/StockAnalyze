@@ -55,6 +55,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.widget.Checkable;
+import android.widget.RadioGroup;
+import android.widget.RadioGroup.OnCheckedChangeListener;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /**
@@ -74,17 +78,16 @@ public abstract class ChartActivity extends BaseActivity {
 	
 	private class ChartDataCache {
 		Map<Long, Float> dataSet;
-		int timePeriod;
 		long creationTime;
 		
 		/**
 		 * @param dataSet
 		 * @param timePeriod
 		 */
-		public ChartDataCache(Map<Long, Float> dataSet, int timePeriod) {
+		public ChartDataCache(Map<Long, Float> dataSet) {
 			super();
 			this.dataSet = dataSet;
-			this.timePeriod = timePeriod;
+			//this.timePeriod = timePeriod;
 			this.creationTime = SystemClock.elapsedRealtime(); 
 		}
 		
@@ -96,7 +99,11 @@ public abstract class ChartActivity extends BaseActivity {
 	protected StockItem stockItem;
 	protected DataManager dataManager;
 	protected int timePeriod = DataManager.TIME_PERIOD_MONTH;
+	
 	protected CompositeChartView chartView;
+	private RadioGroup depthGroup;
+	private TextView txtDescription;
+	
 	protected DrawChartTask chartTask;
 	protected DayData dayData;
 	
@@ -137,9 +144,37 @@ public abstract class ChartActivity extends BaseActivity {
 			this.timePeriod = this.prefs.getInt(Utils.PREF_CHART_TIME_PERIOD, DataManager.TIME_PERIOD_MONTH);
 		}
 
-		this.dataManager = (DataManager) getApplicationContext().getSystemService(Application.DATA_MANAGER_SERVICE);	
+		this.dataManager = (DataManager) getApplicationContext().getSystemService(Application.DATA_MANAGER_SERVICE);
 	}
 	
+	@Override
+	protected void onResume() {
+		super.onResume();
+
+		this.depthGroup = (RadioGroup) this.findViewById(R.id.chartDepthGroup);
+		if (depthGroup != null) {
+			this.depthGroup.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+				@Override
+				public void onCheckedChanged(RadioGroup group, int checkedId) {
+					int timePeriod = getDayCountById(checkedId);
+					updateTimePeriod(timePeriod, false);
+				}
+			});
+		}
+		this.txtDescription = (TextView) this.findViewById(R.id.chartDescription);
+	}
+
+	@Override
+	public void onStart() {
+		super.onStart();
+		final int id = getIdByDayCount(this.timePeriod);
+		View v = findViewById(id);
+		if (v != null) {
+			((Checkable) v).setChecked(true);
+		}
+	}
+
 	/* (non-Javadoc)
 	 * @see cz.tomas.StockAnalyze.activity.base.BaseActivity#onStop()
 	 */
@@ -173,6 +208,11 @@ public abstract class ChartActivity extends BaseActivity {
 		outState.putInt(EXTRA_CHART_DAY_COUNT, this.timePeriod);
 	}
 
+	public void setDescriptionVisibility(int visibility) {
+		if (this.txtDescription != null) {
+			this.txtDescription.setVisibility(visibility);
+		}
+	}
 
 	/** 
 	 * create context menu for chart
@@ -194,20 +234,38 @@ public abstract class ChartActivity extends BaseActivity {
 	 */
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		int timePeriod = this.getDayCountByResource(item.getItemId());
+		int timePeriod = this.getDayCountById(item.getItemId());
 		if (timePeriod != 0) {
-			this.timePeriod = timePeriod;
-			Editor ed = this.prefs.edit();
-			ed.putInt(Utils.PREF_CHART_TIME_PERIOD, timePeriod);
-			ed.commit();
-			this.updateChart();
-			Map<String, String> pars = new HashMap<String, String>(2);
-			pars.put(Consts.FLURRY_KEY_CHART_TIME_PERIOD, String.valueOf(timePeriod));
-			pars.put(Consts.FLURRY_KEY_CHART_TIME_SOURCE, getClass().getName());
-			FlurryAgent.onEvent(Consts.FLURRY_EVENT_CHART_TIME_PERIOD, pars);
-			return true;
+			return updateTimePeriod(timePeriod, false);
 		} else
 			return super.onContextItemSelected(item);
+	}
+
+	/**
+	 * update time period and redraw the chart
+	 * @param timePeriod
+	 * @return
+	 */
+	protected boolean updateTimePeriod(int timePeriod, boolean updateUi) {
+		this.timePeriod = timePeriod;
+		final Editor ed = this.prefs.edit();
+		ed.putInt(Utils.PREF_CHART_TIME_PERIOD, timePeriod);
+		ed.commit();
+		
+		if (updateUi) {
+			final int id = getIdByDayCount(this.timePeriod);
+			View v = findViewById(id);
+			if (v != null) {
+				((Checkable) v).setChecked(true);
+			}
+		}
+		
+		this.updateChart();
+		Map<String, String> pars = new HashMap<String, String>(2);
+		pars.put(Consts.FLURRY_KEY_CHART_TIME_PERIOD, String.valueOf(timePeriod));
+		pars.put(Consts.FLURRY_KEY_CHART_TIME_SOURCE, getClass().getName());
+		FlurryAgent.onEvent(Consts.FLURRY_EVENT_CHART_TIME_PERIOD, pars);
+		return true;
 	}
 
 	/**
@@ -245,11 +303,11 @@ public abstract class ChartActivity extends BaseActivity {
 
 	/**
 	 * by resource id get day count, this method is used to translate selected
-	 * menu item to day count
+	 * menu item/radio button to day count
 	 * @param item
 	 * @return
 	 */
-	protected int getDayCountByResource(int id) {
+	protected int getDayCountById(int id) {
 		//int dayCount = 0;
 		int timePeriod = 0;
 		// day counts are work days only
@@ -266,16 +324,43 @@ public abstract class ChartActivity extends BaseActivity {
 		case R.id.chart6months:
 			timePeriod =  DataManager.TIME_PERIOD_HALF_YEAR;
 			break;
-		case R.id.chartMonth:
+		case R.id.chart1month:
 			timePeriod = DataManager.TIME_PERIOD_MONTH;
 			break;
-		case R.id.chartYear:
+		case R.id.chart1year:
 			timePeriod = DataManager.TIME_PERIOD_YEAR;
 			break;
 		default:
 			break;
 		}
 		return timePeriod;
+	}
+	
+	protected int getIdByDayCount(int timePeriod) {
+		int id = 0;
+		switch (timePeriod) {
+		case DataManager.TIME_PERIOD_DAY:
+			id = R.id.chartDay;
+			break;
+		case DataManager.TIME_PERIOD_QUARTER:
+			id = R.id.chart3months;
+			break;
+		case DataManager.TIME_PERIOD_WEEK:
+			id = R.id.chart5days;
+			break;
+		case DataManager.TIME_PERIOD_HALF_YEAR:
+			id = R.id.chart6months;
+			break;
+		case DataManager.TIME_PERIOD_MONTH:
+			id = R.id.chart1month;
+			break;
+		case DataManager.TIME_PERIOD_YEAR:
+			id = R.id.chart1year;
+			break;
+		default:
+			break;
+		}
+		return id;
 	}
 
 	public void setChartActivityListener(IChartActivityListener listener) {
@@ -352,7 +437,7 @@ public abstract class ChartActivity extends BaseActivity {
 					dataSet = dataManager.getDayDataSet(stockItem, timePeriod, true);
 
 					if (dataSet != null) {
-						chartCache = new ChartDataCache(dataSet, timePeriod);
+						chartCache = new ChartDataCache(dataSet);
 						Map<String, SoftReference<ChartDataCache>> cacheMap = getCacheMap(timePeriod);
 						if (cacheMap.size() >= MAX_CACHE_SIZE) {
 							String firstKey = cacheMap.keySet().iterator().next();
@@ -456,7 +541,9 @@ public abstract class ChartActivity extends BaseActivity {
 			} else {
 				Log.w(Utils.LOG_TAG, "ChartView is null! Can not set data to chart!");
 			}
-			
+			if (txtDescription != null) {
+				txtDescription.setText(stockItem.getName());
+			}
 			if (listener != null)
 				listener.onChartUpdateFinish();
 		}

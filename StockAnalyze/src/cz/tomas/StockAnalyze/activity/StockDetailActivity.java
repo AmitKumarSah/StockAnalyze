@@ -53,15 +53,12 @@ import cz.tomas.StockAnalyze.utils.Utils;
  *
  */
 public final class StockDetailActivity extends ChartActivity implements IActionBarListener {
-
-	private TextView txtChartDescription;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
 		this.setContentView(R.layout.stock_detail);
-		this.txtChartDescription = (TextView) this.findViewById(R.id.detail_label_chart_description);
 		this.chartView = (CompositeChartView) findViewById(R.id.stockChartView);
 		if (chartView != null) {
 			this.registerForContextMenu(this.chartView);
@@ -75,22 +72,6 @@ public final class StockDetailActivity extends ChartActivity implements IActionB
 			});
 		} else
 			Log.w(Utils.LOG_TAG, "Failed to initialize chart view");
-		
-		this.setChartActivityListener(new IChartActivityListener() {
-			
-			@Override
-			public void onChartUpdateFinish() {
-				int id = DAY_COUNT_MAP.get(timePeriod);
-				if (txtChartDescription != null)
-					txtChartDescription.setText(getString(id));
-			}
-			
-			@Override
-			public void onChartUpdateBegin() {
-				if (txtChartDescription != null)
-					txtChartDescription.setText(R.string.loading);
-			}
-		});
 		
 		// compatibility
 		if (this.getParent() instanceof TabActivity) {
@@ -136,7 +117,6 @@ public final class StockDetailActivity extends ChartActivity implements IActionB
 		ActionBar bar = (ActionBar) this.findViewById(R.id.detailActionBar);
 		bar.setActionBarListener(this);
 	}
-		
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -151,7 +131,6 @@ public final class StockDetailActivity extends ChartActivity implements IActionB
 		return super.onOptionsItemSelected(item);
 	}
 
-
 	private void fill() throws NullPointerException, IOException {
 		this.updateChart();
 		this.updateCurrentStock();
@@ -164,21 +143,6 @@ public final class StockDetailActivity extends ChartActivity implements IActionB
 		intent.putExtra(EXTRA_CHART_DAY_COUNT, this.timePeriod);
 		startActivity(intent);
 	}
-
-
-	/* (non-Javadoc)
-	 * @see android.app.Activity#onPause()
-	 */
-	@Override
-	protected void onPause() {
-//		if (this.chartTask != null && this.chartTask.getStatus() != Status.FINISHED) {
-//			Log.w(Utils.LOG_TAG, "canceling chart update task!");
-//			this.chartTask.cancel(true);
-//		}
-		super.onPause();
-	}
-
-
 
 	private void updateCurrentStock() throws NullPointerException, IOException {
 		if (this.stockItem == null)

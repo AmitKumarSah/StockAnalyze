@@ -24,6 +24,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.LinearGradient;
 import android.graphics.Paint;
@@ -50,6 +51,8 @@ import cz.tomas.StockAnalyze.charts.interfaces.IChartTextFormatter;
  */
 public class ChartView extends View {
 
+	private static final boolean DEBUG = false;
+	
 	private float[] data;
 	private float[] preparedData;
 	
@@ -66,6 +69,7 @@ public class ChartView extends View {
 	private final TextPaint textPaint;
 	
 	private Bitmap chartBitmap;
+	private boolean isChartBitmapDirty;
 	
 	private boolean disableRedraw = false;
 	private boolean drawTracking = true;
@@ -157,7 +161,7 @@ public class ChartView extends View {
 		
 		final float chartWidth = this.getWidth() - 2 * OFFSET -offsetNextToYAxis ;
 		final float chartHeight = this.getHeight() - 2 * OFFSET - offsetBelowXAxis;
-		
+
 		drawAxis(canvas, originX, originY, chartWidth);
 		drawAxisDescription(canvas, offsetBelowXAxis, offsetNextToYAxis, chartWidth, chartHeight);
 		this.logger.addSplit("draw grid");
@@ -165,7 +169,11 @@ public class ChartView extends View {
 		
 		this.logger.addSplit("draw DATA");
 		if (this.data != null && this.data.length > 1) {
-			if (this.chartBitmap == null) {
+			if (this.chartBitmap != null && this.isChartBitmapDirty) {
+				this.chartBitmap.eraseColor(Color.TRANSPARENT);
+				this.drawData(new Canvas(this.chartBitmap), originX, originY, chartWidth, chartHeight);
+				this.isChartBitmapDirty = false;
+			} else if (this.chartBitmap == null) {
 				// cache bitmap with full chart
 				this.chartBitmap = Bitmap.createBitmap(getWidth(), getHeight(), this.bmpConfig);
 				this.drawData(new Canvas(this.chartBitmap), originX, originY, chartWidth, chartHeight);
@@ -244,7 +252,7 @@ public class ChartView extends View {
 
 	private void drawData(Canvas canvas, float originX,
 			float originY, float chartWidth, float chartHeight) {
-		
+
 		final float step = chartWidth / (float) (this.data.length -1);
 		if (this.preparedData == null || this.preparedData.length == 0)
 			this.preparedData = prepareDataValues(chartHeight);
@@ -296,7 +304,7 @@ public class ChartView extends View {
 	}
 
 	private float[] prepareDataValues(float chartHeight) {
-		Log.d(Utils.LOG_TAG, "preparing chart data..");
+		if (DEBUG) Log.d(Utils.LOG_TAG, "preparing chart data..");
 		float[] preparedData = new float[this.data.length];
 //		float heightMaxScale = chartHeight / max;
 //		float heightMinScale = chartHeight / min;
@@ -379,13 +387,17 @@ public class ChartView extends View {
 		this.min = min;
 		this.data = data;
 		this.preparedData = null;
+		this.isChartBitmapDirty = true;
+		this.trackingValueX = 0;
 		
 		this.postInvalidate();
-		StringBuilder builder = new StringBuilder("Chart Data: ");
-		for (int i = 0; i < data.length; i++) {
-			builder.append(String.valueOf(data[i]) + "; ");
+		if (DEBUG) {
+			StringBuilder builder = new StringBuilder("Chart Data: ");
+			for (int i = 0; i < data.length; i++) {
+				builder.append(String.valueOf(data[i]) + "; ");
+			}
+			Log.d(Utils.LOG_TAG, builder.toString());
 		}
-		Log.d(Utils.LOG_TAG, builder.toString());
 	}
 	
 	@SuppressWarnings("unchecked")

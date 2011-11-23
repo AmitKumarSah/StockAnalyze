@@ -19,7 +19,7 @@
 <resources>
 	<style name="themeLight" parent="@android:style/Theme.Light" >
     	<item name="titlePageIndicatorStyle">@style/MyTitlePageIndicator</item>
-    	
+    	<item name="android:radioButtonStyle">@style/radioStyle</item>
     	    
         <item name="android:windowTitleSize">@dimen/actionbar_compat_height</item>
         <item name="android:windowTitleBackgroundStyle">@style/ActionBarCompat</item>
