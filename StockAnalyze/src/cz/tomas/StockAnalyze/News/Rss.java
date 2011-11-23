@@ -22,7 +22,6 @@ package cz.tomas.StockAnalyze.News;
 
 import java.io.IOException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,9 +40,6 @@ import cz.tomas.StockAnalyze.utils.Utils;
  *
  */
 public class Rss {
-	
-	public static final String BASE_URL = "http://google.com/";
-	static final String GWT_URL = BASE_URL + "gwt/x?ct=url&u=%s";
 	
 	final XmlFeedPullParseHandler handler;
 	final NewsSqlHelper sqlHelper;
@@ -148,10 +144,10 @@ public class Rss {
 //	};
 
 	private void downloadContent(Article article) throws IOException {
-		String url = String.format(Rss.GWT_URL, URLEncoder.encode(article.getUrl().toString()));
+		//String url = String.format(Rss.GWT_URL, URLEncoder.encode(article.getUrl().toString()));
 		
 		//InputStream stream = DownloadService.GetInstance().openHttpConnection(url, true);
-		byte[] content = DownloadService.GetInstance().DownloadFromUrl(url, false);
+		byte[] content = DownloadService.GetInstance().DownloadFromUrl(article.getMobilizedUrl(), false);
 		String html = new String(content);
 		article.setContent(html);
 		this.sqlHelper.updateArticleContent(article);

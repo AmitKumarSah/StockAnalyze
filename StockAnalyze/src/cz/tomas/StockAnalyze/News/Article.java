@@ -18,16 +18,26 @@
 package cz.tomas.StockAnalyze.News;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.net.URLEncoder;
+
+import cz.tomas.StockAnalyze.utils.Utils;
+
+import android.util.Log;
 
 public class Article implements Serializable {
     
+	public static final String BASE_URL = "http://google.com/";
+	static final String GWT_URL = BASE_URL + "gwt/x?ct=url&u=%s";
+	
 	private static final long serialVersionUID = 8350602351455117248L;
 	
 	private long articleId;
     private long feedId;
     private String title;
     private URL url;
+    private String mobUrl;
     private String content;
     private String description;
     private long date;
@@ -80,6 +90,18 @@ public class Article implements Serializable {
 	public URL getUrl() {
 		return url;
 	}
+	
+	public String getMobilizedUrl() {
+		if (mobUrl == null) {
+			try {
+				mobUrl = String.format(GWT_URL, URLEncoder.encode(this.url.toString(), "UTF-8"));
+			} catch (UnsupportedEncodingException e) {
+				Log.e(Utils.LOG_TAG, "failed to decode article url", e);
+			}
+		}
+		return mobUrl;
+	}
+	
 	/**
 	 * @param url the url to set
 	 */

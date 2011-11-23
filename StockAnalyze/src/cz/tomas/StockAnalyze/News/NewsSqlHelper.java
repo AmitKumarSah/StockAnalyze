@@ -96,8 +96,12 @@ public final class NewsSqlHelper extends AbstractSqlHelper {
 //	private static final String SOURCE_AKCIE_NAME = "Akcie.cz";
 //	private static final String SOURCE_AKCIE_COUNTRY = "cz";
 	
-	private static final String SOURCE_NAME2 = "reuters";
-	private static final String SOURCE2= "http://feeds.reuters.com/reuters/globalmarketsNews";
+//	private static final String SOURCE_NAME2 = "reuters";
+//	private static final String SOURCE2= "http://feeds.reuters.com/reuters/globalmarketsNews";
+//	private static final String SOURCE_COUNTRY2 = "en";
+	
+	private static final String SOURCE_NAME2 = "marketwatch";
+	private static final String SOURCE2= "http://feeds.marketwatch.com/marketwatch/topstories/";
 	private static final String SOURCE_COUNTRY2 = "en";
 	
 	private static final String SOURCE_NAME1 = "bloomberg";

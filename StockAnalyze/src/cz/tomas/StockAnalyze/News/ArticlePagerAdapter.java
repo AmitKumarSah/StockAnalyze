@@ -49,7 +49,7 @@ public final class ArticlePagerAdapter extends FragmentPagerAdapter {
 //			} else {
 //				bundle.putString(ARTICLE_CONTENT, article.getDescription());
 //			}
-			bundle.putString(ARTICLE_URL, article.getUrl().toString());
+			bundle.putString(ARTICLE_URL, article.getMobilizedUrl());
 			fragment.setArguments(bundle);
 		}
 		return fragment;
