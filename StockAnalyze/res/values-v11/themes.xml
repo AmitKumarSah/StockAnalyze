@@ -22,9 +22,11 @@
     	
         <item name="android:actionBarStyle">@style/ActionBar</item>
         <item name="android:windowContentOverlay">@drawable/actionbar_shadow</item>
+    	<item name="android:radioButtonStyle">@style/radioStyle</item>
     </style>
     
     <style name="themeLightTitle" parent="android:style/Theme.Holo.Light">
+    	<item name="android:radioButtonStyle">@style/radioStyle</item>
     
     </style>
 </resources>

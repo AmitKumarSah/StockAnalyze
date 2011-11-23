@@ -14,8 +14,8 @@ import android.widget.FrameLayout;
 import android.widget.FrameLayout.LayoutParams;
 import android.widget.TextView;
 import cz.tomas.StockAnalyze.R;
+import cz.tomas.StockAnalyze.News.Article;
 import cz.tomas.StockAnalyze.News.ArticlePagerAdapter;
-import cz.tomas.StockAnalyze.News.Rss;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
 
 public final class WebArticleFragment extends Fragment {
@@ -37,7 +37,6 @@ public final class WebArticleFragment extends Fragment {
 			String dateText = FormattingUtils.formatDate(cal);
 			dateText += " " + cal.getTimeZone().getDisplayName(true, TimeZone.SHORT);
 			final String content = arguments.getString(ArticlePagerAdapter.ARTICLE_CONTENT);
-			final String articleUrl = arguments.getString(ArticlePagerAdapter.ARTICLE_URL);
 			
 			final FrameLayout articleContainer = (FrameLayout) view.findViewById(R.id.newsArticleContentContainer);
 			final TextView txtDate = (TextView) view.findViewById(R.id.newsArticleDate);
@@ -51,8 +50,9 @@ public final class WebArticleFragment extends Fragment {
 			articleContainer.addView(webContent);
 			
 			if (content != null) {
-				webContent.loadDataWithBaseURL(Rss.BASE_URL,content, "text/html", "utf-8", null);
+				webContent.loadDataWithBaseURL(Article.BASE_URL,content, "text/html", "utf-8", null);
 			} else {
+				final String articleUrl = arguments.getString(ArticlePagerAdapter.ARTICLE_URL);
 				webContent.loadUrl(articleUrl);
 				webContent.setWebViewClient(new WebViewClient() {
 			        @Override

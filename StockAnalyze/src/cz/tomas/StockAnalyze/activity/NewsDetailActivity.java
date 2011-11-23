@@ -18,6 +18,11 @@ import cz.tomas.StockAnalyze.activity.base.BaseFragmentActivity;
 import cz.tomas.StockAnalyze.ui.widgets.CirclesView;
 import cz.tomas.StockAnalyze.utils.Utils;
 
+/**
+ * article showing {@link ViewPager} of all articles content.
+ * @author tomas
+ *
+ */
 public final class NewsDetailActivity extends BaseFragmentActivity implements OnPageChangeListener {
 
 	public static final String STATE_CURRENT_POSITION = "cz.tomas.StockAnalyze.activity.State_current_position";

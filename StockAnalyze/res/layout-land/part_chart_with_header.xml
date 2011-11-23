@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+   	android:layout_width="fill_parent" 
+   	android:layout_height="fill_parent"
+   	android:gravity="center"
+   	android:orientation="vertical">
+    	
+    	<TextView android:id="@+id/chartLabel"
+    		style="@style/groupboxHeader"
+    		android:text="@string/homeChartTitle" 
+    		android:background="#00000000"
+    		android:visibility="gone"
+    		android:layout_alignParentTop="true"
+    		android:layout_width="wrap_content" 
+    		android:layout_height="wrap_content"/>
+    	<TextView android:id="@+id/chartDescription"
+    		style="@style/groupboxHeader" 
+    		android:background="#00000000"
+    		android:visibility="gone"
+    		android:layout_alignParentTop="true"
+    		android:layout_centerHorizontal="true"
+    		android:layout_toRightOf="@+id/chartLabel"
+    		android:layout_width="wrap_content" 
+    		android:layout_height="wrap_content"/>
+    	
+	    <RadioGroup android:id="@+id/chartDepthGroup"
+	        android:orientation="vertical"
+	        android:padding="2dp"
+	        android:layout_marginRight="8dp"
+	        android:layout_below="@+id/chartDescription"
+	        android:layout_alignParentRight="true"
+	        android:layout_centerVertical="true"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content">
+	        
+	        <RadioButton android:id="@id/chartDay"
+	            android:layout_width="fill_parent"
+	            android:layout_height="wrap_content"
+	            android:text="@string/chartDayShort"/>
+	        <RadioButton android:id="@id/chart5days"
+	            android:layout_width="fill_parent"
+	            android:layout_height="wrap_content"
+	            android:text="@string/chart5daysShort"/>
+	        <RadioButton android:id="@id/chart1month"
+	            android:layout_width="fill_parent"
+	            android:layout_height="wrap_content"
+	            android:text="@string/chartMonthShort"/>
+	        <RadioButton android:id="@id/chart3months"
+	            android:layout_width="fill_parent"
+	            android:layout_height="wrap_content"
+	            android:text="@string/chart3monthsShort"/>
+	        <RadioButton android:id="@id/chart6months"
+	            android:layout_width="fill_parent"
+	            android:layout_height="wrap_content"
+	            android:text="@string/chart6monthsShort"/>
+	        <RadioButton android:id="@id/chart1year"
+	            android:layout_width="fill_parent"
+	            android:layout_height="wrap_content"
+	            android:text="@string/chartYearShort"/>
+	    </RadioGroup>
+<!--     </RelativeLayout> -->
+    <cz.tomas.StockAnalyze.charts.view.CompositeChartView android:id="@+id/stockChartView"
+    	style="@style/groupboxBody" 
+    	android:layout_width="fill_parent" 
+    	android:layout_height="fill_parent"
+		android:layout_below="@+id/chartDescription"
+		android:layout_alignParentBottom="true"
+		android:layout_toLeftOf="@+id/chartDepthGroup"
+    	android:minHeight="150dp" 
+    	android:layout_marginBottom="2dp"
+    	android:visibility="visible"/>
+</RelativeLayout>
+

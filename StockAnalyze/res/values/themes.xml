@@ -33,6 +33,6 @@
     </style>
     
     <style name="themeLightTitle" parent="@android:style/Theme.Light">
-    
+    	<item name="android:radioButtonStyle">@style/radioStyle</item>
     </style>
 </resources>
