@@ -46,8 +46,6 @@ import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 
 public class HomeActivity extends ChartActivity implements OnClickListener, OnKeyListener, IActionBarListener {
-
-	private static final int DIALOG_PICK_STOCK = 0;
 	
 	private SharedPreferences pref;
 	
@@ -60,6 +58,7 @@ public class HomeActivity extends ChartActivity implements OnClickListener, OnKe
 		this.setContentView(R.layout.home_layout);
 				
 		this.chartView = (CompositeChartView) this.findViewById(R.id.stockChartView);
+		this.chartView.setEnableTracking(false);
 		this.pref = getSharedPreferences(Utils.PREF_NAME, 0);
 		
 		View[] blockViews = new View[4];

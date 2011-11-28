@@ -55,6 +55,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.Checkable;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
@@ -69,7 +71,8 @@ import android.widget.Toast;
  *
  */
 public abstract class ChartActivity extends BaseActivity {
-	
+
+	protected static final int DIALOG_PICK_STOCK = 0;
 
 	interface IChartActivityListener {
 		void onChartUpdateBegin();
@@ -103,6 +106,7 @@ public abstract class ChartActivity extends BaseActivity {
 	protected CompositeChartView chartView;
 	private RadioGroup depthGroup;
 	private TextView txtDescription;
+	private Button btnRetry;
 	
 	protected DrawChartTask chartTask;
 	protected DayData dayData;
@@ -163,6 +167,27 @@ public abstract class ChartActivity extends BaseActivity {
 			});
 		}
 		this.txtDescription = (TextView) this.findViewById(R.id.chartDescription);
+		if (this.txtDescription != null) {
+			this.txtDescription.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					showDialog(DIALOG_PICK_STOCK);
+				}
+			});
+		}
+		this.btnRetry = (Button) this.findViewById(R.id.chartRetryButton);
+		if (this.btnRetry != null) {
+			this.btnRetry.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					updateChart();
+					btnRetry.setVisibility(View.GONE);
+					chartView.setVisibility(View.VISIBLE);
+				}
+			});
+		}
 	}
 
 	@Override
@@ -415,6 +440,9 @@ public abstract class ChartActivity extends BaseActivity {
 				listener.onChartUpdateBegin();
 			if (chartView != null)
 				chartView.setLoading(true);
+			if (txtDescription != null) {
+				txtDescription.setText(stockItem.getName());
+			}
 		}
 
 		@Override
@@ -532,7 +560,16 @@ public abstract class ChartActivity extends BaseActivity {
 		@Override
 		protected void onPostExecute(Void result) {	
 			if (this.ex != null) {
-				Toast.makeText(ChartActivity.this, R.string.failedGetChart, Toast.LENGTH_LONG).show();
+				Toast.makeText(ChartActivity.this, R.string.failedGetChart, Toast.LENGTH_SHORT).show();
+				if (btnRetry != null && chartView != null) {
+					btnRetry.setVisibility(View.VISIBLE);
+					chartView.setVisibility(View.GONE);
+				}
+			} else {
+				if (btnRetry != null && chartView != null) {
+					btnRetry.setVisibility(View.GONE);
+					chartView.setVisibility(View.VISIBLE);
+				}
 			}
 			// change ui to show that update is done
 			if (chartView != null) {

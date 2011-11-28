@@ -158,5 +158,6 @@ Nikdy se nepouštějte do obchodů, jejichž podstatě plně nerozumíte. Obchod
     <string name="working">pracuji...</string>
     
     <string name="pickMarket">Vyberte trh</string>
-    <string name="pickStock">Vyberte akcii</string>
+    <string name="pickStock">Vyberte akcii pro graf</string>
+    <string name="retry">Zkusit znovu</string>
 </resources>

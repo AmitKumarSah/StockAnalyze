@@ -161,5 +161,6 @@ Nikdy se nepouštějte do obchodů, jejichž podstatě plně nerozumíte. Obchod
     <string name="working">Processing...</string>
     
     <string name="pickMarket">Pick Market</string>
-    <string name="pickStock">Pick Stock</string>
+    <string name="pickStock">Pick Stock for Chart</string>
+    <string name="retry">Try again</string>
 </resources>

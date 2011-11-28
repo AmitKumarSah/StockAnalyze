@@ -171,7 +171,7 @@ public class DownloadService {
 				in = stream;
 		
 		} catch (Exception ex) {
-			throw new IOException("Error connecting: " + ex.getMessage());
+			throw new IOException("Error connecting: " + ex.getMessage(), ex);
 		}
 		return in;
 	}

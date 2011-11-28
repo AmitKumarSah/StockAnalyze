@@ -43,8 +43,6 @@ public class StockChartActivity extends ChartActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-//		this.chartView = new CompositeChartView(this, null);
-//		this.setContentView(this.chartView);
 		this.setContentView(R.layout.part_chart_with_header);
 		this.chartView = (CompositeChartView) this.findViewById(R.id.stockChartView);
 		this.registerForContextMenu(this.chartView);
