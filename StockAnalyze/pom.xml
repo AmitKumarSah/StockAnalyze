@@ -32,23 +32,11 @@
 			<artifactId>gson</artifactId>
 			<version>2.0</version>
 		</dependency>
-<!-- 		<dependency> -->
-<!--         	<groupId>com.google.gson</groupId> -->
-<!-- 	        <artifactId>gson</artifactId> -->
-<!--     	    <version>1.7.1</version> -->
-<!--         	<scope>system</scope> -->
-<!-- 	        <systemPath>${project.basedir}/lib/gson-1.7.1.jar</systemPath> -->
-<!--    		</dependency>		 -->
    		<dependency>
         	<groupId>com.flurry</groupId>
 	        <artifactId>FlurryAgent</artifactId>
     	    <version>1.0.0</version>
    		</dependency>
-<!--    		<dependency> -->
-<!--   			<groupId>com.viewpagerindicator</groupId> -->
-<!--   			<artifactId>library</artifactId> -->
-<!--   			<version>1.2.0</version> -->
-<!-- 		</dependency> -->
 		<dependency>
 			<groupId>com.viewpagerindicator</groupId>
 			<artifactId>library</artifactId>
@@ -58,7 +46,7 @@
 		<dependency>
 			<groupId>cz.tomas.stockanalyze</groupId>
 			<artifactId>pulltorefresh</artifactId>
-			<version>0.9.4</version>
+			<version>1.0</version>
 			<type>apklib</type>
 		</dependency>
 		<dependency>
