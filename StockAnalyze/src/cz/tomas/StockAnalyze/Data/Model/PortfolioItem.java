@@ -39,14 +39,14 @@ public class PortfolioItem {
 	int boughtCount;
 	int soldCount;
 	
-	float buyPrice;
-	float sellPrice;
+	double buyPrice;
+	double sellPrice;
 	
 	long buyDate;
 	long sellDate;
 	
-	float buyFee;
-	float sellFee;
+	double buyFee;
+	double sellFee;
 	
 	String marketId;
 	
@@ -62,13 +62,13 @@ public class PortfolioItem {
 	 * @param marketId
 	 */
 	public PortfolioItem(String stockId, String portfolioName, int stockCount,
-			float buyPrice, float sellPrice, long buyDate, long sellDate, String marketId) {
+			double buyPrice, double sellPrice, long buyDate, long sellDate, String marketId) {
 		this(-1, stockId, portfolioName, stockCount, buyPrice, sellPrice, buyDate, sellDate, 0, 0, marketId);
 	}
 
 	public PortfolioItem(int id, String stockId, String portfolioName, int stockCount,
-			float buyPrice, float sellPrice, long buyDate, long sellDate,
-			float buyFee, float sellFee, String marketId) {
+			double buyPrice, double sellPrice, long buyDate, long sellDate,
+			double buyFee, double sellFee, String marketId) {
 		this.id = id;
 		this.stockId = stockId;
 		this.portfolioName = portfolioName;
@@ -106,23 +106,23 @@ public class PortfolioItem {
 	 * fee to broker for buying the stock
 	 * @return the buyFee
 	 */
-	public float getBuyFee() {
+	public double getBuyFee() {
 		return buyFee;
 	}
 
 	/**
 	 * fee to broker for buying the stock
-	 * @param buyFee the buyFee to set
+	 * @param fee the buyFee to set
 	 */
-	public void setBuyFee(float buyFee) {
-		this.buyFee = buyFee;
+	public void setBuyFee(double fee) {
+		this.buyFee = fee;
 	}
 
 	/**
 	 * fee to broker for potential selling the stock
 	 * @return the sellFee
 	 */
-	public float getSellFee() {
+	public double getSellFee() {
 		return sellFee;
 	}
 
@@ -130,7 +130,7 @@ public class PortfolioItem {
 	 * fee to broker for selling the stock
 	 * @param sellFee the sellFee to set
 	 */
-	public void setSellFee(float sellFee) {
+	public void setSellFee(double sellFee) {
 		this.sellFee = sellFee;
 	}
 
@@ -177,7 +177,7 @@ public class PortfolioItem {
 	 * price of stock item in time of buying
 	 * @return the buyPrice
 	 */
-	public float getBuyPrice() {
+	public double getBuyPrice() {
 		return buyPrice;
 	}
 
@@ -185,7 +185,7 @@ public class PortfolioItem {
 	 * price of stock item in time of selling
 	 * @return the sellPrice, returns negative number if stock item hasn't been sold yet
 	 */
-	public float getSellPrice() {
+	public double getSellPrice() {
 		return sellPrice;
 	}
 
@@ -215,7 +215,7 @@ public class PortfolioItem {
 	/**
 	 * @param sellPrice the sell price to set
 	 */
-	public void setSellPrice(float sellPrice) {
+	public void setSellPrice(double sellPrice) {
 		this.sellPrice = sellPrice;
 	}
 
@@ -238,9 +238,9 @@ public class PortfolioItem {
 				+ buyDate + ", sellDate=" + sellDate + "]";
 	}
 
-	public float getInvestedValue(boolean includeFees) {
-		float soldItemsValue = this.soldCount * this.sellPrice;
-		float boughtItemsValue = this.boughtCount * this.buyPrice;
+	public double getInvestedValue(boolean includeFees) {
+		double soldItemsValue = this.soldCount * this.sellPrice;
+		double boughtItemsValue = this.boughtCount * this.buyPrice;
 		
 		soldItemsValue = Math.abs(soldItemsValue);
 		if (includeFees) {
@@ -265,19 +265,19 @@ public class PortfolioItem {
 	 * @param output 2 element array that will be filled with change values.
 	 * at index 0 is relative change in % and at index 1 is absolute change
 	 */
-	public void calculateChanges(float stockPrice, boolean includeFees, float[] output) {
-		final float currentMarketValue = this.getCurrentStockCount() * stockPrice;
+	public void calculateChanges(double stockPrice, boolean includeFees, double[] output) {
+		final double currentMarketValue = this.getCurrentStockCount() * stockPrice;
     	// value of sold items, this is negative number
-		float soldItemsValue = this.soldCount * this.sellPrice;
-		float boughtItemsValue = this.boughtCount * this.buyPrice;
+		double soldItemsValue = this.soldCount * this.sellPrice;
+		double boughtItemsValue = this.boughtCount * this.buyPrice;
 		
 		soldItemsValue = Math.abs(soldItemsValue);
 		if (includeFees) {
 			boughtItemsValue += this.buyFee;	// how much money user paid
 			soldItemsValue -= this.sellFee;		// how much money did user get
 		}
-		float change = 0f;
-		float absChange = 0f;
+		double change = 0f;
+		double absChange = 0f;
 
 		if (boughtItemsValue > soldItemsValue) {
 			// portfolio is long

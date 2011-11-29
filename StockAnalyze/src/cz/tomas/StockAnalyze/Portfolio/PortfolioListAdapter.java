@@ -244,7 +244,7 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 			}
         }
         if (holder.txtPortfolioValue != null && holder.txtPortfolioValueChange != null && data != null) {        	
-        	final float[] changes = new float[2]; 
+        	final double[] changes = new double[2]; 
         	portfolioItem.calculateChanges(data.getPrice(), includeFee, changes);
         	final float currentMarketValue = portfolioItem.getCurrentStockCount() * data.getPrice();
         	
@@ -323,8 +323,8 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 							// invested value is here because item value might be null,
 							// because user bought something and also sold it - therefore
 							// we need to know invested money so we can calculate percentual change for whole portfolio
-							final float investedValue = portfolioItem.getInvestedValue(includeFee);
-							final float[] changes = new float[2];
+							final double investedValue = portfolioItem.getInvestedValue(includeFee);
+							final double[] changes = new double[2];
 							portfolioItem.calculateChanges(dayData.getPrice(), includeFee, changes);
 							totalValueSum += itemValue;	// count short positions as positive so we have their value
 							totalAbsChangeSum += changes[1];

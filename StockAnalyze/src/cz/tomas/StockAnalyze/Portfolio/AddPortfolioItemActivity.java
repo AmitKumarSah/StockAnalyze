@@ -31,9 +31,11 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
+import android.view.View.OnKeyListener;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -64,7 +66,7 @@ public final class AddPortfolioItemActivity extends BaseActivity {
 	private static final String INSTANCE_COUNT = "count";
 	private static final String INSTANCE_PRICE = "price";
 	
-	private static final int MINIMAL_FEE = 40;
+	private static final int MINIMAL_FEE = 0;
 	private DataManager dataManager = null;
 	
 	private StockItem stockItem;
@@ -74,6 +76,8 @@ public final class AddPortfolioItemActivity extends BaseActivity {
 	private TextView feeView;
 	private TextView priceView;
 	private TextView countView; 
+	
+	private boolean manualFee;
 	
 	/* (non-Javadoc)
 	 * @see android.app.Activity#onCreate(android.os.Bundle)
@@ -94,10 +98,12 @@ public final class AddPortfolioItemActivity extends BaseActivity {
 			
 			this.totalValueView = (TextView) this.findViewById(R.id.portfolioAddTotalValue);
 			this.feeView = (TextView) this.findViewById(R.id.portfolioAddDealFee);
+			this.priceView = (TextView) this.findViewById(R.id.portfolioAddPrice);
+			this.countView = (TextView) this.findViewById(R.id.portfolioAddCount);
+
 			final TextView tickerView = (TextView) this.findViewById(R.id.portfolioAddTicker);
 			final TextView marketView = (TextView) this.findViewById(R.id.portfolioAddMarket);
-			priceView = (TextView) this.findViewById(R.id.portfolioAddPrice);
-			countView = (TextView) this.findViewById(R.id.portfolioAddCount);
+			
 			final Button addButton = (Button) this.findViewById(R.id.portfolioAddButton);
 			final Spinner dealSpinner = (Spinner) this.findViewById(R.id.portfolioAddSpinnerDeal);
 			if (priceView != null && data != null)
@@ -110,17 +116,28 @@ public final class AddPortfolioItemActivity extends BaseActivity {
 			if (marketView != null && market != null)
 				marketView.setText(market.getName());
 			if (stockItem != null) {
-				if (tickerView != null)
+				if (tickerView != null) {
 					tickerView.setText(stockItem.getTicker());
+				}
 			}
 
+			if (feeView != null) {
+				feeView.setOnKeyListener(new OnKeyListener() {
+					
+					@Override
+					public boolean onKey(View v, int keyCode, KeyEvent event) {
+						manualFee = true;
+						return false;
+					}
+				});
+			}
 			if (countView != null) {
 				countView.setOnFocusChangeListener(this.focusListener);
 			}
 			if (priceView != null) {
 				priceView.setOnFocusChangeListener(this.focusListener);
 			}
-			if (addButton != null)
+			if (addButton != null) {
 				addButton.setOnClickListener(new OnClickListener() {
 					
 					@Override
@@ -128,62 +145,16 @@ public final class AddPortfolioItemActivity extends BaseActivity {
 						addButton.setEnabled(false);
 						// check if all fields are filled
 						if (priceView.getText() == null || countView.getText() == null ||
-								marketView.getText() == null || tickerView.getText() == null)
+								marketView.getText() == null || tickerView.getText() == null) {
 							Toast.makeText(AddPortfolioItemActivity.this, R.string.portfolioValidationMessage, Toast.LENGTH_SHORT).show();
-						else if (market != null && stockItem != null) {
-							try {
-								addButton.setEnabled(false);
-								final int count = Integer.parseInt(countView.getText().toString());
-								final String deal = dealSpinner.getSelectedItem().toString();
-								final String[] deals = getResources().getStringArray(R.array.portfolioDealArray);
-								final boolean sell = deal.equals(deals[1]);
-									
-								final float price = Float.parseFloat(priceView.getText().toString());
-//								final float finalPrice = price; 
-//								final int finalCount = count;
-								final float fee = calculateFee(price, count);
-
-								setProgressBarVisibility(true);
-								AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
-									private Exception ex;
-									@Override
-									protected Void doInBackground(Void... params) {
-										try {
-											addPortfolioItem(stockItem.getId(), count, price, market.getCurrencyCode(), market.getId(), fee, sell);
-										} catch (SQLException e) {
-											ex = e;
-										}
-										return null;
-									}
-
-									@Override
-									protected void onPostExecute(Void result) {
-										setProgressBarVisibility(false);
-										if (ex != null) {
-											String message = getText(R.string.portfolioFailedToAdd).toString();
-											if (ex.getMessage() != null)
-												message += ex.getMessage();
-											
-											Toast.makeText(AddPortfolioItemActivity.this, message, Toast.LENGTH_LONG).show();
-										} else {
-											Intent intent = new Intent(AddPortfolioItemActivity.this, PortfoliosActivity.class);
-											intent.putExtra(PortfolioListFragment.EXTRA_REFRESH, true);
-											intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-											AddPortfolioItemActivity.this.startActivity(intent);
-											finish();
-										}
-										super.onPostExecute(result);
-									}
-								};
-								task.execute((Void) null);
-							} catch (NumberFormatException e) {
-								Log.e(Utils.LOG_TAG, "failed to parse data from add portfolio layout", e);
-							}
+							addButton.setEnabled(true);
+						} else if (market != null && stockItem != null) {
+							addItemToPortfolio(market, dealSpinner);
 						}
-						addButton.setEnabled(true);
 						return;
 					}
 				});
+			}
 			try {
 				String priceText = null;
 				String countText = null;
@@ -235,65 +206,55 @@ public final class AddPortfolioItemActivity extends BaseActivity {
 		outState.putString(INSTANCE_COUNT, countView.getText().toString());
 		super.onSaveInstanceState(outState);
 	}
+	
 
+	protected void addItemToPortfolio(final Market market, final Spinner dealSpinner) {
+		try {
+			final long count = Long.parseLong(countView.getText().toString());
+			final String deal = dealSpinner.getSelectedItem().toString();
+			final String[] deals = getResources().getStringArray(R.array.portfolioDealArray);
+			final boolean sell = deal.equals(deals[1]);
+				
+			final double price = Double.parseDouble(priceView.getText().toString());
+			double fee = 0;
+			if (! manualFee) {
+				fee = calculateFee(price, count);
+			} else {
+				fee = FormattingUtils.getPriceFormat(market.getCurrency())
+					.parse(this.feeView.getText().toString()).doubleValue();
+			}
+			setProgressBarVisibility(true);
+			AsyncTask<Void, Void, Void> task = new AddTask(fee, count, sell, price, market);
+			task.execute();
+		} catch (Exception e) {
+			Log.e(Utils.LOG_TAG, "failed to parse data from add portfolio layout", e);
+		}
+	}
 
-
-	protected void updateFeeAndValue(final float price, final int count) {
-		final float fee = calculateFee(price, count);
+	protected void updateFeeAndValue(final double price, final double count) {
+		final double fee = calculateFee(price, count);
 		
-		final float value = price * count + fee;
+		final double value = price * count + fee;
 		
 		try {
 			NumberFormat priceFormat = FormattingUtils.getPriceFormat(this.stockItem.getMarket().getCurrency());
-			this.feeView.setText(priceFormat.format(fee));
+			if (! this.manualFee) {
+				this.feeView.setText(priceFormat.format(fee));
+			}
 			this.totalValueView.setText(priceFormat.format(value));
 		} catch (Exception e) {
 			Log.e(Utils.LOG_TAG, "failed to set total fee and value", e);
 		}
 	}
 
-	private void addPortfolioItem(String stockId, int count, float price, String portfolioName, String marketId, float fee, boolean sell) throws SQLException {
-		Portfolio portfolio = new Portfolio(this);
-		
-		float buyPrice = 0, sellPrice = 0;
-		long buyDate = 0, sellDate = 0;
-		long ms = Calendar.getInstance().getTimeInMillis();
-		if (! sell) {
-			buyPrice = price;
-			buyDate = ms;
-		} else {
-			sellPrice = price;
-			sellDate = ms;
-			count = -count;
-		}
-		// construct portfolio item and pass it to Portfolio
-		PortfolioItem item = new PortfolioItem(stockId, portfolioName, count, buyPrice, sellPrice,
-				buyDate, sellDate, marketId);
-		if (count > 0)
-			item.setBuyFee(fee);
-		else
-			item.setSellFee(fee);
-
-		try {
-			portfolio.addToPortfolio(item);
-			Log.i(Utils.LOG_TAG, "adding new portfolio item for " + stockId);
-		} catch (SQLException e) {
-			Log.e(Utils.LOG_TAG, "failed to add portoflio item to db", e);
-			throw e;
-		}
-		Map<String, String> pars = new HashMap<String, String>();
-		pars.put(Consts.FLURRY_KEY_PORTFOLIO_NEW_SOURCE, getIntent().getStringExtra(Utils.EXTRA_SOURCE));
-		pars.put(Consts.FLURRY_KEY_PORTFOLIO_NEW_OPERATOIN, count > 0 ? "buy" : "sell");
-		FlurryAgent.onEvent(Consts.FLURRY_EVENT_PORTFOLIO_NEW, pars);
-	}
 
 	/**
 	 * @param price
 	 * @param count
 	 * @return
 	 */
-	private float calculateFee(final float price, final int count) {
-		float fee = (price * count) * 0.004f;
+	private double calculateFee(final double price, final double count) {
+		double fee = (price * count) * 0.004;
 		return Math.max(MINIMAL_FEE, fee);
 	}
 
@@ -335,6 +296,87 @@ public final class AddPortfolioItemActivity extends BaseActivity {
 			setProgressBarVisibility(false);
 			super.onPostExecute(result);
 		}
+	}
+
+	private final class AddTask extends AsyncTask<Void, Void, Void> {
+		private final double fee;
+		private final long count;
+		private final boolean sell;
+		private final double price;
+		private final Market market;
+		private Exception ex;
+
+		private AddTask(double fee, long count, boolean sell, double price, Market market) {
+			this.fee = fee;
+			this.count = count;
+			this.sell = sell;
+			this.price = price;
+			this.market = market;
+		}
+
+		@Override
+		protected Void doInBackground(Void... params) {
+			try {
+				addPortfolioItem(stockItem.getId(), count, price, market.getCurrencyCode(), market.getId(), fee, sell);
+			} catch (SQLException e) {
+				ex = e;
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+			setProgressBarVisibility(false);
+			if (ex != null) {
+				String message = getText(R.string.portfolioFailedToAdd).toString();
+				if (ex.getMessage() != null)
+					message += ex.getMessage();
+				
+				Toast.makeText(AddPortfolioItemActivity.this, message, Toast.LENGTH_LONG).show();
+			} else {
+				Intent intent = new Intent(AddPortfolioItemActivity.this, PortfoliosActivity.class);
+				intent.putExtra(PortfolioListFragment.EXTRA_REFRESH, true);
+				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				AddPortfolioItemActivity.this.startActivity(intent);
+				finish();
+			}
+			super.onPostExecute(result);
+		}
 		
+
+		private void addPortfolioItem(String stockId, long count, double price, String portfolioName, String marketId, double fee, boolean sell) throws SQLException {
+			Portfolio portfolio = new Portfolio(AddPortfolioItemActivity.this);
+			
+			double buyPrice = 0, sellPrice = 0;
+			long buyDate = 0, sellDate = 0;
+			long ms = Calendar.getInstance().getTimeInMillis();
+			if (! sell) {
+				buyPrice = price;
+				buyDate = ms;
+			} else {
+				sellPrice = price;
+				sellDate = ms;
+				count = -count;
+			}
+			// construct portfolio item and pass it to Portfolio
+			PortfolioItem item = new PortfolioItem(stockId, portfolioName, (int) count, buyPrice, sellPrice,
+					buyDate, sellDate, marketId);
+			if (count > 0)
+				item.setBuyFee(fee);
+			else
+				item.setSellFee(fee);
+
+			try {
+				portfolio.addToPortfolio(item);
+				Log.i(Utils.LOG_TAG, "adding new portfolio item for " + stockId);
+			} catch (SQLException e) {
+				Log.e(Utils.LOG_TAG, "failed to add portoflio item to db", e);
+				throw e;
+			}
+			Map<String, String> pars = new HashMap<String, String>();
+			pars.put(Consts.FLURRY_KEY_PORTFOLIO_NEW_SOURCE, getIntent().getStringExtra(Utils.EXTRA_SOURCE));
+			pars.put(Consts.FLURRY_KEY_PORTFOLIO_NEW_OPERATOIN, count > 0 ? "buy" : "sell");
+			FlurryAgent.onEvent(Consts.FLURRY_EVENT_PORTFOLIO_NEW, pars);
+		}
 	}
 }
