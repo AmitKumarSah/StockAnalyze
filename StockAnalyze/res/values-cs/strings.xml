@@ -33,10 +33,10 @@
     <string name="SearchTextView">Napište ticker nebo jméno</string>
 	<string name="update_succes">Data byla úspěšně aktualizována!</string>
 	<string name="update_fail">nastala chyba při aktualizaci dat. Zkontrolujete své připojení.</string>
-	<string name="noOfflineData">Žádná off-line data přístupná,stahuju...</string>
+	<string name="noOfflineData">Žádná off-line data přístupná,stahuju…</string>
 	<string name="NoRefresh">"Žádná data nebyla aktualizována."</string>
 	<string name="failed_price_update">Selhala aktualizace kurzu!</string>
-	<string name="loading">Načítám...</string>
+	<string name="loading">Načítám…</string>
 	<string name="NoInternet">Potřebujete připojení k iternetu pro získání posledních dat!</string>
 	<string name="LabelDetailMin">Roční minimum</string>
 	<string name="LabelDetailMax">Roční maximum</string>
@@ -59,7 +59,7 @@
 	<string name="disclaimerTitle">Disclaimer:</string>
 	<string name="disclaimerText">Upozornění: Všechny informace poskytované aplikací jsou poskytovány zdarma a neslouží v žádném případě jako konkrétní investiční či obchodní doporučení. Využití těchto informací je výhradně věc odpovědnosti a uvážení uživatele, stejně tak jako rozhodnutí obchodovat. Provozovatel aplikace není zodpovědný za konkrétní rozhodnutí jednotlivých uživatelů. Provozovatel není zodpovědný za nefunkčnost stránek, ani chyby v datech. Veškeré zdroje jsou pouze informační. Provozovatel aplikace ani jednotliví autoři nejsou registrovaným brokerem či investičním poradcem ani makléřem. 
 Nikdy se nepouštějte do obchodů, jejichž podstatě plně nerozumíte. Obchodování a investování s finančními instrumenty je vysoce rizikové.</string>
-	<string name="disclaimerShortText">Information is provided "as is" and solely for informational purposes, not for trading purposes or advice, and may be delayed.</string>
+	<string name="disclaimerShortText">Informace jsou poskytovany "tak jak jsou" a pouze k informačním účelům, nikoli k obchodním účelům, ani jako poradenství, a mohou býti zpožděny.</string>
 	<string name="dataUpdating">Aktualizuji data</string>
 	<string name="dataUpdated">Data aktualizována</string>
 	<string name="lastDataUpdated">Čas poslední aktualizace:</string>
@@ -88,7 +88,7 @@ Nikdy se nepouštějte do obchodů, jejichž podstatě plně nerozumíte. Obchod
     <string name="portfolioBalance">Bilance:</string>
     <string name="portfolioBuyPrice">Kupní cena</string>
     <string name="portfolioSellPrice">Prodejní cena</string>
-    <string name="noPortfolioItems">V portfoliu nejsou žádné položky...</string>
+    <string name="noPortfolioItems">V portfoliu nejsou žádné položky…</string>
     
     <string name="failedScheduleUpdate">Chyba při plánování denní aktualizace!</string>
     
@@ -153,9 +153,9 @@ Nikdy se nepouštějte do obchodů, jejichž podstatě plně nerozumíte. Obchod
     <string name="chart6monthsShort">6m</string>
     <string name="chartYearShort">1r</string>
     
-    <string name="failedGetChart">Selhalo stažení dat pro graf...</string>
+    <string name="failedGetChart">Selhalo stažení dat pro graf…</string>
     
-    <string name="working">pracuji...</string>
+    <string name="working">pracuji…</string>
     
     <string name="pickMarket">Vyberte trh</string>
     <string name="pickStock">Vyberte akcii pro graf</string>

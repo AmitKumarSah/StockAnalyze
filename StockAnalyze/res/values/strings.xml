@@ -36,10 +36,10 @@
 	An error occurred while updating the data!
 	Check your internet connectivity.
 	</string>
-	<string name="noOfflineData">No off-line data available, downloading...</string>
+	<string name="noOfflineData">No off-line data available, downloading…</string>
 	<string name="NoRefresh">"No data was refreshed."</string>
 	<string name="failed_price_update">Failed to update the price!</string>
-	<string name="loading">Loading...</string>
+	<string name="loading">Loading…</string>
 	<string name="NoInternet">You need internet connection do get latest data!</string>
 	<string name="LabelDetailMin">52 week Minimum</string>
 	<string name="LabelDetailMax">52 week Maximum</string>
@@ -60,8 +60,8 @@
 	<string name="homeMyPortfolio">Portfolio</string>
 	<string name="homeChartTitle">Market Chart:</string>
 	<string name="disclaimerTitle">Disclaimer:</string>
-	<string name="disclaimerText">Upozornění: Všechny informace poskytované aplikací jsou poskytovány zdarma a neslouží v žádném případě jako konkrétní investiční či obchodní doporučení. Využití těchto informací je výhradně věc odpovědnosti a uvážení uživatele, stejně tak jako rozhodnutí obchodovat. Provozovatel aplikace není zodpovědný za konkrétní rozhodnutí jednotlivých uživatelů. Provozovatel není zodpovědný za nefunkčnost stránek, ani chyby v datech. Veškeré zdroje jsou pouze informační. Provozovatel aplikace ani jednotliví autoři nejsou registrovaným brokerem či investičním poradcem ani makléřem. 
-Nikdy se nepouštějte do obchodů, jejichž podstatě plně nerozumíte. Obchodování a investování s finančními instrumenty je vysoce rizikové.</string>
+	<string name="disclaimerText">Note: All information provided applications are provided free of charge and does not in any way as a particular investment or trading recommendations. The use of this information is only a matter of responsibility and discretion of the user, as well as business decisions. The operator of the application is not responsible for specific decisions of individual users. The operator is not responsible for the failure of application, nor errors in the data. All resources are for information only. The operator of application or individual authors are not registered broker or investment advisor.
+Never let go to the trades, which nature you do not fully understand. Trading and investing in financial instruments is highly risky.</string>
 	<string name="disclaimerShortText">Information is provided "as is" and solely for informational purposes, not for trading purposes or advice, and may be delayed.</string>
 	<string name="dataUpdating">Updating data</string>
 	<string name="dataUpdated">Updated data</string>
@@ -91,7 +91,7 @@ Nikdy se nepouštějte do obchodů, jejichž podstatě plně nerozumíte. Obchod
     <string name="portfolioBalance">Balance:</string>
     <string name="portfolioBuyPrice">Buy price</string>
     <string name="portfolioSellPrice">Sell price</string>
-    <string name="noPortfolioItems">No portfolio items...</string>
+    <string name="noPortfolioItems">No portfolio items…</string>
     
     <string name="failedScheduleUpdate">Failed to schedule intraday update!</string>
     
@@ -156,11 +156,12 @@ Nikdy se nepouštějte do obchodů, jejichž podstatě plně nerozumíte. Obchod
     <string name="chart6monthsShort">6m</string>
     <string name="chartYearShort">1y</string>
     
-    <string name="failedGetChart">Failed to get data for chart...</string>
+    <string name="failedGetChart">Failed to get data for chart…</string>
     
-    <string name="working">Processing...</string>
+    <string name="working">Processing…</string>
     
     <string name="pickMarket">Pick Market</string>
     <string name="pickStock">Pick Stock for Chart</string>
     <string name="retry">Try again</string>
+    <string name="chart">graf</string>
 </resources>
