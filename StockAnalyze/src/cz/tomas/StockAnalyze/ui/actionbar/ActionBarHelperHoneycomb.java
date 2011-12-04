@@ -18,6 +18,7 @@ package cz.tomas.StockAnalyze.ui.actionbar;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -37,6 +38,14 @@ public class ActionBarHelperHoneycomb extends ActionBarHelper {
     }
 
     @Override
+	public void onPostCreate(Bundle savedInstanceState) {
+		super.onPostCreate(savedInstanceState);
+		if (this.mUpIconId > 0) {
+			this.setLogo(this.mUpIconId);
+		}
+	}
+
+	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         mOptionsMenu = menu;
         return super.onCreateOptionsMenu(menu);

@@ -35,6 +35,8 @@ import cz.tomas.StockAnalyze.R;
 public abstract class ActionBarHelper {
 	
     protected Activity mActivity;
+    protected int mUpIconId;
+
 
     /**
      * Factory method for creating {@link ActionBarHelper} objects for a
@@ -59,6 +61,7 @@ public abstract class ActionBarHelper {
      * Action bar helper code to be run in {@link Activity#onCreate(android.os.Bundle)}.
      */
     public void onCreate(Bundle savedInstanceState) {
+        this.setDisplayHomeAsUpEnabled(true);
     }
 
     /**

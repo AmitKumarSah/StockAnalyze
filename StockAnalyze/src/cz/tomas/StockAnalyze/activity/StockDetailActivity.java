@@ -42,7 +42,6 @@ import android.widget.Toast;
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.charts.view.CompositeChartView;
-import cz.tomas.StockAnalyze.ui.widgets.ActionBar;
 import cz.tomas.StockAnalyze.ui.widgets.ActionBar.IActionBarListener;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.Markets;
@@ -102,7 +101,7 @@ public final class StockDetailActivity extends ChartActivity implements IActionB
 			final Intent intent = this.getIntent();
 			try {
 				if (readData(intent)) {
-					final int logo = this.stockItem.getMarket().getId() == Markets.GLOBAL.getId() ? 
+					final int logo = this.stockItem.isIndex() ? 
 							R.drawable.ic_up_indeces : R.drawable.ic_up_list;
 					this.getActionBarHelper().setLogo(logo);
 					this.fill();

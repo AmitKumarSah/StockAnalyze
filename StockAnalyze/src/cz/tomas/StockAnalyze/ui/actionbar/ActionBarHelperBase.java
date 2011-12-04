@@ -55,17 +55,16 @@ public class ActionBarHelperBase extends ActionBarHelper {
 
     protected Set<Integer> mActionItemIds = new HashSet<Integer>();
     
-    private boolean mDisplayUp = false;
-    private int mUpIconId;
-
+    private boolean mDisplayUp;
+    
     protected ActionBarHelperBase(Activity activity) {
         super(activity);
-        this.setDisplayHomeAsUpEnabled(true);
     }
 
     /**{@inheritDoc}*/
     @Override
     public void onCreate(Bundle savedInstanceState) {
+    	super.onCreate(savedInstanceState);
         mActivity.requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
     }
 
@@ -249,6 +248,11 @@ public class ActionBarHelperBase extends ActionBarHelper {
 	public void setDisplayHomeAsUpEnabled(boolean enabled) {
 		this.mDisplayUp = enabled;
 	}
+	
+	@Override
+	public void setLogo(int resId) {
+		this.mUpIconId = resId;
+	}
 
     /**
      * A {@link android.view.MenuInflater} that reads action bar metadata.
@@ -323,9 +327,4 @@ public class ActionBarHelperBase extends ActionBarHelper {
         }
 
     }
-
-	@Override
-	public void setLogo(int resId) {
-		this.mUpIconId = resId;
-	}
 }
