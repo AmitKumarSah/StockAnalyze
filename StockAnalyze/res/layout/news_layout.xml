@@ -30,9 +30,9 @@
 		actionBar:titleText="@string/activityNews" >
 	</cz.tomas.StockAnalyze.ui.widgets.ActionBar>
 		 	
-     <com.markupartist.android.widget.PullToRefreshListView android:id="@id/android:list"
+     <com.handmark.pulltorefresh.library.PullToRefreshListView android:id="@+id/listView"
 		android:layout_width="fill_parent"
-		android:layout_height="fill_parent"
+		android:layout_height="0dp"
 		android:layout_weight="1"
 		android:layout_marginTop="4dp"
 		android:drawSelectorOnTop="false"/>

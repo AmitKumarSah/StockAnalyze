@@ -21,6 +21,7 @@ import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.ui.actionbar.ActionBarHelper;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 
@@ -62,8 +63,15 @@ public abstract class ActionBarFragmentActivity extends FragmentActivity {
     	if (item.getItemId() == android.R.id.home) {
     		NavUtils.goHome(this);
     		return true;
+    	} else if (item.getItemId() == R.id.action_up) {
+    		this.onNavigateUp();
+    		return true;
     	}
 		return super.onOptionsItemSelected(item);
+	}
+
+	protected void onNavigateUp() {
+		NavUtils.goHome(this);
 	}
     
     /**{@inheritDoc}*/

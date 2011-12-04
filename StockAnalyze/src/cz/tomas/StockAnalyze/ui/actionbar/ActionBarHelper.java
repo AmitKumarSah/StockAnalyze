@@ -21,6 +21,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
+import cz.tomas.StockAnalyze.R;
 
 /**
  * An abstract class that handles some common action bar-related functionality in the app. This
@@ -32,6 +33,7 @@ import android.view.MenuInflater;
  * in Android 3.0 and later.
  */
 public abstract class ActionBarHelper {
+	
     protected Activity mActivity;
 
     /**
@@ -94,4 +96,8 @@ public abstract class ActionBarHelper {
     public MenuInflater getMenuInflater(MenuInflater superMenuInflater) {
         return superMenuInflater;
     }
+    
+	public abstract void setDisplayHomeAsUpEnabled(boolean b);
+
+	public abstract void setLogo(int resId);
 }

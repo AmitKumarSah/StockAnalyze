@@ -24,6 +24,11 @@ import cz.tomas.StockAnalyze.ui.widgets.PickStockDialog;
 import cz.tomas.StockAnalyze.ui.widgets.PickStockDialog.IStockDialogListener;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 
+/**
+ * activity vith {@link ViewPager} with portfolio for each currency as a page
+ * @author tomas
+ *
+ */
 public final class PortfoliosActivity extends BaseFragmentActivity implements OnPageChangeListener {
 
 	public static final int DIALOG_PROGRESS = 1000;
@@ -123,5 +128,10 @@ public final class PortfoliosActivity extends BaseFragmentActivity implements On
 
 	@Override
 	public void onPageSelected(int position) {
+	}
+	
+	@Override
+	protected void onNavigateUp() {
+		NavUtils.goUp(this, HomeActivity.class);
 	}
 }

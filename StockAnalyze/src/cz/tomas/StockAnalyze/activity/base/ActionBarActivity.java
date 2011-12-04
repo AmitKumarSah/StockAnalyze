@@ -16,6 +16,7 @@
 
 package cz.tomas.StockAnalyze.activity.base;
 
+import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.ui.actionbar.ActionBarHelper;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 import android.app.Activity;
@@ -83,8 +84,15 @@ public abstract class ActionBarActivity extends Activity {
     	if (item.getItemId() == android.R.id.home) {
     		NavUtils.goHome(this);
     		return true;
+    	} else if (item.getItemId() == R.id.action_up) {
+    		this.onNavigateUp();
+    		return true;
     	}
 		return super.onOptionsItemSelected(item);
+	}
+
+	protected void onNavigateUp() {
+		NavUtils.goHome(this);
 	}
 
 	/**{@inheritDoc}*/

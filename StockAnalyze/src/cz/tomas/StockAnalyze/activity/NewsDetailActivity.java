@@ -16,6 +16,7 @@ import cz.tomas.StockAnalyze.News.ArticlePagerAdapter;
 import cz.tomas.StockAnalyze.News.NewsItemsTask.ITaskListener;
 import cz.tomas.StockAnalyze.activity.base.BaseFragmentActivity;
 import cz.tomas.StockAnalyze.ui.widgets.CirclesView;
+import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 
 /**
@@ -87,7 +88,7 @@ public final class NewsDetailActivity extends BaseFragmentActivity implements On
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 	    MenuInflater inflater = getMenuInflater();
-	    inflater.inflate(R.menu.news_menu, menu);
+	    inflater.inflate(R.menu.news_detail_menu, menu);
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -121,5 +122,10 @@ public final class NewsDetailActivity extends BaseFragmentActivity implements On
 	public void onPageSelected(int position) {
 		this.currentPosition = position;
 		this.circlesView.setSelected(position);
+	}
+	
+	@Override
+	protected void onNavigateUp() {
+		NavUtils.goUp(this, NewsActivity.class);
 	}
 }

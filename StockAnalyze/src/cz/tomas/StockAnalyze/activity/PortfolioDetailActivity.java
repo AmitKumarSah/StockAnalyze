@@ -9,6 +9,7 @@ import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.Portfolio.PortfolioDetailListAdapter;
 import cz.tomas.StockAnalyze.charts.view.CompositeChartView;
+import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 
 
@@ -60,5 +61,10 @@ public class PortfolioDetailActivity extends ChartActivity {
 		
 		View v = View.inflate(this, R.layout.part_chart_with_header, null);
 		return v;
+	}
+	
+	@Override
+	protected void onNavigateUp() {
+		NavUtils.goUp(this, PortfoliosActivity.class);
 	}
 }

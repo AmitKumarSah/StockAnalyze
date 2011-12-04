@@ -76,4 +76,14 @@ public class ActionBarHelperHoneycomb extends ActionBarHelper {
     protected Context getActionBarThemedContext() {
         return mActivity;
     }
+
+	@Override
+	public void setDisplayHomeAsUpEnabled(boolean b) {
+		this.mActivity.getActionBar().setDisplayHomeAsUpEnabled(b);
+	}
+
+	@Override
+	public void setLogo(int resId) {
+		this.mActivity.getActionBar().setLogo(resId);
+	}
 }

@@ -87,6 +87,16 @@ public class NavUtils {
 		Intent intent = new Intent(context, AboutActivity.class);
     	context.startActivity(intent);
 	}
+	
+	public static void goUp(Context context, Class<? extends Activity> target) {
+		Intent intent = new Intent();
+		intent.setClass(context, target);
+		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+		context.startActivity(intent);
+
+		FlurryAgent.logEvent(Consts.FLURRY_EVENT_ACTION_UP);
+	}
+	
 	public static void goHome(Context context) {
 		Intent intent = new Intent();
 		intent.setClass(context, HomeActivity.class);

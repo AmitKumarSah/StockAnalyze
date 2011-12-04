@@ -182,5 +182,8 @@ public final class StocksActivity extends BaseFragmentActivity implements IActio
 		this.selectedMarket = market;
 	}
 	
-	
+	@Override
+	protected void onNavigateUp() {
+		NavUtils.goUp(this, HomeActivity.class);
+	}	
 }

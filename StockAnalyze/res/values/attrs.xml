@@ -38,12 +38,16 @@
 		<attr name="subTitleText" format="string"/>
 	</declare-styleable>
 
-	    <declare-styleable name="AppTheme">
+	<declare-styleable name="AppTheme">
         <attr name="actionbarCompatTitleStyle" format="reference" />
         <attr name="actionbarCompatItemStyle" format="reference" />
         <attr name="actionbarCompatItemHomeStyle" format="reference" />
         <attr name="actionbarCompatProgressIndicatorStyle" format="reference" />
     </declare-styleable>
+    
+	<declare-styleable name="ActionBarExtensions">
+	    <attr name="logo" format="reference"/>
+	</declare-styleable>
 
     <declare-styleable name="BezelImageView">
         <attr name="maskDrawable" format="reference" />

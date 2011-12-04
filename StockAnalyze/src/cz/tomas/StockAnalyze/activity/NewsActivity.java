@@ -30,18 +30,17 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 
-import com.markupartist.android.widget.PullToRefreshListView;
-import com.markupartist.android.widget.PullToRefreshListView.OnRefreshListener;
+import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
+import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.News.NewsItemsTask.ITaskListener;
 import cz.tomas.StockAnalyze.News.NewsListAdapter;
 import cz.tomas.StockAnalyze.activity.base.BaseListActivity;
-import cz.tomas.StockAnalyze.ui.widgets.ActionBar;
-import cz.tomas.StockAnalyze.ui.widgets.ActionBar.IActionBarListener;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 
 /**
+ * Activity with list of titles of all articles together with description.
  * @author tomas
  *
  */
@@ -60,7 +59,8 @@ public class NewsActivity extends BaseListActivity implements ITaskListener {
 		super.onCreate(savedInstanceState);
 		
 		this.setContentView(R.layout.news_layout);
-		this.listView = (PullToRefreshListView) this.getListView();
+		this.listView = (PullToRefreshListView) this.findViewById(R.id.listView);
+		//this.listView = (PullToRefreshListView) this.getListView();
 		listView.setOnRefreshListener(new OnRefreshListener() {
 			
 			@Override
@@ -70,26 +70,26 @@ public class NewsActivity extends BaseListActivity implements ITaskListener {
 				}
 			}
 		});
-		listView.setTextFilterEnabled(true);
-		listView.setOnItemClickListener(new OnItemClickListener() {
+		listView.getAdapterView().setTextFilterEnabled(true);
+		listView.getAdapterView().setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long rowId) {
 				Intent intent = new Intent(NewsActivity.this, NewsDetailActivity.class);
-				intent.putExtra(EXTRA_NEWS_POSITION, position - listView.getHeaderViewsCount());
+				intent.putExtra(EXTRA_NEWS_POSITION, position - listView.getAdapterView().getHeaderViewsCount());
 				startActivity(intent);
 			}
 		});
 		
-		final ActionBar bar = (ActionBar) this.findViewById(R.id.newsActionBar);
-		bar.setActionBarListener(new IActionBarListener() {
-			
-			@Override
-			public void onAction(int viewId) {
-				if (viewId == R.id.actionRefreshButton) {
-					refresh();
-				}
-			}
-		});
+//		final ActionBar bar = (ActionBar) this.findViewById(R.id.newsActionBar);
+//		bar.setActionBarListener(new IActionBarListener() {
+//			
+//			@Override
+//			public void onAction(int viewId) {
+//				if (viewId == R.id.actionRefreshButton) {
+//					refresh();
+//				}
+//			}
+//		});
 	}
 	
 	@Override
@@ -111,7 +111,7 @@ public class NewsActivity extends BaseListActivity implements ITaskListener {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 	    final MenuInflater inflater = getMenuInflater();
-	    inflater.inflate(R.menu.stock_list_menu, menu);
+	    inflater.inflate(R.menu.news_menu, menu);
 	    return super.onCreateOptionsMenu(menu);
 	}
 	
@@ -122,7 +122,7 @@ public class NewsActivity extends BaseListActivity implements ITaskListener {
 	    case R.id.menu_refresh:	    	
 	    	refresh();
 	        return true;
-	    case R.id.menu_stock_list_settings:
+	    case R.id.menu_settings:
 	    	NavUtils.goToSettings(this);
 	        return true;
 	    default:
@@ -144,5 +144,10 @@ public class NewsActivity extends BaseListActivity implements ITaskListener {
 	@Override
 	public void onUpdateStart() {
 		this.getActionBarHelper().setRefreshActionItemState(true);
+	}
+	
+	@Override
+	protected void onNavigateUp() {
+		NavUtils.goUp(this, HomeActivity.class);
 	}
 }

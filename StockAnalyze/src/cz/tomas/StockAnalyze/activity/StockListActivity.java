@@ -285,5 +285,8 @@ public class StockListActivity extends BaseListActivity implements IActionBarLis
 		}
 	}
 	
+	@Override
+	protected void onNavigateUp() {
+		NavUtils.goUp(this, HomeActivity.class);
+	}
 }
-

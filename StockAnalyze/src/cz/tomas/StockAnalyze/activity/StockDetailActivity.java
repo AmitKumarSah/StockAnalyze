@@ -45,6 +45,7 @@ import cz.tomas.StockAnalyze.charts.view.CompositeChartView;
 import cz.tomas.StockAnalyze.ui.widgets.ActionBar;
 import cz.tomas.StockAnalyze.ui.widgets.ActionBar.IActionBarListener;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
+import cz.tomas.StockAnalyze.utils.Markets;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 
@@ -98,24 +99,24 @@ public final class StockDetailActivity extends ChartActivity implements IActionB
 			});
 		}
 		else {
-			Intent intent = this.getIntent();
+			final Intent intent = this.getIntent();
 			try {
 				if (readData(intent)) {
+					final int logo = this.stockItem.getMarket().getId() == Markets.GLOBAL.getId() ? 
+							R.drawable.ic_up_indeces : R.drawable.ic_up_list;
+					this.getActionBarHelper().setLogo(logo);
 					this.fill();
-				} else 
+				} else {
 					this.showWarning();
+				}
 			} catch (Exception e) {
 				Log.e(Utils.LOG_TAG, "failed to get data from intent", e);
 				Toast toast = Toast.makeText(StockDetailActivity.this, R.string.InvalidData, Toast.LENGTH_LONG);
-				if (e.getMessage() != null) {
-					Log.d("StockDetailActivity", e.getMessage());
-					toast.setText(getString(R.string.InvalidData) + ": " + e.getMessage());
-				}
 				toast.show();
 			}
 		}
-		ActionBar bar = (ActionBar) this.findViewById(R.id.detailActionBar);
-		bar.setActionBarListener(this);
+//		ActionBar bar = (ActionBar) this.findViewById(R.id.detailActionBar);
+//		bar.setActionBarListener(this);
 	}
 
 	@Override
@@ -228,5 +229,11 @@ public final class StockDetailActivity extends ChartActivity implements IActionB
 		if(id == R.id.actionAddButton || id == R.id.menu_stock_detail_add) {
 			NavUtils.goToAddToPortfolio(this, this.stockItem, this.dayData);
 		}
-	}	
+	}
+	
+	@Override
+	protected void onNavigateUp() {
+		//NavUtils.goUp(this, StocksActivity.class);
+		finish();
+	}
 }

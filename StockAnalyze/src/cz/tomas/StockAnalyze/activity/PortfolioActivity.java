@@ -70,7 +70,7 @@ import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 
 /**
- * Activity showing all user's portfolios
+ * Activity showing user portfolio
  * 
  * @author tomas
  *
@@ -123,8 +123,8 @@ public class PortfolioActivity extends BaseListActivity implements OnSharedPrefe
 			@Override
 			public void onItemClick(AdapterView<?> adapterView, View view, int position,
 					long id) {
-				final PortfolioItem portfolioItem = (PortfolioItem) getListAdapter().getItem(position -1);
-				goToPortfolioDetail(portfolioItem);
+//				final PortfolioItem portfolioItem = (PortfolioItem) getListAdapter().getItem(position -1);
+//				goToPortfolioDetail(portfolioItem);
 			}
 		});
 
@@ -426,5 +426,10 @@ public class PortfolioActivity extends BaseListActivity implements OnSharedPrefe
 			this.adapter.refresh();
 		else if (viewId == R.id.actionAddButton) 
 			showDialog(DIALOG_ADD_NEW);
+	}
+	
+	@Override
+	protected void onNavigateUp() {
+		NavUtils.goUp(this, HomeActivity.class);
 	}
 }

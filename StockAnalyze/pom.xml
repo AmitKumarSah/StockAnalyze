@@ -43,8 +43,14 @@
 			<version>1.0.0</version>
 			<type>apklib</type>
 		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>cz.tomas.stockanalyze</groupId> -->
+<!-- 			<artifactId>pulltorefresh</artifactId> -->
+<!-- 			<version>1.0</version> -->
+<!-- 			<type>apklib</type> -->
+<!-- 		</dependency> -->
 		<dependency>
-			<groupId>cz.tomas.stockanalyze</groupId>
+			<groupId>com.handmark.pulltorefresh</groupId>
 			<artifactId>pulltorefresh</artifactId>
 			<version>1.0</version>
 			<type>apklib</type>

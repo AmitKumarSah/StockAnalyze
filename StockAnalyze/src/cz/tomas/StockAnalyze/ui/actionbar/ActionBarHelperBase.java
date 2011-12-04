@@ -47,13 +47,20 @@ import java.util.Set;
  */
 public class ActionBarHelperBase extends ActionBarHelper {
     private static final String MENU_RES_NAMESPACE = "http://schemas.android.com/apk/res/android";
+    private static final String MENU_RES_EX_NAMESPACE = "http://schemas.android.com/apk/res/cz.tomas.StockAnalyze";
+    
     private static final String MENU_ATTR_ID = "id";
+    private static final String MENU_ATTR_LOGO = "logo";
     private static final String MENU_ATTR_SHOW_AS_ACTION = "showAsAction";
 
     protected Set<Integer> mActionItemIds = new HashSet<Integer>();
+    
+    private boolean mDisplayUp = false;
+    private int mUpIconId;
 
     protected ActionBarHelperBase(Activity activity) {
         super(activity);
+        this.setDisplayHomeAsUpEnabled(true);
     }
 
     /**{@inheritDoc}*/
@@ -67,11 +74,13 @@ public class ActionBarHelperBase extends ActionBarHelper {
     public void onPostCreate(Bundle savedInstanceState) {
         mActivity.getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE,
                 R.layout.actionbar_compat);
-        setupActionBar();
 
         SimpleMenu menu = new SimpleMenu(mActivity);
         mActivity.onCreatePanelMenu(Window.FEATURE_OPTIONS_PANEL, menu);
         mActivity.onPrepareOptionsMenu(menu);
+        
+        setupActionBar();
+        
         for (int i = 0; i < menu.size(); i++) {
             MenuItem item = menu.getItem(i);
             if (mActionItemIds.contains(item.getItemId())) {
@@ -93,14 +102,21 @@ public class ActionBarHelperBase extends ActionBarHelper {
                 0, ViewGroup.LayoutParams.FILL_PARENT);
         springLayoutParams.weight = 1;
 
-        // Add Home button
-        SimpleMenu tempMenu = new SimpleMenu(mActivity);
-        SimpleMenuItem homeItem = new SimpleMenuItem(
-                tempMenu, android.R.id.home, 0, mActivity.getString(R.string.app_name));
-        homeItem.setIcon(R.drawable.ic_action_home);
-        addActionItemCompatFromMenuItem(homeItem);
-
-        // Add title text
+		final SimpleMenu tempMenu = new SimpleMenu(mActivity);
+		SimpleMenuItem homeItem;
+        if (mDisplayUp && mUpIconId > 0) {
+			// up icon - it's loaded from menu xml,
+			// during inflation
+        	homeItem = new SimpleMenuItem(tempMenu, R.id.action_up, 0, mActivity.getString(R.string.app_name));
+			homeItem.setIcon(this.mUpIconId);
+		} else {
+			// Add logo
+			homeItem = new SimpleMenuItem(tempMenu, android.R.id.home, 0, mActivity.getString(R.string.app_name));
+			homeItem.setIcon(R.drawable.ic_app);
+			homeItem.setEnabled(false);
+		}
+		addActionItemCompatFromMenuItem(homeItem);
+		// Add title text
         TextView titleText = new TextView(mActivity, null, R.attr.actionbarCompatTitleStyle);
         titleText.setId(R.id.actionbar_compat_title);
         titleText.setLayoutParams(springLayoutParams);
@@ -228,6 +244,11 @@ public class ActionBarHelperBase extends ActionBarHelper {
 
         return actionButton;
     }
+    
+	@Override
+	public void setDisplayHomeAsUpEnabled(boolean enabled) {
+		this.mDisplayUp = enabled;
+	}
 
     /**
      * A {@link android.view.MenuInflater} that reads action bar metadata.
@@ -262,25 +283,26 @@ public class ActionBarHelperBase extends ActionBarHelper {
 
                 boolean eof = false;
                 while (!eof) {
-                    switch (eventType) {
+                    
+					switch (eventType) {
                         case XmlPullParser.START_TAG:
-                            if (!parser.getName().equals("item")) {
-                                break;
-                            }
+                        String name = parser.getName();
 
-                            itemId = parser.getAttributeResourceValue(MENU_RES_NAMESPACE,
-                                    MENU_ATTR_ID, 0);
-                            if (itemId == 0) {
-                                break;
-                            }
-
-                            showAsAction = parser.getAttributeIntValue(MENU_RES_NAMESPACE,
-                                    MENU_ATTR_SHOW_AS_ACTION, -1);
-                            if (showAsAction == MenuItem.SHOW_AS_ACTION_ALWAYS ||
-                                    showAsAction == MenuItem.SHOW_AS_ACTION_IF_ROOM) {
-                                mActionItemIds.add(itemId);
-                            }
-                            break;
+						if (name.equals("item")) {
+							itemId = parser.getAttributeResourceValue(MENU_RES_NAMESPACE, MENU_ATTR_ID, 0);
+							if (itemId == 0) {
+								break;
+							}
+							showAsAction = parser.getAttributeIntValue(MENU_RES_NAMESPACE, MENU_ATTR_SHOW_AS_ACTION, -1);
+							if (showAsAction == MenuItem.SHOW_AS_ACTION_ALWAYS || showAsAction == MenuItem.SHOW_AS_ACTION_IF_ROOM) {
+								mActionItemIds.add(itemId);
+							}
+						} else if (name.equals("menu")) {
+							if (mUpIconId <= 0) {
+								mUpIconId = parser.getAttributeResourceValue(MENU_RES_EX_NAMESPACE, MENU_ATTR_LOGO, -1);
+							}
+						}
+						break;
 
                         case XmlPullParser.END_DOCUMENT:
                             eof = true;
@@ -301,4 +323,9 @@ public class ActionBarHelperBase extends ActionBarHelper {
         }
 
     }
+
+	@Override
+	public void setLogo(int resId) {
+		this.mUpIconId = resId;
+	}
 }

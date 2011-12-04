@@ -18,4 +18,5 @@ public class Consts {
 	public static final String FLURRY_EVENT_SCHEDULED_UPDATE = "scheduled-update";
 	public static final String FLURRY_KEY_SCHEDULED_UPDATE_DAY = "day";
 	public static final String FLURRY_EVENT_ACTION_HOME = "action-home";
+	public static final String FLURRY_EVENT_ACTION_UP = "action-up";
 }

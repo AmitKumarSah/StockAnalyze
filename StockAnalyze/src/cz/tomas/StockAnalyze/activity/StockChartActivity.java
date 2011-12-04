@@ -26,6 +26,7 @@ import android.widget.Toast;
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.charts.view.CompositeChartView;
+import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 
 /**
@@ -93,5 +94,11 @@ public class StockChartActivity extends ChartActivity {
 		if (loading)
 			title += " - " + this.getString(R.string.loading);
 		this.setTitle(title);
+	}
+	
+	@Override
+	protected void onNavigateUp() {
+		//NavUtils.goUp(this, StocksActivity.class);
+		this.finish();
 	}
 }

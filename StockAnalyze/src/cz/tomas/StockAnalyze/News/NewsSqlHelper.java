@@ -338,7 +338,7 @@ public final class NewsSqlHelper extends AbstractSqlHelper {
 			db = this.getWritableDatabase();
 			c = db.query(ARTICLES_TABLE_NAME, new String[] {
 					ArticleColumns.ID, ArticleColumns.FEED_ID, ArticleColumns.TITLE, ArticleColumns.DESCRIPTION, 
-					ArticleColumns.URL, ArticleColumns.DATE, ArticleColumns.CONTENT, ArticleColumns.READ }, 
+					ArticleColumns.URL, ArticleColumns.DATE, /*ArticleColumns.CONTENT, */ArticleColumns.READ }, 
 					null, null, null, null, ArticleColumns.DATE + " DESC", null);
 			
 			if (!c.moveToFirst()) {
