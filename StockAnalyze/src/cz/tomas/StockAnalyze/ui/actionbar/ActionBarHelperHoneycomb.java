@@ -16,6 +16,7 @@
 
 package cz.tomas.StockAnalyze.ui.actionbar;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
@@ -94,5 +95,11 @@ public class ActionBarHelperHoneycomb extends ActionBarHelper {
 	@Override
 	public void setLogo(int resId) {
 		this.mActivity.getActionBar().setLogo(resId);
+	}
+
+	@Override
+	public boolean isDisplayedUp() {
+		return (mActivity.getActionBar().getDisplayOptions() & ActionBar.DISPLAY_HOME_AS_UP) 
+				== ActionBar.DISPLAY_HOME_AS_UP;
 	}
 }

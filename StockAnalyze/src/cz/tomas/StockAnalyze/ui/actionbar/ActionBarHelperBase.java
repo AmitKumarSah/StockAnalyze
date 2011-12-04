@@ -16,10 +16,12 @@
 
 package cz.tomas.StockAnalyze.ui.actionbar;
 
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
-
-import cz.tomas.StockAnalyze.R;
 
 import android.app.Activity;
 import android.content.Context;
@@ -37,10 +39,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
+import cz.tomas.StockAnalyze.R;
 
 /**
  * A class that implements the action bar pattern for pre-Honeycomb devices.
@@ -102,15 +101,13 @@ public class ActionBarHelperBase extends ActionBarHelper {
         springLayoutParams.weight = 1;
 
 		final SimpleMenu tempMenu = new SimpleMenu(mActivity);
-		SimpleMenuItem homeItem;
+		SimpleMenuItem homeItem = new SimpleMenuItem(tempMenu, android.R.id.home, 0, mActivity.getString(R.string.app_name));
         if (mDisplayUp && mUpIconId > 0) {
 			// up icon - it's loaded from menu xml,
 			// during inflation
-        	homeItem = new SimpleMenuItem(tempMenu, R.id.action_up, 0, mActivity.getString(R.string.app_name));
 			homeItem.setIcon(this.mUpIconId);
 		} else {
 			// Add logo
-			homeItem = new SimpleMenuItem(tempMenu, android.R.id.home, 0, mActivity.getString(R.string.app_name));
 			homeItem.setIcon(R.drawable.ic_app);
 			homeItem.setEnabled(false);
 		}
@@ -327,4 +324,9 @@ public class ActionBarHelperBase extends ActionBarHelper {
         }
 
     }
+
+	@Override
+	public boolean isDisplayedUp() {
+		return this.mDisplayUp;
+	}
 }

@@ -18,8 +18,13 @@
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
 	package="cz.tomas.StockAnalyze" 
-	android:versionName="0.9.5"
-	android:versionCode="00905">
+	android:versionName="0.9.6"
+	android:versionCode="00906">
+	
+	<uses-sdk android:minSdkVersion="7" />
+	<uses-permission android:name="android.permission.INTERNET"/>
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+	<uses-permission android:name="android.permission.READ_SYNC_SETTINGS"/>
 	
 	<application android:icon="@drawable/ic_launcher" android:label="@string/app_name"
 		android:name=".Application"
@@ -32,7 +37,11 @@
 <!--				<action android:name="android.intent.action.MAIN" />-->
         	</intent-filter>
 		</activity>
-		<activity android:label="@string/app_name" android:name=".activity.HomeActivity" android:launchMode="singleTop">
+		<activity 
+		    android:logo="@drawable/ic_app"
+		    android:label="@string/app_name" 
+		    android:name=".activity.HomeActivity" 
+		    android:launchMode="singleTop">
 			<intent-filter>
 				<category android:name="android.intent.category.LAUNCHER" />
 				<action android:name="android.intent.action.MAIN" />
@@ -42,6 +51,7 @@
 		<activity android:name=".activity.StockListActivity" android:launchMode="singleTop"></activity>
 		<activity android:name=".activity.IndecesListActivity" android:launchMode="singleTop"  android:label="@string/homeIndeces"/>
 		<activity android:name=".activity.StocksActivity" 
+		    android:logo="@drawable/ic_up_list"
 		    android:launchMode="singleTop" 
 		    android:label="@string/homeStockList"
 		    android:taskAffinity=""
@@ -53,13 +63,23 @@
 			android:screenOrientation="landscape"
 			android:label="@string/activityPortfolio" />
 		<activity android:name=".activity.PortfolioActivity" android:launchMode="singleTop" />
-		<activity android:name=".activity.PortfoliosActivity" android:launchMode="singleTop" android:label="@string/homeMyPortfolio"/>
-		<activity android:name=".activity.PortfolioDetailActivity" android:label="@string/activityPortfolioDetail"/>
+		<activity android:name=".activity.PortfoliosActivity"
+		    android:logo="@drawable/ic_up_portfolio"
+		    android:launchMode="singleTop" 
+		    android:label="@string/homeMyPortfolio"/>
+		<activity android:name=".activity.PortfolioDetailActivity" 
+		    android:logo="@drawable/ic_up_portfolio"
+		    android:label="@string/activityPortfolioDetail"/>
 		<activity android:name=".Portfolio.AddPortfolioItemActivity"
 			android:theme="@style/themeLightTitle"
 			android:label="@string/AddPortfolioItemActivityTitle"></activity>
-		<activity android:name=".activity.NewsActivity" android:launchMode="singleTop"  android:label="@string/homeNews"/>
-		<activity android:name=".activity.NewsDetailActivity"  android:label="@string/homeNews"/>
+		<activity android:name=".activity.NewsActivity"
+		    android:logo="@drawable/ic_up_rss"
+		    android:launchMode="singleTop"  
+		    android:label="@string/homeNews"/>
+		<activity android:name=".activity.NewsDetailActivity"  
+		    android:logo="@drawable/ic_up_rss"
+		    android:label="@string/homeNews"/>
 		<activity android:name=".activity.AppPreferencesActivity" 
 			android:label="@string/AppPreferencesActivityTitle"
 			android:theme="@style/themeLightTitle"></activity>
@@ -75,9 +95,4 @@
 		<receiver android:name=".receivers.AlarmReceiver"></receiver>
 	
 	</application>
-	<uses-sdk android:minSdkVersion="7" />
-
-	<uses-permission android:name="android.permission.INTERNET"></uses-permission>
-	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
-	<uses-permission android:name="android.permission.READ_SYNC_SETTINGS"/>
 </manifest> 

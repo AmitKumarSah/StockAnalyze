@@ -103,4 +103,6 @@ public abstract class ActionBarHelper {
 	public abstract void setDisplayHomeAsUpEnabled(boolean b);
 
 	public abstract void setLogo(int resId);
+	
+	public abstract boolean isDisplayedUp();
 }

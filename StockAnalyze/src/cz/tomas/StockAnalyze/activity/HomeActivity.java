@@ -102,6 +102,7 @@ public class HomeActivity extends ChartActivity implements OnClickListener, OnKe
 			bar.setActionBarListener(this);
 		
 		//this.registerForContextMenu(this.chartView);
+		this.getActionBarHelper().setDisplayHomeAsUpEnabled(false);
 	}
 	
 	private final Runnable chartRunnable = new Runnable() {
