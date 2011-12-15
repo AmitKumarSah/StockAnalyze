@@ -29,4 +29,6 @@
     <item type="id" name="chart3months" />
     <item type="id" name="chart6months" />
     <item type="id" name="chart1year" />
+    
+    <item type="integer" name="indicatorStyle">1</item>
 </resources>

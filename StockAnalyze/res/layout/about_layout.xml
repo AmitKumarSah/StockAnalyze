@@ -16,67 +16,82 @@
       You should have received a copy of the GNU General Public License
       along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-<ScrollView
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  android:layout_width="fill_parent"
-  android:layout_height="fill_parent">
-<RelativeLayout
-  android:layout_width="fill_parent"
-  android:layout_height="fill_parent"
-   
-  android:layout_margin="8dp" >
-  
-  <ImageView android:id="@+id/aboutLogo"
-	style="@style/aboutContent"
-	android:layout_marginLeft="10dp"
-  	android:src="@drawable/ic_launcher"
-  	android:layout_alignParentTop="true"
-  	android:layout_alignParentLeft="true" />
-  <TextView android:id="@+id/aboutTitle"
-  	android:text="@string/app_name"
-	style="@style/aboutContent"
-  	android:layout_toRightOf="@+id/aboutLogo" 
-  	android:layout_alignParentTop="true"
-  	android:layout_alignBottom="@+id/aboutLogo"
-  	android:gravity="center"/>
-  <TextView android:id="@+id/aboutVersion"
-  	style="@style/aboutContent"
-  	android:text="0.9"
-  	android:layout_toRightOf="@+id/aboutTitle"
-  	android:layout_alignParentTop="true"
-  	android:layout_alignBottom="@+id/aboutLogo"
-  	android:gravity="center" />
-  <TextView android:id="@+id/aboutAuthor"
-  	style="@style/aboutContent"
-  	android:text="@string/appAuthor"
-  	android:autoLink="email"
-  	android:layout_width="fill_parent"
-  	android:layout_alignParentLeft="true"
-  	android:layout_below="@+id/aboutLogo"
-  	android:gravity="center"/>
-  <TextView android:id="@+id/aboutWww"
-  	style="@style/aboutContent"
-  	android:text="@string/appWww"
-  	android:layout_width="fill_parent"
-  	android:gravity="center"
-  	android:autoLink="web"
-  	android:layout_alignParentLeft="true"
-  	android:layout_below="@+id/aboutAuthor"/>
-  <TextView android:id="@+id/aboutDisclaimerTitle"
-	style="@style/groupboxHeader"
-	android:text="@string/disclaimerTitle"
- 	android:layout_alignLeft="@+id/aboutAuthor"
- 	android:layout_below="@+id/aboutWww"/>
-  <LinearLayout android:id="@+id/DetailLinearSummary"
-	style="@style/groupboxBody" 
-	android:orientation="vertical"
- 	android:layout_width="fill_parent"
- 	android:layout_alignLeft="@+id/aboutAuthor"
- 	android:layout_below="@+id/aboutDisclaimerTitle">
-	<TextView android:id="@+id/aboutDisclaimer"
-	 	style="@style/aboutContent"
-	 	android:layout_margin="0dp"
-	 	android:text="@string/disclaimerText"/>
- 	</LinearLayout>
-</RelativeLayout>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="12dp" >
+
+        <ImageView
+            android:id="@+id/aboutLogo"
+            style="@style/aboutContent"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="10dp"
+            android:src="@drawable/ic_app" />
+
+        <TextView
+            android:id="@+id/aboutTitle"
+            style="@style/aboutContent"
+            android:layout_alignBottom="@+id/aboutLogo"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/aboutLogo"
+            android:gravity="center"
+            android:text="@string/app_name" />
+
+        <TextView
+            android:id="@+id/aboutVersion"
+            style="@style/aboutContent"
+            android:layout_alignBottom="@+id/aboutLogo"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/aboutTitle"
+            android:gravity="center"/>
+
+        <TextView
+            android:id="@+id/aboutAuthor"
+            style="@style/aboutContent"
+            android:layout_width="fill_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/aboutLogo"
+            android:autoLink="email"
+            android:gravity="center"
+            android:text="@string/appAuthor" />
+
+        <TextView
+            android:id="@+id/aboutWww"
+            style="@style/aboutContent"
+            android:layout_width="fill_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/aboutAuthor"
+            android:autoLink="web"
+            android:gravity="center"
+            android:text="@string/appWww"
+            android:layout_marginBottom="4dp" />
+
+        <TextView
+            android:id="@+id/aboutDisclaimerTitle"
+            style="@style/groupboxHeader"
+            android:layout_alignLeft="@+id/aboutAuthor"
+            android:layout_below="@+id/aboutWww"
+            android:text="@string/disclaimerTitle" />
+
+        <LinearLayout
+            android:id="@+id/DetailLinearSummary"
+            style="@style/groupboxBody"
+            android:layout_width="fill_parent"
+            android:layout_alignLeft="@+id/aboutAuthor"
+            android:layout_below="@+id/aboutDisclaimerTitle"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/aboutDisclaimer"
+                style="@style/aboutContent"
+                android:layout_margin="0dp"
+                android:text="@string/disclaimerText" />
+        </LinearLayout>
+    </RelativeLayout>
+
 </ScrollView>
