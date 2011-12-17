@@ -28,6 +28,7 @@
         <ImageView
             android:id="@+id/aboutLogo"
             style="@style/aboutContent"
+            android:contentDescription="@string/app_name"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
             android:layout_marginLeft="10dp"

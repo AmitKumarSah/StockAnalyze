@@ -131,12 +131,6 @@ public final class StockDetailActivity extends ChartActivity {
 		TextView txtVolume = (TextView) this.findViewById(R.id.txtDetailVolume);
 		TextView txtMax = (TextView) this.findViewById(R.id.txtDetailMax);
 		TextView txtMin = (TextView) this.findViewById(R.id.txtDetailMin);
-		TextView txtActionBarTitle = (TextView) this.findViewById(R.id.actionTitle);
-		
-		if(txtActionBarTitle != null) {
-			// add ticker on action bar title
-			txtActionBarTitle.setText(txtActionBarTitle.getText() + ": " + stockItem.getTicker());
-		}
 		
 		final DataManager manager = DataManager.getInstance(this);
 		

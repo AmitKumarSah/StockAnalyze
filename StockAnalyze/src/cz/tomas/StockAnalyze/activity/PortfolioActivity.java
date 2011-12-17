@@ -42,8 +42,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
@@ -88,9 +86,6 @@ public class PortfolioActivity extends BaseListActivity implements OnSharedPrefe
 	private View footerView;
 	private static boolean isDirty;
 	
-	private View refreshButton;
-	private Animation refreshAnim;
-	
 	private SharedPreferences prefs;
 	
 	/* 
@@ -108,7 +103,6 @@ public class PortfolioActivity extends BaseListActivity implements OnSharedPrefe
 		isDirty |= this.getIntent().getBooleanExtra("refresh", false);
 		
 		LayoutInflater vi = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		this.refreshButton = findViewById(R.id.actionRefreshButton);
 		headerView = vi.inflate(R.layout.portfolio_list_header, null);
 		footerView = vi.inflate(R.layout.portfolio_list_footer, null);
 		
@@ -164,19 +158,13 @@ public class PortfolioActivity extends BaseListActivity implements OnSharedPrefe
 			adapter.addPortfolioListener(new IListAdapterListener<PortfolioSum>() {
 
 				@Override
-				public void onListLoading() {					
-					if (refreshButton != null)
-						refreshAnim = AnimationUtils.loadAnimation(PortfolioActivity.this, R.anim.refresh_rotate);
-						refreshButton.startAnimation(refreshAnim);
+				public void onListLoading() {
 				}
 
 				@Override
 				public void onListLoaded(PortfolioSum portfolioSummary) {
 					Log.d(Utils.LOG_TAG, "Updating portfolio summary");
-					fillPortfolioSummary(portfolioSummary);
-					
-					if (refreshAnim != null)
-						refreshAnim.setDuration(0);					
+					fillPortfolioSummary(portfolioSummary);			
 				}
 			});
 		}
@@ -308,8 +296,6 @@ public class PortfolioActivity extends BaseListActivity implements OnSharedPrefe
 	 * @param portfolioItem
 	 */
 	private void removePortfolioRecord(final PortfolioItem portfolioItem) {
-		if (refreshButton != null)
-			refreshButton.setVisibility(View.VISIBLE);
 		FlurryAgent.onEvent(Consts.FLURRY_EVENT_PORTFOLIO_REMOVE);
 		AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
 

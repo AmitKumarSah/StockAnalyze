@@ -16,98 +16,92 @@
       You should have received a copy of the GNU General Public License
       along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical" >
+    android:fillViewport="true" >
 
-    <ScrollView
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <TableLayout
+        xmlns:block="http://schemas.android.com/apk/res/cz.tomas.StockAnalyze"
+        android:id="@+id/homeBlockTable"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:fillViewport="true" >
+        android:layout_height="wrap_content"
+        android:stretchColumns="*" >
 
-        <TableLayout
-            xmlns:block="http://schemas.android.com/apk/res/cz.tomas.StockAnalyze"
-            android:id="@+id/homeBlockTable"
+        <TableRow>
+
+            <cz.tomas.StockAnalyze.ui.widgets.HomeBlockView
+                android:id="@+id/homeBlockStockList"
+                style="@style/homeBlock"
+                android:layout_weight="1"
+                block:imageId="@drawable/ic_home_list"
+                block:target="cz.tomas.StockAnalyze.activity.StocksActivity"
+                block:textId="@string/homeStockList" />
+
+            <cz.tomas.StockAnalyze.ui.widgets.HomeBlockView
+                android:id="@+id/homeBlockPortfolio"
+                style="@style/homeBlock"
+                android:layout_weight="1"
+                block:imageId="@drawable/ic_home_portfolio"
+                block:target="cz.tomas.StockAnalyze.activity.PortfoliosActivity"
+                block:textId="@string/homeMyPortfolio" />
+            <!-- <cz.tomas.StockAnalyze.ui.widgets.HomeBlockView -->
+            <!-- android:id="@+id/homeBlockCurrencies" -->
+            <!-- style="@style/homeBlock" -->
+            <!-- block:textId="@string/homeCurrencies" -->
+            <!-- block:imageId="@drawable/ic_globe" -->
+            <!-- block:target="cz.tomas.StockAnalyze.activity.IndecesListActivity"/> -->
+
+            <cz.tomas.StockAnalyze.ui.widgets.HomeBlockView
+                android:id="@+id/homeBlockIndeces"
+                style="@style/homeBlock"
+                block:imageId="@drawable/ic_home_indeces"
+                block:target="cz.tomas.StockAnalyze.activity.IndecesListActivity"
+                block:textId="@string/homeIndeces" />
+
+            <cz.tomas.StockAnalyze.ui.widgets.HomeBlockView
+                android:id="@+id/homeBlockNews"
+                style="@style/homeBlock"
+                android:layout_weight="1"
+                block:imageId="@drawable/ic_home_rss"
+                block:target="cz.tomas.StockAnalyze.activity.NewsActivity"
+                block:textId="@string/homeNews" />
+        </TableRow>
+
+        <View
+            android:id="@+id/homeSeparator1"
+            android:layout_width="fill_parent"
+            android:layout_height="1dip"
+            android:layout_margin="10dip"
+            android:background="@drawable/bg_header" />
+
+        <TextView
+            android:id="@+id/home_chart_title"
+            style="@style/titleText"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:stretchColumns="*" >
+            android:text="@string/homeChartTitle"
+            android:visibility="gone" />
 
-            <TableRow>
+        <ImageView
+            android:id="@+id/home_chart"
+            style="@style/homeBlock"
+            android:contentDescription="@string/chart"
+            android:visibility="gone" />
 
-                <cz.tomas.StockAnalyze.ui.widgets.HomeBlockView
-                    android:id="@+id/homeBlockStockList"
-                    style="@style/homeBlock"
-                    android:layout_weight="1"
-                    block:imageId="@drawable/ic_home_list"
-                    block:target="cz.tomas.StockAnalyze.activity.StocksActivity"
-                    block:textId="@string/homeStockList" />
+        <include
+            style="@style/homeBlock"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            layout="@layout/part_chart_with_header" />
 
-                <cz.tomas.StockAnalyze.ui.widgets.HomeBlockView
-                    android:id="@+id/homeBlockPortfolio"
-                    style="@style/homeBlock"
-                    android:layout_weight="1"
-                    block:imageId="@drawable/ic_home_portfolio"
-                    block:target="cz.tomas.StockAnalyze.activity.PortfoliosActivity"
-                    block:textId="@string/homeMyPortfolio" />
-                <!-- <cz.tomas.StockAnalyze.ui.widgets.HomeBlockView -->
-                <!-- android:id="@+id/homeBlockCurrencies" -->
-                <!-- style="@style/homeBlock" -->
-                <!-- block:textId="@string/homeCurrencies" -->
-                <!-- block:imageId="@drawable/ic_globe" -->
-                <!-- block:target="cz.tomas.StockAnalyze.activity.IndecesListActivity"/> -->
+        <TextView
+            style="@style/subText"
+            android:inputType="textMultiLine"
+            android:padding="8dp"
+            android:singleLine="false"
+            android:text="@string/disclaimerShortText" />
+    </TableLayout>
 
-                <cz.tomas.StockAnalyze.ui.widgets.HomeBlockView
-                    android:id="@+id/homeBlockIndeces"
-                    style="@style/homeBlock"
-                    block:imageId="@drawable/ic_home_indeces"
-                    block:target="cz.tomas.StockAnalyze.activity.IndecesListActivity"
-                    block:textId="@string/homeIndeces" />
-
-                <cz.tomas.StockAnalyze.ui.widgets.HomeBlockView
-                    android:id="@+id/homeBlockNews"
-                    style="@style/homeBlock"
-                    android:layout_weight="1"
-                    block:imageId="@drawable/ic_home_rss"
-                    block:target="cz.tomas.StockAnalyze.activity.NewsActivity"
-                    block:textId="@string/homeNews" />
-            </TableRow>
-
-            <View
-                android:id="@+id/homeSeparator1"
-                android:layout_width="fill_parent"
-                android:layout_height="1dip"
-                android:layout_margin="10dip"
-                android:background="@drawable/bg_header" />
-
-            <TextView
-                android:id="@+id/home_chart_title"
-                style="@style/titleText"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/homeChartTitle"
-                android:visibility="gone" />
-
-            <ImageView
-                android:contentDescription="@string/chart"
-                android:id="@+id/home_chart"
-                style="@style/homeBlock"
-                android:visibility="gone" />
-
-            <include
-                style="@style/homeBlock"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                layout="@layout/part_chart_with_header" />
-
-            <TextView
-                style="@style/subText"
-                android:inputType="textMultiLine"
-                android:padding="8dp"
-                android:singleLine="false"
-                android:text="@string/disclaimerShortText" />
-        </TableLayout>
-    </ScrollView>
-
-</LinearLayout>
+</ScrollView>

@@ -91,9 +91,6 @@ public final class PortfolioListFragment extends ListFragment implements OnShare
 		this.dataManager = DataManager.getInstance(getActivity());
 		
 		FragmentActivity activity = this.getActivity();
-		//isDirty |= activity.getIntent().getBooleanExtra(EXTRA_REFRESH, false);
-		
-		this.refreshButton = getActivity().findViewById(R.id.actionRefreshButton);
 
 		this.setEmptyText(getText(R.string.loading));
 		this.getListView().addHeaderView(headerView, null, false);
