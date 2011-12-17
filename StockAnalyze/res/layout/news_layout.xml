@@ -20,15 +20,6 @@
          android:orientation="vertical"
          android:layout_width="fill_parent"
          android:layout_height="fill_parent">
-	<cz.tomas.StockAnalyze.ui.widgets.ActionBar
-		xmlns:actionBar="http://schemas.android.com/apk/res/cz.tomas.StockAnalyze"
-		android:id="@+id/newsActionBar"
-		android:layout_width="fill_parent" 
-		android:layout_height="wrap_content"
-		actionBar:showRefreshButton="true"
-		android:visibility="gone"
-		actionBar:titleText="@string/activityNews" >
-	</cz.tomas.StockAnalyze.ui.widgets.ActionBar>
 		 	
      <com.handmark.pulltorefresh.library.PullToRefreshListView android:id="@+id/listView"
 		android:layout_width="fill_parent"

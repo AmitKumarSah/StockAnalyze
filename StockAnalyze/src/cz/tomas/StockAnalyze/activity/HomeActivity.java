@@ -36,8 +36,6 @@ import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.charts.view.CompositeChartView;
-import cz.tomas.StockAnalyze.ui.widgets.ActionBar;
-import cz.tomas.StockAnalyze.ui.widgets.ActionBar.IActionBarListener;
 import cz.tomas.StockAnalyze.ui.widgets.HomeBlockView;
 import cz.tomas.StockAnalyze.ui.widgets.PickStockDialog;
 import cz.tomas.StockAnalyze.ui.widgets.PickStockDialog.IStockDialogListener;
@@ -45,7 +43,7 @@ import cz.tomas.StockAnalyze.utils.Markets;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 
-public class HomeActivity extends ChartActivity implements OnClickListener, OnKeyListener, IActionBarListener {
+public class HomeActivity extends ChartActivity implements OnClickListener, OnKeyListener {
 	
 	private SharedPreferences pref;
 	
@@ -76,32 +74,7 @@ public class HomeActivity extends ChartActivity implements OnClickListener, OnKe
 
 		Thread thread = new Thread(chartRunnable);
 		thread.start();
-		//final TextView txtChartDescription = (TextView) this.findViewById(R.id.chartDescription);
-//		this.setChartActivityListener(new IChartActivityListener() {
-//			
-//			@Override
-//			public void onChartUpdateFinish() {
-//				int id = DAY_COUNT_MAP.get(timePeriod);
-//				if (txtChartDescription != null && stockItem != null) {
-//					String text = String.format("%s (%s)", stockItem.getName(), getString(id));
-//					txtChartDescription.setText(text);
-//				}
-//			}
-//			
-//			@Override
-//			public void onChartUpdateBegin() {
-//				if (txtChartDescription != null && stockItem != null) {
-//					String text = String.format("%s %s", stockItem.getTicker(), getString(R.string.loading));
-//					txtChartDescription.setText(text);
-//				}
-//			}
-//		});
 
-		ActionBar bar = (ActionBar) findViewById(R.id.homeActionBar);
-		if (bar != null)
-			bar.setActionBarListener(this);
-		
-		//this.registerForContextMenu(this.chartView);
 		this.getActionBarHelper().setDisplayHomeAsUpEnabled(false);
 	}
 	
@@ -222,15 +195,6 @@ public class HomeActivity extends ChartActivity implements OnClickListener, OnKe
 				Log.e(Utils.LOG_TAG, "failed to start activity", e);
 				Toast.makeText(this, "Failed to start:\n" + (target == null ? "unkown" : target), Toast.LENGTH_SHORT).show();
 			}
-		}
-	}
-
-	@Override
-	public void onAction(int viewId) {
-		if (viewId == R.id.actionHelpButton) {
-			NavUtils.gotToAbout(this);
-		} else if (viewId == R.id.actionChartButton) {
-			this.showDialog(DIALOG_PICK_STOCK);
 		}
 	}
 }

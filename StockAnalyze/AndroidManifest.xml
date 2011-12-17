@@ -58,6 +58,7 @@
 		    android:excludeFromRecents="true" />
 		<activity android:name=".activity.StockSearchActivity"/>
 		<activity android:name=".activity.StockDetailActivity"
+		    android:logo="@drawable/ic_up_list"
 		    android:hardwareAccelerated="false"  
 		    android:label="@string/activityStockDetail"/>
 		<activity android:name=".activity.StockChartActivity"

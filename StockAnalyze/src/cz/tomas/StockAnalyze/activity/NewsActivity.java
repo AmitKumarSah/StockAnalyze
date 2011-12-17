@@ -79,17 +79,6 @@ public class NewsActivity extends BaseListActivity implements ITaskListener {
 				startActivity(intent);
 			}
 		});
-		
-//		final ActionBar bar = (ActionBar) this.findViewById(R.id.newsActionBar);
-//		bar.setActionBarListener(new IActionBarListener() {
-//			
-//			@Override
-//			public void onAction(int viewId) {
-//				if (viewId == R.id.actionRefreshButton) {
-//					refresh();
-//				}
-//			}
-//		});
 	}
 	
 	@Override

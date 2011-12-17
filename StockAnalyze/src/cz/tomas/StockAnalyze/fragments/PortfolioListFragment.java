@@ -40,14 +40,12 @@ import cz.tomas.StockAnalyze.Portfolio.Portfolio;
 import cz.tomas.StockAnalyze.Portfolio.PortfolioListAdapter;
 import cz.tomas.StockAnalyze.activity.PortfolioDetailActivity;
 import cz.tomas.StockAnalyze.activity.PortfoliosActivity;
-import cz.tomas.StockAnalyze.ui.widgets.ActionBar;
-import cz.tomas.StockAnalyze.ui.widgets.ActionBar.IActionBarListener;
 import cz.tomas.StockAnalyze.utils.Consts;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 
-public final class PortfolioListFragment extends ListFragment implements IActionBarListener, OnSharedPreferenceChangeListener {
+public final class PortfolioListFragment extends ListFragment implements OnSharedPreferenceChangeListener {
 	
 	public static final String EXTRA_REFRESH = "portfolioRefresh";
 	public static final String EXTRA_STOCK_ITEM = "portfolioStockItem";
@@ -96,8 +94,6 @@ public final class PortfolioListFragment extends ListFragment implements IAction
 		//isDirty |= activity.getIntent().getBooleanExtra(EXTRA_REFRESH, false);
 		
 		this.refreshButton = getActivity().findViewById(R.id.actionRefreshButton);
-		ActionBar bar = (ActionBar) getActivity().findViewById(R.id.portfolioActionBar);
-		bar.setActionBarListener(this);
 
 		this.setEmptyText(getText(R.string.loading));
 		this.getListView().addHeaderView(headerView, null, false);
@@ -357,13 +353,5 @@ public final class PortfolioListFragment extends ListFragment implements IAction
 			this.fill();
 		}
 		
-	}
-
-	@Override
-	public void onAction(int viewId) {
-		if (viewId == R.id.actionRefreshButton)
-			this.adapter.refresh();
-		else if (viewId == R.id.actionAddButton) 
-			getActivity().showDialog(PortfoliosActivity.DIALOG_ADD_NEW);
 	}
 }

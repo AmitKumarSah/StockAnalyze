@@ -24,8 +24,6 @@ import java.text.NumberFormat;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.flurry.android.FlurryAgent;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -39,17 +37,20 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.TextView;
+
+import com.flurry.android.FlurryAgent;
+
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.Interfaces.IListAdapterListener;
@@ -61,8 +62,6 @@ import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.Portfolio.Portfolio;
 import cz.tomas.StockAnalyze.Portfolio.PortfolioListAdapter;
 import cz.tomas.StockAnalyze.activity.base.BaseListActivity;
-import cz.tomas.StockAnalyze.ui.widgets.ActionBar;
-import cz.tomas.StockAnalyze.ui.widgets.ActionBar.IActionBarListener;
 import cz.tomas.StockAnalyze.utils.Consts;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.Markets;
@@ -75,7 +74,7 @@ import cz.tomas.StockAnalyze.utils.Utils;
  * @author tomas
  *
  */
-public class PortfolioActivity extends BaseListActivity implements OnSharedPreferenceChangeListener, IActionBarListener {
+public class PortfolioActivity extends BaseListActivity implements OnSharedPreferenceChangeListener {
 
 	private static final int DIALOG_PROGRESS = 1000;
 	private static final int DIALOG_ADD_NEW = DIALOG_PROGRESS + 1;
@@ -110,9 +109,6 @@ public class PortfolioActivity extends BaseListActivity implements OnSharedPrefe
 		
 		LayoutInflater vi = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.refreshButton = findViewById(R.id.actionRefreshButton);
-		ActionBar bar = (ActionBar) findViewById(R.id.portfolioActionBar);
-		bar.setActionBarListener(this);
-		
 		headerView = vi.inflate(R.layout.portfolio_list_header, null);
 		footerView = vi.inflate(R.layout.portfolio_list_footer, null);
 		
@@ -420,14 +416,6 @@ public class PortfolioActivity extends BaseListActivity implements OnSharedPrefe
 		
 	}
 
-	@Override
-	public void onAction(int viewId) {
-		if (viewId == R.id.actionRefreshButton)
-			this.adapter.refresh();
-		else if (viewId == R.id.actionAddButton) 
-			showDialog(DIALOG_ADD_NEW);
-	}
-	
 	@Override
 	protected void onNavigateUp() {
 		NavUtils.goUp(this, HomeActivity.class);

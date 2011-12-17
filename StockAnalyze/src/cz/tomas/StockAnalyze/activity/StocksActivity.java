@@ -22,7 +22,6 @@ import cz.tomas.StockAnalyze.Data.Interfaces.IUpdateSchedulerListener;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.StockList.StocksPagerAdapter;
 import cz.tomas.StockAnalyze.activity.base.BaseFragmentActivity;
-import cz.tomas.StockAnalyze.ui.widgets.ActionBar.IActionBarListener;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 
 /**
@@ -31,7 +30,7 @@ import cz.tomas.StockAnalyze.utils.NavUtils;
  * @author tomas
  *
  */
-public final class StocksActivity extends BaseFragmentActivity implements IActionBarListener, OnPageChangeListener {
+public final class StocksActivity extends BaseFragmentActivity implements OnPageChangeListener {
 	
 	static final int UPDATE_DLG_SUCCES = 0;
 	static final int UPDATE_DLG_FAIL = 1;
@@ -50,11 +49,7 @@ public final class StocksActivity extends BaseFragmentActivity implements IActio
 		super.onCreate(arg0);
 		this.setContentView(R.layout.stocks);
 		this.sheduler = (UpdateScheduler) this.getApplicationContext().getSystemService(Application.UPDATE_SCHEDULER_SERVICE);
-		
-//		ActionBar bar = (ActionBar) findViewById(R.id.stockListActionBar);
-//		if (bar != null) {
-//			bar.setActionBarListener(this);
-//		}
+
 		this.pager = (ViewPager) this.findViewById(R.id.stocksViewPager);
 		List<Market> markets = DataManager.getInstance(this).getMarkets();
 		this.pager.setAdapter(new StocksPagerAdapter(getSupportFragmentManager(), markets));
@@ -159,13 +154,6 @@ public final class StocksActivity extends BaseFragmentActivity implements IActio
 	public void onStop() {
 		super.onStop();
 		this.sheduler.removeListener(this.updateListener);
-	}
-
-	@Override
-	public void onAction(int viewId) {
-		if (viewId == R.id.actionRefreshButton) {
-			updateImmediatly();
-		}
 	}
 
 	/**

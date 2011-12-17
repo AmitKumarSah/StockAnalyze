@@ -20,14 +20,7 @@
          android:orientation="vertical"
          android:layout_width="fill_parent"
          android:layout_height="fill_parent">
-	<cz.tomas.StockAnalyze.ui.widgets.ActionBar
-		xmlns:actionBar="http://schemas.android.com/apk/res/cz.tomas.StockAnalyze"
-		android:id="@+id/stockListActionBar"
-		android:layout_width="fill_parent" 
-		android:layout_height="wrap_content"
-		android:visibility="gone"
-		actionBar:showRefreshButton="true"
-		actionBar:titleText="@string/activityStockList" />
+
 	<com.jakewharton.android.viewpagerindicator.TitlePageIndicator
 	    android:id="@+id/pagerTitles"
 	    android:layout_height="wrap_content"

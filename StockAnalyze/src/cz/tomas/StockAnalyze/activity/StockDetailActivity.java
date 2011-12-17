@@ -44,7 +44,6 @@ import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.charts.view.CompositeChartView;
 import cz.tomas.StockAnalyze.ui.widgets.ActionBar.IActionBarListener;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
-import cz.tomas.StockAnalyze.utils.Markets;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 
@@ -52,7 +51,7 @@ import cz.tomas.StockAnalyze.utils.Utils;
  * @author tomas
  *
  */
-public final class StockDetailActivity extends ChartActivity implements IActionBarListener {
+public final class StockDetailActivity extends ChartActivity {
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -114,8 +113,6 @@ public final class StockDetailActivity extends ChartActivity implements IActionB
 				toast.show();
 			}
 		}
-//		ActionBar bar = (ActionBar) this.findViewById(R.id.detailActionBar);
-//		bar.setActionBarListener(this);
 	}
 
 	@Override
@@ -127,7 +124,10 @@ public final class StockDetailActivity extends ChartActivity implements IActionB
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		this.onAction(item.getItemId());
+		if(item.getItemId() == R.id.menu_stock_detail_add) {
+			NavUtils.goToAddToPortfolio(this, this.stockItem, this.dayData);
+			return true;
+		}
 		return super.onOptionsItemSelected(item);
 	}
 
@@ -220,14 +220,6 @@ public final class StockDetailActivity extends ChartActivity implements IActionB
 		
 		if (txtName != null)
 			txtName.setText(R.string.NoStockSelected);
-	}
-
-
-	@Override
-	public void onAction(int id) {
-		if(id == R.id.actionAddButton || id == R.id.menu_stock_detail_add) {
-			NavUtils.goToAddToPortfolio(this, this.stockItem, this.dayData);
-		}
 	}
 	
 	@Override
