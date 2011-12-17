@@ -84,10 +84,6 @@ public class StockListActivity extends BaseListActivity implements IActionBarLis
 		} catch (Exception e) {
 			Log.e(Utils.LOG_TAG, "failed to find refresh button", e);
 		}
-		ActionBar bar = (ActionBar) findViewById(R.id.stockListActionBar);
-		if (bar != null)
-			bar.setActionBarListener(this);
-
 		this.getListView().setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long rowId) {
@@ -180,7 +176,7 @@ public class StockListActivity extends BaseListActivity implements IActionBarLis
 	}
 	
 	
-	/* stock
+	/** 
 	 * context menu for stock item
 	 * @see android.app.Activity#onContextItemSelected(android.view.MenuItem)
 	 */

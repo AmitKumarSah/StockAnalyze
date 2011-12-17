@@ -169,13 +169,14 @@ public final class PortfolioListFragment extends ListFragment implements OnShare
 
 				@Override
 				public void onListLoaded(PortfolioSum portfolioSummary) {
-					Log.d(Utils.LOG_TAG, "Updating portfolio summary");
-					fillPortfolioSummary(portfolioSummary);
-					
-					if (refreshAnim != null)
-						refreshAnim.setDuration(0);	
-					if (adapter.getCount() == 0) {
-						setEmptyText(getText(R.string.noPortfolioItems));
+					if (isAdded()) {
+						Log.d(Utils.LOG_TAG, "Updating portfolio summary");
+						fillPortfolioSummary(portfolioSummary);
+						if (refreshAnim != null)
+							refreshAnim.setDuration(0);
+						if (adapter.getCount() == 0) {
+							setEmptyText(getText(R.string.noPortfolioItems));
+						}
 					}
 				}
 			});

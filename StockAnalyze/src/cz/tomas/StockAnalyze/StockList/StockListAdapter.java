@@ -237,7 +237,7 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 	 */
 	private void fillView(StockItemViewHolder holder, StockItem stock) {
         if (holder.txtName != null) 
-        	holder.txtName.setText(stock.getName());
+        	holder.txtName.setText(stock.getName().toUpperCase());
         if(holder.txtTicker != null)
         	holder.txtTicker.setText(stock.getTicker());
         if(holder.txtPrice != null && holder.txtChange != null) {

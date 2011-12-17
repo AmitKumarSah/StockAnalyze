@@ -20,13 +20,17 @@
     android:id="@+id/frame"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:padding="2dip" >
+    android:padding="2dp" >
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/pricelayout"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:orientation="vertical" >
+        android:orientation="vertical"
+        android:paddingTop="5dp"
+        android:paddingRight="8dp"
+        android:paddingLeft="8dp"
+        android:paddingBottom="5dp">
 
         <TextView
             android:id="@+id/name"
@@ -34,6 +38,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
+            android:layout_alignParentTop="true"
             android:ellipsize="end"
             android:singleLine="true"
             android:textColor="@color/money_item_text"
@@ -45,6 +50,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_alignTop="@+id/name"
+            android:layout_toRightOf="@+id/name"
             android:ellipsize="end"
             android:singleLine="true"
             android:textColor="@color/money_item_text"
@@ -55,6 +62,8 @@
             style="@style/moneyText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/name"
+            android:layout_alignParentRight="true"
             android:textColor="@color/money_item_text" />
 
         <TextView
@@ -63,8 +72,10 @@
             android:singleLine="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignRight="@+id/price"
+            android:layout_below="@+id/price"
             android:textColor="@color/money_item_text"
             android:textSize="@dimen/text_size_small" />
-    </LinearLayout>
+    </RelativeLayout>
 
 </FrameLayout>
