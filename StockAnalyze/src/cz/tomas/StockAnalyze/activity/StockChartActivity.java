@@ -45,7 +45,6 @@ public class StockChartActivity extends ChartActivity {
 		
 		this.setContentView(R.layout.part_chart_with_header);
 		this.chartView = (CompositeChartView) this.findViewById(R.id.stockChartView);
-		this.registerForContextMenu(this.chartView);
 		
 		// if we aren't resuming, load day count from intent (first run)
 		if (savedInstanceState == null || !savedInstanceState.containsKey(EXTRA_CHART_DAY_COUNT))

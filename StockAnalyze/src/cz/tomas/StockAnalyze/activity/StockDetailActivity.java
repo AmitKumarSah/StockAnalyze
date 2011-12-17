@@ -26,7 +26,6 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
-import android.app.TabActivity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -36,13 +35,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.charts.view.CompositeChartView;
-import cz.tomas.StockAnalyze.ui.widgets.ActionBar.IActionBarListener;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
@@ -60,7 +57,6 @@ public final class StockDetailActivity extends ChartActivity {
 		this.setContentView(R.layout.stock_detail);
 		this.chartView = (CompositeChartView) findViewById(R.id.stockChartView);
 		if (chartView != null) {
-			this.registerForContextMenu(this.chartView);
 			this.chartView.setEnableTracking(false);
 			this.chartView.setOnClickListener(new OnClickListener() {
 
@@ -69,50 +65,27 @@ public final class StockDetailActivity extends ChartActivity {
 					goToChartDetail();
 				}
 			});
-		} else
+		} else {
 			Log.w(Utils.LOG_TAG, "Failed to initialize chart view");
+		}
 		
-		// compatibility
-		if (this.getParent() instanceof TabActivity) {
-			((TabActivity) this.getParent()).getTabHost().setOnTabChangedListener(new OnTabChangeListener() {
-				
-				@Override
-				public void onTabChanged(String tabId) {
-					try {
-						if (tabId.equals("StockDetail")) {
-							Intent intent = StockDetailActivity.this.getParent().getIntent();
-							if (readData(intent))
-								fill();
-						}
-					} catch (Exception e) {
-						Log.e(Utils.LOG_TAG, "failed to get data from intent", e);
-						Toast toast = Toast.makeText(StockDetailActivity.this, R.string.InvalidData, Toast.LENGTH_LONG);
-						if (e.getMessage() != null) {
-							Log.d("StockDetailActivity", e.getMessage());
-							toast.setText(getString(R.string.InvalidData) + ": " + e.getMessage());
-						}
-						toast.show();
-					}
-				}
-			});
-		}
-		else {
-			final Intent intent = this.getIntent();
-			try {
-				if (readData(intent)) {
-					final int logo = this.stockItem.isIndex() ? 
-							R.drawable.ic_up_indeces : R.drawable.ic_up_list;
-					this.getActionBarHelper().setLogo(logo);
-					this.fill();
-				} else {
-					this.showWarning();
-				}
-			} catch (Exception e) {
-				Log.e(Utils.LOG_TAG, "failed to get data from intent", e);
-				Toast toast = Toast.makeText(StockDetailActivity.this, R.string.InvalidData, Toast.LENGTH_LONG);
-				toast.show();
+		final Intent intent = this.getIntent();
+		try {
+			if (readData(intent)) {
+				final int logo = this.stockItem.isIndex() ? R.drawable.ic_up_indeces
+						: R.drawable.ic_up_list;
+				this.getActionBarHelper().setLogo(logo);
+				this.fill();
+			} else {
+				this.showWarning();
 			}
+		} catch (Exception e) {
+			Log.e(Utils.LOG_TAG, "failed to get data from intent", e);
+			Toast toast = Toast.makeText(StockDetailActivity.this,
+					R.string.InvalidData, Toast.LENGTH_LONG);
+			toast.show();
 		}
+
 	}
 
 	@Override
@@ -145,10 +118,11 @@ public final class StockDetailActivity extends ChartActivity {
 	}
 
 	private void updateCurrentStock() throws NullPointerException, IOException {
-		if (this.stockItem == null)
+		if (this.stockItem == null) {
 			throw new NullPointerException("stockItem must be defined");
-		if (this.stockItem.getMarket() == null)
+		} else if (this.stockItem.getMarket() == null) {
 			throw new NullPointerException("market must be defined");
+		}
 		
 		TextView txtHeader = (TextView) this.findViewById(R.id.txtDetailHeader);
 		TextView txtName = (TextView) this.findViewById(R.id.txtDetailName);
@@ -174,8 +148,8 @@ public final class StockDetailActivity extends ChartActivity {
 			this.dayData = manager.getLastValue(stockItem);
 		}
 		
-		NumberFormat priceFormat = FormattingUtils.getPriceFormat(stockItem.getMarket().getCurrency());
-		NumberFormat percentFormat = FormattingUtils.getPercentFormat();
+		final NumberFormat priceFormat = FormattingUtils.getPriceFormat(stockItem.getMarket().getCurrency());
+		final NumberFormat percentFormat = FormattingUtils.getPercentFormat();
 
 		if (this.dayData == null)
 			throw new NullPointerException("Day data is null!");
@@ -208,10 +182,11 @@ public final class StockDetailActivity extends ChartActivity {
 			String strAbsChange = percentFormat.format(this.dayData.getAbsChange());
 			txtChange.setText(String.format("%s (%s%%)", strAbsChange, strChange));
 			
-			if (this.dayData.getChange() > 0f)
+			if (this.dayData.getChange() > 0f) {
 				txtChange.setTextColor(Color.GREEN);
-			else if (this.dayData.getChange() < 0f)
+			} else if (this.dayData.getChange() < 0f) {
 				txtChange.setTextColor(Color.RED);
+			}
 		}
 	}
 

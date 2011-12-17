@@ -44,8 +44,6 @@
         	</intent-filter>
 		</activity>
 
-		<activity android:name=".activity.StockListActivity" 
-		    android:launchMode="singleTop"/>
 		<activity android:name=".activity.IndecesListActivity"
 		    android:logo="@drawable/ic_up_indeces" 
 		    android:launchMode="singleTop"  
@@ -56,7 +54,6 @@
 		    android:label="@string/homeStockList"
 		    android:taskAffinity=""
 		    android:excludeFromRecents="true" />
-		<activity android:name=".activity.StockSearchActivity"/>
 		<activity android:name=".activity.StockDetailActivity"
 		    android:logo="@drawable/ic_up_list"
 		    android:hardwareAccelerated="false"  
