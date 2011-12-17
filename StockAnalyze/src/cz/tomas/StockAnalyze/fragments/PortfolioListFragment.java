@@ -17,8 +17,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
@@ -48,7 +46,6 @@ import cz.tomas.StockAnalyze.utils.Utils;
 public final class PortfolioListFragment extends ListFragment implements OnSharedPreferenceChangeListener {
 	
 	public static final String EXTRA_REFRESH = "portfolioRefresh";
-	public static final String EXTRA_STOCK_ITEM = "portfolioStockItem";
 	
 	private DataManager dataManager;
 	private Portfolio portfolio;
@@ -60,11 +57,14 @@ public final class PortfolioListFragment extends ListFragment implements OnShare
 	private View footerView;
 	private static boolean isDirty;
 	
-	private View refreshButton;
-	private Animation refreshAnim;
-	
 	private SharedPreferences prefs;
 	
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		this.setHasOptionsMenu(true);
+		super.onCreate(savedInstanceState);
+	}
+
 	/* (non-Javadoc)
 	 * @see android.support.v4.app.ListFragment#onCreateView(android.view.LayoutInflater, android.view.ViewGroup, android.os.Bundle)
 	 */
@@ -105,8 +105,9 @@ public final class PortfolioListFragment extends ListFragment implements OnShare
 			}
 		});
 
-		if (portfolio == null)
+		if (portfolio == null) {
 			portfolio = new Portfolio(activity);
+		}
 		
 		this.prefs = activity.getSharedPreferences(Utils.PREF_NAME, 0);
 		this.prefs.registerOnSharedPreferenceChangeListener(this);
@@ -154,14 +155,11 @@ public final class PortfolioListFragment extends ListFragment implements OnShare
 	
 	private void fill() {
 		if (adapter == null) {
-			adapter = new PortfolioListAdapter(this.getActivity(), R.layout.stock_list, this.dataManager, this.portfolio, this.market);
+			adapter = new PortfolioListAdapter(this.getActivity(), 0, this.dataManager, this.portfolio, this.market);
 			adapter.addPortfolioListener(new IListAdapterListener<PortfolioSum>() {
 
 				@Override
-				public void onListLoading() {					
-					if (refreshButton != null)
-						refreshAnim = AnimationUtils.loadAnimation(getActivity(), R.anim.refresh_rotate);
-						refreshButton.startAnimation(refreshAnim);
+				public void onListLoading() {
 				}
 
 				@Override
@@ -169,8 +167,6 @@ public final class PortfolioListFragment extends ListFragment implements OnShare
 					if (isAdded()) {
 						Log.d(Utils.LOG_TAG, "Updating portfolio summary");
 						fillPortfolioSummary(portfolioSummary);
-						if (refreshAnim != null)
-							refreshAnim.setDuration(0);
 						if (adapter.getCount() == 0) {
 							setEmptyText(getText(R.string.noPortfolioItems));
 						}
@@ -268,7 +264,7 @@ public final class PortfolioListFragment extends ListFragment implements OnShare
 		switch (item.getItemId()) {
 	    case R.id.menu_refresh:
 	    	this.adapter.refresh();
-	        return true;
+	        break;
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -279,7 +275,7 @@ public final class PortfolioListFragment extends ListFragment implements OnShare
 	private void goToPortfolioDetail(PortfolioItem item) {
 		Intent intent = new Intent(this.getActivity(), PortfolioDetailActivity.class);
 		StockItem stockItem = this.adapter.getStockItem(item);
-		intent.putExtra(EXTRA_STOCK_ITEM, stockItem);
+		intent.putExtra(PortfoliosActivity.EXTRA_STOCK_ITEM, stockItem);
 		this.startActivity(intent);
 	}
 	
@@ -290,8 +286,6 @@ public final class PortfolioListFragment extends ListFragment implements OnShare
 	 * @param portfolioItem
 	 */
 	private void removePortfolioRecord(final PortfolioItem portfolioItem) {
-		if (refreshButton != null)
-			refreshButton.setVisibility(View.VISIBLE);
 		FlurryAgent.onEvent(Consts.FLURRY_EVENT_PORTFOLIO_REMOVE);
 		AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
 
@@ -318,7 +312,7 @@ public final class PortfolioListFragment extends ListFragment implements OnShare
 			}
 			
 		};
-		task.execute((Void[])null);
+		task.execute();
 	}	
 
 	/**

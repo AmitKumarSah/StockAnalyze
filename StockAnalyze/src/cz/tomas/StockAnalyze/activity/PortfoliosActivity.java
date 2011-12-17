@@ -34,6 +34,8 @@ public final class PortfoliosActivity extends BaseFragmentActivity implements On
 	public static final int DIALOG_PROGRESS = 1000;
 	public static final int DIALOG_ADD_NEW = DIALOG_PROGRESS + 1;
 	
+	public static final String EXTRA_STOCK_ITEM = "portfolioStockItem";
+	
 	private ViewPager pager;
 	
 	/* (non-Javadoc)

@@ -24,9 +24,8 @@ public class PortfolioDetailActivity extends ChartActivity {
 		
 		this.setContentView(R.layout.portfolio_detail_layout);
 		
-		
 		try {
-			StockItem stockItem = getIntent().getParcelableExtra(PortfolioActivity.EXTRA_STOCK_ITEM);
+			StockItem stockItem = getIntent().getParcelableExtra(PortfoliosActivity.EXTRA_STOCK_ITEM);
 			this.stockItem = stockItem;
 			TextView title = (TextView) this.findViewById(R.id.portfolioDetailTitle);
 			title.setText(stockItem.getTicker());
@@ -40,7 +39,7 @@ public class PortfolioDetailActivity extends ChartActivity {
 			expandList.setAdapter(adapter);
 			
 		} catch (Exception e) {
-			Log.e(Utils.LOG_TAG, "failed to initialize portfolio detail");
+			Log.e(Utils.LOG_TAG, "failed to initialize portfolio detail", e);
 		}
 
 		this.chartView = (CompositeChartView) this.findViewById(R.id.stockChartView);

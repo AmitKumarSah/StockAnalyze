@@ -2,9 +2,6 @@ package cz.tomas.StockAnalyze.activity;
 
 import java.util.List;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
@@ -32,10 +29,6 @@ import cz.tomas.StockAnalyze.utils.NavUtils;
  */
 public final class StocksActivity extends BaseFragmentActivity implements OnPageChangeListener {
 	
-	static final int UPDATE_DLG_SUCCES = 0;
-	static final int UPDATE_DLG_FAIL = 1;
-	static final int NO_INTERNET = 2;
-	
 	private Market selectedMarket;
 	private UpdateScheduler sheduler;
 	
@@ -62,39 +55,6 @@ public final class StocksActivity extends BaseFragmentActivity implements OnPage
 		titleIndicator.setOnPageChangeListener(this);
 
         //ViewServer.get(this).addWindow(this);
-	}
-	
-	@Override
-	protected Dialog onCreateDialog(int id) {
-		Dialog dlg = null;
-		
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setCancelable(false);
-		builder.setPositiveButton("OK", new Dialog.OnClickListener() {
-			
-			@Override
-			public void onClick(DialogInterface dlg, int arg1) {
-				dlg.dismiss();
-			}
-		});
-		
-		switch (id)
-		{
-		case UPDATE_DLG_SUCCES:
-			builder.setMessage(R.string.update_succes);
-			dlg = builder.create();
-			break;
-		case UPDATE_DLG_FAIL:
-			builder.setMessage(R.string.update_fail);
-			dlg = builder.create();
-			break;
-		case NO_INTERNET:
-			builder.setMessage(R.string.NoInternet);
-			dlg = builder.create();
-			break;
-		}
-		
-		return dlg;
 	}
 
 	@Override

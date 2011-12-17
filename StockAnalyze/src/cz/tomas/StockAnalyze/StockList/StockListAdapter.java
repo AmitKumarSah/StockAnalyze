@@ -199,13 +199,7 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 	public View getView(int position, View convertView, ViewGroup parent) {
         View v = convertView;
         StockItemViewHolder holder = null;
-     // Handle dividers
-        if(this.isDivider(position)) {
-            View divider = this.vi.inflate(R.layout.stock_list_divider, null);
-            TextView txt = (TextView) divider.findViewById(R.id.txtStockListDivider);
-            txt.setText("Prague Stock Exchange");
-            return divider;
-        }
+        
         if (v == null) {
             v = vi.inflate(this.viewId, null);
             
