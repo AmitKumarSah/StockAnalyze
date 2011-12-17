@@ -25,7 +25,7 @@
 		style="@style/actionBar" android:orientation="horizontal">
 		<ImageButton android:id="@+id/actionHomeButton"
 			style="@style/actionBar.ImageButton"
-			android:src="@drawable/ic_tab_home"
+			android:src="@drawable/ic_app"
 			android:visibility="gone"
 			android:layout_gravity="left" 
 			android:layout_alignParentLeft="true"
@@ -60,20 +60,20 @@
    	        
 		    <ImageButton android:id="@+id/actionAddButton"
     			style="@style/actionBar.ImageButton"
-    			android:src="@drawable/ic_top_plus" 
+    			android:src="@drawable/ic_action_plus" 
     			android:gravity="right" />
     	    <ImageButton android:id="@+id/actionRefreshButton"
     			style="@style/actionBar.ImageButton"
-    			android:src="@drawable/ic_top_refresh"/>
+    			android:src="@drawable/ic_action_refresh"/>
     		<ImageButton android:id="@+id/actionSearchButton"
     			style="@style/actionBar.ImageButton"
     			android:src="@drawable/ic_tab_search" />
 			<ImageButton android:id="@+id/actionChartButton"
     			style="@style/actionBar.ImageButton"
-    			android:src="@drawable/ic_top_chart" />
+    			android:src="@drawable/ic_action_chart" />
     		<ImageButton android:id="@+id/actionHelpButton"
     			style="@style/actionBar.ImageButton"
-    			android:src="@drawable/ic_top_help" 
+    			android:src="@drawable/ic_action_chart" 
     			android:gravity="right" />
 		</LinearLayout>
 <!--		<ImageView android:id="@+id/actionHorizontalSeparator" -->
