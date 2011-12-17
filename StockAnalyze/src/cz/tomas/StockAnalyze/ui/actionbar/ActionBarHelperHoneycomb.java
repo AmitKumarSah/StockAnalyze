@@ -94,7 +94,7 @@ public class ActionBarHelperHoneycomb extends ActionBarHelper {
 
 	@Override
 	public void setLogo(int resId) {
-		this.mActivity.getActionBar().setLogo(resId);
+		//this.mActivity.getActionBar().setLogo(resId);
 	}
 
 	@Override

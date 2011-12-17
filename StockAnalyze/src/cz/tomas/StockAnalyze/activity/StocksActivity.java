@@ -12,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import com.android.debug.hv.ViewServer;
 import com.jakewharton.android.viewpagerindicator.TitlePageIndicator;
 
 import cz.tomas.StockAnalyze.Application;
@@ -48,7 +49,6 @@ public final class StocksActivity extends BaseFragmentActivity implements IActio
 	@Override
 	protected void onCreate(Bundle arg0) {
 		super.onCreate(arg0);
-		
 		this.setContentView(R.layout.stocks);
 		this.sheduler = (UpdateScheduler) this.getApplicationContext().getSystemService(Application.UPDATE_SCHEDULER_SERVICE);
 		
@@ -66,6 +66,8 @@ public final class StocksActivity extends BaseFragmentActivity implements IActio
 		TitlePageIndicator titleIndicator = (TitlePageIndicator)findViewById(R.id.pagerTitles);
 		titleIndicator.setViewPager(pager);
 		titleIndicator.setOnPageChangeListener(this);
+
+        //ViewServer.get(this).addWindow(this);
 	}
 	
 	@Override
@@ -135,6 +137,18 @@ public final class StocksActivity extends BaseFragmentActivity implements IActio
 			getActionBarHelper().setRefreshActionItemState(true);
 		}
 	};
+	
+    @Override
+	protected void onPause() {
+		super.onPause();
+		//ViewServer.get(this).removeWindow(this);
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		//ViewServer.get(this).setFocusedWindow(this);
+	}
 	
 	@Override
 	public void onStart() {

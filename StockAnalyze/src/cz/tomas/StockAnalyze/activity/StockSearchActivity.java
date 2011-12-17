@@ -31,6 +31,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -43,6 +44,7 @@ import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.StockList.StockListAdapter;
 import cz.tomas.StockAnalyze.activity.base.BaseActivity;
 import cz.tomas.StockAnalyze.utils.Markets;
+import cz.tomas.StockAnalyze.utils.Utils;
 
 /**
  * @author tomas
@@ -79,7 +81,7 @@ public class StockSearchActivity extends BaseActivity {
 					if (stocks != null) {
 						try {
 							//list.setAdapter(new ArrayAdapter<String>(StockSearchActivity.this, R.layout.stock_list, displayResults));
-							StockListAdapter adapter = new StockListAdapter(StockSearchActivity.this, R.id.toptext, dataManger, null, true);
+							StockListAdapter adapter = new StockListAdapter(StockSearchActivity.this, R.id.name, dataManger, null, true);
 							adapter.showIcons(false);
 							list.setAdapter(adapter);
 							list.setOnItemClickListener(new OnItemClickListener() {
@@ -92,7 +94,7 @@ public class StockSearchActivity extends BaseActivity {
 								}
 							});
 						} catch (Exception e) {
-							e.printStackTrace();
+							Log.d(Utils.LOG_TAG, "search list error", e);
 						}
 					}
 				}

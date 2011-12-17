@@ -104,7 +104,7 @@ public final class PortfoliosActivity extends BaseFragmentActivity implements On
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    // Handle item selection
 	    switch (item.getItemId()) {
-	    case R.id.menu_portfolio_refresh:
+	    case R.id.menu_refresh:
 	    	//this.adapter.refresh();
 	        return super.onOptionsItemSelected(item);
 	    case R.id.menu_portfolio_settings:

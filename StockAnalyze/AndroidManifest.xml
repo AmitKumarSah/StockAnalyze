@@ -21,7 +21,7 @@
 	android:versionName="0.9.6"
 	android:versionCode="00906">
 	
-	<uses-sdk android:minSdkVersion="7" />
+	<uses-sdk android:minSdkVersion="7" android:targetSdkVersion="14"/>
 	<uses-permission android:name="android.permission.INTERNET"/>
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 	<uses-permission android:name="android.permission.READ_SYNC_SETTINGS"/>
@@ -30,17 +30,13 @@
 		android:name=".Application"
 		android:debuggable="true" 
 		android:theme="@style/themeLight" 
-		android:allowBackup="true">
-		<activity android:name=".StockAnalyze" android:label="@string/app_name">
-			<intent-filter>
-<!-- 				<category android:name="android.intent.category.LAUNCHER" /> -->
-<!--				<action android:name="android.intent.action.MAIN" />-->
-        	</intent-filter>
-		</activity>
+		android:allowBackup="true" 
+		android:hardwareAccelerated="true">
 		<activity 
 		    android:logo="@drawable/ic_app"
 		    android:label="@string/app_name" 
-		    android:name=".activity.HomeActivity" 
+		    android:name=".activity.HomeActivity"
+		    android:hardwareAccelerated="false"
 		    android:launchMode="singleTop">
 			<intent-filter>
 				<category android:name="android.intent.category.LAUNCHER" />
@@ -48,17 +44,25 @@
         	</intent-filter>
 		</activity>
 
-		<activity android:name=".activity.StockListActivity" android:launchMode="singleTop"></activity>
-		<activity android:name=".activity.IndecesListActivity" android:launchMode="singleTop"  android:label="@string/homeIndeces"/>
+		<activity android:name=".activity.StockListActivity" 
+		    android:launchMode="singleTop"/>
+		<activity android:name=".activity.IndecesListActivity"
+		    android:logo="@drawable/ic_up_indeces" 
+		    android:launchMode="singleTop"  
+		    android:label="@string/homeIndeces"/>
 		<activity android:name=".activity.StocksActivity" 
 		    android:logo="@drawable/ic_up_list"
 		    android:launchMode="singleTop" 
 		    android:label="@string/homeStockList"
 		    android:taskAffinity=""
 		    android:excludeFromRecents="true" />
-		<activity android:name=".activity.StockSearchActivity"></activity>
-		<activity android:name=".activity.StockDetailActivity"  android:label="@string/activityStockDetail"/>
-		<activity android:name=".activity.StockChartActivity"	
+		<activity android:name=".activity.StockSearchActivity"/>
+		<activity android:name=".activity.StockDetailActivity"
+		    android:hardwareAccelerated="false"  
+		    android:label="@string/activityStockDetail"/>
+		<activity android:name=".activity.StockChartActivity"
+		    android:hardwareAccelerated="false"
+		    android:logo="@drawable/ic_app"
 			android:theme="@style/themeLightTitle"
 			android:screenOrientation="landscape"
 			android:label="@string/activityPortfolio" />
@@ -68,9 +72,11 @@
 		    android:launchMode="singleTop" 
 		    android:label="@string/homeMyPortfolio"/>
 		<activity android:name=".activity.PortfolioDetailActivity" 
+		    android:hardwareAccelerated="false"
 		    android:logo="@drawable/ic_up_portfolio"
 		    android:label="@string/activityPortfolioDetail"/>
 		<activity android:name=".Portfolio.AddPortfolioItemActivity"
+		    android:logo="@drawable/ic_app"
 			android:theme="@style/themeLightTitle"
 			android:label="@string/AddPortfolioItemActivityTitle"></activity>
 		<activity android:name=".activity.NewsActivity"
@@ -80,10 +86,12 @@
 		<activity android:name=".activity.NewsDetailActivity"  
 		    android:logo="@drawable/ic_up_rss"
 		    android:label="@string/homeNews"/>
-		<activity android:name=".activity.AppPreferencesActivity" 
+		<activity android:name=".activity.AppPreferencesActivity"
+		    android:logo="@drawable/ic_app"
 			android:label="@string/AppPreferencesActivityTitle"
 			android:theme="@style/themeLightTitle"></activity>
-		<activity android:name=".activity.AboutActivity" 
+		<activity android:name=".activity.AboutActivity"
+		    android:logo="@drawable/ic_app"
 			android:label="@string/appAbout"
 			android:theme="@style/themeLightTitle"></activity>
 <!-- 		<receiver android:enabled="true" android:permission="android.permission.ACCESS_NETWORK_STATE" android:name=".receivers.NetworkBroadcastReceiver"> -->

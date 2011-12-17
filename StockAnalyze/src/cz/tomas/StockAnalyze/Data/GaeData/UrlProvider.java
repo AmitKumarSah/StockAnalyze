@@ -108,7 +108,7 @@ public final class UrlProvider {
 	 * @return
 	 */
 	private Map<String, String> readFromCache(File file) {
-		if (file == null) {
+		if (file == null || ! file.exists()) {
 			return null;
 		}
 		Reader reader = null;

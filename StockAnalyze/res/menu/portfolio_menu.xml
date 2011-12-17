@@ -27,7 +27,8 @@
         android:showAsAction="never">
 	</item>
 	<item android:title="@string/refresh" 
-		android:id="@+id/menu_portfolio_refresh" 
+		android:id="@id/menu_refresh" 
+		android:visible="false"
 		android:icon="@drawable/ic_action_refresh"
 	    android:orderInCategory="1"
         android:showAsAction="always">

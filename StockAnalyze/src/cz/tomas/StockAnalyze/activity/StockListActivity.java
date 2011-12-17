@@ -152,7 +152,7 @@ public class StockListActivity extends BaseListActivity implements IActionBarLis
 	 * create adapter instance
 	 */
 	protected StockListAdapter createListAdapter() {
-		StockListAdapter adapter = new StockListAdapter(this, R.layout.stock_list, this.dataManager, Markets.CZ, false);
+		StockListAdapter adapter = new StockListAdapter(this, R.layout.item_stock_list, this.dataManager, Markets.CZ, false);
 		adapter.showIcons(false);
 		return adapter;
 	}

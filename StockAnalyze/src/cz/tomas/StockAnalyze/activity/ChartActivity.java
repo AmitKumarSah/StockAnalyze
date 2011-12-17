@@ -440,7 +440,7 @@ public abstract class ChartActivity extends BaseActivity {
 				listener.onChartUpdateBegin();
 			if (chartView != null)
 				chartView.setLoading(true);
-			if (txtDescription != null) {
+			if (txtDescription != null && stockItem != null) {
 				txtDescription.setText(stockItem.getName());
 			}
 		}
@@ -578,7 +578,7 @@ public abstract class ChartActivity extends BaseActivity {
 			} else {
 				Log.w(Utils.LOG_TAG, "ChartView is null! Can not set data to chart!");
 			}
-			if (txtDescription != null) {
+			if (txtDescription != null && stockItem != null) {
 				txtDescription.setText(stockItem.getName());
 			}
 			if (listener != null)

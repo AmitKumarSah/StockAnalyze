@@ -32,4 +32,9 @@ public class ActionBarHelperICS extends ActionBarHelperHoneycomb {
     protected Context getActionBarThemedContext() {
         return mActivity.getActionBar().getThemedContext();
     }
+    
+	@Override
+	public void setLogo(int resId) {
+		this.mActivity.getActionBar().setLogo(resId);
+	}
 }

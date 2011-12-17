@@ -118,7 +118,6 @@ public class NewsListAdapter extends SimpleCursorAdapter {
 			super(rss, context);
 		}
 
-		@SuppressWarnings("unchecked")
 		protected void onPostExecute(List<Article> result) {
 			if (result != null) {
 				if (result.size() == 0) {
@@ -133,8 +132,8 @@ public class NewsListAdapter extends SimpleCursorAdapter {
 					Toast.makeText(this.context, message, Toast.LENGTH_LONG).show();
 				}
 				if (result != null && result.size() > 0) {
-					final FetchContentTask task = new FetchContentTask(this.rss);
-					task.execute(result);
+					final FetchContentTask task = new FetchContentTask(this.rss, result);
+					task.start();
 				}
 			}
 			if (this.listener != null) {
@@ -145,22 +144,23 @@ public class NewsListAdapter extends SimpleCursorAdapter {
 		}
 	}
 	
-	private final class FetchContentTask extends AsyncTask<List<Article>, Integer, Void> {
+	private final class FetchContentTask extends Thread {
 
 		private final Rss rss;
-		public FetchContentTask(Rss rss) {
+		private List<Article> articles;
+		
+		public FetchContentTask(Rss rss, List<Article> articles) {
 			this.rss = rss;
+			this.articles = articles;
 		}
 
 		@Override
-		protected Void doInBackground(List<Article>... params) {
-			if (params == null || params.length != 1) {
-				return null;
+		public void run() {
+			if (articles == null || articles.size() != 1) {
+				return;
 			}
 			
-			final List<Article> list = params[0];
-			this.rss.downloadContent(list);
-			return null;
+			this.rss.downloadContent(this.articles);
 		}
 	}
 }

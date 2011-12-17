@@ -1,34 +1,32 @@
 package cz.tomas.StockAnalyze.fragments;
 
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
+import android.support.v4.app.Fragment;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.GridView;
 import android.widget.ListAdapter;
-import android.widget.ListView;
 import cz.tomas.StockAnalyze.Application;
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.DataManager;
+import cz.tomas.StockAnalyze.Data.Interfaces.IListAdapterListener;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.StockList.StockListAdapter;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 
-/**
- * Fragment with list of stocks and their prices.
- * It needs to have {@link Market} in arguments - see setArguments(Bundle b)
- * @author tomas
- *
- */
-public class StockListFragment extends ListFragment {
-
+public final class StockGridFragment extends Fragment implements IListAdapterListener<Object> {
+	
 	public static String ARG_MARKET = "market";
 	
 	protected DataManager dataManager;
@@ -37,33 +35,39 @@ public class StockListFragment extends ListFragment {
 	
 	private Market market;
 	
-	/* (non-Javadoc)
-	 * @see android.support.v4.app.Fragment#onActivityCreated(android.os.Bundle)
-	 */
+	private GridView grid;
+	private View progress;
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		View v = inflater.inflate(R.layout.stock_grid, container, false);
+		this.grid = (GridView) v.findViewById(R.id.gridview);
+		this.progress = v.findViewById(R.id.progress);
+		return v;
+	}
+
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		this.dataManager = (DataManager) getActivity().getApplicationContext().getSystemService(Application.DATA_MANAGER_SERVICE);
 		
-		//this.setContentView(R.layout.stock_list);
-		this.getListView().setTextFilterEnabled(true);
-		this.registerForContextMenu(this.getListView());
+		this.market = (Market) getArguments().get(ARG_MARKET);
+		this.adapter = new StockListAdapter(getActivity(), R.layout.item_stock_grid, this.dataManager, this.market, false);
+		this.adapter.addListAdapterListener(this);
+		
+		this.registerForContextMenu(this.grid);
+		this.grid.setAdapter(this.adapter);
+		this.grid.setOnItemClickListener(new OnItemClickListener() {
 
-		this.getListView().setOnItemClickListener(new OnItemClickListener() {
 			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long rowId) {
-				StockItem stock = (StockItem) getListView().getItemAtPosition(position);
+			public void onItemClick(AdapterView<?> adapterView, View arg1, int position, long arg3) {
+				StockItem stock = (StockItem) adapter.getItem(position);
 				NavUtils.goToStockDetail(stock, adapter.getDayData(stock), getActivity());
 			}
-
 		});
-
-		this.market = (Market) getArguments().get(ARG_MARKET);
-		this.adapter = createListAdapter();
-		this.setListAdapter(adapter);
-		this.setEmptyText(getString(R.string.loading));
 	}
-	
+
+
 	/**
 	 * create adapter instance
 	 */
@@ -97,7 +101,7 @@ public class StockListFragment extends ListFragment {
 	public boolean onContextItemSelected(MenuItem item) {
 		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
 		// we need to have adapter from this listview
-		ListAdapter listAdapter = ((ListView) info.targetView.getParent()).getAdapter();
+		ListAdapter listAdapter = ((AbsListView) info.targetView.getParent()).getAdapter();
 		if (info.position >= listAdapter.getCount()) {
 			return false;
 		}
@@ -132,5 +136,19 @@ public class StockListFragment extends ListFragment {
 		MenuInflater inflater = getActivity().getMenuInflater();
 		inflater.inflate(R.menu.stock_item_context_menu, menu);
 		super.onCreateContextMenu(menu, v, menuInfo);
+	}
+
+	@Override
+	public void onListLoading() {
+		if (this.getActivity() != null) {
+			this.progress.setVisibility(View.VISIBLE);
+		}
+	}
+
+	@Override
+	public void onListLoaded(Object data) {
+		if (this.getActivity() != null) {
+			this.progress.setVisibility(View.GONE);
+		}
 	}
 }

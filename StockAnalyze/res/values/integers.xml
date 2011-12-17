@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item type="integer" name="grid_columns">2</item>
+    
+    <item type="integer" name="indicatorStyle">1</item>
+    
+</resources>

@@ -272,7 +272,7 @@ public final class PortfolioListFragment extends ListFragment implements IAction
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-	    case R.id.menu_portfolio_refresh:
+	    case R.id.menu_refresh:
 	    	this.adapter.refresh();
 	        return true;
 		}

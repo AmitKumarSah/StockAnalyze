@@ -28,7 +28,7 @@
         android:title="@string/settings"/>
 
     <item
-        android:id="@+id/menu_refresh"
+        android:id="@id/menu_refresh"
         android:icon="@drawable/ic_action_refresh"
         android:title="@string/refresh"
 	    android:orderInCategory="1"

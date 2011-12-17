@@ -30,6 +30,7 @@ import java.util.concurrent.Semaphore;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -76,29 +77,40 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 	/**
 	 * these are data to be used in views
 	 */
-	private Map<StockItem, DayData> dataSet;
+	private final Map<StockItem, DayData> dataSet;
 	//private StockComparator comparator;
 	/**
 	 * listeners for changes in this adapter
 	 */
-	private List<IListAdapterListener<Object>> listeners;
+	private final List<IListAdapterListener<Object>> listeners;
 	
 	//private Boolean showIcons = true;
 	
-	private Market market;
+	private final Market market;
 	
 	private final boolean includeIndeces;
 	
 	/**
 	 * semaphore to synchronize updates to list in StockListTask
 	 */
-	private Semaphore semaphore;
+	private final Semaphore semaphore;
 	
-	public StockListAdapter(Activity context, int textViewResourceId, final DataManager dataManager, final Market market, boolean includeIndeces) {
-		super(context, textViewResourceId);
+	private final int viewId;
+	
+	private final Drawable drawableGreen;
+	private final Drawable drawableRed;
+	private final Drawable drawableBlack;
+	
+	public StockListAdapter(Activity context, int viewId, final DataManager dataManager, final Market market, boolean includeIndeces) {
+		super(context, viewId);
+		this.viewId = viewId;
 		this.dataManager = dataManager;
 		this.market = market;
 		this.includeIndeces = includeIndeces;
+		
+		this.drawableGreen = getContext().getResources().getDrawable(R.drawable.bg_simple_green_shape);
+		this.drawableRed = getContext().getResources().getDrawable(R.drawable.bg_simple_red_shape);
+		this.drawableBlack = getContext().getResources().getDrawable(R.drawable.bg_simple_dark_shape);
 		
 		//this.comparator = new StockComparator(StockCompareTypes.Name, dataManager);
 		this.listeners = new ArrayList<IListAdapterListener<Object>>();
@@ -195,22 +207,18 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
             return divider;
         }
         if (v == null) {
-            v = vi.inflate(R.layout.stock_list_item, null);
+            v = vi.inflate(this.viewId, null);
+            
             holder = new StockItemViewHolder();
-            holder.txtTicker = (TextView) v.findViewById(R.id.bottomtext);
-            holder.txtName = (TextView) v.findViewById(R.id.toptext);
-            holder.txtPrice = (TextView) v.findViewById(R.id.righttext);
-            holder.txtChange = (TextView) v.findViewById(R.id.righttext2);
+            holder.txtTicker = (TextView) v.findViewById(R.id.ticker);
+            holder.txtName = (TextView) v.findViewById(R.id.name);
+            holder.txtPrice = (TextView) v.findViewById(R.id.price);
+            holder.txtChange = (TextView) v.findViewById(R.id.change);
             holder.priceGroupView = v.findViewById(R.id.pricelayout);
             v.setTag(holder);
         } else {
         	holder = (StockItemViewHolder) v.getTag();
         }
-//        View iconView = v.findViewById(R.id.iconStockItem);
-//        if (! this.showIcons) {
-//        	 if (iconView != null)
-//        		 iconView.setVisibility(View.GONE);
-//        }
         
         final StockItem stock = this.getItem(position);
         if (stock != null)
@@ -228,12 +236,6 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 	 * @param stock stock to access data to write to view
 	 */
 	private void fillView(StockItemViewHolder holder, StockItem stock) {
-//		TextView txtTicker = (TextView) holder.findViewById(R.id.bottomtext);
-//        TextView txtName = (TextView) holder.findViewById(R.id.toptext);
-//        TextView txtPrice = (TextView) holder.findViewById(R.id.righttext);
-//        TextView txtChange = (TextView) holder.findViewById(R.id.righttext2);
-//        View priceGroupView = holder.findViewById(R.id.pricelayout);
-        
         if (holder.txtName != null) 
         	holder.txtName.setText(stock.getName());
         if(holder.txtTicker != null)
@@ -257,13 +259,11 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 				
 				// set background drawable according to positive/negative price change
 				if (data.getChange() > 0 && holder.priceGroupView != null) {
-					holder.priceGroupView.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.groupbox_green_shape));
-				}
-				else if (data.getChange() < 0 && holder.priceGroupView != null) {
-					holder.priceGroupView.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.groupbox_red_shape));
-				}
-				else if (holder.priceGroupView != null) {
-					holder.priceGroupView.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.groupbox_dark_shape));
+					holder.priceGroupView.setBackgroundDrawable(this.drawableGreen);
+				} else if (data.getChange() < 0 && holder.priceGroupView != null) {
+					holder.priceGroupView.setBackgroundDrawable(this.drawableRed);
+				} else if (holder.priceGroupView != null) {
+					holder.priceGroupView.setBackgroundDrawable(this.drawableBlack);
 				}
 			} else {
 				holder.txtPrice.setText(R.string.InvalidData);
@@ -342,7 +342,8 @@ public class StockListAdapter extends ArrayAdapter<StockItem> {
 					if (items != null) {
 						// get day data for each stock and save it
 						dataSet.clear();
-						dataSet = dataManager.getLastDataSet(items);
+						//dataSet = dataManager.getLastDataSet(items);
+						dataSet.putAll(dataManager.getLastDataSet(items));
 						Log.d(Utils.LOG_TAG, "StockList: loaded data from database: " + dataSet.size());
 					}
 				} catch (Exception e) {

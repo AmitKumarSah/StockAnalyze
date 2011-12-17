@@ -31,7 +31,7 @@ public final class IndecesListActivity extends StockListActivity {
 	 */
 	@Override
 	protected StockListAdapter createListAdapter() {
-		StockListAdapter adapter = new StockListAdapter(this, R.layout.stock_list, this.dataManager, null, true);
+		StockListAdapter adapter = new StockListAdapter(this, R.layout.item_stock_list, this.dataManager, null, true);
 		return adapter;
 	}
 

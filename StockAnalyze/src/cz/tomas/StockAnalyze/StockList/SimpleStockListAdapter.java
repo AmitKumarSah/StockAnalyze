@@ -2,13 +2,6 @@ package cz.tomas.StockAnalyze.StockList;
 
 import java.util.Map;
 
-import cz.tomas.StockAnalyze.Application;
-import cz.tomas.StockAnalyze.Data.DataManager;
-import cz.tomas.StockAnalyze.Data.Interfaces.IListAdapterListener;
-import cz.tomas.StockAnalyze.Data.Model.Market;
-import cz.tomas.StockAnalyze.Data.Model.StockItem;
-import cz.tomas.StockAnalyze.utils.Markets;
-import cz.tomas.StockAnalyze.utils.Utils;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -17,6 +10,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+import cz.tomas.StockAnalyze.Application;
+import cz.tomas.StockAnalyze.Data.DataManager;
+import cz.tomas.StockAnalyze.Data.Interfaces.IListAdapterListener;
+import cz.tomas.StockAnalyze.Data.Model.Market;
+import cz.tomas.StockAnalyze.Data.Model.StockItem;
+import cz.tomas.StockAnalyze.utils.Utils;
 
 /**
  * adapter for pick stock dialog on home screen

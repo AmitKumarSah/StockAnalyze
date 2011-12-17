@@ -57,7 +57,7 @@ public abstract class ActionBarActivity extends Activity {
         mActionBarHelper.onCreate(savedInstanceState);
     }
 
-    /**{@inheritDoc}*/
+	/**{@inheritDoc}*/
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
