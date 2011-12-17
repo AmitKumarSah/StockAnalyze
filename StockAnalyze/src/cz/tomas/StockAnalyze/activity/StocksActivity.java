@@ -12,7 +12,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import com.android.debug.hv.ViewServer;
 import com.jakewharton.android.viewpagerindicator.TitlePageIndicator;
 
 import cz.tomas.StockAnalyze.Application;

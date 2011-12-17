@@ -22,13 +22,6 @@
     android:padding="4dip"
     android:orientation="horizontal" 
     android:baselineAligned="false">
-<!--    <ImageView-->
-<!--        style="@style/logoView"-->
-<!--        android:visibility="visible"-->
-<!--        android:id="@+id/iconStockItem" -->
-<!--        android:src="@drawable/px_logo" -->
-<!--        android:maxHeight="8dip" -->
-<!--        android:layout_gravity="left"/>-->
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="fill_parent"
@@ -63,7 +56,6 @@
         	android:textColor="@color/money_item_text"/>
 	    <TextView android:id="@+id/change"
 			style="@style/moneyText"
-			android:textSize="14sp"
 	        android:layout_weight="1"
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
