@@ -1,0 +1,84 @@
+<!--
+  StockAnalyze for Android
+      Copyright (C)  2011 Tomas Vondracek.
+  
+      This program is free software: you can redistribute it and/or modify
+      it under the terms of the GNU General Public License as published by
+      the Free Software Foundation, either version 3 of the License, or
+      (at your option) any later version.
+  
+      This program is distributed in the hope that it will be useful,
+      but WITHOUT ANY WARRANTY; without even the implied warranty of
+      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+      GNU General Public License for more details.
+  
+      You should have received a copy of the GNU General Public License
+      along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:padding="6dip"
+    android:gravity="center"
+    android:orientation="horizontal" 
+    android:baselineAligned="false">
+    
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_marginLeft="6dp"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.2">
+        <TextView android:id="@+id/portfolioStockName"
+            style="@style/text"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+            android:singleLine="true" />
+        <TextView
+            android:id="@+id/portfolioStockTicker"
+            style="@style/text"
+            android:layout_marginLeft="6dp"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content" />
+    </LinearLayout>
+    <RelativeLayout android:id="@+id/portfolioValueLayout"
+		style="@style/priceInfoBlock"
+		android:padding="6dp"
+		android:layout_weight="1" >
+		<TextView
+			style="@style/moneyText"
+        	android:id="@+id/portfolioCurrentValue"
+        	android:layout_alignParentLeft="true"
+        	android:layout_toLeftOf="@+id/portfolioValueChange"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:gravity="left"
+        	android:textColor="@color/money_item_text"/>
+	    <TextView android:id="@+id/portfolioValueChange"
+			style="@style/moneyText"
+			android:layout_alignParentRight="true"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+	        android:textColor="@color/money_item_text"/>
+	</RelativeLayout>
+	<RelativeLayout android:id="@+id/portfolioPricelayout"
+		style="@style/priceInfoBlock"
+		android:padding="6dp"
+		android:layout_weight="1.1">
+		<TextView
+			style="@style/moneyText"
+        	android:id="@+id/portfolioCurrentStockPrice"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:layout_alignParentLeft="true"
+        	android:gravity="left"
+        	android:layout_toLeftOf="@+id/portfolioCurrentStockChange"
+        	android:textColor="@color/money_item_text"/>
+	    <TextView android:id="@+id/portfolioCurrentStockChange"
+			style="@style/moneyText"
+        	android:layout_alignParentRight="true"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+	        android:textColor="@color/money_item_text"/>
+	</RelativeLayout>
+</LinearLayout>

@@ -28,6 +28,7 @@ import java.util.Map;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -79,13 +80,29 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 	private SharedPreferences prefs;
 	private Market market;
 	
+	private final Drawable drawableGreenPortfolio;
+	private final Drawable drawableRedPortfolio;
+	private final Drawable drawableBlackPortfolio;
+	
+	private final Drawable drawableGreenPrice;
+	private final Drawable drawableRedPrice;
+	private final Drawable drawableBlackPrice;
+	
 	public PortfolioListAdapter(Context context, int textViewResourceId, final DataManager dataManager, Portfolio portfolio, Market market) {
 		super(context, textViewResourceId);
 		
 		this.market = market;
 		this.portfolio = portfolio;
 		this.dataManager = dataManager;
+		
+		this.drawableGreenPrice = getContext().getResources().getDrawable(R.drawable.bg_simple_green_shape);
+		this.drawableRedPrice = getContext().getResources().getDrawable(R.drawable.bg_simple_red_shape);
+		this.drawableBlackPrice = getContext().getResources().getDrawable(R.drawable.bg_simple_dark_shape);
 
+		this.drawableGreenPortfolio = getContext().getResources().getDrawable(R.drawable.bg_simple_green_shape);
+		this.drawableRedPortfolio = getContext().getResources().getDrawable(R.drawable.bg_simple_red_shape);
+		this.drawableBlackPortfolio = getContext().getResources().getDrawable(R.drawable.bg_simple_dark_shape);
+		
 		this.setNotifyOnChange(false);
 		this.portfolioListeners = new ArrayList<IListAdapterListener<PortfolioSum>>();
 		
@@ -178,7 +195,7 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 	public View getView(int position, View convertView, ViewGroup parent) {
 		PortfolioItemViewHolder holder;
 		if (convertView == null) {
-			convertView = vi.inflate(R.layout.portfolio_list_item, null);
+			convertView = vi.inflate(R.layout.item_portfolio_list, null);
 			holder = new PortfolioItemViewHolder();
 			holder.txtTicker = (TextView) convertView.findViewById(R.id.portfolioStockTicker);
 			holder.txtName = (TextView) convertView.findViewById(R.id.portfolioStockName);
@@ -215,13 +232,16 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 			}
 		}
     	
-        if (stock == null)
+        if (stock == null) {
         	return;
-        if (holder.txtName != null) 
+        }
+        if (holder.txtName != null)  {
         	holder.txtName.setText(stock.getName());
-        if(holder.txtTicker != null)
+        }
+        if (holder.txtTicker != null) {
         	holder.txtTicker.setText(stock.getTicker());
-        if(holder.txtPrice != null && holder.txtChange != null) {
+        }
+        if (holder.txtPrice != null && holder.txtChange != null) {
         	if (data != null) {
         		holder.txtPrice.setText(String.valueOf(data.getPrice()));
 				NumberFormat percentFormat = FormattingUtils.getPercentFormat();
@@ -231,13 +251,11 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
 				
 				// set background drawable according to positive/negative price change
 				if (data.getChange() > 0 && holder.priceGroupView != null) {
-					holder.priceGroupView.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.groupbox_green_shape));
-				}
-				else if (data.getChange() < 0 && holder.priceGroupView != null) {
-					holder.priceGroupView.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.groupbox_red_shape));
-				}
-				else if (holder.priceGroupView != null) {
-					holder.priceGroupView.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.groupbox_dark_shape));
+					holder.priceGroupView.setBackgroundDrawable(this.drawableGreenPrice);
+				} else if (data.getChange() < 0 && holder.priceGroupView != null) {
+					holder.priceGroupView.setBackgroundDrawable(this.drawableRedPrice);
+				} else if (holder.priceGroupView != null) {
+					holder.priceGroupView.setBackgroundDrawable(this.drawableBlackPrice);
 				}
 			} else {
 				holder.txtPrice.setText("Fail");
@@ -255,15 +273,14 @@ public class PortfolioListAdapter extends ArrayAdapter<PortfolioItem> {
         	
         	holder.txtPortfolioValueChange.setText(String.format("%s (%s%%)", strAbsChange, strChange));
         	holder.txtPortfolioValue.setText(strCurrentValue);
+        	
         	// set background drawable according to positive/negative portfolio value change
 			if (changes[0] > 0 && holder.portfolioGroupView != null) {
-				holder.portfolioGroupView.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.groupbox_green_shape));
-			}
-			else if (changes[0] < 0 && holder.portfolioGroupView != null) {
-				holder.portfolioGroupView.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.groupbox_red_shape));
-			}
-			else if (holder.portfolioGroupView != null) {
-				holder.portfolioGroupView.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.groupbox_dark_shape));
+				holder.portfolioGroupView.setBackgroundDrawable(this.drawableGreenPortfolio);
+			} else if (changes[0] < 0 && holder.portfolioGroupView != null) {
+				holder.portfolioGroupView.setBackgroundDrawable(this.drawableRedPortfolio);
+			} else if (holder.portfolioGroupView != null) {
+				holder.portfolioGroupView.setBackgroundDrawable(this.drawableBlackPortfolio);
 			}
         }
 	}

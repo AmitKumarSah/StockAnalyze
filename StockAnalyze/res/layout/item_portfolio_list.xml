@@ -19,12 +19,15 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:padding="6dip"
-    android:orientation="horizontal" >
+    android:orientation="horizontal"
+    android:baselineAligned="true">
     <LinearLayout
         android:orientation="vertical"
-        android:layout_marginLeft="6dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:layout_weight="1.2">
         <TextView android:id="@+id/portfolioStockName"
             style="@style/text"
@@ -35,13 +38,16 @@
             android:layout_gravity="center_vertical"/>
         <TextView
             android:id="@+id/portfolioStockTicker"
-            style="@style/subText"
+            style="@style/text"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="50"
             android:layout_gravity="center"/>
     </LinearLayout>
     <LinearLayout android:id="@+id/portfolioValueLayout"
 		style="@style/priceInfoBlock"
 		android:orientation="vertical"
+    	android:padding="4dip"
 		android:layout_weight="1" >
 		<TextView
 			style="@style/moneyText"
@@ -62,6 +68,7 @@
 	<LinearLayout android:id="@+id/portfolioPricelayout"
 		style="@style/priceInfoBlock"
 		android:orientation="vertical"
+    	android:padding="4dip"
 		android:layout_weight="1.1">
 		<TextView
 			style="@style/moneyText"
