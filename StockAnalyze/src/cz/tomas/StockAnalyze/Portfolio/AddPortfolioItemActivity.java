@@ -345,7 +345,7 @@ public final class AddPortfolioItemActivity extends BaseActivity {
 		
 
 		private void addPortfolioItem(String stockId, long count, double price, String portfolioName, String marketId, double fee, boolean sell) throws SQLException {
-			Portfolio portfolio = new Portfolio(AddPortfolioItemActivity.this);
+			Portfolio portfolio = (Portfolio) AddPortfolioItemActivity.this.getApplicationContext().getSystemService(Application.PORTFOLIO_SERVICE);
 			
 			double buyPrice = 0, sellPrice = 0;
 			long buyDate = 0, sellDate = 0;

@@ -29,7 +29,7 @@
        	android:layout_height="wrap_content"
 		android:text="@string/portfolioFooterSum"
 		android:layout_gravity="left"
-		android:layout_weight="1.2" >
+		android:layout_weight="3.2" >
 	</TextView>
 	<RelativeLayout android:id="@+id/RelativeLayout01"
 		android:layout_width="fill_parent" 
@@ -52,9 +52,4 @@
 			android:layout_below="@+id/txtPortfolioFooterSumValue">
 		</TextView>
 	</RelativeLayout>
-	<View 
-	 	android:layout_width="fill_parent"
-	 	android:layout_height="0dp"
-	 	android:layout_gravity="right"
-		android:layout_weight="1.1"  />
 </LinearLayout>

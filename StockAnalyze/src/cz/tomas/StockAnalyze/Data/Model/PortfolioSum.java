@@ -31,21 +31,21 @@ import java.io.Serializable;
 @SuppressWarnings("serial")
 public class PortfolioSum implements Serializable{
 	
-	private float totalValue;
-	private float totalAbsChange;
-	private float totalPercChange;
+	private final double totalValue;
+	private final double totalAbsChange;
+	private final double totalPercChange;
 	
-	public PortfolioSum(float totalValue, float totalAbsChange,
-			float totalPercChange) {
-		this.totalValue = totalValue;
-		this.totalAbsChange = totalAbsChange;
-		this.totalPercChange = totalPercChange;
+	public PortfolioSum(double totalValueSum, double totalAbsChangeSum,
+			double totalInvestedSum) {
+		this.totalValue = totalValueSum;
+		this.totalAbsChange = totalAbsChangeSum;
+		this.totalPercChange = totalInvestedSum;
 	}
 	
 	/**
 	 * get total absolute value of all portfolio items
 	 */
-	public float getTotalValue() {
+	public double getTotalValue() {
 		return totalValue;
 	}
 	
@@ -53,14 +53,14 @@ public class PortfolioSum implements Serializable{
 	 * get total absolute value of change of your portfolio, 
 	 * that is, sum of all changes among all portfolio items.
 	 */
-	public float getTotalAbsChange() {
+	public double getTotalAbsChange() {
 		return totalAbsChange;
 	}
 	
 	/**
 	 * get total percentual change of all portfolio items
 	 */
-	public float getTotalPercChange() {
+	public double getTotalPercChange() {
 		return totalPercChange;
 	}
 	

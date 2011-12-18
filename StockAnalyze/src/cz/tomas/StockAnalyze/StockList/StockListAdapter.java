@@ -34,13 +34,13 @@ import android.widget.TextView;
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
-import cz.tomas.StockAnalyze.fragments.PortfolioListFragment;
+import cz.tomas.StockAnalyze.fragments.StockGridFragment;
 import cz.tomas.StockAnalyze.fragments.StockListFragment;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 
 /**
- * Adapter for list of stocks - used in {@link StockListFragment}, {@link PortfolioListFragment}
+ * Adapter for list of stocks - used in {@link StockListFragment} and {@link StockGridFragment}
  * 
  * @author tomas
  *
@@ -77,10 +77,12 @@ public class StockListAdapter extends BaseAdapter {
 	}
 	
 	public void setData(Map<StockItem, DayData> data) {
-		this.dataSet = data;
-		this.stocks = new StockItem[this.dataSet.size()];
-		this.stocks = this.dataSet.keySet().toArray(this.stocks);
-		this.notifyDataSetChanged();
+		if (data != null) {
+			this.dataSet = data;
+			this.stocks = new StockItem[this.dataSet.size()];
+			this.stocks = this.dataSet.keySet().toArray(this.stocks);
+			this.notifyDataSetChanged();
+		}
 	}
 	
 	public DayData getDayData(StockItem stockItem) {

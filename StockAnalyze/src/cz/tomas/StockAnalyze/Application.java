@@ -32,6 +32,7 @@ import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
 
 import cz.tomas.StockAnalyze.Data.DataManager;
+import cz.tomas.StockAnalyze.Portfolio.Portfolio;
 import cz.tomas.StockAnalyze.activity.ChartActivity;
 import cz.tomas.StockAnalyze.utils.Utils;
 import android.util.Log;
@@ -40,10 +41,13 @@ public class Application extends android.app.Application {
 
 	public static final String UPDATE_SCHEDULER_SERVICE = "cz.tomas.StockAnalyze.Data.UpdateScheduler"; 
 	public static final String DATA_MANAGER_SERVICE = "cz.tomas.StockAnalyze.Data.DataManager";
+	public static final String PORTFOLIO_SERVICE = "cz.tomas.StockAnalyze.Data.Portfolio";
 	public static final String HTTP_CLIENT_SERVICE = "httpClient";
 	
 	private UpdateScheduler scheduler;
 	private DataManager dataManager;
+	private Portfolio portfolio;
+	
 	private static DefaultHttpClient sDefaultHttpClient;
 	
 	/* (non-Javadoc)
@@ -76,11 +80,16 @@ public class Application extends android.app.Application {
 	 */
 	@Override
 	public Object getSystemService(String name) {
-		if (name.equals(UPDATE_SCHEDULER_SERVICE))
+		if (UPDATE_SCHEDULER_SERVICE.equals(name)) {
 			return this.scheduler;
-		else if (name.equals(DATA_MANAGER_SERVICE))
+		} else if (DATA_MANAGER_SERVICE.equals(name)) {
 			return this.dataManager;
-		else if (HTTP_CLIENT_SERVICE.equals(name)) {
+		} else if (PORTFOLIO_SERVICE.equals(name)) {
+			if (this.portfolio == null) {
+				this.portfolio = new Portfolio(this);
+			}
+			return portfolio;
+		} else if (HTTP_CLIENT_SERVICE.equals(name)) {
 			if (sDefaultHttpClient == null) {
 				HttpParams params = new BasicHttpParams();
 				HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);

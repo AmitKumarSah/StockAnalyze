@@ -41,10 +41,33 @@ import cz.tomas.StockAnalyze.utils.Utils;
  */
 public class Portfolio {
 
+	public interface IPortfolioListener {
+		void onPortfolioChanged();
+	}
+	
+	private List<IPortfolioListener> listeners;
+	
 	private PortfolioSqlHelper sqlHelper;
 	
 	public Portfolio(Context context) {
+		this.listeners = new ArrayList<Portfolio.IPortfolioListener>();
 		this.sqlHelper = new PortfolioSqlHelper(context);
+	}
+	
+	public void addPortfolioListener(IPortfolioListener listener) {
+		this.listeners.add(listener);
+	}
+	
+	public void removePortfolioListener(IPortfolioListener listener) {
+		this.listeners.remove(listener);
+	}
+	
+	private void fireChangeEvent() {
+		if (this.listeners != null) {
+			for (IPortfolioListener l : this.listeners) {
+				l.onPortfolioChanged();
+			}
+		}
 	}
 	
 	/**
@@ -54,6 +77,7 @@ public class Portfolio {
 		try {
 			this.sqlHelper.acquireDb(this);
 			this.sqlHelper.addPortfolioItem(item);
+			this.fireChangeEvent();
 		} finally {
 			this.sqlHelper.releaseDb(true, this);
 		}
@@ -129,6 +153,7 @@ public class Portfolio {
 	public void removeFromPortfolio(int id) {
 		if (id != -1) {
 			this.sqlHelper.removeItem(id);
+			this.fireChangeEvent();
 		}
 	}
 	
@@ -147,6 +172,7 @@ public class Portfolio {
 					this.sqlHelper.removeItem(portfolioItem.getId());
 				}
 				db.setTransactionSuccessful();
+				this.fireChangeEvent();
 			} finally {
 				try {
 					this.sqlHelper.getWritableDatabase().endTransaction();

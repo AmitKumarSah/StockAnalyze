@@ -3,12 +3,11 @@ package cz.tomas.StockAnalyze.fragments;
 import java.text.NumberFormat;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.ListFragment;
+import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -25,10 +24,8 @@ import android.widget.TextView;
 
 import com.flurry.android.FlurryAgent;
 
+import cz.tomas.StockAnalyze.Application;
 import cz.tomas.StockAnalyze.R;
-import cz.tomas.StockAnalyze.Data.DataManager;
-import cz.tomas.StockAnalyze.Data.Interfaces.IListAdapterListener;
-import cz.tomas.StockAnalyze.Data.Interfaces.IUpdateDateChangedListener;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.PortfolioItem;
@@ -36,6 +33,8 @@ import cz.tomas.StockAnalyze.Data.Model.PortfolioSum;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.Portfolio.Portfolio;
 import cz.tomas.StockAnalyze.Portfolio.PortfolioListAdapter;
+import cz.tomas.StockAnalyze.Portfolio.PortfolioListData;
+import cz.tomas.StockAnalyze.Portfolio.PortfolioLoader;
 import cz.tomas.StockAnalyze.activity.PortfolioDetailActivity;
 import cz.tomas.StockAnalyze.activity.PortfoliosActivity;
 import cz.tomas.StockAnalyze.utils.Consts;
@@ -43,21 +42,18 @@ import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 
-public final class PortfolioListFragment extends ListFragment implements OnSharedPreferenceChangeListener {
+public final class PortfolioListFragment extends ListFragment implements LoaderCallbacks<PortfolioListData> {
 	
 	public static final String EXTRA_REFRESH = "portfolioRefresh";
 	
-	private DataManager dataManager;
-	private Portfolio portfolio;
 	private PortfolioListAdapter adapter;
+
+	private Portfolio portfolio;
 	
 	private Market market;
 	
 	private View headerView;
 	private View footerView;
-	private static boolean isDirty;
-	
-	private SharedPreferences prefs;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -65,9 +61,6 @@ public final class PortfolioListFragment extends ListFragment implements OnShare
 		super.onCreate(savedInstanceState);
 	}
 
-	/* (non-Javadoc)
-	 * @see android.support.v4.app.ListFragment#onCreateView(android.view.LayoutInflater, android.view.ViewGroup, android.os.Bundle)
-	 */
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -78,19 +71,14 @@ public final class PortfolioListFragment extends ListFragment implements OnShare
 		return view;
 	}
 
-	/* (non-Javadoc)
-	 * @see android.support.v4.app.Fragment#onActivityCreated(android.os.Bundle)
-	 */
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		
+		this.portfolio = (Portfolio) getActivity().getApplicationContext().getSystemService(Application.PORTFOLIO_SERVICE);
+		
 		this.getListView().setTextFilterEnabled(true);
 		this.registerForContextMenu(this.getListView());
-		
-		this.dataManager = DataManager.getInstance(getActivity());
-		
-		FragmentActivity activity = this.getActivity();
 
 		this.setEmptyText(getText(R.string.loading));
 		this.getListView().addHeaderView(headerView, null, false);
@@ -104,91 +92,15 @@ public final class PortfolioListFragment extends ListFragment implements OnShare
 				goToPortfolioDetail(portfolioItem);
 			}
 		});
-
-		if (portfolio == null) {
-			portfolio = new Portfolio(activity);
-		}
 		
-		this.prefs = activity.getSharedPreferences(Utils.PREF_NAME, 0);
-		this.prefs.registerOnSharedPreferenceChangeListener(this);
 		this.market = (Market) this.getArguments().get(StockListFragment.ARG_MARKET);
 
 		this.getListView().setTag(market.getCurrencyCode());
-		this.fill();
+		this.adapter = new PortfolioListAdapter(this.getActivity());
+		this.setListAdapter(this.adapter);
+		this.getLoaderManager().initLoader(0, null, this);
 	}
 
-	/** 
-	 * check if it is necessary to update the adapter and listview
-	 * @see android.app.Activity#onResume()
-	 */
-	@Override
-	public void onResume() {
-		super.onResume();
-
-		// in case of resuming when adapter is initialized but not set to list view
-		if (this.getListAdapter() == null) {
-			this.setListAdapter(adapter);
-		}
-
-		isDirty |= getActivity().getIntent().getBooleanExtra(EXTRA_REFRESH, false);
-		if (isDirty) {
-			adapter.refresh();
-			isDirty = false;
-		}
-		this.dataManager.addUpdateChangedListener(listener);
-	}
-	
-	@Override
-	public void onPause() {
-		super.onPause();
-		this.dataManager.removeUpdateChangedListener(listener);
-	}
-
-	/* (non-Javadoc)
-	 * @see android.app.Activity#onDestroy()
-	 */
-	@Override
-	public void onDestroy() {
-		prefs.unregisterOnSharedPreferenceChangeListener(this);
-		super.onDestroy();
-	}
-	
-	private void fill() {
-		if (adapter == null) {
-			adapter = new PortfolioListAdapter(this.getActivity(), 0, this.dataManager, this.portfolio, this.market);
-			adapter.addPortfolioListener(new IListAdapterListener<PortfolioSum>() {
-
-				@Override
-				public void onListLoading() {
-				}
-
-				@Override
-				public void onListLoaded(PortfolioSum portfolioSummary) {
-					if (isAdded()) {
-						Log.d(Utils.LOG_TAG, "Updating portfolio summary");
-						fillPortfolioSummary(portfolioSummary);
-						if (adapter.getCount() == 0) {
-							setEmptyText(getText(R.string.noPortfolioItems));
-						}
-					}
-				}
-			});
-			isDirty = false;
-		}
-		// restore portfolio summary, it should available in case of resuming
-		if (adapter.getPortfolioSummary() != null) {
-			this.fillPortfolioSummary(adapter.getPortfolioSummary());
-		}
-	}
-	
-	private IUpdateDateChangedListener listener = new IUpdateDateChangedListener() {
-		
-		@Override
-		public void OnLastUpdateDateChanged(long updateTime) {
-			Log.d(Utils.LOG_TAG, "refreshing portfolio list adapter because of datamanager update");
-			isDirty = true;
-		}
-	};
 	
 	/** 
 	 * context menu for all stock items in list view
@@ -217,40 +129,27 @@ public final class PortfolioListFragment extends ListFragment implements OnShare
 		}
 		final PortfolioItem portfolioItem = (PortfolioItem) adapter.getItem(info.position - 1);
 		
-		if (portfolioItem == null)
-			return true;
+		if (portfolioItem == null) {
+			return false;
+		}
 		
 		switch (item.getItemId()) {
 			case R.id.portfolio_item_context_menu_stock_detail:
-			if (portfolioItem.getStockId() != null) {
-				new Thread(new Runnable() {
-					public void run() {
-						StockItem stock = dataManager.getStockItem(portfolioItem.getStockId(), portfolioItem.getMarketId());
-						NavUtils.goToStockDetail(stock, getActivity());
-					}
-				}).start();
-			}
+				StockItem stock = adapter.getStockItem(portfolioItem);
+				NavUtils.goToStockDetail(stock, getActivity());
 			return true;
 			case R.id.portfolio_item_context_menu_remove:
-				try {
-					removePortfolioRecord(portfolioItem);
-				} catch (Exception e) {
-					Log.e(Utils.LOG_TAG, "failed to remove portfolio item", e);
-				}
+				removePortfolioRecord(portfolioItem);
 				return true;
 			case R.id.portfolio_item_context_menu_detail:
 				goToPortfolioDetail(portfolioItem);
 				return true;
 			case R.id.portfolio_item_context_menu_add_more:
-				new Thread(new Runnable() {
-					public void run() {
-						StockItem stock = dataManager.getStockItem(portfolioItem.getStockId(), portfolioItem.getMarketId());
-						DayData data = adapter.getData(portfolioItem);
-						
-						NavUtils.goToAddToPortfolio(getActivity(), stock,data);
-					}
-				}).start();
-			return true;
+				StockItem stockItem = adapter.getStockItem(portfolioItem);
+				DayData data = adapter.getData(portfolioItem);
+				
+				NavUtils.goToAddToPortfolio(getActivity(), stockItem, data);
+				return true;
 			default:
 				return super.onContextItemSelected(item);
 		}
@@ -263,7 +162,7 @@ public final class PortfolioListFragment extends ListFragment implements OnShare
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 	    case R.id.menu_refresh:
-	    	this.adapter.refresh();
+	    	this.getLoaderManager().initLoader(0, null, this);
 	        break;
 		}
 		return super.onOptionsItemSelected(item);
@@ -306,7 +205,6 @@ public final class PortfolioListFragment extends ListFragment implements OnShare
 			}
 			@Override
 			protected void onPostExecute(Void result) {
-				adapter.refresh();
 				getActivity().dismissDialog(PortfoliosActivity.DIALOG_PROGRESS);
 				super.onPostExecute(result);
 			}
@@ -327,23 +225,32 @@ public final class PortfolioListFragment extends ListFragment implements OnShare
 		TextView txtChangeSum = (TextView)getListView().findViewById(R.id.txtPortfolioFooterSumChange);
 		
 		NumberFormat percentFormat = FormattingUtils.getPercentFormat();
+		NumberFormat currencyFormat = FormattingUtils.getPriceFormat(this.market.getCurrency());
     	String strAbsChange = percentFormat.format(portfolioSummary.getTotalAbsChange());
     	String strChange = percentFormat.format(portfolioSummary.getTotalPercChange());
-    	String totalValue = percentFormat.format(portfolioSummary.getTotalValue());
+    	String totalValue = currencyFormat.format(portfolioSummary.getTotalValue());
     	
-    	if (txtValueSum != null)
+    	if (txtValueSum != null) {
     		txtValueSum.setText(totalValue);
-    	if (txtChangeSum != null)
+    	}
+    	if (txtChangeSum != null) {
     		txtChangeSum.setText(String.format("%s (%s%%)", strAbsChange, strChange));
+    	}
 	}
 
 	@Override
-	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
-			String key) {
-		if (key.equals(Utils.PREF_PORTFOLIO_INCLUDE_FEE)) {
-			isDirty = true;
-			this.fill();
-		}
-		
+	public Loader<PortfolioListData> onCreateLoader(int id, Bundle args) {
+		return new PortfolioLoader(this.getActivity(), this.market);
+	}
+
+	@Override
+	public void onLoadFinished(Loader<PortfolioListData> loader,
+			PortfolioListData data) {
+		this.adapter.setData(data);
+		this.fillPortfolioSummary(data.portfolioSummary);
+	}
+
+	@Override
+	public void onLoaderReset(Loader<PortfolioListData> loader) {
 	}
 }

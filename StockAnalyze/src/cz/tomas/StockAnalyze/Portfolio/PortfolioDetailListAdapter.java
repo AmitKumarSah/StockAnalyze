@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
+import cz.tomas.StockAnalyze.Application;
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.Model.PortfolioItem;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
@@ -25,7 +26,7 @@ public class PortfolioDetailListAdapter extends BaseExpandableListAdapter {
 		if (stockItem == null)
 			throw new NullPointerException("stock item must be defined!");
 		this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		Portfolio portfolio = new Portfolio(context);
+		Portfolio portfolio = (Portfolio) context.getApplicationContext().getSystemService(Application.PORTFOLIO_SERVICE);
 		
 		this.portfolioGroups = portfolio.getPortfolioItems(stockItem.getId());
 	}
