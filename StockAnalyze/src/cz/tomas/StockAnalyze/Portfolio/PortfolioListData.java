@@ -30,5 +30,12 @@ public final class PortfolioListData {
 		this.portfolioSummary = portfolioSummary;
 	}
 
+	/**
+	 * returns true, if there aren't any portfolio items
+	 * @return
+	 */
+	public boolean isEmpty() {
+		return this.portfolioItems == null || portfolioItems.length == 0;
+	}
 	
 }

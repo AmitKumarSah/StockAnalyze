@@ -20,6 +20,11 @@ import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.Portfolio.Portfolio.IPortfolioListener;
 import cz.tomas.StockAnalyze.utils.Utils;
 
+/**
+ * loader for portfolio  items, also connected for possible sources of portfolio changes
+ * @author tomas
+ *
+ */
 public final class PortfolioLoader extends AsyncTaskLoader<PortfolioListData> implements IUpdateDateChangedListener, OnSharedPreferenceChangeListener, IPortfolioListener {
 
 	private final DataManager dataManager;

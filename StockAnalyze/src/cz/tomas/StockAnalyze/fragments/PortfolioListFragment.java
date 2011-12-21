@@ -42,6 +42,11 @@ import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 
+/**
+ * fragment holding list of portfolio items of one currency
+ * @author tomas
+ *
+ */
 public final class PortfolioListFragment extends ListFragment implements LoaderCallbacks<PortfolioListData> {
 	
 	public static final String EXTRA_REFRESH = "portfolioRefresh";
@@ -246,6 +251,11 @@ public final class PortfolioListFragment extends ListFragment implements LoaderC
 	@Override
 	public void onLoadFinished(Loader<PortfolioListData> loader,
 			PortfolioListData data) {
+		if (data == null) {
+			return;
+		} else if (data.isEmpty()) {
+			this.setEmptyText(getText(R.string.noPortfolioItems));
+		}
 		this.adapter.setData(data);
 		this.fillPortfolioSummary(data.portfolioSummary);
 	}
