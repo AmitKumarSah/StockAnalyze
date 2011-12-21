@@ -18,8 +18,8 @@
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
 	package="cz.tomas.StockAnalyze" 
-	android:versionName="0.9.6"
-	android:versionCode="00906">
+	android:versionName="0.9.7"
+	android:versionCode="00907">
 	
 	<uses-sdk android:minSdkVersion="7" android:targetSdkVersion="14"/>
 	<uses-permission android:name="android.permission.INTERNET"/>
@@ -31,7 +31,8 @@
 		android:debuggable="true" 
 		android:theme="@style/themeLight" 
 		android:allowBackup="true" 
-		android:hardwareAccelerated="true">
+		android:hardwareAccelerated="true"
+		android:backupAgent=".MyBackupAgent">
 		<activity 
 		    android:logo="@drawable/ic_app"
 		    android:label="@string/app_name" 
@@ -99,6 +100,8 @@
 <!-- 			</intent-filter> -->
 <!-- 		</receiver> -->
 		<receiver android:name=".receivers.AlarmReceiver"></receiver>
-	
+		
+		<meta-data android:name="com.google.android.backup.api_key"
+	    	android:value="AEdPqrEAAAAI5tOZR9ZhnQEr6WbFhN7YQhc9URK9cYnz7k-KdQ" />
 	</application>
 </manifest> 

@@ -20,8 +20,10 @@
  */
 package cz.tomas.StockAnalyze.activity;
 
+import android.app.backup.BackupManager;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
@@ -32,7 +34,7 @@ import cz.tomas.StockAnalyze.activity.base.BasePreferenceActivity;
 import cz.tomas.StockAnalyze.utils.Utils;
 
 /**
- * General Application Prefernces activity accessible from home page
+ * General Application Preferences activity accessible from home page
  * 
  * @author tomas
  * 
@@ -47,6 +49,7 @@ public class AppPreferencesActivity extends BasePreferenceActivity {
 		this.sharedPreferences = getSharedPreferences(Utils.PREF_NAME, MODE_PRIVATE);
 		
 		addPreferencesFromResource(R.xml.preferences);
+		
 		// Get the preferences
 		CheckBoxPreference updateNotifPref = (CheckBoxPreference) findPreference("prefUpdateNotification");
 		CheckBoxPreference permanentNotifPref = (CheckBoxPreference) findPreference("prefPermanentNotification");
@@ -109,5 +112,14 @@ public class AppPreferencesActivity extends BasePreferenceActivity {
 				return true;
 			}
 		});
+	}
+
+	@Override
+	protected void onDestroy() {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
+			BackupManager manager = new BackupManager(this);
+			manager.dataChanged();
+		}
+		super.onDestroy();
 	}
 }
