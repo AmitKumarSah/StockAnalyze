@@ -34,9 +34,8 @@ public class StockListFragment extends ListFragment implements IStockFragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
-		final Market market = (Market) getArguments().get(ARG_MARKET);
 		final StockListAdapter adapter = new StockListAdapter(getActivity(), R.layout.item_stock_list);
-		this.helper = new StockFragmentHelper(this, market, adapter);
+		this.helper = new StockFragmentHelper(this, getArguments(), adapter);
 		
 		this.setListAdapter(adapter);
 		this.setEmptyText(getString(R.string.loading));

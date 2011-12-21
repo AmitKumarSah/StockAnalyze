@@ -130,12 +130,12 @@ public class StockDataSqlStore extends DataSqlHelper {
 	 */
 	public void deleteStockItem(String stockId) {
 		try {
-			Log.d(Utils.LOG_TAG, "deleting stockItems");
+			Log.d(Utils.LOG_TAG, "deleting stockItem " + stockId);
 
 			SQLiteDatabase db = this.getWritableDatabase();
 			db.delete(STOCK_TABLE_NAME, "id=?", new String[] {stockId});
 		} catch (SQLException e) {
-			Log.e(Utils.LOG_TAG, "failed to insert data.", e);
+			Log.e(Utils.LOG_TAG, "failed to delete data.", e);
 		} finally {
 			this.close();
 		}
@@ -147,12 +147,12 @@ public class StockDataSqlStore extends DataSqlHelper {
 	 */
 	public void deleteStockItems(String marketId) {
 		try {
-			Log.d(Utils.LOG_TAG, "deleting stockItems");
+			Log.d(Utils.LOG_TAG, "deleting stockItems " + marketId);
 
 			SQLiteDatabase db = this.getWritableDatabase();
 			db.delete(STOCK_TABLE_NAME, "market_id=?", new String[] {marketId});
 		} catch (SQLException e) {
-			Log.e(Utils.LOG_TAG, "failed to insert data.", e);
+			Log.e(Utils.LOG_TAG, "failed to delete data.", e);
 		} finally {
 			this.close();
 		}
@@ -168,7 +168,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 				updateStockItem(item);
 				return;
 			}
-			Log.d(Utils.LOG_TAG, "inserting stockItem " + item.toString());
+			if (Utils.DEBUG) Log.d(Utils.LOG_TAG, "inserting stockItem " + item.toString());
 			SQLiteDatabase db = this.getWritableDatabase();
 			ContentValues values = new ContentValues();
 			values.put("_id", item.getId());
@@ -194,7 +194,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 	 */
 	private void updateStockItem(StockItem item) {
 		try {
-			Log.d(Utils.LOG_TAG, "updating stockItem " + item.toString());
+			if (Utils.DEBUG) Log.d(Utils.LOG_TAG, "updating stockItem " + item.toString());
 			SQLiteDatabase db = this.getWritableDatabase();
 			ContentValues values = new ContentValues();
 			values.put("ticker", item.getTicker());
@@ -243,7 +243,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 	
 	public void insertDayData(StockItem item, DayData newdata) {
 
-		Log.d(Utils.LOG_TAG, "inserting day data for " + item.getTicker() + " to db (" + newdata.getDate().toString() + ")");
+		if (Utils.DEBUG) Log.d(Utils.LOG_TAG, "inserting day data for " + item.getTicker() + " to db (" + newdata.getDate().toString() + ")");
 		if (! this.checkForStock(item))
 			this.insertStockItem(item);
 		
@@ -274,7 +274,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 			SQLiteDatabase db = this.getWritableDatabase();
 			ContentValues values = new ContentValues();
 
-			Log.d(Utils.LOG_TAG, "updating day data for " + currentData.toString() + " to db");
+			if (Utils.DEBUG) Log.d(Utils.LOG_TAG, "updating day data for " + currentData.toString() + " to db");
 			values.put("date" ,Utils.createDateOnlyCalendar(newData.getDate()).getTimeInMillis());
 			values.put("last_update", newData.getLastUpdate());
 			values.put("price", newData.getPrice());
@@ -288,10 +288,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 			
 			db.update(DAY_DATA_TABLE_NAME, values,"_id=?", new String[] { String.valueOf(currentData.getId()) });
 		} catch (Exception e) {
-			String message =  "Failed to UPDATE stock item.";
-			if (e.getMessage() != null)
-				 message += e.getMessage();
-			Log.e(Utils.LOG_TAG, message, e);
+			Log.e(Utils.LOG_TAG, "Failed to UPDATE stock item.", e);
 		} finally {
 			this.close();
 		}
@@ -423,8 +420,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 					c.close();
 			}
 		} catch (SQLException e) {
-			Log.d(Utils.LOG_TAG, "failed to get data." + e.getMessage());
-			e.printStackTrace();
+			Log.e(Utils.LOG_TAG, "failed to get data.", e);
 		} finally {
 			this.close();
 		}

@@ -156,22 +156,17 @@ public class DownloadService {
 	public InputStream openHttpConnection(String urlString, boolean compress) throws IOException {
 		InputStream in = null;
 
-		try {
-			InputStream stream = this.openHttpConnection(urlString);
-			if (compress) {
-				try {
-					InputStream gzipInput = new GZIPInputStream(stream);
-					in = gzipInput;
-				} catch (IOException e) {
-					Log.d(Utils.LOG_TAG, "DownloadService: Failed to create GZIP stream for " + urlString + ", using default one");
-					in = stream;
-				}
-			}
-			else
+		InputStream stream = this.openHttpConnection(urlString);
+		if (compress) {
+			try {
+				InputStream gzipInput = new GZIPInputStream(stream);
+				in = gzipInput;
+			} catch (IOException e) {
+				Log.d(Utils.LOG_TAG, "DownloadService: Failed to create GZIP stream for " + urlString + ", using default one");
 				in = stream;
-		
-		} catch (Exception ex) {
-			throw new IOException("Error connecting: " + ex.getMessage(), ex);
+			}
+		} else {
+			in = stream;
 		}
 		return in;
 	}

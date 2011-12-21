@@ -36,6 +36,7 @@ import android.net.NetworkInfo;
 public class Utils {
 	
 	public static final String LOG_TAG = "StockAnalyze";
+	public static final boolean DEBUG = true;
 	public static final String PREF_NAME = "StockAnalyzePreferences";
 	public static final String PREF_UPDATE_NOTIF = "prefUpdateNotif";
 	public static final String PREF_PERMANENT_NOTIF = "prefPermanentNotif";

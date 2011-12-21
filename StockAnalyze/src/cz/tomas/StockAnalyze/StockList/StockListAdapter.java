@@ -153,9 +153,7 @@ public class StockListAdapter extends BaseAdapter {
 				data = dataSet.get(stock);
 			} catch (Exception e) {
 				holder.txtPrice.setText("Fail");
-				if (e.getMessage() != null) {
-					Log.d(Utils.LOG_TAG, e.getMessage(), e);
-				}
+				Log.e(Utils.LOG_TAG, "failed to get daydata for " + stock, e);
 			}
         	if (data != null) {
         		holder.txtPrice.setText(String.valueOf(data.getPrice()));
@@ -173,7 +171,11 @@ public class StockListAdapter extends BaseAdapter {
 					holder.priceGroupView.setBackgroundDrawable(this.drawableBlack);
 				}
 			} else {
-				holder.txtPrice.setText(R.string.InvalidData);
+				Log.w(Utils.LOG_TAG, "there are no day data for " + stock);
+				if (holder.txtPrice != null && holder.priceGroupView != null) {
+					holder.txtPrice.setText(R.string.InvalidData);
+					holder.priceGroupView.setBackgroundDrawable(this.drawableBlack);
+				}
 			}
         }
 	}

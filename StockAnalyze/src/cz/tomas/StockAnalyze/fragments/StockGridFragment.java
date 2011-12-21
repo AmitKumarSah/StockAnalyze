@@ -12,7 +12,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
 import cz.tomas.StockAnalyze.R;
-import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.StockList.StockListAdapter;
 import cz.tomas.StockAnalyze.fragments.StockFragmentHelper.IStockFragment;
@@ -20,6 +19,7 @@ import cz.tomas.StockAnalyze.utils.NavUtils;
 
 public final class StockGridFragment extends Fragment implements IStockFragment {
 	
+	public static final String ARG_INLCUDE_INDECES = "includeIndeces";
 	public static String ARG_MARKET = "market";
 
 	private StockFragmentHelper helper;
@@ -45,9 +45,8 @@ public final class StockGridFragment extends Fragment implements IStockFragment 
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		
-		final Market market = (Market) getArguments().get(ARG_MARKET);
 		final StockListAdapter adapter = new StockListAdapter(getActivity(), R.layout.item_stock_grid);
-		this.helper = new StockFragmentHelper(this, market, adapter);
+		this.helper = new StockFragmentHelper(this, getArguments(), adapter);
 		
 		this.registerForContextMenu(this.grid);
 		this.grid.setAdapter(adapter);

@@ -37,12 +37,15 @@ final class StockFragmentHelper implements LoaderCallbacks<Map<StockItem, DayDat
 	
 	private final IStockFragment fragment;
 	private final Market market;
+	private final boolean includeIndeces;
 	private final StockListAdapter adapter;
 	
-	StockFragmentHelper(IStockFragment fragment, Market market, StockListAdapter adapter) {
+	StockFragmentHelper(IStockFragment fragment, Bundle bundle, StockListAdapter adapter) {
 		this.fragment = fragment;
-		this.market = market;
 		this.adapter = adapter;
+
+		this.includeIndeces = bundle.getBoolean(StockGridFragment.ARG_INLCUDE_INDECES);
+		this.market = (Market) bundle.get(StockGridFragment.ARG_MARKET);
 	}
 	
 	boolean onContextItemSelected(MenuItem item) {
@@ -81,7 +84,7 @@ final class StockFragmentHelper implements LoaderCallbacks<Map<StockItem, DayDat
 	
 	@Override
 	public Loader<Map<StockItem, DayData>> onCreateLoader(int id, Bundle args) {
-		return new StocksLoader(this.fragment.getActivity(), this.market, false);
+		return new StocksLoader(this.fragment.getActivity(), this.market, this.includeIndeces);
 	}
 
 	@Override

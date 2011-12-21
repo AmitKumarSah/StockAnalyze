@@ -42,7 +42,8 @@ public final class IndecesListActivity extends BaseFragmentActivity {
 		} else {
 			fragment = new StockGridFragment();
 			Bundle args = new Bundle();
-			args.putSerializable(StockGridFragment.ARG_MARKET, Markets.GLOBAL);
+			//args.putSerializable(StockGridFragment.ARG_MARKET, Markets.GLOBAL);
+			args.putBoolean(StockGridFragment.ARG_INLCUDE_INDECES, true);
 			fragment.setArguments(args);
 			tran.add(container.getId(), fragment, FRAGMENT_TAG);
 		}

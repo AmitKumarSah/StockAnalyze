@@ -175,7 +175,7 @@ public class DataManager implements IStockDataListener {
 	/**
 	 * get all stock items from database for given Market,
 	 * if stock items weren't found, would try to download them
-	 * @returns map stock id vs StockItem,
+	 * @returns map stock id vs StockItem, ordered by stock ticker
 	 */
 	public synchronized Map<String, StockItem> getStockItems(Market market, boolean includeIndeces) {
 		final boolean isStockListDirty = isStockListDirty();
