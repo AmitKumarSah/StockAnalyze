@@ -43,7 +43,15 @@ public final class StocksLoader extends AsyncTaskLoader<Map<StockItem, DayData>>
 	@Override
 	public void deliverResult(Map<StockItem, DayData> data) {
 		this.cachedData = data;
-		super.deliverResult(data);
+		if (this.isStarted()) {
+			super.deliverResult(data);
+		}
+	}
+
+	@Override
+	public void onCanceled(Map<StockItem, DayData> data) {
+		// TODO Auto-generated method stub
+		super.onCanceled(data);
 	}
 
 	@Override
@@ -115,7 +123,14 @@ public final class StocksLoader extends AsyncTaskLoader<Map<StockItem, DayData>>
 	protected void onStopLoading() {
 		super.onStopLoading();
 		this.cancelLoad();
+	}
+
+	@Override
+	protected void onReset() {
+		super.onReset();
 		this.cachedData = null;
+
+        onStopLoading();
 	}
 
 	@Override
@@ -133,8 +148,10 @@ public final class StocksLoader extends AsyncTaskLoader<Map<StockItem, DayData>>
 	@Override
 	public void OnStockDataUpdated(IStockDataProvider sender,
 			Map<String, DayData> dataMap) {
-		this.cachedData = null;
-		this.startLoading();
+		if (! this.isAbandoned()) {
+			this.cachedData = null;
+			this.startLoading();
+		}
 	}
 
 	@Override

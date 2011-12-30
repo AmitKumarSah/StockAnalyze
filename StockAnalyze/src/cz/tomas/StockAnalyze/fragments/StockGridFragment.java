@@ -2,6 +2,7 @@ package cz.tomas.StockAnalyze.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -16,6 +17,7 @@ import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.StockList.StockListAdapter;
 import cz.tomas.StockAnalyze.fragments.StockFragmentHelper.IStockFragment;
 import cz.tomas.StockAnalyze.utils.NavUtils;
+import cz.tomas.StockAnalyze.utils.Utils;
 
 public final class StockGridFragment extends Fragment implements IStockFragment {
 	
@@ -29,7 +31,7 @@ public final class StockGridFragment extends Fragment implements IStockFragment 
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		this.setRetainInstance(true);
+		//this.setRetainInstance(true);
 		super.onCreate(savedInstanceState);
 	}
 
@@ -58,6 +60,7 @@ public final class StockGridFragment extends Fragment implements IStockFragment 
 				NavUtils.goToStockDetail(stock, adapter.getDayData(stock), getActivity());
 			}
 		});
+		LoaderManager.enableDebugLogging(Utils.DEBUG);
 		getLoaderManager().initLoader(0, null, this.helper);
 		this.progress.setVisibility(View.VISIBLE);
 	}

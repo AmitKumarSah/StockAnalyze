@@ -24,6 +24,7 @@ import cz.tomas.StockAnalyze.charts.R;
 import cz.tomas.StockAnalyze.charts.Utils;
 import cz.tomas.StockAnalyze.charts.interfaces.IChartTextFormatter;
 import android.content.Context;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -51,6 +52,9 @@ public class CompositeChartView extends RelativeLayout {
 		this.chart = (ChartView) this.findViewById(R.id.chart);
 		this.progressBar = this.findViewById(R.id.chartProgressBar);
 		this.background = this.findViewById(R.id.chartBackground);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			this.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+		}
 	}
 	
 	

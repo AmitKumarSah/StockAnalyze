@@ -37,7 +37,6 @@
 		    android:logo="@drawable/ic_app"
 		    android:label="@string/app_name" 
 		    android:name=".activity.HomeActivity"
-		    android:hardwareAccelerated="false"
 		    android:launchMode="singleTop">
 			<intent-filter>
 				<category android:name="android.intent.category.LAUNCHER" />
@@ -57,10 +56,8 @@
 		    android:excludeFromRecents="true" />
 		<activity android:name=".activity.StockDetailActivity"
 		    android:logo="@drawable/ic_up_list"
-		    android:hardwareAccelerated="false"  
 		    android:label="@string/activityStockDetail"/>
 		<activity android:name=".activity.StockChartActivity"
-		    android:hardwareAccelerated="false"
 		    android:logo="@drawable/ic_app"
 			android:theme="@style/themeLightTitle"
 			android:screenOrientation="landscape"
@@ -70,8 +67,7 @@
 		    android:logo="@drawable/ic_up_portfolio"
 		    android:launchMode="singleTop" 
 		    android:label="@string/homeMyPortfolio"/>
-		<activity android:name=".activity.PortfolioDetailActivity" 
-		    android:hardwareAccelerated="false"
+		<activity android:name=".activity.PortfolioDetailActivity"
 		    android:logo="@drawable/ic_up_portfolio"
 		    android:label="@string/activityPortfolioDetail"/>
 		<activity android:name=".Portfolio.AddPortfolioItemActivity"

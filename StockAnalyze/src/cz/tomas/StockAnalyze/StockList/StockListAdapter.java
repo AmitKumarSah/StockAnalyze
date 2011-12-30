@@ -77,12 +77,14 @@ public class StockListAdapter extends BaseAdapter {
 	}
 	
 	public void setData(Map<StockItem, DayData> data) {
+		this.dataSet = data;
 		if (data != null) {
-			this.dataSet = data;
 			this.stocks = new StockItem[this.dataSet.size()];
 			this.stocks = this.dataSet.keySet().toArray(this.stocks);
-			this.notifyDataSetChanged();
+		} else {
+			this.stocks = null;
 		}
+		this.notifyDataSetChanged();
 	}
 	
 	public DayData getDayData(StockItem stockItem) {

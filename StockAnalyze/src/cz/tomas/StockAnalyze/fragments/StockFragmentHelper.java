@@ -97,5 +97,8 @@ final class StockFragmentHelper implements LoaderCallbacks<Map<StockItem, DayDat
 
 	@Override
 	public void onLoaderReset(Loader<Map<StockItem, DayData>> loader) {
+		if (adapter != null) {
+			adapter.setData(null);
+		}
 	}
 }
