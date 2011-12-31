@@ -16,11 +16,25 @@
       You should have received a copy of the GNU General Public License
       along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-<menu
-  xmlns:android="http://schemas.android.com/apk/res/android">
-<item android:title="@string/PortfolioContextViewDetail" android:id="@+id/portfolio_item_context_menu_detail"></item>
-<item android:id="@+id/portfolio_item_context_menu_stock_detail" android:title="@string/portfolioContextMenuStockDetail"></item>
-<item android:id="@+id/portfolio_item_context_menu_remove" android:title="@string/portfolioContextMenuRemove"></item>
-<item android:id="@+id/portfolio_item_context_menu_add_more" android:title="@string/portfolioContextMenuAddMore"></item>
-<!-- <item android:enabled="true" android:id="@+id/portfolio_item_context_menu_subtract" android:title="@string/portfolioContextMenuSubtract"></item> -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+	<item
+		android:id="@+id/portfolio_item_context_menu_detail"
+		android:visible="false"
+		android:title="@string/PortfolioContextViewDetail">
+	</item>
+	<item
+		android:id="@+id/portfolio_item_context_menu_stock_detail"
+		android:title="@string/portfolioContextMenuStockDetail">
+	</item>
+	<item
+		android:id="@+id/portfolio_item_context_menu_remove"
+		android:title="@string/portfolioContextMenuRemove">
+	</item>
+	<item
+		android:id="@+id/portfolio_item_context_menu_add_more"
+		android:title="@string/portfolioContextMenuAddMore">
+	</item>
+	<!-- <item android:enabled="true" android:id="@+id/portfolio_item_context_menu_subtract" android:title="@string/portfolioContextMenuSubtract"></item> -->
+
 </menu>

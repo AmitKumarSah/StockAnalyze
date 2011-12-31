@@ -27,7 +27,6 @@ import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -154,7 +153,7 @@ public final class StockDetailActivity extends ChartActivity {
 			String time = FormattingUtils.formatStockDate(cal);
 			time += " " + cal.getTimeZone().getDisplayName(true, TimeZone.SHORT);
 			
-			txtHeader.setText(String.format("%s - %s", time, /*stockItem.getTicker(), */stockItem.getId()));
+			txtHeader.setText(String.format("%s - %s", time, stockItem.getTicker() /*, stockItem.getId() */));
 			txtHeader.setSelected(true);
 		}
 		if (txtVolume != null) {
@@ -177,9 +176,9 @@ public final class StockDetailActivity extends ChartActivity {
 			txtChange.setText(String.format("%s (%s%%)", strAbsChange, strChange));
 			
 			if (this.dayData.getChange() > 0f) {
-				txtChange.setTextColor(Color.GREEN);
+				txtChange.setTextColor(getResources().getColor(R.color.money_item_green));
 			} else if (this.dayData.getChange() < 0f) {
-				txtChange.setTextColor(Color.RED);
+				txtChange.setTextColor(getResources().getColor(R.color.money_item_red));
 			}
 		}
 	}

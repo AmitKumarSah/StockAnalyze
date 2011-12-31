@@ -44,7 +44,7 @@
 	<string name="NoStockSelected">Nejsou vybrány žádné akcie.Prosím označte nebo přidejte jednu.</string>
 	<string name="FailedGetNews">"Chyba při stahování zpráv"</string>
 	<string name="NoNews">"Nejsou zde žádné nové zprávy."</string>
-	<string name="InvalidData">Neplatná data</string>
+	<string name="InvalidData">Nejsou data</string>
 	<string name="Statistics">Statistiky</string>
 	<string name="pieces">ks</string>
 	<string name="share">Sdílet</string>

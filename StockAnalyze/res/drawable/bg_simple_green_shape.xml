@@ -19,7 +19,7 @@
 <shape
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
-    <solid android:color="@color/money_item_green_center"/>
+    <solid android:color="@color/money_item_green"/>
     <stroke
         android:width="0.5dip"
         android:color="#909090"/>

@@ -93,8 +93,8 @@ public final class PortfolioListFragment extends ListFragment implements LoaderC
 			@Override
 			public void onItemClick(AdapterView<?> adapterView, View view, int position,
 					long id) {
-				final PortfolioItem portfolioItem = (PortfolioItem) getListAdapter().getItem(position -1);
-				goToPortfolioDetail(portfolioItem);
+//				final PortfolioItem portfolioItem = (PortfolioItem) getListAdapter().getItem(position -1);
+//				goToPortfolioDetail(portfolioItem);
 			}
 		});
 		

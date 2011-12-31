@@ -47,7 +47,7 @@
 	<string name="NoStockSelected">There is no stock selected. Please select one or add new one.</string>
 	<string name="FailedGetNews">"Failed to get news."</string>
 	<string name="NoNews">"There are no updated news."</string>
-	<string name="InvalidData">Invalid data</string>
+	<string name="InvalidData">No data</string>
 	<string name="Statistics">Statistics</string>
 	<string name="pieces">pcs</string>
 	<string name="share">Sdílet</string>
