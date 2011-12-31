@@ -31,7 +31,7 @@
     <style name="ActionBar" parent="android:style/Widget.Holo.Light.ActionBar">
         <item name="android:background">#eee</item>
         <item name="android:titleTextStyle">@style/ActionBarTitle</item>
-        <item name="android:icon">@drawable/ic_action_home</item>
+        <item name="android:icon">@drawable/ic_app</item>
     </style>
 
     <style name="ActionBarTitle">
