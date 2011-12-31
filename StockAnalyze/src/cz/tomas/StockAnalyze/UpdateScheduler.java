@@ -132,8 +132,9 @@ public class UpdateScheduler {
 	 */
 	public void scheduleNextIntraDayUpdate() {
 		boolean enabled = this.preferences.getBoolean(Utils.PREF_ENABLE_BACKGROUND_UPDATE, Utils.PREF_DEF_ENABLE_BACKGROUND_UPDATE);
-		if (enabled)
+		if (enabled) {
 			this.scheduleAlarm(true);
+		}
 	}
 	
 	/**
@@ -239,8 +240,9 @@ public class UpdateScheduler {
 			pendingIntent = intraUpdateIntent;
 		} else {
 			// set it for tomorrow evening
-			if (cal.get(Calendar.HOUR_OF_DAY) >= DAY_UPDATE_HOUR)
+			if (cal.get(Calendar.HOUR_OF_DAY) >= DAY_UPDATE_HOUR) {
 				cal.add(Calendar.HOUR_OF_DAY, 24);
+			}
 			cal.set(Calendar.HOUR_OF_DAY, DAY_UPDATE_HOUR);
 			cal.set(Calendar.MINUTE,1);
 			pendingIntent = dayUpdateIntent;

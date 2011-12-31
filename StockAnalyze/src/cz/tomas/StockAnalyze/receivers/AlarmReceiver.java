@@ -37,10 +37,11 @@ public class AlarmReceiver extends BroadcastReceiver {
 	public void onReceive(Context context, Intent intent) {
 		boolean intra = intent.getExtras().getBoolean("intraday", true);
 		UpdateScheduler scheduler = (UpdateScheduler) context.getSystemService(Application.UPDATE_SCHEDULER_SERVICE);
-		if (intra)
+		if (intra) {
 			scheduler.scheduleNextIntraDayUpdate();
-		else
+		} else {
 			scheduler.scheduleNextDayUpdate();
+		}
 		
 		try {
 			scheduler.perfromScheduledUpdate();
