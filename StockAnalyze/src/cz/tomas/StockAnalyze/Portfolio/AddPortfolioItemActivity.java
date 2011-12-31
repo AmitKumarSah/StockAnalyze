@@ -106,19 +106,18 @@ public final class AddPortfolioItemActivity extends BaseActivity {
 			
 			final Button addButton = (Button) this.findViewById(R.id.portfolioAddButton);
 			final Spinner dealSpinner = (Spinner) this.findViewById(R.id.portfolioAddSpinnerDeal);
-			if (priceView != null && data != null)
+			if (priceView != null && data != null) {
 				priceView.setText(String.valueOf(data.getPrice()));
-			else if (data == null) {
+			} else if (data == null) {
 				DayDataTask task = new DayDataTask();
 				task.execute(stockItem);
 			}
 			
-			if (marketView != null && market != null)
+			if (marketView != null && market != null) {
 				marketView.setText(market.getName());
-			if (stockItem != null) {
-				if (tickerView != null) {
-					tickerView.setText(stockItem.getTicker());
-				}
+			}
+			if (stockItem != null && tickerView != null) {
+				tickerView.setText(stockItem.getTicker());
 			}
 
 			if (feeView != null) {
@@ -179,6 +178,12 @@ public final class AddPortfolioItemActivity extends BaseActivity {
 		}
 	}
 	
+	@Override
+	protected void onNavigateUp() {
+		finish();
+	}
+
+
 	private OnFocusChangeListener focusListener = new OnFocusChangeListener() {
 		
 		@Override

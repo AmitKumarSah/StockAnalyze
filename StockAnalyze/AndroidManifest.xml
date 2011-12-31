@@ -59,7 +59,6 @@
 		    android:label="@string/activityStockDetail"/>
 		<activity android:name=".activity.StockChartActivity"
 		    android:logo="@drawable/ic_app"
-			android:theme="@style/themeLightTitle"
 			android:screenOrientation="landscape"
 			android:label="@string/activityPortfolio" />
 		<activity android:name=".activity.PortfolioActivity" android:launchMode="singleTop" />
@@ -72,7 +71,6 @@
 		    android:label="@string/activityPortfolioDetail"/>
 		<activity android:name=".Portfolio.AddPortfolioItemActivity"
 		    android:logo="@drawable/ic_app"
-			android:theme="@style/themeLightTitle"
 			android:label="@string/AddPortfolioItemActivityTitle"></activity>
 		<activity android:name=".activity.NewsActivity"
 		    android:logo="@drawable/ic_up_rss"
@@ -87,8 +85,7 @@
 			android:theme="@style/themeLightTitle"></activity>
 		<activity android:name=".activity.AboutActivity"
 		    android:logo="@drawable/ic_app"
-			android:label="@string/appAbout"
-			android:theme="@style/themeLightTitle"></activity>
+			android:label="@string/appAbout"/>
 <!-- 		<receiver android:enabled="true" android:permission="android.permission.ACCESS_NETWORK_STATE" android:name=".receivers.NetworkBroadcastReceiver"> -->
 <!-- 			<intent-filter> -->
 <!-- 				<action android:name="android.net.conn.BACKGROUND_DATA_SETTING_CHANGED"/> -->
