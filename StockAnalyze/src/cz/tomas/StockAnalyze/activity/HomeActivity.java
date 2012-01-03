@@ -24,13 +24,11 @@ import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnKeyListener;
 import android.widget.Toast;
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.DataManager;
@@ -43,7 +41,7 @@ import cz.tomas.StockAnalyze.utils.Markets;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 
-public class HomeActivity extends ChartActivity implements OnClickListener, OnKeyListener {
+public class HomeActivity extends ChartActivity implements OnClickListener {
 	
 	private SharedPreferences pref;
 	
@@ -68,7 +66,6 @@ public class HomeActivity extends ChartActivity implements OnClickListener, OnKe
 		for (View view : blockViews) {
 			if (view != null) {
 				view.setOnClickListener(this);
-				view.setOnKeyListener(this);
 			}
 		}
 
@@ -99,7 +96,6 @@ public class HomeActivity extends ChartActivity implements OnClickListener, OnKe
 	};
 	
 	@Override
-	
 	public boolean onCreateOptionsMenu(Menu menu) {
 	    MenuInflater inflater = getMenuInflater();
 	    inflater.inflate(R.menu.app_menu, menu);
@@ -163,17 +159,6 @@ public class HomeActivity extends ChartActivity implements OnClickListener, OnKe
 	@Override
 	public void onClick(View v) {
 		startChildActivity(v);
-	}
-
-
-	@Override
-	public boolean onKey(View v, int keyCode, KeyEvent event) {
-		if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
-			startChildActivity(v);
-			return true;
-		}
-		else
-			return false;
 	}
 	
 	/**

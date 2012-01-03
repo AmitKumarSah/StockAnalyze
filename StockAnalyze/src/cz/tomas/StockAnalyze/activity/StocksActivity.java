@@ -15,10 +15,8 @@ import cz.tomas.StockAnalyze.Application;
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.UpdateScheduler;
 import cz.tomas.StockAnalyze.Data.DataManager;
-import cz.tomas.StockAnalyze.Data.Interfaces.IUpdateSchedulerListener;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.StockList.StocksPagerAdapter;
-import cz.tomas.StockAnalyze.activity.base.BaseFragmentActivity;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 
 /**
@@ -27,10 +25,9 @@ import cz.tomas.StockAnalyze.utils.NavUtils;
  * @author tomas
  *
  */
-public final class StocksActivity extends BaseFragmentActivity implements OnPageChangeListener {
+public final class StocksActivity extends AbstractStocksActivity implements OnPageChangeListener {
 	
 	private Market selectedMarket;
-	private UpdateScheduler sheduler;
 	
 	private ViewPager pager;
 	
@@ -53,8 +50,6 @@ public final class StocksActivity extends BaseFragmentActivity implements OnPage
 		TitlePageIndicator titleIndicator = (TitlePageIndicator)findViewById(R.id.pagerTitles);
 		titleIndicator.setViewPager(pager);
 		titleIndicator.setOnPageChangeListener(this);
-
-        //ViewServer.get(this).addWindow(this);
 	}
 
 	@Override
@@ -69,7 +64,7 @@ public final class StocksActivity extends BaseFragmentActivity implements OnPage
 	    // Handle item selection
 	    switch (item.getItemId()) {
 	    case R.id.menu_refresh:
-	    	updateImmediatly();
+	    	updateImmediatly(this.selectedMarket);
 	        return true;
 	    case R.id.menu_stock_list_settings:
 	    	NavUtils.goToSettings(this);
@@ -77,56 +72,6 @@ public final class StocksActivity extends BaseFragmentActivity implements OnPage
 	    default:
 	        return super.onOptionsItemSelected(item);
 	    }
-	}
-	
-	private final IUpdateSchedulerListener updateListener = new IUpdateSchedulerListener() {
-		
-		@Override
-		public void onUpdateFinished(boolean succes) {
-			getActionBarHelper().setRefreshActionItemState(false);
-		}
-		
-		@Override
-		public void onUpdateBegin(Market... markets) {
-			getActionBarHelper().setRefreshActionItemState(true);
-		}
-	};
-	
-    @Override
-	protected void onPause() {
-		super.onPause();
-		//ViewServer.get(this).removeWindow(this);
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-		//ViewServer.get(this).setFocusedWindow(this);
-	}
-	
-	@Override
-	public void onStart() {
-		super.onStart();
-		this.sheduler.addListener(this.updateListener);
-	}
-
-	@Override
-	public void onStop() {
-		super.onStop();
-		this.sheduler.removeListener(this.updateListener);
-	}
-
-	/**
-	 * call {@link UpdateScheduler} to update data
-	 */
-	protected void updateImmediatly() {
-		UpdateScheduler scheduler = 
-			(UpdateScheduler) this.getApplicationContext().getSystemService(Application.UPDATE_SCHEDULER_SERVICE);
-		if (this.selectedMarket == null) {
-			scheduler.updateImmediatly();
-		} else {
-			scheduler.updateImmediatly(this.selectedMarket);
-		}
 	}
 
 	@Override
@@ -142,9 +87,4 @@ public final class StocksActivity extends BaseFragmentActivity implements OnPage
 		Market market = ((StocksPagerAdapter) this.pager.getAdapter()).getMarketByPosition(position);
 		this.selectedMarket = market;
 	}
-	
-	@Override
-	protected void onNavigateUp() {
-		NavUtils.goUp(this, HomeActivity.class);
-	}	
 }

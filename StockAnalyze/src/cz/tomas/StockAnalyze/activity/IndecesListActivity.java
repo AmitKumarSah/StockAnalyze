@@ -11,7 +11,6 @@ import android.widget.FrameLayout;
 import cz.tomas.StockAnalyze.Application;
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.UpdateScheduler;
-import cz.tomas.StockAnalyze.activity.base.BaseFragmentActivity;
 import cz.tomas.StockAnalyze.fragments.StockGridFragment;
 import cz.tomas.StockAnalyze.utils.Markets;
 import cz.tomas.StockAnalyze.utils.NavUtils;
@@ -21,7 +20,7 @@ import cz.tomas.StockAnalyze.utils.NavUtils;
  * @author tomas
  *
  */
-public final class IndecesListActivity extends BaseFragmentActivity {
+public final class IndecesListActivity extends AbstractStocksActivity {
 	
 	private static final int CONTAINER_ID = 1000;
 	private static final String FRAGMENT_TAG = "stocklist";
@@ -48,14 +47,16 @@ public final class IndecesListActivity extends BaseFragmentActivity {
 			tran.add(container.getId(), fragment, FRAGMENT_TAG);
 		}
 		tran.commit();
+		
+		this.sheduler = (UpdateScheduler) this.getApplicationContext().getSystemService(Application.UPDATE_SCHEDULER_SERVICE);
 	}
-
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    // Handle item selection
 	    switch (item.getItemId()) {
 	    case R.id.menu_refresh:
-	    	updateImmediatly();
+	    	updateImmediatly(Markets.GLOBAL);
 	        return true;
 	    case R.id.menu_stock_list_settings:
 	    	NavUtils.goToSettings(this);
@@ -65,21 +66,10 @@ public final class IndecesListActivity extends BaseFragmentActivity {
 	    }
 	}
 	
-	protected void updateImmediatly() {
-		UpdateScheduler scheduler = 
-			(UpdateScheduler) this.getApplicationContext().getSystemService(Application.UPDATE_SCHEDULER_SERVICE);
-		scheduler.updateImmediatly(Markets.GLOBAL);
-	}
-	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 	    MenuInflater inflater = getMenuInflater();
 	    inflater.inflate(R.menu.indeces_menu, menu);
 	    return true;
-	}
-
-	@Override
-	protected void onNavigateUp() {
-		NavUtils.goUp(this, HomeActivity.class);
 	}
 }

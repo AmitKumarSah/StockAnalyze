@@ -21,7 +21,6 @@
 package cz.tomas.StockAnalyze.ui.widgets;
 
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -31,17 +30,21 @@ import android.widget.TextView;
 import cz.tomas.StockAnalyze.R;
 
 /**
+ * Clickable view with icon and text. See {@link R.styleable#HomeBlockItemAtts} for attributes.
+ * 
  * @author tomas
  *
  */
 public class HomeBlockView extends RelativeLayout {
 
+	private static final String NAMESPACE = "http://schemas.android.com/apk/res/cz.tomas.StockAnalyze";
+
 	String target;
 
 	private LayoutInflater inflater = null;
 	
-	/*
-	 * get target to invoke from this block
+	/**
+	 * get target activity class to invoke from this block
 	 */
 	public String getTarget() {
 		return target;
@@ -51,8 +54,9 @@ public class HomeBlockView extends RelativeLayout {
 	public HomeBlockView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		
-		if (this.inflater == null)
+		if (this.inflater == null) {
 			this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		}
         this.inflater.inflate(R.layout.home_block_item, this);
         
         try {
@@ -62,22 +66,19 @@ public class HomeBlockView extends RelativeLayout {
 		}
 	}
 
-	/*
+	/**
 	 * read attributes from xml layout file for this view
 	 */
 	private void init(Context context, AttributeSet attrs) {
-		TextView textView = (TextView) this.findViewById(R.id.homeBlockItemTextView);
-		ImageView image = (ImageView) this
-				.findViewById(R.id.homeBlockItemImage);
-
-		TypedArray a = getContext().obtainStyledAttributes(attrs,
-				R.styleable.HomeBlockItemAtts);
-
-		if (textView != null)
-			textView.setText(a.getResourceId(2, R.string.app_name));
-		if (image != null)
-			image.setImageResource(a.getResourceId(3, R.drawable.ic_launcher));
-		this.target = a.getString(4);
-		a.recycle();
+		final TextView textView = (TextView) this.findViewById(R.id.homeBlockItemTextView);
+		final ImageView image = (ImageView) this.findViewById(R.id.homeBlockItemImage);
+		
+		if (textView != null) {
+			textView.setText(attrs.getAttributeResourceValue(NAMESPACE, "textId", R.string.app_name));
+		}
+		if (image != null) {
+			image.setImageResource(attrs.getAttributeResourceValue(NAMESPACE, "imageId", 0));
+		}
+		this.target = attrs.getAttributeValue(NAMESPACE, "target");
 	}
 }

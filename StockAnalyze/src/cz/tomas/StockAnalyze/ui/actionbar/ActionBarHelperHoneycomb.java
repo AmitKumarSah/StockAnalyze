@@ -94,6 +94,7 @@ public class ActionBarHelperHoneycomb extends ActionBarHelper {
 
 	@Override
 	public void setLogo(int resId) {
+		// this method is available only for ics
 		//this.mActivity.getActionBar().setLogo(resId);
 	}
 
