@@ -69,7 +69,7 @@
 		<activity android:name=".activity.PortfolioDetailActivity"
 		    android:logo="@drawable/ic_up_portfolio"
 		    android:label="@string/activityPortfolioDetail"/>
-		<activity android:name=".Portfolio.AddPortfolioItemActivity"
+		<activity android:name=".activity.AddPortfolioItemActivity"
 		    android:logo="@drawable/ic_app"
 			android:label="@string/AddPortfolioItemActivityTitle"></activity>
 		<activity android:name=".activity.NewsActivity"
