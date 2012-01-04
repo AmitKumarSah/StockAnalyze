@@ -44,6 +44,7 @@ import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 
 /**
+ * activity with detail information of stock or index
  * @author tomas
  *
  */
@@ -71,8 +72,12 @@ public final class StockDetailActivity extends ChartActivity {
 		final Intent intent = this.getIntent();
 		try {
 			if (readData(intent)) {
-				final int logo = this.stockItem.isIndex() ? R.drawable.ic_up_indeces
+				final boolean index = this.stockItem.isIndex();
+				final int logo = index ? R.drawable.ic_up_indeces
 						: R.drawable.ic_up_list;
+				final int textId = index ? R.string.activityIndexDetail
+						: R.string.activityStockDetail;
+				this.setTitle(textId);
 				this.getActionBarHelper().setLogo(logo);
 				this.fill();
 			} else {

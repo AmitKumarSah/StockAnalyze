@@ -32,6 +32,7 @@
     
     <item android:id="@+id/menu_app_pick_stock"
         android:orderInCategory="2"
+        android:visible="false"
         android:showAsAction="collapseActionView"
         android:title="@string/pickStock" 
         android:icon="@drawable/ic_menu_chart"/>

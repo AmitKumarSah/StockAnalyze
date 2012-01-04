@@ -111,7 +111,7 @@ Never let go to the trades, which nature you do not fully understand. Trading an
     <string name="AppPreferencesActivityTitle">Application Preferences</string>
     
     <string-array name="prefListUpdateIntervalEntries">
-        <item>10 Minutes</item>
+        <item>15 Minutes</item>
         <item>30 Minutes</item>
         <item>1 Hour</item>
         <item>2 Hours</item>
@@ -119,7 +119,7 @@ Never let go to the trades, which nature you do not fully understand. Trading an
         <item>12 Hours</item>
     </string-array>
     <string-array name="prefListUpdateIntervalValues">
-        <item>10</item>
+        <item>15</item>
         <item>30</item>
         <item>60</item>
         <item>120</item>
@@ -135,6 +135,7 @@ Never let go to the trades, which nature you do not fully understand. Trading an
     <!-- names for activities to display in ActionBar -->
     <string name="activityStockList">Stocks</string>
     <string name="activityStockDetail">Stock Detail</string>
+    <string name="activityIndexDetail">Index Detail</string>
     <string name="activityPortfolio">Portfolio</string>
     <string name="activityPortfolioDetail">Detail</string>
     <string name="activityNews">News</string>

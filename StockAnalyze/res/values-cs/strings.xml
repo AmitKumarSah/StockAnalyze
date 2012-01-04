@@ -108,20 +108,12 @@ Nikdy se nepouštějte do obchodů, jejichž podstatě plně nerozumíte. Obchod
     <string name="AppPreferencesActivityTitle">Nastavení aplikace</string>
     
     <string-array name="prefListUpdateIntervalEntries">
-        <item>10 minut</item>
+        <item>15 minut</item>
         <item>30 minut</item>
         <item>1 hodina</item>
         <item>2 hodiny</item>
         <item>6 hodin</item>
         <item>12 hodin</item>
-    </string-array>
-    <string-array name="prefListUpdateIntervalValues">
-        <item>10</item>
-        <item>30</item>
-        <item>60</item>
-        <item>120</item>
-        <item>360</item>
-        <item>720</item>
     </string-array>
     
     <string name="prefBackgroundUpdate">Povolí aktualizace na pozadí.</string>
@@ -132,6 +124,7 @@ Nikdy se nepouštějte do obchodů, jejichž podstatě plně nerozumíte. Obchod
     <!-- names for activities to display in ActionBar -->
     <string name="activityStockList">Akcie</string>
     <string name="activityStockDetail">Detail akcie</string>
+    <string name="activityIndexDetail">Detail indexu</string>
     <string name="activityPortfolio">Portfolio</string>
     <string name="activityPortfolioDetail">Detail</string>
     <string name="activityNews">Zprávy</string>
