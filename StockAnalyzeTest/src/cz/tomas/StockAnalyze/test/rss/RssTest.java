@@ -62,7 +62,6 @@ public class RssTest extends AndroidTestCase {
 			this.mergeUrl1 = new URL(root + xmlMerge1);
 			this.mergeUrl2 = new URL(root + xmlMerge2);
 		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -83,10 +82,7 @@ public class RssTest extends AndroidTestCase {
     }
     
     @Override
-	protected void tearDown() throws Exception {
-    	if (this.rss != null)
-    		this.rss.done();
-    	
+	protected void tearDown() throws Exception {    	
 		super.tearDown();
 	}
 
@@ -176,12 +172,14 @@ public class RssTest extends AndroidTestCase {
 		this.rss.insertFeed("test_merge_feed1", this.mergeUrl1, "cz");
 		Feed feed = this.rss.getFeeds().get(0);
 		//long feedId = feed.getFeedId();
-		List<Article> articles = this.rss.fetchArticles(feed);
+		this.rss.fetchArticles(feed);
+		List<Article> articles = this.rss.getArticles(feed.getFeedId());
 		assertEquals(12, articles.size());
 		// now we have some articles in db, 
 		// change feed url to download some more articles - 15 but 12 of them is common
 		feed.setUrl(this.mergeUrl2);
-		articles = this.rss.fetchArticles(feed);
+		this.rss.fetchArticles(feed);
+		articles = this.rss.getArticles(feed.getFeedId());
 		assertEquals(12 + 3, articles.size());
 	}
 	
@@ -211,7 +209,8 @@ public class RssTest extends AndroidTestCase {
 		// create test feed from test server with 12 articles
 		this.rss.insertFeed("test_merge_feed1", this.dataUrl1, "cz");
 		Feed feed = this.rss.getFeeds().get(0);
-		List<Article> articles = this.rss.fetchArticles(feed);
+		this.rss.fetchArticles(feed);
+		List<Article> articles = this.rss.getArticles(feed.getFeedId());
 		this.checkArticlesOrder(articles);
 	}
 	
@@ -223,12 +222,14 @@ public class RssTest extends AndroidTestCase {
 		this.rss.insertFeed("test_merge_feed1", this.dataUrl1, "cz");
 		Feed feed = this.rss.getFeeds().get(0);
 		long feedId = feed.getFeedId();
-		List<Article> articles = this.rss.fetchArticles(feed);
+		this.rss.fetchArticles(feed);
+		List<Article> articles = this.rss.getArticles(feedId);
 		checkArticlesOrder(articles);
 		
 		// change feed url to download some more articles and check their order
 		feed.setUrl(this.mergeUrl1);
-		articles = this.rss.fetchArticles(feed);
+		this.rss.fetchArticles(feed);
+		articles = this.rss.getArticles(feedId);
 		checkArticlesOrder(articles);
 	}
 	

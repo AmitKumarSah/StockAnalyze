@@ -1,8 +1,11 @@
 package cz.tomas.StockAnalyze.activity;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
@@ -13,7 +16,7 @@ import android.view.View;
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.News.Article;
 import cz.tomas.StockAnalyze.News.ArticlePagerAdapter;
-import cz.tomas.StockAnalyze.News.NewsItemsTask.ITaskListener;
+import cz.tomas.StockAnalyze.News.NewsLoader;
 import cz.tomas.StockAnalyze.activity.base.BaseFragmentActivity;
 import cz.tomas.StockAnalyze.ui.widgets.CirclesView;
 import cz.tomas.StockAnalyze.utils.NavUtils;
@@ -24,7 +27,8 @@ import cz.tomas.StockAnalyze.utils.Utils;
  * @author tomas
  *
  */
-public final class NewsDetailActivity extends BaseFragmentActivity implements OnPageChangeListener {
+public final class NewsDetailActivity extends BaseFragmentActivity 
+									implements OnPageChangeListener, LoaderCallbacks<Cursor> {
 
 	public static final String STATE_CURRENT_POSITION = "cz.tomas.StockAnalyze.activity.State_current_position";
 	
@@ -33,6 +37,8 @@ public final class NewsDetailActivity extends BaseFragmentActivity implements On
 	private int currentPosition;
 	
 	private CirclesView circlesView;
+
+	private int initialPosition;
 	
 	/* (non-Javadoc)
 	 * @see android.app.Activity#onCreate(android.os.Bundle)
@@ -47,36 +53,16 @@ public final class NewsDetailActivity extends BaseFragmentActivity implements On
 		final Bundle extras = getIntent().getExtras();
 		final int initialPosition = extras != null ? extras.getInt(NewsActivity.EXTRA_NEWS_POSITION) : 0;
 		final boolean restorePosition = savedInstanceState != null && savedInstanceState.containsKey(STATE_CURRENT_POSITION);
-		final int position = (restorePosition ? savedInstanceState.getInt(STATE_CURRENT_POSITION) : initialPosition);
+		this.initialPosition = (restorePosition ? savedInstanceState.getInt(STATE_CURRENT_POSITION) : initialPosition);
 
 		this.circlesView = (CirclesView) this.findViewById(R.id.newsCirclesView);
 		this.pager = (ViewPager) this.findViewById(R.id.newsArticleViewPager);
 		
-		this.adapter = new ArticlePagerAdapter(this, getSupportFragmentManager(), new ITaskListener() {
-
-			@Override
-			public void onUpdateFinished() {
-
-				try {
-					findViewById(R.id.progressNews).setVisibility(View.GONE);
-				} catch (Exception e) {
-					Log.d(Utils.LOG_TAG, "failed to dissmis progess bar! " + e.getMessage());
-				}
-				int count = pager.getAdapter().getCount();
-				circlesView.setCircles(count);
-				pager.setCurrentItem(position);
-				// event isn't triggered if position is 0
-				if (position == 0 && count > 0) {
-					onPageSelected(position);
-				}
-			}
-
-			@Override
-			public void onUpdateStart() {
-			}
-		});
+		this.adapter = new ArticlePagerAdapter(this, getSupportFragmentManager());
 		this.pager.setAdapter(adapter);
 		this.pager.setOnPageChangeListener(this);
+		
+		this.getSupportLoaderManager().initLoader(0, null, this);
 	}	
 	
 	@Override
@@ -127,5 +113,33 @@ public final class NewsDetailActivity extends BaseFragmentActivity implements On
 	@Override
 	protected void onNavigateUp() {
 		NavUtils.goUp(this, NewsActivity.class);
+	}
+
+	@Override
+	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+		return new NewsLoader(this, NewsLoader.MODE_FULL);
+	}
+
+	@Override
+	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+		this.adapter.setData(data);
+		try {
+			findViewById(R.id.progressNews).setVisibility(View.GONE);
+		} catch (Exception e) {
+			Log.d(Utils.LOG_TAG, "failed to dissmis progess bar! " + e.getMessage());
+		}
+		
+		int count = pager.getAdapter().getCount();
+		circlesView.setCircles(count);
+		pager.setCurrentItem(initialPosition);
+		// event isn't triggered if position is 0
+		if (initialPosition == 0 && count > 0) {
+			onPageSelected(initialPosition);
+		}
+	}
+
+	@Override
+	public void onLoaderReset(Loader<Cursor> loader) {
+		this.adapter.setData(null);
 	}
 }

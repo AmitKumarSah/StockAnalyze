@@ -21,8 +21,13 @@
 package cz.tomas.StockAnalyze.activity;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -33,18 +38,21 @@ import android.widget.AdapterView.OnItemClickListener;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
+import cz.tomas.StockAnalyze.Application;
 import cz.tomas.StockAnalyze.R;
-import cz.tomas.StockAnalyze.News.NewsItemsTask.ITaskListener;
 import cz.tomas.StockAnalyze.News.NewsListAdapter;
-import cz.tomas.StockAnalyze.activity.base.BaseListActivity;
+import cz.tomas.StockAnalyze.News.NewsLoader;
+import cz.tomas.StockAnalyze.News.Rss;
+import cz.tomas.StockAnalyze.activity.base.BaseFragmentActivity;
 import cz.tomas.StockAnalyze.utils.NavUtils;
+import cz.tomas.StockAnalyze.utils.Utils;
 
 /**
  * Activity with list of titles of all articles together with description.
  * @author tomas
  *
  */
-public class NewsActivity extends BaseListActivity implements ITaskListener {
+public class NewsActivity extends BaseFragmentActivity implements LoaderCallbacks<Cursor> {
 	
 	public static final String EXTRA_NEWS_ARTICLE = "news-article";
 	public static final String EXTRA_NEWS_POSITION = "news-position";
@@ -60,14 +68,11 @@ public class NewsActivity extends BaseListActivity implements ITaskListener {
 		
 		this.setContentView(R.layout.news_layout);
 		this.listView = (PullToRefreshListView) this.findViewById(R.id.listView);
-		//this.listView = (PullToRefreshListView) this.getListView();
 		listView.setOnRefreshListener(new OnRefreshListener() {
 			
 			@Override
 			public void onRefresh() {
-				if (adapter != null) {
-					adapter.refresh();
-				}
+				refresh();
 			}
 		});
 		listView.getAdapterView().setTextFilterEnabled(true);
@@ -79,17 +84,16 @@ public class NewsActivity extends BaseListActivity implements ITaskListener {
 				startActivity(intent);
 			}
 		});
+		
+		this.adapter = new NewsListAdapter(this, null);
+		this.listView.getAdapterView().setAdapter(this.adapter);
+		this.getSupportLoaderManager().initLoader(0, null, this);
 	}
 	
 	@Override
 	protected void onResume() {
 		super.onResume();
-		
-		if (adapter == null) {
-			adapter = new NewsListAdapter(this, this);
-		}
-		
-		this.setListAdapter(adapter);
+
 		final long current = SystemClock.elapsedRealtime();
 		if (current - lastUpdateTime > UPDATE_INTERVAL) {
 			this.refresh();
@@ -120,23 +124,51 @@ public class NewsActivity extends BaseListActivity implements ITaskListener {
 	}
 
 	protected void refresh() {
-		adapter.refresh();
-	}
-	
-	@Override
-	public void onUpdateFinished() {
-		this.getActionBarHelper().setRefreshActionItemState(false);
-
-		this.listView.onRefreshComplete();
-	}
-
-	@Override
-	public void onUpdateStart() {
 		this.getActionBarHelper().setRefreshActionItemState(true);
+		NewsRefreshTask task = new NewsRefreshTask();
+		task.execute();
 	}
 	
 	@Override
 	protected void onNavigateUp() {
 		NavUtils.goUp(this, HomeActivity.class);
+	}
+
+	@Override
+	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+		return new NewsLoader(this, NewsLoader.MODE_PEREX);
+	}
+
+	@Override
+	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+		this.adapter.swapCursor(data);
+		
+		this.getActionBarHelper().setRefreshActionItemState(false);
+		this.listView.onRefreshComplete();
+	}
+
+	@Override
+	public void onLoaderReset(Loader<Cursor> loader) {
+		this.adapter.swapCursor(null);
+	}
+	
+	private class NewsRefreshTask extends AsyncTask<Void, Integer, Void> {
+
+		@Override
+		protected Void doInBackground(Void... params) {
+			Rss rss = (Rss) getApplicationContext().getSystemService(Application.RSS_SERVICE);
+			try {
+				rss.fetchArticles();
+			} catch (Exception e) {
+				Log.e(Utils.LOG_TAG, "failed to refresh news");
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+			super.onPostExecute(result);
+			//getSupportLoaderManager().restartLoader(0, null, NewsActivity.this);
+		}
 	}
 }

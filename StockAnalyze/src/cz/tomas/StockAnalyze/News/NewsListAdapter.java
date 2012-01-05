@@ -22,18 +22,13 @@ package cz.tomas.StockAnalyze.News;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.List;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.os.AsyncTask;
 import android.support.v4.widget.SimpleCursorAdapter;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 import cz.tomas.StockAnalyze.R;
-import cz.tomas.StockAnalyze.News.NewsItemsTask.ITaskListener;
 import cz.tomas.StockAnalyze.News.NewsSqlHelper.ArticleColumns;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
@@ -44,38 +39,14 @@ import cz.tomas.StockAnalyze.utils.Utils;
  */
 public class NewsListAdapter extends SimpleCursorAdapter {
 
-	//private LayoutInflater vi; 
-	private NewsItemsTask task;
-	private ITaskListener listener;
-	//private final int MAX_DESCRIPTION_LENGHT = 100;
-	private Rss rss;
-
 	private Calendar cal = new GregorianCalendar(Utils.PRAGUE_TIME_ZONE);
 	
 	/**
 	 * @param context
-	 * @param textViewResourceId
-	 * @param objects
 	 */
-	public NewsListAdapter(Context context, ITaskListener listener) {
-		super(context, R.layout.news_list_item, null, new String[] {ArticleColumns.TITLE, ArticleColumns.DATE, ArticleColumns.DESCRIPTION},
+	public NewsListAdapter(Context context, Cursor cursor) {
+		super(context, R.layout.news_list_item, cursor, new String[] {ArticleColumns.TITLE, ArticleColumns.DATE, ArticleColumns.DESCRIPTION},
 				new int[] {R.id.txtNewsItemTitle, R.id.txtNewsItemBottomInfo, R.id.txtNewsItemContentPreview }, 0);
-
-		this.listener = listener;
-		//this.vi = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		this.rss = new Rss(context);
-		CursorTask task = new CursorTask();
-		task.execute((Void)null);
-	}
-	
-	/**
-	 * fetch new data for rss feeds
-	 */
-	public void refresh() {
-		task = new NewsAdapterTask(this.rss, this.mContext);
-		task.listener = this.listener;
-		task.execute(true);
-		Log.d(Utils.LOG_TAG, "loading news data");
 	}
 	
 	@Override
@@ -93,74 +64,5 @@ public class NewsListAdapter extends SimpleCursorAdapter {
 		cal.setTimeInMillis(date);
 		String dateText = FormattingUtils.formatDate(cal);
 		txtDate.setText(dateText);
-	}
-
-
-
-	final class CursorTask extends AsyncTask<Void, Integer, Cursor> {
-
-		@Override
-		protected Cursor doInBackground(Void... params) {
-			Cursor c = rss.getAllArticlesCursor();
-			return c;
-		}
-
-		@Override
-		protected void onPostExecute(Cursor result) {
-			super.onPostExecute(result);
-			swapCursor(result);
-		}
-	}
-	
-	final class NewsAdapterTask extends NewsItemsTask {
-
-		NewsAdapterTask(Rss rss, Context context) {
-			super(rss, context);
-		}
-
-		protected void onPostExecute(List<Article> result) {
-			if (result != null) {
-				if (result.size() == 0) {
-					String message = "";
-
-					if (this.ex != null && this.ex.getMessage() != null) {
-						message = this.context.getString(R.string.FailedGetNews);
-						message += (": " + this.ex.getMessage());
-					} else {
-						message = this.context.getString(R.string.NoNews);
-					}
-					Toast.makeText(this.context, message, Toast.LENGTH_LONG).show();
-				}
-				if (result != null && result.size() > 0) {
-					final FetchContentTask task = new FetchContentTask(this.rss, result);
-					task.start();
-				}
-			}
-			if (this.listener != null) {
-				this.listener.onUpdateFinished();
-			}
-			final CursorTask task = new CursorTask();
-			task.execute((Void)null);
-		}
-	}
-	
-	private final class FetchContentTask extends Thread {
-
-		private final Rss rss;
-		private List<Article> articles;
-		
-		public FetchContentTask(Rss rss, List<Article> articles) {
-			this.rss = rss;
-			this.articles = articles;
-		}
-
-		@Override
-		public void run() {
-			if (articles == null || articles.size() != 1) {
-				return;
-			}
-			
-			this.rss.downloadContent(this.articles);
-		}
 	}
 }

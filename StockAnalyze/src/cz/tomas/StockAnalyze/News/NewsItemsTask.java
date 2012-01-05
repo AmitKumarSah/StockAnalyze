@@ -83,7 +83,6 @@ public abstract class NewsItemsTask extends AsyncTask<Boolean, Integer, List<Art
 			Log.e(Utils.LOG_TAG, "failed to read news", e);
 			this.ex = e;
 		} finally {
-			rss.done();
 			rss.sqlHelper.releaseDb(true, this);
 			this.semaphore.release();
 		}

@@ -35,8 +35,7 @@ import cz.tomas.StockAnalyze.utils.DownloadService;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
 
 /**
- * rss xml pull parser with data storing to database
- * based on http://www.ibm.com/developerworks/opensource/library/x-android/#list10
+ * rss xml pull parser 
  */
 public class XmlFeedPullParseHandler {
 	private static final String ITEM = "item";

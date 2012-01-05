@@ -53,6 +53,13 @@ public final class NewsSqlHelper extends AbstractSqlHelper {
 		public static final String CONTENT = "content";
 		public static final String FLAG = "flag";
 		public static final String READ = "read";
+		
+		static final String[] BASE_PROJECTION =  new String[] {
+				ArticleColumns.ID, ArticleColumns.FEED_ID, ArticleColumns.TITLE, ArticleColumns.DESCRIPTION, 
+				ArticleColumns.URL, ArticleColumns.DATE, /*ArticleColumns.CONTENT, */ArticleColumns.READ };
+		static final String[] FULL_PROJECTION =  new String[] {
+			ArticleColumns.ID, ArticleColumns.FEED_ID, ArticleColumns.TITLE, ArticleColumns.DESCRIPTION, 
+			ArticleColumns.URL, ArticleColumns.DATE, ArticleColumns.CONTENT, ArticleColumns.READ };
 	}
 	
 	private final static int DATABASE_VERSION_NUMBER = 2;
@@ -302,7 +309,7 @@ public final class NewsSqlHelper extends AbstractSqlHelper {
 					ArticleColumns.URL, ArticleColumns.DATE, ArticleColumns.CONTENT }, 
 					null, null, null, null, ArticleColumns.DATE + " DESC", null);
 
-			if (c.moveToFirst())
+			if (c.moveToFirst()) {
 				do {
 					Article article = new Article();
 					article.setArticleId(c.getLong(0));
@@ -314,8 +321,9 @@ public final class NewsSqlHelper extends AbstractSqlHelper {
 					article.setContent(c.getString(6));
 					articles.add(article);
 				} while (c.moveToNext());
-			else
+			} else {
 				Log.d(Utils.LOG_TAG, "no articles present");
+			}
 		} catch (Exception e) {
 			Log.e(Utils.LOG_TAG, e.toString());
 		} finally {
@@ -328,17 +336,32 @@ public final class NewsSqlHelper extends AbstractSqlHelper {
 	}
 	
 	/**
-	 * get cursor of articles that belongs to given feed
-	 * @returns cusor at first position
+	 * get cursor of all articles, but this method exclude article content
+	 * @returns cursor at first position
 	 */
 	public Cursor getAllArticlesCursor() {
+		return this.getAllArticlesCursorInternal(ArticleColumns.BASE_PROJECTION);
+	}
+	
+	/**
+	 * get cursor of all articles with full content
+	 * @returns cursor at first position
+	 */
+	public Cursor getAllFullArticlesCursor() {
+		return this.getAllArticlesCursorInternal(ArticleColumns.FULL_PROJECTION);
+	}
+	
+	/**
+	 * get cursor of articles ordered by date
+	 * @returns cursor at first position
+	 * @param projection TODO
+	 */
+	private Cursor getAllArticlesCursorInternal(String[] projection) {
 		Cursor c = null;
 		SQLiteDatabase db = null;
 		try {
 			db = this.getWritableDatabase();
-			c = db.query(ARTICLES_TABLE_NAME, new String[] {
-					ArticleColumns.ID, ArticleColumns.FEED_ID, ArticleColumns.TITLE, ArticleColumns.DESCRIPTION, 
-					ArticleColumns.URL, ArticleColumns.DATE, /*ArticleColumns.CONTENT, */ArticleColumns.READ }, 
+			c = db.query(ARTICLES_TABLE_NAME, projection, 
 					null, null, null, null, ArticleColumns.DATE + " DESC", null);
 			
 			if (!c.moveToFirst()) {

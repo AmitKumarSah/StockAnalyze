@@ -41,8 +41,14 @@ import cz.tomas.StockAnalyze.utils.Utils;
  */
 public class Rss {
 	
+	interface IFetchListener {
+		void onDataFetched();
+	}
+	
 	final XmlFeedPullParseHandler handler;
 	final NewsSqlHelper sqlHelper;
+	
+	private final List<IFetchListener> listeners;
 
 	/**
 	 * constructor, Context is required to connect to database
@@ -50,8 +56,20 @@ public class Rss {
 	public Rss(Context context) {
 		this.handler = new XmlFeedPullParseHandler(context);
 		this.sqlHelper = NewsSqlHelper.getInstance(context);
+		this.listeners = new ArrayList<Rss.IFetchListener>();
+	}
+
+	public void addListener(IFetchListener listener) {
+		if (listener == null) {
+			return; 
+		}
+		this.listeners.add(listener);
 	}
 	
+	public boolean removeListener(IFetchListener listener) {
+		return this.listeners.remove(listener);
+	}
+
 	/**
 	 * insert new feed to database - does NOT check for duplicates
 	 */
@@ -74,18 +92,34 @@ public class Rss {
 	}
 	
 	/**
-	 * download and save new articles from given feed to database
-	 * @returns list of merged articles - downloaded + already present in database
+	 * download and save new articles from all feeds to database
 	 */
-	public List<Article> fetchArticles(Feed feed) throws FailedToGetNewsException {
+	public void fetchArticles() {
+		List<Feed> feeds = getFeeds();
+
+		this.sqlHelper.acquireDb(this);
+		try {
+			for (Feed feed : feeds) {
+				this.fetchArticles(feed);
+			}
+			for (IFetchListener listener : this.listeners) {
+				listener.onDataFetched();
+			}
+		} finally {
+			this.sqlHelper.releaseDb(true, this);
+		}
+	}
+	
+	/**
+	 * download and save new articles from given feed to database
+	 */
+	public void fetchArticles(Feed feed) throws FailedToGetNewsException {
 		List<Article> downloadedArticles = null;
 		try {
 			downloadedArticles = this.handler.fetchArticles(feed);
 		} catch (Exception e) {
 			Log.e(Utils.LOG_TAG, "failed to download new articles", e);
-			String message = "failed to download updated news: ";
-			if (e.getMessage() != null)
-				message += e.getMessage();
+			String message = "failed to download updated news ";
 			throw new FailedToGetNewsException(message, e);
 		}
 		List<Article> presentArticles;
@@ -120,6 +154,8 @@ public class Rss {
 			}
 			this.sqlHelper.deleteOldArticles(feed.getFeedId());
 			db.setTransactionSuccessful();
+			final FetchContentTask task = new FetchContentTask(downloadedArticles);
+			task.start();
 		} finally {
 			if (db != null) {
 				db.endTransaction();
@@ -127,26 +163,9 @@ public class Rss {
 				this.sqlHelper.close();
 			}
 		}
-		downloadedArticles.addAll(presentArticles);
-		return downloadedArticles;
 	}
-//	Comparator<Article> dateComparator = new Comparator<Article>() {
-//
-//		@Override
-//		public int compare(Article object1, Article object2) {
-//			if (object1.getDate() > object2.getDate()) {
-//				return 1;
-//			} else if (object1.getDate() < object2.getDate()) {
-//				return -1;
-//			}
-//			return 0;
-//		}
-//	};
 
 	private void downloadContent(Article article) throws IOException {
-		//String url = String.format(Rss.GWT_URL, URLEncoder.encode(article.getUrl().toString()));
-		
-		//InputStream stream = DownloadService.GetInstance().openHttpConnection(url, true);
 		byte[] content = DownloadService.GetInstance().DownloadFromUrl(article.getMobilizedUrl(), false);
 		String html = new String(content);
 		article.setContent(html);
@@ -169,7 +188,12 @@ public class Rss {
 			this.sqlHelper.releaseDb(true, this);
 		}
 	}
+	
 	public Cursor getAllArticlesCursor() {
+		return this.sqlHelper.getAllArticlesCursor();
+	}
+	
+	public Cursor getAllFullArticlesCursor() {
 		return this.sqlHelper.getAllArticlesCursor();
 	}
 
@@ -202,11 +226,21 @@ public class Rss {
 		return this.sqlHelper.getFeeds();
 	}
 	
-	/**
-	 * close database
-	 */
-	public void done() {
-		this.sqlHelper.close();
-	}
+	private final class FetchContentTask extends Thread {
 
+		private List<Article> articles;
+		
+		public FetchContentTask(List<Article> articles) {
+			this.articles = articles;
+		}
+
+		@Override
+		public void run() {
+			if (articles == null || articles.size() != 1) {
+				return;
+			}
+			
+			downloadContent(this.articles);
+		}
+	}
 }

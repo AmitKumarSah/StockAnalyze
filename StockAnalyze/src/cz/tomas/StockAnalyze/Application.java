@@ -32,6 +32,7 @@ import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
 
 import cz.tomas.StockAnalyze.Data.DataManager;
+import cz.tomas.StockAnalyze.News.Rss;
 import cz.tomas.StockAnalyze.Portfolio.Portfolio;
 import cz.tomas.StockAnalyze.activity.ChartActivity;
 import cz.tomas.StockAnalyze.utils.Utils;
@@ -43,10 +44,12 @@ public class Application extends android.app.Application {
 	public static final String DATA_MANAGER_SERVICE = "cz.tomas.StockAnalyze.Data.DataManager";
 	public static final String PORTFOLIO_SERVICE = "cz.tomas.StockAnalyze.Data.Portfolio";
 	public static final String HTTP_CLIENT_SERVICE = "httpClient";
+	public static final String RSS_SERVICE = "rss";
 	
 	private UpdateScheduler scheduler;
 	private DataManager dataManager;
 	private Portfolio portfolio;
+	private Rss rss;
 	
 	private static DefaultHttpClient sDefaultHttpClient;
 	
@@ -107,6 +110,11 @@ public class Application extends android.app.Application {
 			}
 			
 			return sDefaultHttpClient;
+		} else if (RSS_SERVICE.equals(name)) {
+			if (this.rss == null) {
+				this.rss = new Rss(this);
+			}
+			return this.rss;
 		}
 		return super.getSystemService(name);
 	}

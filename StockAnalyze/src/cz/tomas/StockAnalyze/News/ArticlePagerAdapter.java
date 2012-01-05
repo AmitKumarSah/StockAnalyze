@@ -1,15 +1,18 @@
 package cz.tomas.StockAnalyze.News;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import cz.tomas.StockAnalyze.News.NewsItemsTask.ITaskListener;
+import android.util.Log;
 import cz.tomas.StockAnalyze.fragments.WebArticleFragment;
+import cz.tomas.StockAnalyze.utils.Utils;
 
 public final class ArticlePagerAdapter extends FragmentPagerAdapter {
 
@@ -21,14 +24,33 @@ public final class ArticlePagerAdapter extends FragmentPagerAdapter {
 	//private Context context;
 	private List<Article> articles;
 	
-	public ArticlePagerAdapter(Context context, FragmentManager fm, ITaskListener listener) {
+	public ArticlePagerAdapter(Context context, FragmentManager fm) {
 		super(fm);
-		//this.context = context;
 		this.articles = new ArrayList<Article>();
-		
-		final NewsTask task = new NewsTask(new Rss(context), context);
-		task.setListener(listener);
-		task.execute(false);
+	}
+	
+	public void setData(Cursor c) {
+		this.articles.clear();
+		if (c != null && c.moveToFirst()) {
+			try {
+				do {
+					Article article = new Article();
+					article.setArticleId(c.getLong(0));
+					article.setFeedId(c.getLong(1));
+					article.setTitle(c.getString(2));
+					article.setDescription(c.getString(3));
+					article.setUrl(new URL(c.getString(4)));
+					article.setDate(Long.parseLong(c.getString(5)));
+					article.setContent(c.getString(6));
+					articles.add(article);
+				} while (c.moveToNext());
+			} catch (Exception e) {
+				Log.e(Utils.LOG_TAG, "failed to read article from cursor");
+			}
+		} else {
+			Log.d(Utils.LOG_TAG, "no articles present");
+		}
+		this.notifyDataSetChanged();
 	}
 
 	/* (non-Javadoc)
@@ -68,27 +90,5 @@ public final class ArticlePagerAdapter extends FragmentPagerAdapter {
 	
 	public Article getArticle(int position) {
 		return this.articles.get(position);
-	}
-	
-	class NewsTask extends NewsItemsTask {
-
-		NewsTask(Rss rss, Context context) {
-			super(rss, context);
-		}
-
-		/* (non-Javadoc)
-		 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
-		 */
-		@Override
-		protected void onPostExecute(List<Article> result) {
-			super.onPostExecute(result);
-			
-			articles = result;
-			notifyDataSetChanged();
-			if (this.listener != null) {
-				this.listener.onUpdateFinished();
-			}
-		}
-		
 	}
 }
