@@ -52,6 +52,11 @@ import cz.tomas.StockAnalyze.charts.interfaces.IChartTextFormatter;
 public class ChartView extends View {
 
 	private static final boolean DEBUG = false;
+
+	private static final float MOVE_TRESHOLD = 10;
+	
+	private byte STATE_IN_CLICK = 1;
+	private byte STATE_IN_MOVE = 4;
 	
 	private float[] data;
 	private float[] preparedData;
@@ -75,6 +80,9 @@ public class ChartView extends View {
 	private boolean drawTracking = true;
 	
 	private float trackingValueX = -1;
+	private float lastTrackingValue = -1;
+	
+	private byte touchState;
 	
 	private TimingLogger logger;
 	
@@ -406,14 +414,30 @@ public class ChartView extends View {
 		this.formatter = (IChartTextFormatter<Number>) formatter;
 	}
 
-
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		if (this.drawTracking && this.preparedData != null && (
-				event.getAction() == MotionEvent.ACTION_DOWN || 
-				event.getAction() == MotionEvent.ACTION_MOVE) && 
-				this.trackingValueX != event.getX()) {
-			this.trackingValueX = event.getX();
+		final float x = event.getX();
+		if (this.drawTracking && this.preparedData != null && this.trackingValueX != x) {
+			final float moveLength = x - this.lastTrackingValue;
+			
+			if (event.getAction() == MotionEvent.ACTION_DOWN) {
+				this.touchState = STATE_IN_CLICK;
+				if (trackingValueX < 0) {
+					// initial touch
+					this.trackingValueX = x;
+					if (DEBUG) Log.d(Utils.LOG_TAG, "chart initial touch");
+				}
+			} else if (event.getAction() == MotionEvent.ACTION_MOVE) {
+				this.trackingValueX += moveLength;
+				if (Math.abs(moveLength) > MOVE_TRESHOLD) {
+					this.touchState = STATE_IN_MOVE;
+				}
+				if (DEBUG) Log.d(Utils.LOG_TAG, "chart move touch " + moveLength + " state " + this.touchState);
+			} else if (event.getAction() == MotionEvent.ACTION_UP && this.touchState == STATE_IN_CLICK) {
+				this.trackingValueX = x;
+				if (DEBUG) Log.d(Utils.LOG_TAG, "chart click touch " + this.touchState);
+			}
+			this.lastTrackingValue = x;
 			this.invalidate();
 			return true;
 		}
