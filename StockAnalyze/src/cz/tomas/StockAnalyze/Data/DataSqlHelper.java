@@ -29,14 +29,13 @@ import android.util.Log;
  */
 public class DataSqlHelper extends AbstractSqlHelper {
 		
-		private final static int DATABASE_VERSION_NUMBER = 15;
+		private final static int DATABASE_VERSION_NUMBER = 16;
 		
 		private final static String DATABASE_FILE_NAME = "stocks.db";
 		
 		protected static final String STOCK_TABLE_NAME = "stock_item";
 		protected static final String MARKET_TABLE_NAME = "market_item";
 		protected static final String DAY_DATA_TABLE_NAME = "stock_day_data";
-		protected static final String INTRADAY_DATA_TABLE_NAME = "stock_intraday_data";
 		protected static final String PORTFOLIO_TABLE_NAME = "portfolio_item";
 		
 		private static final String STOCK_TABLE_CREATE =
@@ -47,7 +46,7 @@ public class DataSqlHelper extends AbstractSqlHelper {
 	         "is_index integer, " +
 	         "market_id varchar(50), " + 
 	         "name TEXT, " +
-	         "FOREIGN KEY(market_id) REFERENCES " + MARKET_TABLE_NAME + "(id)" +
+	         "FOREIGN KEY(market_id) REFERENCES " + MARKET_TABLE_NAME + "(_id)" +
 	         ");";
 		
 		private static final String MARKET_TABLE_CREATE =
@@ -57,17 +56,6 @@ public class DataSqlHelper extends AbstractSqlHelper {
 	         "currency varchar(10) not null, " +
 	         "ui_order integer, " +
 	         "description TEXT);";
-		
-		private static final String INTRADAY_DATA_TABLE_CREATE = 
-			"CREATE TABLE " + INTRADAY_DATA_TABLE_NAME + " (" +
-	         "_id integer PRIMARY KEY AUTOINCREMENT," +
-	         "stock_id varchar(50)," +
-	         "change real not null," +
-	         "date integer not null, " +				//long - miliseconds
-	         "price real not null," +
-	         "volume real not null," +
-	         "FOREIGN KEY(stock_id) REFERENCES " + STOCK_TABLE_NAME + "(id)" +
-	         ");";
 		
 		private static final String DAY_DATA_TABLE_CREATE = 
 			"CREATE TABLE " + DAY_DATA_TABLE_NAME + " (" +
@@ -80,7 +68,7 @@ public class DataSqlHelper extends AbstractSqlHelper {
 	         "last_update integer not null, " +				//long - miliseconds
 	         "price real not null," +
 	         "volume real not null," +
-	         "FOREIGN KEY(stock_id) REFERENCES " + STOCK_TABLE_NAME + "(id)" +
+	         "FOREIGN KEY(stock_id) REFERENCES " + STOCK_TABLE_NAME + "(_id)" +
 	         ");";
 
 		private static final String PORTFOLIO_TABLE_CREATE = 
@@ -96,7 +84,7 @@ public class DataSqlHelper extends AbstractSqlHelper {
 	         "sell_fee real," +
 	         "name varchar(20)," +
 	         "market_id varchar(50)," +
-	         "FOREIGN KEY(stock_id) REFERENCES " + STOCK_TABLE_NAME + "(id)" +
+	         "FOREIGN KEY(stock_id) REFERENCES " + STOCK_TABLE_NAME + "(_id)" +
 	         ");";
 		
 		public DataSqlHelper(Context context) {
@@ -112,19 +100,16 @@ public class DataSqlHelper extends AbstractSqlHelper {
 				db.execSQL(STOCK_TABLE_CREATE);
 				Log.d(Utils.LOG_TAG, "creating day data table!");
 				db.execSQL(DAY_DATA_TABLE_CREATE);
-				Log.d(Utils.LOG_TAG, "creating intraday data table!");
-				db.execSQL(INTRADAY_DATA_TABLE_CREATE);
 				Log.d(Utils.LOG_TAG, "creating portfolio table!");
 				db.execSQL(PORTFOLIO_TABLE_CREATE);				
 			} catch (SQLException e) {
-				Log.e(Utils.LOG_TAG, "Failed to create database!\n" + e.getMessage(), e);
+				Log.e(Utils.LOG_TAG, "Failed to create database!\n", e);
 			}
 		}
 
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 			Log.d(Utils.LOG_TAG, "droping tables!");
-			db.execSQL(TABLE_DROP + INTRADAY_DATA_TABLE_NAME);
 			db.execSQL(TABLE_DROP + DAY_DATA_TABLE_NAME);
 			db.execSQL(TABLE_DROP + STOCK_TABLE_NAME);
 			db.execSQL(TABLE_DROP + PORTFOLIO_TABLE_NAME);

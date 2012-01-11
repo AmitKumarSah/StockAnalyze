@@ -25,14 +25,12 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.SystemClock;
 import android.util.Log;
 import cz.tomas.StockAnalyze.Application;
@@ -83,8 +81,9 @@ public class DataManager implements IStockDataListener {
 	private long lastUpdateTime;
 	
 	public static DataManager getInstance(Context context) {
-		if (instance == null)
+		if (instance == null) {
 			instance = new DataManager(context.getApplicationContext());
+		}
 		
 		return instance;
 	}
@@ -222,37 +221,14 @@ public class DataManager implements IStockDataListener {
 		if (market == null) {
 			throw new NullPointerException("market can't be null to get stock list");
 		}
-		Map<String, StockItem> items;
 		IStockDataProvider provider = DataProviderFactory.getDataProvider(market);
 		List<StockItem> stocks = provider.getAvailableStockList();
 		Collections.sort(stocks, new StockComparator(StockCompareTypes.Ticker, null));
 		
-		items = new LinkedHashMap<String, StockItem>();
-		Log.i(Utils.LOG_TAG, "storing stock items to db ... " + items.size());
-		
+		Map<String, StockItem> items = null;
 		if (stocks != null && stocks.size() > 0) {
 			this.sqlStore.acquireDb(this);
-			SQLiteDatabase db = this.sqlStore.getWritableDatabase();
-			try {
-				db.beginTransaction();
-				//this.sqlStore.deleteStockItems(market.getId());
-				for (StockItem stockItem : stocks) {
-					items.put(stockItem.getId(), stockItem);
-					this.sqlStore.insertStockItem(stockItem);
-					if (currentItems != null) {
-						currentItems.remove(stockItem.getId());
-					}
-				}
-				// delete items that weren't downloaded
-				if (currentItems != null) {
-					for (Entry<String, StockItem> entry : currentItems.entrySet()) {
-						this.sqlStore.deleteStockItem(entry.getKey());
-					}
-				}
-				db.setTransactionSuccessful();
-			} finally {
-				db.endTransaction();
-			}
+			items = this.sqlStore.updateStockList(stocks, currentItems);
 			this.sqlStore.releaseDb(true, this);
 		}
 		SharedPreferences prefs = this.context.getSharedPreferences(Utils.PREF_NAME, 0);
@@ -282,6 +258,11 @@ public class DataManager implements IStockDataListener {
 		return item; 
 	}
 	
+	/**
+	 * return last data from database, not even trying to go online
+	 * @param stockId
+	 * @return
+	 */
 	public synchronized DayData getLastOfflineValue(String stockId) {
 		DayData data = this.sqlStore.getLastAvailableDayData(stockId);
 		return data;
@@ -342,9 +323,9 @@ public class DataManager implements IStockDataListener {
 				if (provider != null) {
 					data = provider.getLastData(item.getTicker());
 					val = data.getPrice();
-				}
-				else
+				} else {
 					throw new NullPointerException("Can't find appropriate data provider for " + item.toString());
+				}
 			} catch (NullPointerException e) {
 				Log.e(Utils.LOG_TAG, "failed to get day dat for " + item, e);
 				throw e;
@@ -377,9 +358,10 @@ public class DataManager implements IStockDataListener {
 	 */
 	private DayData createDataWithPrice(StockItem item, DayData data) {
 		DayData oldData = this.getLastOfflineValue(item.getId());
-		if (oldData != null)
+		if (oldData != null) {
 			data = new DayData(oldData.getPrice(), data.getChange(), data.getDate(), data.getVolume(), data.getYearMaximum(), data.getYearMinimum(),
 					data.getLastUpdate(), data.getId());
+		}
 		return data;
 	}	
 	
@@ -443,8 +425,9 @@ public class DataManager implements IStockDataListener {
 				Map<String, DayData> receivedData = new HashMap<String, DayData>();
 				for (StockItem item : sender.getAvailableStockList()) {
 					DayData data = sender.getLastData(item.getTicker());
-					if (data.getPrice() == 0)
+					if (data.getPrice() == 0) {
 						data = this.createDataWithPrice(item, data);
+					}
 					receivedData.put(item.getId(), data);
 				}
 

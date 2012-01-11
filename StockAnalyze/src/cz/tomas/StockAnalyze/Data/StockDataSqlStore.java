@@ -22,6 +22,7 @@ package cz.tomas.StockAnalyze.Data;
 
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -60,6 +61,7 @@ import cz.tomas.StockAnalyze.utils.Utils;
 
 
 /**
+ * db helper for {@link StockItem} data and {@link DayData} data
  * @author tomas
  *
  */
@@ -84,24 +86,24 @@ public class StockDataSqlStore extends DataSqlHelper {
 	 * @return
 	 */
 	boolean checkForStock(String id) {
-		if (id == null || id.length() == 0)
+		if (id == null || id.length() == 0) {
 			return false;
+		}
 		boolean result = false;
 		try {
 			SQLiteDatabase db = this.getWritableDatabase();
 			Cursor c = null;
 			try {
-				//c = db.query(STOCK_TABLE_NAME, new String[] { "_id" }, "id='"+ item.getId() +"'", null, null, null, null);
 				c = db.query(STOCK_TABLE_NAME, new String[] { "_id" }, "_id=?", new String[] { id }, null, null, null);
 				if (c.moveToFirst())
 					result = true;
 				
 			} catch (SQLException e) {
-				Log.e("StockDataSqlStore", e.toString());
+				Log.e(Utils.LOG_TAG, "failed to check stock", e);
 			} finally {
-				// close cursor
-				if (c != null)
+				if (c != null) {
 					c.close();
+				}
 			}
 		} catch (SQLException e) {
 			Log.e("StockDataSqlStore", "failed to get stock item." + e.getMessage(), e);
@@ -117,27 +119,26 @@ public class StockDataSqlStore extends DataSqlHelper {
 	 * @return
 	 */
 	private boolean checkForStock(StockItem item) {
-		if (item == null || item.getId() == null)
+		if (item == null || item.getId() == null) {
 			return false;
+		}
 		String id = item.getId();
 		
 		return this.checkForStock(id);
 	}
-	/**
 	
+	/**	
 	 * delete stock item from db 
 	 * @param stockId 
 	 */
-	public void deleteStockItem(String stockId) {
+	private void deleteStockItem(String stockId, SQLiteDatabase db) {
 		try {
 			Log.d(Utils.LOG_TAG, "deleting stockItem " + stockId);
 
-			SQLiteDatabase db = this.getWritableDatabase();
+			db.delete(DAY_DATA_TABLE_NAME, "stock_id = ?", new String[] {stockId} );
 			db.delete(STOCK_TABLE_NAME, "id=?", new String[] {stockId});
 		} catch (SQLException e) {
 			Log.e(Utils.LOG_TAG, "failed to delete data.", e);
-		} finally {
-			this.close();
 		}
 	}
 	
@@ -170,6 +171,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 			}
 			if (Utils.DEBUG) Log.d(Utils.LOG_TAG, "inserting stockItem " + item.toString());
 			SQLiteDatabase db = this.getWritableDatabase();
+			
 			ContentValues values = new ContentValues();
 			values.put("_id", item.getId());
 			values.put("ticker", item.getTicker());
@@ -232,10 +234,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 			
 			db.insert(DAY_DATA_TABLE_NAME, null, values);
 		} catch (SQLException e) {
-			String message =  "Failed to INSERT stock item.";
-			if (e.getMessage() != null)
-				 message += e.getMessage();
-			Log.e(Utils.LOG_TAG, message, e);
+			Log.e(Utils.LOG_TAG, "Failed to INSERT stock item.", e);
 		} finally {
 			this.close();
 		}
@@ -322,11 +321,11 @@ public class StockDataSqlStore extends DataSqlHelper {
 				}
 				
 			} catch (SQLException e) {
-				Log.e(Utils.LOG_TAG, e.toString());
+				Log.e(Utils.LOG_TAG, "failed to read stock items from db", e);
 			} finally {
-				// close cursor
-				if (c != null)
+				if (c != null) {
 					c.close();
+				}
 			}
 		} catch (SQLException e) {
 			Log.e(Utils.LOG_TAG, "failed to get stock item.",e);
@@ -347,7 +346,6 @@ public class StockDataSqlStore extends DataSqlHelper {
 			SQLiteDatabase db = this.getWritableDatabase();
 			Cursor c = null;
 			try {
-				//c = db.query(STOCK_TABLE_NAME, new String[] { "_id" }, "id='"+ item.getId() +"'", null, null, null, null);
 				c = db.query(STOCK_TABLE_NAME, new String[] { "_id", "ticker", "name", "market_id" }, "_id=?", new String[] { id }, null, null, null);
 				if (c.moveToFirst()) {
 					String ticker = c.getString(1);
@@ -357,15 +355,14 @@ public class StockDataSqlStore extends DataSqlHelper {
 				}
 				
 			} catch (SQLException e) {
-				Log.e(Utils.LOG_TAG, e.toString());
+				Log.e(Utils.LOG_TAG, "failed to read stock item from db", e);
 			} finally {
-				// close cursor
-				if (c != null)
+				if (c != null) {
 					c.close();
+				}
 			}
 		} catch (SQLException e) {
-			Log.d(Utils.LOG_TAG, "failed to get stock item." + e.getMessage());
-			e.printStackTrace();
+			Log.e(Utils.LOG_TAG, "failed to get stock item." + e.getMessage(), e);
 		} finally {
 			this.close();
 		}
@@ -510,10 +507,11 @@ public class StockDataSqlStore extends DataSqlHelper {
 				}
 				
 				// order by given column, if any, and by date, so we get last results 
-				if (orderBy != null && orderBy.length() > 0)
+				if (orderBy != null && orderBy.length() > 0) {
 					orderBy += ", date DESC";
-				else
+				} else {
 					orderBy = "date DESC";
+				}
 				
 				// data is grouped by stock-id and sorted by date, 
 				// so we get last result for all stock items
@@ -544,8 +542,9 @@ public class StockDataSqlStore extends DataSqlHelper {
 			} catch (IllegalStateException e) {
 				Log.e(Utils.LOG_TAG, "database is in an illegal state!", e);
 			} finally {
-				if (c != null)
+				if (c != null) {
 					c.close();
+				}
 			}
 		} catch (SQLException e) {
 			Log.e(Utils.LOG_TAG, "failed to get data.", e);
@@ -554,5 +553,39 @@ public class StockDataSqlStore extends DataSqlHelper {
 		}
 		
 		return dbData;
+	}
+
+	/**
+	 * update stocks in db with new one and deleting old one, not present in given list
+	 * 
+	 * @param stocks
+	 * @param currentItems
+	 * @return
+	 */
+	public Map<String, StockItem>  updateStockList(List<StockItem> stocks, Map<String, StockItem> currentItems) {
+		Map<String, StockItem> items = new LinkedHashMap<String, StockItem>();
+		Log.i(Utils.LOG_TAG, "storing stock items to db ... " + items.size());
+		
+		SQLiteDatabase db = this.getWritableDatabase();
+		try {
+			db.beginTransaction();
+			for (StockItem stockItem : stocks) {
+				items.put(stockItem.getId(), stockItem);
+				this.insertStockItem(stockItem);
+				if (currentItems != null) {
+					currentItems.remove(stockItem.getId());
+				}
+			}
+			// delete items that weren't downloaded
+			if (currentItems != null) {
+				for (Entry<String, StockItem> entry : currentItems.entrySet()) {
+					this.deleteStockItem(entry.getKey(), db);
+				}
+			}
+			db.setTransactionSuccessful();
+		} finally {
+			db.endTransaction();
+		}
+		return items;
 	}
 }
