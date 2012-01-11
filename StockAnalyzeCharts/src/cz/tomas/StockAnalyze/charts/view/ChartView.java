@@ -20,6 +20,9 @@
  */
 package cz.tomas.StockAnalyze.charts.view;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -37,7 +40,6 @@ import android.graphics.Typeface;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.util.TimingLogger;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -53,39 +55,6 @@ public class ChartView extends View {
 
 	private static final boolean DEBUG = false;
 
-	private static final float MOVE_TRESHOLD = 10;
-	
-	private byte STATE_IN_CLICK = 1;
-	private byte STATE_IN_MOVE = 4;
-	
-	private float[] data;
-	private float[] preparedData;
-	
-	private Number[] axisX;
-	private IChartTextFormatter<Number> formatter;
-	
-	private float max;
-	private float min;
-	
-	private final Paint paint;
-	private final Paint chartPaint;
-	private final Paint gridPaint;
-	private final Paint gridFillPaint;
-	private final TextPaint textPaint;
-	
-	private Bitmap chartBitmap;
-	private boolean isChartBitmapDirty;
-	
-	private boolean disableRedraw = false;
-	private boolean drawTracking = true;
-	
-	private float trackingValueX = -1;
-	private float lastTrackingValue = -1;
-	
-	private byte touchState;
-	
-	private TimingLogger logger;
-	
 	/**
 	 *  Convert the dps to pixels
 	 */
@@ -94,7 +63,6 @@ public class ChartView extends View {
 	 * offset for whole chart (padding)
 	 */
 	private final float OFFSET = 12 * SCALE;
-	private final Bitmap.Config bmpConfig;
 	
 	/**
 	 * pixels between axis text and axis itself
@@ -104,6 +72,54 @@ public class ChartView extends View {
 	private final int GRID_HORIZONTAL_LINES = 5;
 	private final int GRID_VERTICAL_LINES = 5;
 	
+	private final float MOVE_TRESHOLD = 8 * SCALE;
+	
+	private byte STATE_IN_CLICK = 1;
+	private byte STATE_IN_MOVE = 4;
+	//private byte STATE_IN_PATH = 8;
+	
+	private float[] data;
+	private float[] preparedData;
+	
+	private Number[] axisX;
+	private IChartTextFormatter<Number> formatter;
+	
+	private List<Path> paintingPaths;
+	private Path currentPaintingPath;
+	
+	/**
+	 * data maximum value
+	 */
+	private float max;
+	
+	/**
+	 * data minimum value
+	 */
+	private float min;
+	
+	private final Paint paint;
+	private final Paint paintingPaint;
+	private final Paint chartPaint;
+	private final Paint gridPaint;
+	private final Paint gridFillPaint;
+	private final TextPaint textPaint;
+	
+	private Bitmap chartBitmap;
+	private boolean isChartBitmapDirty;
+	
+	private boolean disableRedraw = false;
+	private boolean drawTracking = false;
+	private boolean drawPainting = false;
+	
+	private float trackingValueX = -1;
+	private float lastTrackingValue = -1;
+	private float lastPaintingX = -1;
+	private float lastPaintingY = -1;
+	
+	private byte touchState;
+	
+	private final Bitmap.Config bmpConfig;
+	
 	public ChartView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		
@@ -111,6 +127,11 @@ public class ChartView extends View {
 		this.paint.setStrokeWidth(2*SCALE);
 		this.paint.setColor(getResources().getColor(R.color.chartGrid));
 		this.paint.setAntiAlias(true);
+		
+		this.paintingPaint = new Paint(paint);
+		this.paintingPaint.setColor(getResources().getColor(R.color.chartPainting));
+		this.paintingPaint.setStyle(Style.STROKE);
+		this.paintingPaint.setStrokeWidth(2*SCALE);
 		
 		this.chartPaint = new Paint(this.paint);
 		this.chartPaint.setColor(getResources().getColor(R.color.chartLine));
@@ -126,11 +147,7 @@ public class ChartView extends View {
 		this.gridFillPaint.setStyle(Style.FILL_AND_STROKE);
 		this.gridFillPaint.setColor(getResources().getColor(R.color.chartFill));
 		
-//		boolean i = Log.isLoggable(Utils.LOG_TAG, Log.VERBOSE);
-//		String result = System.setProperty("log.tag.StockAnalyze", "VERBOSE");
-//		i = Log.isLoggable(Utils.LOG_TAG, Log.VERBOSE);
-		logger = new TimingLogger(Utils.LOG_TAG, "chart drawing");
-		
+		// detect pixel format of our window
 		final WindowManager manager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
 		final int format = manager.getDefaultDisplay().getPixelFormat();
 		if (format == PixelFormat.RGBA_4444) {
@@ -153,10 +170,9 @@ public class ChartView extends View {
 	 */
 	@Override
 	protected void onDraw(Canvas canvas) {
-		if (this.disableRedraw)
+		if (this.disableRedraw) {
 			return;
-		this.logger.reset();
-		this.logger.addSplit("draw axis");
+		}
 		int offsetBelowXAxis, offsetNextToYAxis;									// offset caused by text descriptions of axis
 
 		offsetBelowXAxis = calculateXAxisDescriptionOffset();
@@ -169,43 +185,60 @@ public class ChartView extends View {
 		
 		final float chartWidth = this.getWidth() - 2 * OFFSET -offsetNextToYAxis ;
 		final float chartHeight = this.getHeight() - 2 * OFFSET - offsetBelowXAxis;
-
-		drawAxis(canvas, originX, originY, chartWidth);
-		drawAxisDescription(canvas, offsetBelowXAxis, offsetNextToYAxis, chartWidth, chartHeight);
-		this.logger.addSplit("draw grid");
-		drawGrid(canvas,originX, originY, chartWidth, chartHeight);
 		
-		this.logger.addSplit("draw DATA");
-		if (this.data != null && this.data.length > 1) {
-			if (this.chartBitmap != null && this.isChartBitmapDirty) {
-				this.chartBitmap.eraseColor(Color.TRANSPARENT);
-				this.drawData(new Canvas(this.chartBitmap), originX, originY, chartWidth, chartHeight);
-				this.isChartBitmapDirty = false;
-			} else if (this.chartBitmap == null) {
+		if (this.chartBitmap == null || this.isChartBitmapDirty) {
+			if (this.chartBitmap == null) {
 				// cache bitmap with full chart
 				this.chartBitmap = Bitmap.createBitmap(getWidth(), getHeight(), this.bmpConfig);
-				this.drawData(new Canvas(this.chartBitmap), originX, originY, chartWidth, chartHeight);
+			} else {
+				this.chartBitmap.eraseColor(Color.TRANSPARENT);
+				this.isChartBitmapDirty = false;
 			}
-			canvas.drawBitmap(this.chartBitmap, 0, 0, this.chartPaint);
+			final Canvas cacheCanvas = new Canvas(this.chartBitmap);
+			drawAxis(cacheCanvas, originX, originY, chartWidth);
+			drawAxisDescription(cacheCanvas, offsetBelowXAxis, offsetNextToYAxis, chartWidth, chartHeight);
 			
+			drawGrid(cacheCanvas,originX, originY, chartWidth, chartHeight);
+			
+			if (this.data != null && this.data.length > 1) {
+				this.drawData(cacheCanvas, originX, originY, chartWidth, chartHeight);
+			}
+		}
+
+		canvas.drawBitmap(this.chartBitmap, 0, 0, this.chartPaint);
+		
+		if (this.data != null && this.data.length > 1) {
+			// tracking and paintings go right to the canvas
 			if (this.drawTracking) {
 				this.drawTracking(canvas, originX, originY, chartWidth, chartHeight);
 			}
+			if (this.drawPainting) {
+				this.drawPaintingPaths(canvas);
+			}
 		}
-		
-		this.logger.dumpToLog();
+	}
+
+	private void drawPaintingPaths(Canvas canvas) {
+//		if (this.paintingPaths != null) {
+//			for (Path path : this.paintingPaths) {
+//				canvas.drawPath(path, this.paintingPaint);
+//			}
+//		}
+		if (this.currentPaintingPath != null && ! this.currentPaintingPath.isEmpty()) {
+			canvas.drawPath(this.currentPaintingPath, this.paintingPaint);
+		}
 	}
 
 	private void drawTracking(Canvas canvas, float originX, float originY, float chartWidth, float chartHeight) {
 		if (this.trackingValueX > originX && this.trackingValueX - originX < chartWidth && this.preparedData != null) {
 			// vertical line
-			canvas.drawLine(this.trackingValueX, OFFSET, this.trackingValueX, originY, this.paint);
+			canvas.drawLine(this.trackingValueX, OFFSET, this.trackingValueX, originY, this.paintingPaint);
 			
 			final float step = chartWidth / (float) (this.data.length -1);
 			final int index = (int) ((this.trackingValueX - originX) / step);
 			final float yValue = chartHeight - preparedData[index] + OFFSET;
 			// horizontal line
-			canvas.drawLine(originX, yValue, this.getWidth() - OFFSET, yValue, this.paint);
+			canvas.drawLine(originX, yValue, this.getWidth() - OFFSET, yValue, this.paintingPaint);
 			
 			final String value = String.valueOf(this.data[index]);
 			final String text = String.format("%s - %s", getFormattedValue(this.axisX[index]), value);
@@ -314,13 +347,9 @@ public class ChartView extends View {
 	private float[] prepareDataValues(float chartHeight) {
 		if (DEBUG) Log.d(Utils.LOG_TAG, "preparing chart data..");
 		float[] preparedData = new float[this.data.length];
-//		float heightMaxScale = chartHeight / max;
-//		float heightMinScale = chartHeight / min;
-		//float minMax = heightMaxScale / heightMinScale;
 		//StringBuilder builder = new StringBuilder("Prepared Data: ");
 		
 		for (int i = 0; i < this.data.length; i++) {
-			//preparedData[i] = this.data[i] * heightMaxScale * minMax;
 			preparedData[i] = this.scaleRange(this.data[i], this.min, this.max, 0, chartHeight);
 			//builder.append(String.valueOf(preparedData[i]) + "; ");
 		}
@@ -389,6 +418,15 @@ public class ChartView extends View {
 	void setEnableTracking(boolean enabled) {
 		this.drawTracking = enabled;
 	}
+
+	void setEnablePainting(boolean enabled) {
+		this.drawPainting = enabled;
+		if (! enabled && this.paintingPaths != null) {
+			this.paintingPaths.clear();
+		} else if (enabled) {
+			this.paintingPaths = new ArrayList<Path>();
+		}
+	}
 	
 	void setData(float[] data, float max, float min) {
 		this.max = max;
@@ -417,31 +455,67 @@ public class ChartView extends View {
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		final float x = event.getX();
-		if (this.drawTracking && this.preparedData != null && this.trackingValueX != x) {
-			final float moveLength = x - this.lastTrackingValue;
-			
-			if (event.getAction() == MotionEvent.ACTION_DOWN) {
-				this.touchState = STATE_IN_CLICK;
-				if (trackingValueX < 0) {
-					// initial touch
-					this.trackingValueX = x;
-					if (DEBUG) Log.d(Utils.LOG_TAG, "chart initial touch");
-				}
-			} else if (event.getAction() == MotionEvent.ACTION_MOVE) {
-				this.trackingValueX += moveLength;
-				if (Math.abs(moveLength) > MOVE_TRESHOLD) {
-					this.touchState = STATE_IN_MOVE;
-				}
-				if (DEBUG) Log.d(Utils.LOG_TAG, "chart move touch " + moveLength + " state " + this.touchState);
-			} else if (event.getAction() == MotionEvent.ACTION_UP && this.touchState == STATE_IN_CLICK) {
-				this.trackingValueX = x;
-				if (DEBUG) Log.d(Utils.LOG_TAG, "chart click touch " + this.touchState);
+		if (this.preparedData != null) {
+			if (this.drawTracking && this.trackingValueX != x) {
+				return onTrackingTouch(event);
+			} else if (this.drawPainting && this.paintingPaths != null) {
+				return onPaintingTouch(event);
 			}
-			this.lastTrackingValue = x;
-			this.invalidate();
-			return true;
 		}
 		return super.onTouchEvent(event);
+	}
+
+	private boolean onPaintingTouch(MotionEvent event) {
+		final float x = event.getX();
+		final float y = event.getY();
+		
+		if (event.getAction() == MotionEvent.ACTION_DOWN) {
+			if (this.currentPaintingPath == null) {
+				this.currentPaintingPath = new Path();
+			}
+			this.currentPaintingPath.moveTo(x, y);
+		} else if (event.getAction() == MotionEvent.ACTION_MOVE) {
+			final float dx = Math.abs(x - this.lastPaintingX);
+			final float dy = Math.abs(y - this.lastPaintingY);
+			if (dx > MOVE_TRESHOLD || dy > MOVE_TRESHOLD) {
+				this.currentPaintingPath.lineTo(x, y);
+				this.lastPaintingX = x;
+				this.lastPaintingY = y;
+			}
+			this.invalidate();
+		} else if (event.getAction() == MotionEvent.ACTION_UP &&
+				! this.currentPaintingPath.isEmpty()) {
+			//this.paintingPaths.add(this.currentPaintingPath);
+		}
+		return true;
+	}
+
+	protected boolean onTrackingTouch(final MotionEvent event) {
+		final float x = event.getX();
+		final float moveLength = x - this.lastTrackingValue;
+		
+		if (event.getAction() == MotionEvent.ACTION_DOWN) {
+			this.touchState = STATE_IN_CLICK;
+			if (trackingValueX < 0) {
+				// initial touch
+				this.trackingValueX = x;
+				if (DEBUG) Log.d(Utils.LOG_TAG, "chart initial touch");
+			}
+		} else if (event.getAction() == MotionEvent.ACTION_MOVE) {
+			this.trackingValueX += moveLength;
+			if (Math.abs(moveLength) > MOVE_TRESHOLD) {
+				this.touchState &= ~STATE_IN_CLICK;
+				this.touchState |= STATE_IN_MOVE;
+			}
+			if (DEBUG) Log.d(Utils.LOG_TAG, "chart move touch " + moveLength + " state " + this.touchState);
+		} else if (event.getAction() == MotionEvent.ACTION_UP && 
+				(this.touchState & STATE_IN_CLICK) == STATE_IN_CLICK) {
+			this.trackingValueX = x;
+			if (DEBUG) Log.d(Utils.LOG_TAG, "chart click touch " + this.touchState);
+		}
+		this.lastTrackingValue = x;
+		this.invalidate();
+		return true;
 	}
 
 	@Override
@@ -451,5 +525,17 @@ public class ChartView extends View {
 			this.chartBitmap.recycle();
 			this.chartBitmap = null;
 		}
+	}
+
+	public void clear() {
+		if (this.paintingPaths != null) {
+			this.paintingPaths.clear();
+		}
+		if (this.currentPaintingPath != null) {
+			this.currentPaintingPath.reset();
+		}
+		this.lastTrackingValue = -1;
+		this.trackingValueX = -1;
+		this.invalidate();
 	}
 }

@@ -52,6 +52,8 @@ public class CompositeChartView extends RelativeLayout {
 		this.chart = (ChartView) this.findViewById(R.id.chart);
 		this.progressBar = this.findViewById(R.id.chartProgressBar);
 		this.background = this.findViewById(R.id.chartBackground);
+		
+		// we have some problems with drawing in accelerated layer
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			this.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
 		}
@@ -66,10 +68,11 @@ public class CompositeChartView extends RelativeLayout {
 	}
 	
 	public <T extends Number> void setAxisX(T[] xAxisPoints, IChartTextFormatter<T> formatter) {
-		if (this.chart != null)
+		if (this.chart != null) {
 			this.chart.setAxisX(xAxisPoints, formatter);
-		else
+		} else {
 			Log.w(Utils.LOG_TAG, "chart in CompositeChartView is null! Can't set axis data.");
+		}
 	}
 	
 	public void setEnableTracking(boolean enabled) {
@@ -77,15 +80,31 @@ public class CompositeChartView extends RelativeLayout {
 			this.chart.setEnableTracking(enabled);
 		}
 	}
+	
+	public void setEnablePainting(boolean enabled) {
+		if (this.chart != null) {
+			this.chart.setEnablePainting(enabled);
+		}
+	}
+	
+	public void clear() {
+		if (this.chart != null) {
+			this.chart.clear();
+		}
+	}
 
 	public void setLoading(boolean loading) {
-		if (this.progressBar != null)
+		if (this.progressBar != null) {
 			this.progressBar.setVisibility(loading ? View.VISIBLE: View.GONE);
+		}
 		
-		if (this.background != null)
+		if (this.background != null) {
 			this.background.setVisibility(loading ? View.VISIBLE: View.GONE);
+		}
 		
-		if (this.chart != null)
+		if (this.chart != null) {
+			this.chart.setVisibility(loading ? View.INVISIBLE: View.VISIBLE);
 			this.chart.setDisableRedraw(loading);
+		}
 	}
 }

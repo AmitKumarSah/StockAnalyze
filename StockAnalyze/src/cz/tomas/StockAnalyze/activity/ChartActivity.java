@@ -74,11 +74,6 @@ public abstract class ChartActivity extends BaseActivity {
 
 	protected static final int DIALOG_PICK_STOCK = 0;
 
-	interface IChartActivityListener {
-		void onChartUpdateBegin();
-		void onChartUpdateFinish();
-	}
-	
 	private class ChartDataCache {
 		Map<Long, Float> dataSet;
 		long creationTime;
@@ -118,7 +113,6 @@ public abstract class ChartActivity extends BaseActivity {
 	
 	protected SharedPreferences prefs;
 	
-	private IChartActivityListener listener;
 	/**
 	 * string resource ids mapped to day count
 	 */
@@ -305,12 +299,10 @@ public abstract class ChartActivity extends BaseActivity {
 			this.stockItem = intent.getExtras().getParcelable(NavUtils.STOCK_ITEM_OBJECT);
 			this.dayData = intent.getExtras().getParcelable(NavUtils.DAY_DATA_OBJECT);			
 			return true;
-		}
-		else {
+		} else {
 			return false;
 		}
 	}
-	
 
 	/**
 	 * @param stockItem
@@ -388,8 +380,11 @@ public abstract class ChartActivity extends BaseActivity {
 		return id;
 	}
 
-	public void setChartActivityListener(IChartActivityListener listener) {
-		this.listener = listener;
+
+	protected void onChartUpdateBegin() {
+	}
+	
+	protected void onChartUpdateFinish() {
 	}
 	
 	private Map<String, SoftReference<ChartDataCache>> getCacheMap(int timePeriod) {
@@ -436,8 +431,8 @@ public abstract class ChartActivity extends BaseActivity {
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
-			if (listener != null)
-				listener.onChartUpdateBegin();
+			onChartUpdateBegin();
+			
 			if (chartView != null)
 				chartView.setLoading(true);
 			if (txtDescription != null && stockItem != null) {
@@ -581,8 +576,8 @@ public abstract class ChartActivity extends BaseActivity {
 			if (txtDescription != null && stockItem != null) {
 				txtDescription.setText(stockItem.getName());
 			}
-			if (listener != null)
-				listener.onChartUpdateFinish();
+			
+			onChartUpdateFinish();
 		}
 		
 	}

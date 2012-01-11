@@ -22,6 +22,8 @@ package cz.tomas.StockAnalyze.activity;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.DataManager;
@@ -45,23 +47,13 @@ public class StockChartActivity extends ChartActivity {
 		
 		this.setContentView(R.layout.part_chart_with_header);
 		this.chartView = (CompositeChartView) this.findViewById(R.id.stockChartView);
+		this.chartView.setEnablePainting(true);
+		this.chartView.setEnableTracking(false);
 		
 		// if we aren't resuming, load day count from intent (first run)
-		if (savedInstanceState == null || !savedInstanceState.containsKey(EXTRA_CHART_DAY_COUNT))
+		if (savedInstanceState == null || !savedInstanceState.containsKey(EXTRA_CHART_DAY_COUNT)) {
 			this.timePeriod = this.getIntent().getIntExtra(EXTRA_CHART_DAY_COUNT, DataManager.TIME_PERIOD_MONTH);
-		
-		this.setChartActivityListener(new IChartActivityListener() {
-			
-			@Override
-			public void onChartUpdateFinish() {
-				updateTitle(false);
-			}
-			
-			@Override
-			public void onChartUpdateBegin() {
-				updateTitle(true);
-			}
-		});
+		}
 		
 		try {
 			if (this.readData(this.getIntent())) {
@@ -76,7 +68,48 @@ public class StockChartActivity extends ChartActivity {
 			toast.show();
 		}
 	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.stock_chart_menu, menu);
+		return super.onCreateOptionsMenu(menu);
+	}
 
+
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.menu_chart_painting:
+			this.chartView.setEnablePainting(true);
+			this.chartView.setEnableTracking(false);
+			this.chartView.clear();
+			break;
+		case R.id.menu_chart_tracking:
+			this.chartView.setEnablePainting(false);
+			this.chartView.setEnableTracking(true);
+			this.chartView.clear();
+			break;
+		case R.id.menu_chart_clear:
+			this.chartView.clear();
+			break;
+		default:
+			break;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+
+
+
+	@Override
+	public void onChartUpdateFinish() {
+		updateTitle(false);
+	}
+	
+	@Override
+	public void onChartUpdateBegin() {
+		updateTitle(true);
+	}
 	
 	/**
 	 * build activity title according to content
@@ -89,14 +122,14 @@ public class StockChartActivity extends ChartActivity {
 			title += ": " + this.stockItem.getTicker();
 		}
 		title += " (" + this.getString(id) + ")";
-		if (loading)
+		if (loading) {
 			title += " - " + this.getString(R.string.loading);
+		}
 		this.setTitle(title);
 	}
 	
 	@Override
 	protected void onNavigateUp() {
-		//NavUtils.goUp(this, StocksActivity.class);
 		this.finish();
 	}
 }

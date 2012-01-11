@@ -4,5 +4,6 @@
     <color name="chartGrid">#903570E7</color>
     <color name="chartFill">#FF40C840</color>
     <color name="chartLine">#F000EF00</color>
+    <color name="chartPainting">#F0101010</color>
     
 </resources>
