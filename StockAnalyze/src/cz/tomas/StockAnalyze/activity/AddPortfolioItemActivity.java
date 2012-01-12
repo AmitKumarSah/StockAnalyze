@@ -225,8 +225,9 @@ public final class AddPortfolioItemActivity extends BaseActivity {
 			if (! manualFee) {
 				fee = calculateFee(price, count);
 			} else {
-				fee = FormattingUtils.getPriceFormat(market.getCurrency())
-					.parse(this.feeView.getText().toString()).doubleValue();
+//				fee = FormattingUtils.getPriceFormat(market.getCurrency())
+//					.parse(this.feeView.getText().toString()).doubleValue();
+				fee = Double.parseDouble(this.feeView.getText().toString());
 			}
 			setProgressBarVisibility(true);
 			AsyncTask<Void, Void, Void> task = new AddTask(fee, count, sell, price, market);
@@ -243,8 +244,9 @@ public final class AddPortfolioItemActivity extends BaseActivity {
 		
 		try {
 			NumberFormat priceFormat = FormattingUtils.getPriceFormat(this.stockItem.getMarket().getCurrency());
+			NumberFormat feeFormat = FormattingUtils.getVolumeFormat();
 			if (! this.manualFee) {
-				this.feeView.setText(priceFormat.format(fee));
+				this.feeView.setText(feeFormat.format(fee));
 			}
 			this.totalValueView.setText(priceFormat.format(value));
 		} catch (Exception e) {
