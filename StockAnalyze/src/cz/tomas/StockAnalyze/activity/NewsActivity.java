@@ -34,6 +34,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListView;
 
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
@@ -75,18 +76,20 @@ public class NewsActivity extends BaseFragmentActivity implements LoaderCallback
 				refresh();
 			}
 		});
-		listView.getAdapterView().setTextFilterEnabled(true);
-		listView.getAdapterView().setOnItemClickListener(new OnItemClickListener() {
+		final ListView refreshableView = listView.getRefreshableView();
+		refreshableView.setTextFilterEnabled(true);
+		refreshableView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long rowId) {
 				Intent intent = new Intent(NewsActivity.this, NewsDetailActivity.class);
-				intent.putExtra(EXTRA_NEWS_POSITION, position - listView.getAdapterView().getHeaderViewsCount());
+				intent.putExtra(EXTRA_NEWS_POSITION, position - refreshableView.getHeaderViewsCount());
 				startActivity(intent);
 			}
 		});
 		
 		this.adapter = new NewsListAdapter(this, null);
-		this.listView.getAdapterView().setAdapter(this.adapter);
+		refreshableView.setAdapter(this.adapter);
+		
 		this.getSupportLoaderManager().initLoader(0, null, this);
 	}
 	
@@ -105,6 +108,7 @@ public class NewsActivity extends BaseFragmentActivity implements LoaderCallback
 	public boolean onCreateOptionsMenu(Menu menu) {
 	    final MenuInflater inflater = getMenuInflater();
 	    inflater.inflate(R.menu.news_menu, menu);
+	    
 	    return super.onCreateOptionsMenu(menu);
 	}
 	
@@ -124,7 +128,6 @@ public class NewsActivity extends BaseFragmentActivity implements LoaderCallback
 	}
 
 	protected void refresh() {
-		this.getActionBarHelper().setRefreshActionItemState(true);
 		NewsRefreshTask task = new NewsRefreshTask();
 		task.execute();
 	}
@@ -155,12 +158,19 @@ public class NewsActivity extends BaseFragmentActivity implements LoaderCallback
 	private class NewsRefreshTask extends AsyncTask<Void, Integer, Void> {
 
 		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+
+			getActionBarHelper().setRefreshActionItemState(true);
+		}
+
+		@Override
 		protected Void doInBackground(Void... params) {
 			Rss rss = (Rss) getApplicationContext().getSystemService(Application.RSS_SERVICE);
 			try {
 				rss.fetchArticles();
 			} catch (Exception e) {
-				Log.e(Utils.LOG_TAG, "failed to refresh news");
+				Log.e(Utils.LOG_TAG, "failed to refresh news", e);
 			}
 			return null;
 		}

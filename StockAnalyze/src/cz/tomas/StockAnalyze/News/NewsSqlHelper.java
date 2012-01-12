@@ -62,7 +62,7 @@ public final class NewsSqlHelper extends AbstractSqlHelper {
 			ArticleColumns.URL, ArticleColumns.DATE, ArticleColumns.CONTENT, ArticleColumns.READ };
 	}
 	
-	private final static int DATABASE_VERSION_NUMBER = 2;
+	private final static int DATABASE_VERSION_NUMBER = 3;
 	
 	private final static String DATABASE_FILE_NAME = "news.db";
 
@@ -107,8 +107,12 @@ public final class NewsSqlHelper extends AbstractSqlHelper {
 //	private static final String SOURCE2= "http://feeds.reuters.com/reuters/globalmarketsNews";
 //	private static final String SOURCE_COUNTRY2 = "en";
 	
-	private static final String SOURCE_NAME2 = "marketwatch";
-	private static final String SOURCE2= "http://feeds.marketwatch.com/marketwatch/topstories/";
+//	private static final String SOURCE_NAME2 = "marketwatch";
+//	private static final String SOURCE2= "http://feeds.marketwatch.com/marketwatch/topstories/";
+//	private static final String SOURCE_COUNTRY2 = "en";
+	
+	private static final String SOURCE_NAME2 = "bussiness week";
+	private static final String SOURCE2= "http://www.businessweek.com/finance/index.rss";
 	private static final String SOURCE_COUNTRY2 = "en";
 	
 	private static final String SOURCE_NAME1 = "bloomberg";

@@ -7,7 +7,7 @@
     <LinearLayout
         android:id="@+id/newsArticleContainer"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent" 
+        android:layout_height="wrap_content" 
         android:orientation="vertical">
         <TextView android:id="@+id/newsArticleTitle"
         	style="@style/titleText"
@@ -27,7 +27,8 @@
         	android:layout_marginBottom="6dp"/>
         <FrameLayout android:id="@+id/newsArticleContentContainer" 
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent" />
+            android:layout_height="fill_parent" 
+            android:paddingBottom="7dp"/>
     </LinearLayout>
 </ScrollView>
 
