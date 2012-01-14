@@ -86,7 +86,7 @@ Never let go to the trades, which nature you do not fully understand. Trading an
     <string name="portfolioListHeader2">Total Value\nChange</string>
     <string name="portfolioListHeader3">Stock Price\nChange</string>
     <string name="portfolioFooterSum">Sum:"</string>
-    <string name="AddPortfolioItemActivityTitle">Add Stock to Portfolio</string>
+    <string name="AddPortfolioItemActivityTitle">Add to Portfolio</string>
     <string name="portfolioPickStock">Pick Stock</string>
     <string name="portfolioBalance">Balance:</string>
     <string name="portfolioBuyPrice">Buy price</string>

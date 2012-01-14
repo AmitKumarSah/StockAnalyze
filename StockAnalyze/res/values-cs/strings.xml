@@ -83,7 +83,7 @@ Nikdy se nepouštějte do obchodů, jejichž podstatě plně nerozumíte. Obchod
     <string name="portfolioListHeader2">Celková hodnota\nZměna</string>
     <string name="portfolioListHeader3">Cena akcie\nZměna</string>
     <string name="portfolioFooterSum">Suma:"</string>
-    <string name="AddPortfolioItemActivityTitle">Přidat akcii do portfolia</string>
+    <string name="AddPortfolioItemActivityTitle">Přidat do portfolia</string>
     <string name="portfolioPickStock">Vyberte akcii</string>
     <string name="portfolioBalance">Bilance:</string>
     <string name="portfolioBuyPrice">Kupní cena</string>

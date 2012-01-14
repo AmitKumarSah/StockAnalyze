@@ -116,8 +116,10 @@ public final class AddPortfolioItemActivity extends BaseActivity {
 			if (marketView != null && market != null) {
 				marketView.setText(market.getName());
 			}
-			if (stockItem != null && tickerView != null) {
+			if (stockItem != null) {
 				tickerView.setText(stockItem.getTicker());
+				
+				this.setTitle(String.format("%s %s", getText(R.string.AddPortfolioItemActivityTitle), stockItem.getName()));
 			}
 
 			if (feeView != null) {

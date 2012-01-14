@@ -18,98 +18,131 @@
 -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="fill_parent"
-	android:layout_height="fill_parent">
-<TableLayout
-	android:layout_width="fill_parent"
-	android:layout_height="fill_parent"
-	android:layout_margin="5dp"
-	android:padding="5dp"
-	android:stretchColumns="1">
+	android:layout_height="fill_parent" >
 
-	<TableRow>
-		<TextView android:id="@+id/TextViewPortfolioDeal" 
-			android:text="@string/portfolioDealPrompt" 
-			style="@style/tableItem">
-		</TextView>
-		
-		<Spinner android:id="@+id/portfolioAddSpinnerDeal" 
-			style="@style/tableItem"
-			android:focusable="true"
-			android:prompt="@string/portfolioDealPrompt"
-			android:entries="@array/portfolioDealArray">
-		</Spinner>
-	
-	</TableRow>
-	<TableRow>
-		<TextView android:id="@+id/TextView01" 
-			android:text="@string/portfolioTickerLabel" 
-			android:editable="false"
-			style="@style/tableItem">
-		</TextView>
-		<EditText android:id="@+id/portfolioAddTicker"
-			style="@style/tableItem" 
-			android:text="@+id/EditText01" android:editable="false">
-		</EditText>
-	</TableRow>
-	<TableRow>
-		<TextView android:id="@+id/TextView04"
-			android:text="@string/portfolioMarketLabel" 
-			style="@style/tableItem">
-		</TextView>
-		<EditText android:id="@+id/portfolioAddMarket" 
-			android:editable="false" 
-			android:text="@+id/TextView05"
-			style="@style/tableItem">
-		</EditText>
-	</TableRow>
-	<TableRow>
-		<TextView android:id="@+id/TextView02" 
-			android:text="@string/portfolioCountLabel" 
-			style="@style/tableItem" >
-		</TextView>
-		<EditText android:id="@+id/portfolioAddCount"
-			style="@style/tableItem" 
-			android:inputType="numberDecimal"
-			android:text="@string/portfolioDefaultStockCount">
-		</EditText>
-	</TableRow>
-	<TableRow>
-		<TextView android:id="@+id/TextView03" 
-			android:text="@string/portfolioPriceLabel" 
-			style="@style/tableItem">
-		</TextView>
-		<EditText android:id="@+id/portfolioAddPrice" 
-			style="@style/tableItem"
-			android:inputType="numberDecimal">
-		</EditText>
-	</TableRow>
-	<TableRow>
-		<TextView android:id="@+id/TextView04" 
-			android:text="@string/portfolioDealFee" 
-			style="@style/tableItem">
-		</TextView>
-		<EditText android:id="@+id/portfolioAddDealFee" 
-			style="@style/tableItem"
-			android:inputType="number">
-		</EditText>
-	</TableRow>
-	<TableRow>
-		<TextView android:id="@+id/TextView05" 
-			android:text="@string/portfolioDealTotalValue" 
-			style="@style/tableItem">
-		</TextView>
-		<TextView android:id="@+id/portfolioAddTotalValue" 
-			style="@style/tableItem"
-			android:padding="12dp"
-			android:inputType="number">
-		</TextView>
-	</TableRow>
-	<TableRow>
-		<Button android:id="@+id/portfolioAddButton"
-			android:layout_column="1"
-			style="@style/tableItem"
-			android:text="@string/addStockItemToPortfolio"
-			android:layout_marginTop="8dip"/>
-	</TableRow>
-</TableLayout>
+	<TableLayout
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:layout_margin="5dp"
+		android:padding="5dp"
+		android:stretchColumns="*" >
+
+		<TableRow>
+
+			<TextView
+				android:id="@+id/TextViewPortfolioDeal"
+				style="@style/tableItem"
+				android:text="@string/portfolioDealPrompt" >
+			</TextView>
+
+			<Spinner
+				android:id="@+id/portfolioAddSpinnerDeal"
+				style="@style/tableItem"
+				android:entries="@array/portfolioDealArray"
+				android:focusable="true"
+				android:prompt="@string/portfolioDealPrompt" >
+			</Spinner>
+		</TableRow>
+
+		<TableRow android:visibility="gone">
+
+			<TextView
+				style="@style/tableItem"
+				android:editable="false"
+				android:text="@string/portfolioTickerLabel" >
+			</TextView>
+
+			<TextView
+				android:id="@+id/portfolioAddTicker"
+				style="@style/tableItem"
+				android:editable="false"
+				android:text="@+id/EditText01" 
+				android:inputType="text">
+			</TextView>
+		</TableRow>
+
+		<TableRow android:visibility="gone">
+
+			<TextView
+				style="@style/tableItem"
+				android:text="@string/portfolioMarketLabel" >
+			</TextView>
+
+			<TextView
+				android:id="@+id/portfolioAddMarket"
+				style="@style/tableItem"
+				android:editable="false"
+				android:inputType="text">
+			</TextView>
+		</TableRow>
+
+		<TableRow>
+
+			<TextView
+				style="@style/tableItem"
+				android:text="@string/portfolioCountLabel" >
+			</TextView>
+
+			<EditText
+				android:id="@+id/portfolioAddCount"
+				style="@style/tableItem"
+				android:inputType="numberDecimal"
+				android:text="@string/portfolioDefaultStockCount" >
+			</EditText>
+		</TableRow>
+
+		<TableRow>
+
+			<TextView
+				style="@style/tableItem"
+				android:text="@string/portfolioPriceLabel" >
+			</TextView>
+
+			<EditText
+				android:id="@+id/portfolioAddPrice"
+				style="@style/tableItem"
+				android:inputType="numberDecimal" >
+			</EditText>
+		</TableRow>
+
+		<TableRow>
+
+			<TextView
+				style="@style/tableItem"
+				android:text="@string/portfolioDealFee" >
+			</TextView>
+
+			<EditText
+				android:id="@+id/portfolioAddDealFee"
+				style="@style/tableItem"
+				android:inputType="number" >
+			</EditText>
+		</TableRow>
+
+		<TableRow android:layout_marginTop="18dp">
+
+			<TextView
+				style="@style/tableItem"
+				android:text="@string/portfolioDealTotalValue"
+				android:textStyle="bold" >
+			</TextView>
+
+			<TextView
+				android:id="@+id/portfolioAddTotalValue"
+				style="@style/titleText"
+				android:inputType="number" >
+			</TextView>
+		</TableRow>
+
+		<TableRow>
+
+			<Button
+				android:id="@+id/portfolioAddButton"
+				style="@style/tableItem"
+				android:layout_column="1"
+				android:layout_marginTop="8dip"
+				android:text="@string/addStockItemToPortfolio" />
+		</TableRow>
+	</TableLayout>
+
 </ScrollView>
