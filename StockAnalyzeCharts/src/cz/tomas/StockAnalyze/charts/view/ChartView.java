@@ -20,9 +20,6 @@
  */
 package cz.tomas.StockAnalyze.charts.view;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -62,7 +59,7 @@ public class ChartView extends View {
 	/**
 	 * offset for whole chart (padding)
 	 */
-	private final float OFFSET = 12 * SCALE;
+	private final float OFFSET = 14 * SCALE;
 	
 	/**
 	 * pixels between axis text and axis itself
@@ -84,7 +81,6 @@ public class ChartView extends View {
 	private Number[] axisX;
 	private IChartTextFormatter<Number> formatter;
 	
-	private List<Path> paintingPaths;
 	private Path currentPaintingPath;
 	
 	/**
@@ -142,6 +138,7 @@ public class ChartView extends View {
 		this.textPaint = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
 		this.textPaint.setTypeface(Typeface.DEFAULT_BOLD);
 		this.textPaint.setTextAlign(Align.LEFT);
+		this.textPaint.setTextSize(SCALE * 8f);
 		
 		this.gridFillPaint = new Paint();
 		this.gridFillPaint.setStyle(Style.FILL_AND_STROKE);
@@ -181,7 +178,7 @@ public class ChartView extends View {
 		float originX = OFFSET + offsetNextToYAxis;								// x coord where the chart starts
 		float originY = this.getHeight() - OFFSET - offsetBelowXAxis;			// y coord where the chart starts
 		// originX & originY give us the start point of the chart,
-		// it is the lower left corner
+		// it is the lower left corner with value (0,0)
 		
 		final float chartWidth = this.getWidth() - 2 * OFFSET -offsetNextToYAxis ;
 		final float chartHeight = this.getHeight() - 2 * OFFSET - offsetBelowXAxis;
@@ -196,7 +193,7 @@ public class ChartView extends View {
 			}
 			final Canvas cacheCanvas = new Canvas(this.chartBitmap);
 			drawAxis(cacheCanvas, originX, originY, chartWidth);
-			drawAxisDescription(cacheCanvas, offsetBelowXAxis, offsetNextToYAxis, chartWidth, chartHeight);
+			drawAxisDescription(cacheCanvas, chartWidth, chartHeight, originX, originY);
 			
 			drawGrid(cacheCanvas,originX, originY, chartWidth, chartHeight);
 			
@@ -219,11 +216,6 @@ public class ChartView extends View {
 	}
 
 	private void drawPaintingPaths(Canvas canvas) {
-//		if (this.paintingPaths != null) {
-//			for (Path path : this.paintingPaths) {
-//				canvas.drawPath(path, this.paintingPaint);
-//			}
-//		}
 		if (this.currentPaintingPath != null && ! this.currentPaintingPath.isEmpty()) {
 			canvas.drawPath(this.currentPaintingPath, this.paintingPaint);
 		}
@@ -260,6 +252,7 @@ public class ChartView extends View {
 		if (this.data != null && this.data.length > 0) {
 			float startWidth = this.textPaint.measureText(String.valueOf(this.data[0]));
 			float endWidth = this.textPaint.measureText(String.valueOf(this.data[this.data.length - 1]));
+			
 			return (int) (Math.max(startWidth, endWidth) + 0.5f) + AXIS_TEXT_PADDING;
 		}
 		return 4;
@@ -267,7 +260,7 @@ public class ChartView extends View {
 
 	private int calculateXAxisDescriptionOffset() {
 		if (this.axisX != null && this.axisX.length > 0) {
-			return (int) (2 * this.textPaint.getTextSize() + AXIS_TEXT_PADDING);
+			return (int) (this.textPaint.getTextSize() + AXIS_TEXT_PADDING);
 		}
 		return 4;
 	}
@@ -383,28 +376,30 @@ public class ChartView extends View {
 		canvas.drawLine(originX, this.getHeight() - OFFSET/2, originX, 0 + OFFSET, this.paint);
 	}
 
-	private void drawAxisDescription(Canvas canvas, int offsetBelowXAxis, int offsetNextToYAxis, float chartWidth, float chartHeight) {
+	private void drawAxisDescription(Canvas canvas, float chartWidth, float chartHeight, 
+			float originX, float originY) {
 		// description next to y axis
+		final float textSize = this.textPaint.getTextSize();
 		if (this.data != null && this.data.length > 0) {
 			// bottom text is right above x=0 value to the left of y axis
 			canvas.drawText(String.valueOf(this.min), OFFSET, 
-					this.getHeight() - OFFSET - offsetBelowXAxis - AXIS_TEXT_PADDING, this.textPaint);
+					originY - textSize, this.textPaint);
 			
 			final String lastTickText = String.valueOf(max);
-			canvas.drawText(lastTickText, OFFSET, OFFSET + this.textPaint.getTextSize(),
+			canvas.drawText(lastTickText, OFFSET, OFFSET + textSize,
 					this.textPaint);
 		}
 
 		// description under the x axis
 		if (this.axisX != null && this.axisX.length > 0) {
 			String text = this.getFormattedValue(this.axisX[0]);
-			canvas.drawText(text, OFFSET + offsetNextToYAxis + AXIS_TEXT_PADDING, 
-					this.getHeight() - OFFSET - this.textPaint.getTextSize(), this.textPaint);
+			canvas.drawText(text, originX + AXIS_TEXT_PADDING, 
+					originY + textSize + AXIS_TEXT_PADDING, this.textPaint);
 			
 			text = this.getFormattedValue(this.axisX[this.axisX.length - 1]);
 			float textWidth = this.textPaint.measureText(text);
-			canvas.drawText(text, OFFSET + offsetNextToYAxis + chartWidth - textWidth, 
-					this.getHeight() - OFFSET - this.textPaint.getTextSize(), this.textPaint);
+			canvas.drawText(text, originX + chartWidth - textWidth, 
+					originY + textSize + AXIS_TEXT_PADDING, this.textPaint);
 		}
 	}
 	
@@ -421,10 +416,8 @@ public class ChartView extends View {
 
 	void setEnablePainting(boolean enabled) {
 		this.drawPainting = enabled;
-		if (! enabled && this.paintingPaths != null) {
-			this.paintingPaths.clear();
-		} else if (enabled) {
-			this.paintingPaths = new ArrayList<Path>();
+		if (! enabled && this.paint != null) {
+			this.currentPaintingPath.reset();
 		}
 	}
 	
@@ -458,7 +451,7 @@ public class ChartView extends View {
 		if (this.preparedData != null) {
 			if (this.drawTracking && this.trackingValueX != x) {
 				return onTrackingTouch(event);
-			} else if (this.drawPainting && this.paintingPaths != null) {
+			} else if (this.drawPainting) {
 				return onPaintingTouch(event);
 			}
 		}
@@ -528,9 +521,6 @@ public class ChartView extends View {
 	}
 
 	public void clear() {
-		if (this.paintingPaths != null) {
-			this.paintingPaths.clear();
-		}
 		if (this.currentPaintingPath != null) {
 			this.currentPaintingPath.reset();
 		}
