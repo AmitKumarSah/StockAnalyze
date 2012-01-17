@@ -180,46 +180,6 @@ public final class NewsSqlHelper extends SQLiteOpenHelper {
 		onCreate(db);
 	}
 
-//	/**
-//	 * insert new feed to db
-//	 */
-//	public boolean insertFeed(String title, URL url, String countryCode) throws SQLException {
-//		ContentValues values = new ContentValues();
-//		values.put(FeedColumns.TITLE, title);
-//		values.put(FeedColumns.URL, url.toString());
-//		values.put(FeedColumns.COUNTRY, countryCode);
-//
-//		SQLiteDatabase db = null;
-//		boolean inserted;
-//		try {
-//			db = super.getWritableDatabase();
-//			inserted = db.insert(FEEDS_TABLE_NAME, null, values) > 0;
-//		} finally {
-//			if (db != null) {
-//				db.close();
-//			}
-//		}
-//		return inserted;
-//	}
-
-	// /**
-	// * delete rss feed from db
-	// */
-	// public boolean deleteFeed(Long feedId) throws SQLException {
-	// SQLiteDatabase db = null;
-	// boolean deleted;
-	// try {
-	// db = super.getWritableDatabase();
-	// deleted = db.delete(FEEDS_TABLE_NAME,"_id=" + feedId.toString(), null) >
-	// 0;
-	// } finally {
-	// if (db != null) {
-	// db.close();
-	// }
-	// }
-	// return deleted;
-	// }
-
 	/**
 	 * insert one article to db
 	 */
@@ -236,14 +196,6 @@ public final class NewsSqlHelper extends SQLiteOpenHelper {
 		}
 		boolean result = (db.insert(ARTICLES_TABLE_NAME, null, values) > 0);
 		return result;
-	}
-
-	/**
-	 * delete articles from given feed
-	 */
-	public boolean deleteArticles(Long feedId, SQLiteDatabase db) throws SQLException {
-		int count = db.delete(ARTICLES_TABLE_NAME, ArticleColumns.ID + "=" + feedId.toString(), null);
-		return (count > 0);
 	}
 
 	/**
@@ -284,142 +236,6 @@ public final class NewsSqlHelper extends SQLiteOpenHelper {
 		}
 		return feeds;
 	}
-
-//	/**
-//	 * read all articles from database that belongs to the feed
-//	 * 
-//	 * @returns list of articles, if no articles were found, list would be empty
-//	 */
-//	public List<Article> getArticles(Long feedId) {
-//		return this.getArticles(feedId, DEFAULT_ARTICLE_LIMIT);
-//	}
-
-//	/**
-//	 * get all articles from all feeds
-//	 * 
-//	 * @return
-//	 */
-//	public List<Article> getArticles() {
-//		ArrayList<Article> articles = new ArrayList<Article>();
-//		Cursor c = null;
-//		SQLiteDatabase db = null;
-//		try {
-//			db = this.getWritableDatabase();
-//			c = db.query(ARTICLES_TABLE_NAME, new String[] { ArticleColumns.ID, ArticleColumns.FEED_ID,
-//					ArticleColumns.TITLE, ArticleColumns.DESCRIPTION, ArticleColumns.URL, ArticleColumns.DATE,
-//					ArticleColumns.CONTENT }, null, null, null, null, ArticleColumns.DATE + " DESC", null);
-//
-//			if (c.moveToFirst()) {
-//				do {
-//					Article article = new Article();
-//					article.setArticleId(c.getLong(0));
-//					article.setFeedId(c.getLong(1));
-//					article.setTitle(c.getString(2));
-//					article.setDescription(c.getString(3));
-//					article.setUrl(new URL(c.getString(4)));
-//					article.setDate(Long.parseLong(c.getString(5)));
-//					article.setContent(c.getString(6));
-//					articles.add(article);
-//				} while (c.moveToNext());
-//			} else {
-//				Log.d(Utils.LOG_TAG, "no articles present");
-//			}
-//		} catch (Exception e) {
-//			Log.e(Utils.LOG_TAG, e.toString());
-//		} finally {
-//			if (c != null) {
-//				c.close();
-//				this.close();
-//			}
-//		}
-//		return articles;
-//	}
-
-//	/**
-//	 * get cursor of all articles, but this method exclude article content
-//	 * 
-//	 * @returns cursor at first position
-//	 */
-//	public Cursor getAllArticlesCursor() {
-//		return this.getAllArticlesCursorInternal(ArticleColumns.BASE_PROJECTION);
-//	}
-//
-//	/**
-//	 * get cursor of all articles with full content
-//	 * 
-//	 * @returns cursor at first position
-//	 */
-//	public Cursor getAllFullArticlesCursor() {
-//		return this.getAllArticlesCursorInternal(ArticleColumns.FULL_PROJECTION);
-//	}
-//
-//	/**
-//	 * get cursor of articles ordered by date
-//	 * 
-//	 * @returns cursor at first position
-//	 * @param projection
-//	 *
-//	 */
-//	private Cursor getAllArticlesCursorInternal(String[] projection) {
-//		Cursor c = null;
-//		SQLiteDatabase db = null;
-//		try {
-//			db = this.getWritableDatabase();
-//			c = db.query(ARTICLES_TABLE_NAME, projection, null, null, null, null, ArticleColumns.DATE + " DESC", null);
-//
-//			if (!c.moveToFirst()) {
-//				Log.w(Utils.LOG_TAG, "articles cursor is empty");
-//			}
-//		} catch (Exception e) {
-//			Log.e(Utils.LOG_TAG, "failed to read articles cursor", e);
-//		} finally {
-//			this.close();
-//		}
-//		return c;
-//	}
-
-//	/**
-//	 * read articles limited by limit from database that belongs to the feed
-//	 * 
-//	 * @returns list of articles limited by limit, if no articles were found,
-//	 *          list would be empty
-//	 */
-//	public List<Article> getArticles(Long feedId, int limit) {
-//		ArrayList<Article> articles = new ArrayList<Article>();
-//		Cursor c = null;
-//		SQLiteDatabase db = null;
-//		try {
-//			db = this.getWritableDatabase();
-//			c = db.query(ARTICLES_TABLE_NAME, new String[] { ArticleColumns.ID, ArticleColumns.FEED_ID,
-//					ArticleColumns.TITLE, ArticleColumns.DESCRIPTION, ArticleColumns.URL, ArticleColumns.DATE,
-//					ArticleColumns.CONTENT }, ArticleColumns.FEED_ID + "=" + feedId.toString(), null, null, null,
-//					ArticleColumns.DATE + " DESC", String.valueOf(limit));
-//
-//			if (c.moveToFirst())
-//				do {
-//					Article article = new Article();
-//					article.setArticleId(c.getLong(0));
-//					article.setFeedId(c.getLong(1));
-//					article.setTitle(c.getString(2));
-//					article.setDescription(c.getString(3));
-//					article.setUrl(new URL(c.getString(4)));
-//					article.setDate(Long.parseLong(c.getString(5)));
-//					article.setContent(c.getString(6));
-//					articles.add(article);
-//				} while (c.moveToNext());
-//			else
-//				Log.d(Utils.LOG_TAG, "no articles present in feed " + String.valueOf(feedId));
-//		} catch (Exception e) {
-//			Log.e(Utils.LOG_TAG, e.toString());
-//		} finally {
-//			if (db != null) {
-//				if (c != null)
-//					c.close();
-//				this.close();
-//			}
-//		}
-//		return articles;
-//	}
 
 	/**
 	 * insert articles to the feed in transaction
@@ -476,12 +292,5 @@ public final class NewsSqlHelper extends SQLiteOpenHelper {
 		int deletedCount = db.delete(ARTICLES_TABLE_NAME, where, new String[] { String.valueOf(FLAG_TO_DELETE),
 				String.valueOf(feedId) });
 		Log.d(Utils.LOG_TAG, "deleted old articles: " + deletedCount);
-	}
-
-	@Override
-	public synchronized void close() {
-		// TODO Auto-generated method stub
-		super.close();
-	}
-	
+	}	
 }

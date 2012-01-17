@@ -126,7 +126,6 @@ public final class NewsContentProvider extends ContentProvider {
 			throw new IllegalArgumentException("Unknown URI " + uri);	
 		}
 		
-		//final String[] projection = NewsSqlHelper.ArticleColumns.BASE_PROJECTION;
 		Cursor cursor = qb.query(db, projection, null, null, null, null, sortOrder);
 		cursor.setNotificationUri(getContext().getContentResolver(), uri);
 		return cursor;

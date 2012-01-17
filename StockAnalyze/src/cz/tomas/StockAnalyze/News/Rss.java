@@ -57,20 +57,6 @@ public class Rss {
 		this.sqlHelper = NewsSqlHelper.getInstance(context);
 		this.context = context;
 	}
-
-//	/**
-//	 * insert new feed to database - does NOT check for duplicates
-//	 */
-//	public boolean insertFeed(String title, URL url, String countryCode) {
-//		return this.sqlHelper.insertFeed(title, url, countryCode);
-//	}
-	
-//	/**
-//	 * delete feed from database by its id
-//	 */
-//	public void deleteFeed(long feedId) {
-//		this.sqlHelper.deleteFeed(feedId);
-//	}
 	
 	/**
 	 * download and save new articles from all feeds to database
@@ -102,24 +88,8 @@ public class Rss {
 			db = this.sqlHelper.getWritableDatabase();
 			db.beginTransaction();
 			
-			//this.sqlHelper.acquireDb(this);
-			//presentArticles = this.getArticles(feed.getFeedId());
 			this.sqlHelper.markArticlesToDelete(db);
 			
-			// prevent duplicities
-//			if (downloadedArticles.size() > 0) {
-//				for (Article presentArticle : presentArticles) {
-//					for (int i = 0; i < downloadedArticles.size(); i++) {
-//						final Article downloadedArticle = downloadedArticles.get(i);
-//						
-//						if (presentArticle.getUrl().equals(downloadedArticle.getUrl())) {
-//							downloadedArticles.remove(i);
-//							presentFreshArticles.add(String.valueOf(presentArticle.getArticleId()));
-//							break;
-//						}
-//					}
-//				}
-//			}
 			//get list of entries existing in db
 			final Map<String, Integer> existing = new HashMap<String, Integer>();
 			final Cursor c = db.query(NewsSqlHelper.ARTICLES_TABLE_NAME, new String[] { ArticleColumns.URL, ArticleColumns.ID}, null, null, null, null, null);
@@ -157,7 +127,6 @@ public class Rss {
 		} finally {
 			if (db != null) {
 				db.endTransaction();
-				//this.sqlHelper.releaseDb(true, this);
 				db.close();
 			}
 		}
@@ -166,8 +135,7 @@ public class Rss {
 	private void downloadContent(Article article) throws IOException {
 		byte[] content = DownloadService.GetInstance().DownloadFromUrl(article.getMobilizedUrl(), false);
 		String html = new String(content);
-		//article.setContent(html);
-		//this.sqlHelper.updateArticleContent(article);
+		
 		ContentValues values = new ContentValues();
 		values.put(NewsSqlHelper.ArticleColumns.CONTENT, html);
 		this.context.getContentResolver().update(NewsContentProvider.CONTENT_URI, values, null, null);
@@ -183,36 +151,7 @@ public class Rss {
 				Log.e(Utils.LOG_TAG, "failed to download and save content of article " + article, e);
 			}
 		}
-//		try {
-//			this.sqlHelper.acquireDb(this);
-//			for (Article article : list) {
-//				try {
-//					if (TextUtils.isEmpty(article.getContent())) {
-//						this.downloadContent(article);
-//					}
-//				} catch (Exception e) {
-//					Log.e(Utils.LOG_TAG, "failed to download content of article " + article, e);
-//				}
-//			}
-//		} finally {
-//			this.sqlHelper.releaseDb(true, this);
-//		}
 	}
-
-//	/**
-//	 * get all articles in database
-//	 * @return
-//	 */
-//	public List<Article> getArticles() {
-//		return this.sqlHelper.getArticles();
-//	}
-	
-//	/**
-//	 * get all articles from given feed that are stored in database
-//	 */
-//	public List<Article> getArticles(long feedId) {
-//		return this.sqlHelper.getArticles(feedId);
-//	}
 
 	/**
 	 * get all feeds stored in database
@@ -221,6 +160,11 @@ public class Rss {
 		return this.sqlHelper.getFeeds();
 	}
 	
+	/**
+	 * task to download html content of articles
+	 * @author tomas
+	 *
+	 */
 	private final class FetchContentTask extends Thread {
 
 		private List<Article> articles;

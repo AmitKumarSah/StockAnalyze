@@ -84,6 +84,7 @@ public final class NewsDetailActivity extends BaseFragmentActivity
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == R.id.menu_share) {
 			Article article = adapter.getArticle(this.currentPosition);
+			
 			Intent intent = new Intent(Intent.ACTION_SEND);
 			intent.setType("text/plain");
 			intent.putExtra(Intent.EXTRA_SUBJECT, article.getTitle());
@@ -91,6 +92,7 @@ public final class NewsDetailActivity extends BaseFragmentActivity
 			startActivity(Intent.createChooser(intent, getText(R.string.share)));
 		} else if (item.getItemId() == R.id.menu_browser) {
 			Article article = adapter.getArticle(this.currentPosition);
+			
 			Intent intent = new Intent(Intent.ACTION_VIEW);
 			intent.setData(Uri.parse(article.getUrl().toString()));
 			startActivity(Intent.createChooser(intent, getText(R.string.share)));
@@ -119,7 +121,6 @@ public final class NewsDetailActivity extends BaseFragmentActivity
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-		//return new NewsLoader(this, NewsLoader.MODE_FULL);
 		return new CursorLoader(this, NewsContentProvider.ARTICLES_CONTENT_URI, NewsSqlHelper.ArticleColumns.FULL_PROJECTION, null, null, null);
 	}
 
