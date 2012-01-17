@@ -26,6 +26,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.Menu;
@@ -41,8 +42,9 @@ import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 import cz.tomas.StockAnalyze.Application;
 import cz.tomas.StockAnalyze.R;
+import cz.tomas.StockAnalyze.News.NewsContentProvider;
 import cz.tomas.StockAnalyze.News.NewsListAdapter;
-import cz.tomas.StockAnalyze.News.NewsLoader;
+import cz.tomas.StockAnalyze.News.NewsSqlHelper;
 import cz.tomas.StockAnalyze.News.Rss;
 import cz.tomas.StockAnalyze.activity.base.BaseFragmentActivity;
 import cz.tomas.StockAnalyze.utils.NavUtils;
@@ -139,7 +141,7 @@ public class NewsActivity extends BaseFragmentActivity implements LoaderCallback
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-		return new NewsLoader(this, NewsLoader.MODE_PEREX);
+		return new CursorLoader(this, NewsContentProvider.ARTICLES_CONTENT_URI, NewsSqlHelper.ArticleColumns.BASE_PROJECTION, null, null, null);
 	}
 
 	@Override
@@ -177,8 +179,6 @@ public class NewsActivity extends BaseFragmentActivity implements LoaderCallback
 
 		@Override
 		protected void onPostExecute(Void result) {
-			super.onPostExecute(result);
-			//getSupportLoaderManager().restartLoader(0, null, NewsActivity.this);
-		}
+			super.onPostExecute(result);		}
 	}
 }

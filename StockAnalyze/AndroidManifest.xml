@@ -70,8 +70,8 @@
 		    android:logo="@drawable/ic_up_portfolio"
 		    android:label="@string/activityPortfolioDetail"/>
 		<activity android:name=".activity.AddPortfolioItemActivity"
-		    android:logo="@drawable/ic_app"
-			android:label="@string/AddPortfolioItemActivityTitle"></activity>
+			android:label="@string/AddPortfolioItemActivityTitle"
+		    android:logo="@drawable/ic_up_portfolio"/>
 		<activity android:name=".activity.NewsActivity"
 		    android:logo="@drawable/ic_up_rss"
 		    android:launchMode="singleTop"  
@@ -94,6 +94,11 @@
 <!-- 		</receiver> -->
 		<receiver android:name=".receivers.AlarmReceiver"></receiver>
 		
+		<provider
+			android:name="cz.tomas.StockAnalyze.News.NewsContentProvider"
+			android:authorities="cz.tomas.stockanalyze.news.newscontentprovider"
+			android:exported="false" />
+
 		<meta-data android:name="com.google.android.backup.api_key"
 	    	android:value="AEdPqrEAAAAI5tOZR9ZhnQEr6WbFhN7YQhc9URK9cYnz7k-KdQ" />
 	</application>

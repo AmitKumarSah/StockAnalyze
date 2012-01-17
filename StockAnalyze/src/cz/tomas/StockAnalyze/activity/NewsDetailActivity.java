@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
@@ -16,7 +17,8 @@ import android.view.View;
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.News.Article;
 import cz.tomas.StockAnalyze.News.ArticlePagerAdapter;
-import cz.tomas.StockAnalyze.News.NewsLoader;
+import cz.tomas.StockAnalyze.News.NewsContentProvider;
+import cz.tomas.StockAnalyze.News.NewsSqlHelper;
 import cz.tomas.StockAnalyze.activity.base.BaseFragmentActivity;
 import cz.tomas.StockAnalyze.ui.widgets.CirclesView;
 import cz.tomas.StockAnalyze.utils.NavUtils;
@@ -117,7 +119,8 @@ public final class NewsDetailActivity extends BaseFragmentActivity
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-		return new NewsLoader(this, NewsLoader.MODE_FULL);
+		//return new NewsLoader(this, NewsLoader.MODE_FULL);
+		return new CursorLoader(this, NewsContentProvider.ARTICLES_CONTENT_URI, NewsSqlHelper.ArticleColumns.FULL_PROJECTION, null, null, null);
 	}
 
 	@Override

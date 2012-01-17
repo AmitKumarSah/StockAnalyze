@@ -21,16 +21,19 @@
 package cz.tomas.StockAnalyze.News;
 
 import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 import android.util.Log;
 import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetNewsException;
+import cz.tomas.StockAnalyze.News.NewsSqlHelper.ArticleColumns;
 import cz.tomas.StockAnalyze.utils.DownloadService;
 import cz.tomas.StockAnalyze.utils.Utils;
 
@@ -41,14 +44,10 @@ import cz.tomas.StockAnalyze.utils.Utils;
  */
 public class Rss {
 	
-	interface IFetchListener {
-		void onDataFetched();
-	}
-	
 	final XmlFeedPullParseHandler handler;
 	final NewsSqlHelper sqlHelper;
+	private final Context context;
 	
-	private final List<IFetchListener> listeners;
 
 	/**
 	 * constructor, Context is required to connect to database
@@ -56,58 +55,34 @@ public class Rss {
 	public Rss(Context context) {
 		this.handler = new XmlFeedPullParseHandler(context);
 		this.sqlHelper = NewsSqlHelper.getInstance(context);
-		this.listeners = new ArrayList<Rss.IFetchListener>();
+		this.context = context;
 	}
 
-	public void addListener(IFetchListener listener) {
-		if (listener == null) {
-			return; 
-		}
-		this.listeners.add(listener);
-	}
+//	/**
+//	 * insert new feed to database - does NOT check for duplicates
+//	 */
+//	public boolean insertFeed(String title, URL url, String countryCode) {
+//		return this.sqlHelper.insertFeed(title, url, countryCode);
+//	}
 	
-	public boolean removeListener(IFetchListener listener) {
-		return this.listeners.remove(listener);
-	}
-
-	/**
-	 * insert new feed to database - does NOT check for duplicates
-	 */
-	public boolean insertFeed(String title, URL url, String countryCode) {
-		return this.sqlHelper.insertFeed(title, url, countryCode);
-	}
-	
-	/**
-	 * delete feed from database by its id
-	 */
-	public void deleteFeed(long feedId) {
-		this.sqlHelper.deleteFeed(feedId);
-	}
-	
-	/**
-	 * delete all articles from given feed
-	 */
-	public void deleteArticles(long feedId) {
-		this.sqlHelper.deleteArticles(feedId);
-	}
+//	/**
+//	 * delete feed from database by its id
+//	 */
+//	public void deleteFeed(long feedId) {
+//		this.sqlHelper.deleteFeed(feedId);
+//	}
 	
 	/**
 	 * download and save new articles from all feeds to database
 	 */
 	public void fetchArticles() {
-		List<Feed> feeds = getFeeds();
+		Collection<Feed> feeds = getFeeds();
 
-		this.sqlHelper.acquireDb(this);
-		try {
-			for (Feed feed : feeds) {
-				this.fetchArticles(feed);
-			}
-			for (IFetchListener listener : this.listeners) {
-				listener.onDataFetched();
-			}
-		} finally {
-			this.sqlHelper.releaseDb(true, this);
+		for (Feed feed : feeds) {
+			this.fetchArticles(feed);
 		}
+
+		this.context.getContentResolver().notifyChange(NewsContentProvider.ARTICLES_CONTENT_URI, null, false);
 	}
 	
 	/**
@@ -119,48 +94,71 @@ public class Rss {
 			downloadedArticles = this.handler.fetchArticles(feed);
 		} catch (Exception e) {
 			Log.e(Utils.LOG_TAG, "failed to download new articles", e);
-			String message = "failed to download updated news ";
-			throw new FailedToGetNewsException(message, e);
+			throw new FailedToGetNewsException("failed to download updated news ", e);
 		}
-		List<Article> presentArticles;
-		List<String> presentFreshArticles = new ArrayList<String>();	// present articles, that were also downloaded
+		Map<Article, String> presentFreshArticles = new HashMap<Article, String>();	// present articles, that were also downloaded
 		SQLiteDatabase db = null; 		
 		try {
 			db = this.sqlHelper.getWritableDatabase();
 			db.beginTransaction();
-			this.sqlHelper.acquireDb(this);
-			presentArticles = this.getArticles(feed.getFeedId());
-			this.sqlHelper.markArticlesToDelete();
+			
+			//this.sqlHelper.acquireDb(this);
+			//presentArticles = this.getArticles(feed.getFeedId());
+			this.sqlHelper.markArticlesToDelete(db);
 			
 			// prevent duplicities
-			if (downloadedArticles.size() > 0) {
-				for (Article presentArticle : presentArticles) {
-					for (int i = 0; i < downloadedArticles.size(); i++) {
-						final Article downloadedArticle = downloadedArticles.get(i);
-						
-						if (presentArticle.getUrl().equals(downloadedArticle.getUrl())) {
-							downloadedArticles.remove(i);
-							presentFreshArticles.add(String.valueOf(presentArticle.getArticleId()));
-							break;
-						}
-					}
+//			if (downloadedArticles.size() > 0) {
+//				for (Article presentArticle : presentArticles) {
+//					for (int i = 0; i < downloadedArticles.size(); i++) {
+//						final Article downloadedArticle = downloadedArticles.get(i);
+//						
+//						if (presentArticle.getUrl().equals(downloadedArticle.getUrl())) {
+//							downloadedArticles.remove(i);
+//							presentFreshArticles.add(String.valueOf(presentArticle.getArticleId()));
+//							break;
+//						}
+//					}
+//				}
+//			}
+			//get list of entries existing in db
+			final Map<String, Integer> existing = new HashMap<String, Integer>();
+			final Cursor c = db.query(NewsSqlHelper.ARTICLES_TABLE_NAME, new String[] { ArticleColumns.URL, ArticleColumns.ID}, null, null, null, null, null);
+			try {
+				while (c.moveToNext()) {
+					final int indexLink = c.getColumnIndex(ArticleColumns.URL);
+					final int indexId = c.getColumnIndex(ArticleColumns.ID);
+					existing.put(c.getString(indexLink), c.getInt(indexId));
+				}
+			} finally {
+				c.close();
+			}
+			
+			for (Article article : downloadedArticles) {
+				final String key = article.getUrl().toString();
+				if (existing.containsKey(key)) {
+					presentFreshArticles.put(article, String.valueOf(existing.get(key)));
 				}
 			}
+			for (Article article : presentFreshArticles.keySet()) {
+				downloadedArticles.remove(article);
+			}
+			
 			if (downloadedArticles.size() > 0) {
-				this.sqlHelper.insertArticles(feed.getFeedId(), downloadedArticles);
+				this.sqlHelper.insertArticles(feed.getFeedId(), downloadedArticles, db);
 			}
 			if (presentFreshArticles.size() > 0) {
-				this.sqlHelper.markArticlesFresh(presentFreshArticles);
+				this.sqlHelper.markArticlesFresh(presentFreshArticles.values(), db);
 			}
-			this.sqlHelper.deleteOldArticles(feed.getFeedId());
+			this.sqlHelper.deleteOldArticles(feed.getFeedId(), db);
 			db.setTransactionSuccessful();
+			
 			final FetchContentTask task = new FetchContentTask(downloadedArticles);
 			task.start();
 		} finally {
 			if (db != null) {
 				db.endTransaction();
-				this.sqlHelper.releaseDb(true, this);
-				this.sqlHelper.close();
+				//this.sqlHelper.releaseDb(true, this);
+				db.close();
 			}
 		}
 	}
@@ -168,61 +166,58 @@ public class Rss {
 	private void downloadContent(Article article) throws IOException {
 		byte[] content = DownloadService.GetInstance().DownloadFromUrl(article.getMobilizedUrl(), false);
 		String html = new String(content);
-		article.setContent(html);
-		this.sqlHelper.updateArticleContent(article);
+		//article.setContent(html);
+		//this.sqlHelper.updateArticleContent(article);
+		ContentValues values = new ContentValues();
+		values.put(NewsSqlHelper.ArticleColumns.CONTENT, html);
+		this.context.getContentResolver().update(NewsContentProvider.CONTENT_URI, values, null, null);
 	}
 
 	public void downloadContent(List<Article> list) {
-		try {
-			this.sqlHelper.acquireDb(this);
-			for (Article article : list) {
-				try {
-					if (TextUtils.isEmpty(article.getContent())) {
-						this.downloadContent(article);
-					}
-				} catch (Exception e) {
-					Log.e(Utils.LOG_TAG, "failed to download content of article " + article, e);
+		for (Article article : list) {
+			try {
+				if (TextUtils.isEmpty(article.getContent())) {
+					this.downloadContent(article);
 				}
+			} catch (Exception e) {
+				Log.e(Utils.LOG_TAG, "failed to download and save content of article " + article, e);
 			}
-		} finally {
-			this.sqlHelper.releaseDb(true, this);
 		}
-	}
-	
-	public Cursor getAllArticlesCursor() {
-		return this.sqlHelper.getAllArticlesCursor();
-	}
-	
-	public Cursor getAllFullArticlesCursor() {
-		return this.sqlHelper.getAllArticlesCursor();
+//		try {
+//			this.sqlHelper.acquireDb(this);
+//			for (Article article : list) {
+//				try {
+//					if (TextUtils.isEmpty(article.getContent())) {
+//						this.downloadContent(article);
+//					}
+//				} catch (Exception e) {
+//					Log.e(Utils.LOG_TAG, "failed to download content of article " + article, e);
+//				}
+//			}
+//		} finally {
+//			this.sqlHelper.releaseDb(true, this);
+//		}
 	}
 
-	/**
-	 * get all articles in database
-	 * @return
-	 */
-	public List<Article> getArticles() {
-		return this.sqlHelper.getArticles();
-	}
+//	/**
+//	 * get all articles in database
+//	 * @return
+//	 */
+//	public List<Article> getArticles() {
+//		return this.sqlHelper.getArticles();
+//	}
 	
-	/**
-	 * get all articles from given feed that are stored in database
-	 */
-	public List<Article> getArticles(long feedId) {
-		return this.sqlHelper.getArticles(feedId);
-	}
-	 
-	/**
-	 * get articles from given feed, limited by limit
-	 */
-	public List<Article> getArticles(long feedId, int limit) {
-		return this.sqlHelper.getArticles(feedId, limit);
-	}
+//	/**
+//	 * get all articles from given feed that are stored in database
+//	 */
+//	public List<Article> getArticles(long feedId) {
+//		return this.sqlHelper.getArticles(feedId);
+//	}
 
 	/**
 	 * get all feeds stored in database
 	 */
-	public List<Feed> getFeeds() {
+	public Collection<Feed> getFeeds() {
 		return this.sqlHelper.getFeeds();
 	}
 	
