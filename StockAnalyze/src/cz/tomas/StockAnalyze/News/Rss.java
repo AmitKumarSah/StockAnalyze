@@ -23,13 +23,14 @@ package cz.tomas.StockAnalyze.News;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetNewsException;
@@ -38,13 +39,13 @@ import cz.tomas.StockAnalyze.utils.DownloadService;
 import cz.tomas.StockAnalyze.utils.Utils;
 
 /**
- * Facade for rss handling - using {@link XmlFeedPullParseHandler} and {@link NewsSqlHelper}
+ * Facade for rss handling - using {@link RssProcessor} and {@link NewsSqlHelper}
  * @author tomas
  *
  */
 public class Rss {
 	
-	final XmlFeedPullParseHandler handler;
+	final RssProcessor handler;
 	final NewsSqlHelper sqlHelper;
 	private final Context context;
 	
@@ -53,7 +54,7 @@ public class Rss {
 	 * constructor, Context is required to connect to database
 	 */
 	public Rss(Context context) {
-		this.handler = new XmlFeedPullParseHandler(context);
+		this.handler = new RssProcessor(context);
 		this.sqlHelper = NewsSqlHelper.getInstance(context);
 		this.context = context;
 	}
@@ -75,7 +76,7 @@ public class Rss {
 	 * download and save new articles from given feed to database
 	 */
 	public void fetchArticles(Feed feed) throws FailedToGetNewsException {
-		List<Article> downloadedArticles = null;
+		Collection<Article> downloadedArticles = null;
 		try {
 			downloadedArticles = this.handler.fetchArticles(feed);
 		} catch (Exception e) {
@@ -114,16 +115,28 @@ public class Rss {
 			}
 			
 			if (downloadedArticles.size() > 0) {
-				this.sqlHelper.insertArticles(feed.getFeedId(), downloadedArticles, db);
+				long[] ids = this.sqlHelper.insertArticles(feed.getFeedId(), downloadedArticles, db);
+				int index = 0;
+				for (Article article : downloadedArticles) {
+					article.setArticleId(ids[index]);
+					index++;
+				}
 			}
+
+			final FetchContentTask task = new FetchContentTask(downloadedArticles);
+			task.start();
+			
 			if (presentFreshArticles.size() > 0) {
 				this.sqlHelper.markArticlesFresh(presentFreshArticles.values(), db);
 			}
 			this.sqlHelper.deleteOldArticles(feed.getFeedId(), db);
 			db.setTransactionSuccessful();
-			
-			final FetchContentTask task = new FetchContentTask(downloadedArticles);
-			task.start();
+			try {
+				task.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+//			downloadContent(downloadedArticles);
 		} finally {
 			if (db != null) {
 				db.endTransaction();
@@ -132,20 +145,22 @@ public class Rss {
 		}
 	}
 
-	private void downloadContent(Article article) throws IOException {
+	private void downloadArticleContent(Article article) throws IOException {
 		byte[] content = DownloadService.GetInstance().DownloadFromUrl(article.getMobilizedUrl(), false);
 		String html = new String(content);
 		
 		ContentValues values = new ContentValues();
 		values.put(NewsSqlHelper.ArticleColumns.CONTENT, html);
-		this.context.getContentResolver().update(NewsContentProvider.CONTENT_URI, values, null, null);
+
+		final Uri uri = ContentUris.withAppendedId(NewsContentProvider.CONTENT_URI, article.getArticleId());
+		this.context.getContentResolver().update(uri, values, null, null);
 	}
 
-	public void downloadContent(List<Article> list) {
+	private void downloadContent(Collection<Article> list) {
 		for (Article article : list) {
 			try {
 				if (TextUtils.isEmpty(article.getContent())) {
-					this.downloadContent(article);
+					this.downloadArticleContent(article);
 				}
 			} catch (Exception e) {
 				Log.e(Utils.LOG_TAG, "failed to download and save content of article " + article, e);
@@ -167,9 +182,9 @@ public class Rss {
 	 */
 	private final class FetchContentTask extends Thread {
 
-		private List<Article> articles;
+		private final Collection<Article> articles;
 		
-		public FetchContentTask(List<Article> articles) {
+		public FetchContentTask(Collection<Article> articles) {
 			this.articles = articles;
 		}
 

@@ -86,7 +86,7 @@
 			<EditText
 				android:id="@+id/portfolioAddCount"
 				style="@style/tableItem"
-				android:inputType="numberDecimal"
+				android:inputType="number"
 				android:text="@string/portfolioDefaultStockCount" >
 			</EditText>
 		</TableRow>
@@ -115,7 +115,7 @@
 			<EditText
 				android:id="@+id/portfolioAddDealFee"
 				style="@style/tableItem"
-				android:inputType="number" >
+				android:inputType="numberDecimal" >
 			</EditText>
 		</TableRow>
 

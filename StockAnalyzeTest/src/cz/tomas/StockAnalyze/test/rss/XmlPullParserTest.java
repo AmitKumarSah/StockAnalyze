@@ -25,7 +25,7 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import cz.tomas.StockAnalyze.News.Article;
 import cz.tomas.StockAnalyze.News.Feed;
-import cz.tomas.StockAnalyze.News.XmlFeedPullParseHandler;
+import cz.tomas.StockAnalyze.News.RssProcessor;
 
 import android.content.Context;
 import android.test.AndroidTestCase;
@@ -88,7 +88,7 @@ public class XmlPullParserTest extends AndroidTestCase {
     }
 	
 	public void testFetchArticlesCount() throws XmlPullParserException {
-		XmlFeedPullParseHandler handler = new XmlFeedPullParseHandler();
+		RssProcessor handler = new RssProcessor();
 		List<Article> articles = handler.parse(this.feed);
 		
 		assertEquals(15, articles.size());
@@ -98,7 +98,7 @@ public class XmlPullParserTest extends AndroidTestCase {
 		String articleTitle = "Technická analýza RWE";
 		String articleContent = "Dnes jsme zveřejnili technickou analýzu německé společnosti RWE.brbrpAnalýzu naleznete v přiloženém souboru.ppbrDaniel Marván, Fio banka, a.s.p";
 		
-		XmlFeedPullParseHandler handler = new XmlFeedPullParseHandler();
+		RssProcessor handler = new RssProcessor();
 		List<Article> articles = handler.parse(this.feed);
 		if (articles.size() > 0) {
 			Article article = articles.get(0);

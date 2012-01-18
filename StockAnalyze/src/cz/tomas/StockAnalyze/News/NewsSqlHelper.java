@@ -183,7 +183,7 @@ public final class NewsSqlHelper extends SQLiteOpenHelper {
 	/**
 	 * insert one article to db
 	 */
-	public boolean insertArticle(SQLiteDatabase db, Long feedId, String title, URL url, String description, long date,
+	public long insertArticle(SQLiteDatabase db, Long feedId, String title, URL url, String description, long date,
 			String content) throws SQLException {
 		ContentValues values = new ContentValues();
 		values.put(ArticleColumns.FEED_ID, feedId);
@@ -194,8 +194,7 @@ public final class NewsSqlHelper extends SQLiteOpenHelper {
 		if (content != null) {
 			values.put("content", content);
 		}
-		boolean result = (db.insert(ARTICLES_TABLE_NAME, null, values) > 0);
-		return result;
+		return db.insert(ARTICLES_TABLE_NAME, null, values);
 	}
 
 	/**
@@ -240,12 +239,15 @@ public final class NewsSqlHelper extends SQLiteOpenHelper {
 	/**
 	 * insert articles to the feed in transaction
 	 */
-	public void insertArticles(long feedId, Collection<Article> articles, SQLiteDatabase db) {
+	public long[] insertArticles(long feedId, Collection<Article> articles, SQLiteDatabase db) {
+		long[] ids = new long[articles.size()];
 		try {
 			db.beginTransaction();
+			int index = 0;
 			for (Article article : articles) {
-				this.insertArticle(db, feedId, article.getTitle(), article.getUrl(), article.getDescription(),
+				ids[index] = this.insertArticle(db, feedId, article.getTitle(), article.getUrl(), article.getDescription(),
 						article.getDate(), article.getContent());
+				index++;
 			}
 			db.setTransactionSuccessful();
 		} finally {
@@ -253,6 +255,7 @@ public final class NewsSqlHelper extends SQLiteOpenHelper {
 				db.endTransaction();
 			}
 		}
+		return ids;
 	}
 
 	/**

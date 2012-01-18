@@ -145,14 +145,12 @@ public final class AddPortfolioItemActivity extends BaseActivity {
 					public void onClick(View v) {
 						addButton.setEnabled(false);
 						// check if all fields are filled
-						if (priceView.getText() == null || countView.getText() == null ||
-								marketView.getText() == null || tickerView.getText() == null) {
+						if (priceView.getText() == null || countView.getText() == null) {
 							Toast.makeText(AddPortfolioItemActivity.this, R.string.portfolioValidationMessage, Toast.LENGTH_SHORT).show();
-							addButton.setEnabled(true);
 						} else if (market != null && stockItem != null) {
-							addItemToPortfolio(market, dealSpinner);
+							addItemToPortfolio(market, dealSpinner, addButton);
 						}
-						return;
+						addButton.setEnabled(true);
 					}
 				});
 			}
@@ -215,7 +213,7 @@ public final class AddPortfolioItemActivity extends BaseActivity {
 	}
 	
 
-	protected void addItemToPortfolio(final Market market, final Spinner dealSpinner) {
+	protected void addItemToPortfolio(final Market market, final Spinner dealSpinner, Button addButton) {
 		try {
 			final long count = Long.parseLong(countView.getText().toString());
 			final String deal = dealSpinner.getSelectedItem().toString();
@@ -229,10 +227,18 @@ public final class AddPortfolioItemActivity extends BaseActivity {
 			} else {
 //				fee = FormattingUtils.getPriceFormat(market.getCurrency())
 //					.parse(this.feeView.getText().toString()).doubleValue();
-				fee = Double.parseDouble(this.feeView.getText().toString());
+				String feeText = this.feeView.getText().toString();
+				if (! TextUtils.isEmpty(feeText)) {
+					try {
+						feeText = feeText.replace(',', '.');
+						fee = Double.parseDouble(feeText);
+					} catch (Exception e) {
+						Log.w(Utils.LOG_TAG, "failed to parse fee", e);
+					}
+				}
 			}
 			setProgressBarVisibility(true);
-			AsyncTask<Void, Void, Void> task = new AddTask(fee, count, sell, price, market);
+			AsyncTask<Void, Void, Void> task = new AddTask(fee, count, sell, price, market, addButton);
 			task.execute();
 		} catch (Exception e) {
 			Log.e(Utils.LOG_TAG, "failed to parse data from add portfolio layout", e);
@@ -272,7 +278,7 @@ public final class AddPortfolioItemActivity extends BaseActivity {
 	 * @author tomas
 	 *
 	 */
-	class DayDataTask extends AsyncTask<StockItem, Integer, Float> {
+	private class DayDataTask extends AsyncTask<StockItem, Integer, Float> {
 
 		@Override
 		protected Float doInBackground(StockItem... params) {
@@ -313,14 +319,16 @@ public final class AddPortfolioItemActivity extends BaseActivity {
 		private final boolean sell;
 		private final double price;
 		private final Market market;
+		private final View addButton;
 		private Exception ex;
 
-		private AddTask(double fee, long count, boolean sell, double price, Market market) {
+		private AddTask(double fee, long count, boolean sell, double price, Market market, View addButton) {
 			this.fee = fee;
 			this.count = count;
 			this.sell = sell;
 			this.price = price;
 			this.market = market;
+			this.addButton = addButton;
 		}
 
 		@Override
@@ -338,8 +346,6 @@ public final class AddPortfolioItemActivity extends BaseActivity {
 			setProgressBarVisibility(false);
 			if (ex != null) {
 				String message = getText(R.string.portfolioFailedToAdd).toString();
-				if (ex.getMessage() != null)
-					message += ex.getMessage();
 				
 				Toast.makeText(AddPortfolioItemActivity.this, message, Toast.LENGTH_LONG).show();
 			} else {
@@ -349,6 +355,7 @@ public final class AddPortfolioItemActivity extends BaseActivity {
 				AddPortfolioItemActivity.this.startActivity(intent);
 				finish();
 			}
+			this.addButton.setEnabled(true);
 			super.onPostExecute(result);
 		}
 		
