@@ -17,12 +17,6 @@
  ******************************************************************************/
 package cz.tomas.StockAnalyze.News;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -32,6 +26,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import cz.tomas.StockAnalyze.utils.Utils;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 
 public final class NewsSqlHelper extends SQLiteOpenHelper {
 
@@ -295,5 +295,11 @@ public final class NewsSqlHelper extends SQLiteOpenHelper {
 		int deletedCount = db.delete(ARTICLES_TABLE_NAME, where, new String[] { String.valueOf(FLAG_TO_DELETE),
 				String.valueOf(feedId) });
 		Log.d(Utils.LOG_TAG, "deleted old articles: " + deletedCount);
-	}	
+	}
+
+	@Override
+	public void close() {
+		super.close();
+		Log.d(Utils.LOG_TAG, "closing news database");
+	}
 }

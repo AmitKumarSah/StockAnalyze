@@ -36,16 +36,14 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
-
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
-
 import cz.tomas.StockAnalyze.Application;
-import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.News.NewsContentProvider;
 import cz.tomas.StockAnalyze.News.NewsListAdapter;
 import cz.tomas.StockAnalyze.News.NewsSqlHelper;
 import cz.tomas.StockAnalyze.News.Rss;
+import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.activity.base.BaseFragmentActivity;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
@@ -99,11 +97,11 @@ public class NewsActivity extends BaseFragmentActivity implements LoaderCallback
 	protected void onResume() {
 		super.onResume();
 
-		final long current = SystemClock.elapsedRealtime();
-		if (current - lastUpdateTime > UPDATE_INTERVAL) {
-			this.refresh();
-			lastUpdateTime = current;
-		}
+//		final long current = SystemClock.elapsedRealtime();
+//		if (current - lastUpdateTime > UPDATE_INTERVAL) {
+//			this.refresh();
+//			lastUpdateTime = current;
+//		}
 	}
 
 	@Override
@@ -150,6 +148,11 @@ public class NewsActivity extends BaseFragmentActivity implements LoaderCallback
 		
 		this.getActionBarHelper().setRefreshActionItemState(false);
 		this.listView.onRefreshComplete();
+		final long current = SystemClock.elapsedRealtime();
+		if (current - lastUpdateTime > UPDATE_INTERVAL) {
+			this.refresh();
+			lastUpdateTime = current;
+		}
 	}
 
 	@Override

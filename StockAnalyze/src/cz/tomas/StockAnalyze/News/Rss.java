@@ -20,14 +20,7 @@
  */
 package cz.tomas.StockAnalyze.News;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
-import android.content.ContentUris;
-import android.content.ContentValues;
-import android.content.Context;
+import android.content.*;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
@@ -37,6 +30,12 @@ import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetNewsException;
 import cz.tomas.StockAnalyze.News.NewsSqlHelper.ArticleColumns;
 import cz.tomas.StockAnalyze.utils.DownloadService;
 import cz.tomas.StockAnalyze.utils.Utils;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Facade for rss handling - using {@link RssProcessor} and {@link NewsSqlHelper}
@@ -62,7 +61,7 @@ public class Rss {
 	/**
 	 * download and save new articles from all feeds to database
 	 */
-	public void fetchArticles() {
+	public void fetchArticles() throws Exception {
 		Collection<Feed> feeds = getFeeds();
 
 		for (Feed feed : feeds) {
@@ -75,7 +74,85 @@ public class Rss {
 	/**
 	 * download and save new articles from given feed to database
 	 */
-	public void fetchArticles(Feed feed) throws FailedToGetNewsException {
+	public void fetchArticles(Feed feed) throws Exception {
+		Collection<Article> downloadedArticles = null;
+		try {
+			downloadedArticles = this.handler.fetchArticles(feed);
+		} catch (Exception e) {
+			Log.e(Utils.LOG_TAG, "failed to download new articles", e);
+			throw new FailedToGetNewsException("failed to download updated news ", e);
+		}
+		Log.d(Utils.LOG_TAG, "fetched articles: " + downloadedArticles.size());
+		Map<Article, String> presentFreshArticles = new HashMap<Article, String>();	// present articles, that were also downloaded
+
+		//get list of entries existing in db
+		final Map<String, Integer> existing = new HashMap<String, Integer>();
+		final Uri feedArticlesUri =ContentUris.withAppendedId(NewsContentProvider.FEED_ARTICLES_CONTENT_URI, feed.getFeedId());
+		final Cursor c = context.getContentResolver().query(feedArticlesUri,
+				new String[] { ArticleColumns.URL, ArticleColumns.ID}, null, null, ArticleColumns.ID);
+		try {
+			while (c.moveToNext()) {
+				final int indexLink = c.getColumnIndex(ArticleColumns.URL);
+				final int indexId = c.getColumnIndex(ArticleColumns.ID);
+				existing.put(c.getString(indexLink), c.getInt(indexId));
+			}
+		} finally {
+			c.close();
+		}
+
+		// match downloaded articles with those already present in db
+		for (Article article : downloadedArticles) {
+			final String key = article.getUrl().toString();
+			if (existing.containsKey(key)) {
+				presentFreshArticles.put(article, String.valueOf(existing.get(key)));
+			}
+		}
+
+		for (Article article : presentFreshArticles.keySet()) {
+			downloadedArticles.remove(article);
+		}
+
+		Log.d(Utils.LOG_TAG, "new articles: " + downloadedArticles.size());
+		ArrayList<ContentProviderOperation> operations = new ArrayList<ContentProviderOperation>();
+
+		// mark all articles for deletion
+		ContentProviderOperation.Builder updateMarkBuilder = ContentProviderOperation.newUpdate(NewsContentProvider.ARTICLES_CONTENT_URI);
+		updateMarkBuilder.withValue(ArticleColumns.FLAG, NewsSqlHelper.FLAG_TO_DELETE);
+		operations.add(updateMarkBuilder.build());
+
+		// insert new articles
+		for (Article article : downloadedArticles) {
+			ContentProviderOperation.Builder insertBuilder = ContentProviderOperation.newInsert(NewsContentProvider.ARTICLES_CONTENT_URI);
+			insertBuilder.withValue(ArticleColumns.DATE, article.getDate());
+			insertBuilder.withValue(ArticleColumns.DESCRIPTION, article.getDescription());
+			insertBuilder.withValue(ArticleColumns.FEED_ID, feed.getFeedId());
+			insertBuilder.withValue(ArticleColumns.TITLE, article.getTitle());
+			insertBuilder.withValue(ArticleColumns.URL, article.getUrl().toString());
+			operations.add(insertBuilder.build());
+		}
+
+		// mark downloaded & already present articles as fresh
+		for (String articleId : presentFreshArticles.values()) {
+			ContentProviderOperation.Builder updateBuilder = ContentProviderOperation.newUpdate(feedArticlesUri);
+			updateBuilder.withValue(ArticleColumns.FLAG, NewsSqlHelper.FLAG_FRESH);
+			updateBuilder.withSelection(String.format("%s=?", ArticleColumns.ID), new String[]{articleId});
+			operations.add(updateBuilder.build());
+		}
+
+		// delete old articles
+		ContentProviderOperation.Builder deleteBuilder = ContentProviderOperation.newDelete(feedArticlesUri);
+		deleteBuilder.withSelection(String.format("%s=?", ArticleColumns.FLAG), new String[] { String.valueOf(NewsSqlHelper.FLAG_TO_DELETE) });
+		operations.add(deleteBuilder.build());
+
+		ContentProviderResult[] results = context.getContentResolver().applyBatch(NewsContentProvider.AUTHORITY, operations);
+
+		downloadContent(downloadedArticles);
+	}
+
+	/**
+	 * download and save new articles from given feed to database
+	 */
+	public void fetchArticlesOld(Feed feed) throws FailedToGetNewsException {
 		Collection<Article> downloadedArticles = null;
 		try {
 			downloadedArticles = this.handler.fetchArticles(feed);
@@ -84,16 +161,17 @@ public class Rss {
 			throw new FailedToGetNewsException("failed to download updated news ", e);
 		}
 		Map<Article, String> presentFreshArticles = new HashMap<Article, String>();	// present articles, that were also downloaded
-		SQLiteDatabase db = null; 		
+		SQLiteDatabase db = null;
 		try {
 			db = this.sqlHelper.getWritableDatabase();
 			db.beginTransaction();
-			
+
 			this.sqlHelper.markArticlesToDelete(db);
-			
+
 			//get list of entries existing in db
 			final Map<String, Integer> existing = new HashMap<String, Integer>();
 			final Cursor c = db.query(NewsSqlHelper.ARTICLES_TABLE_NAME, new String[] { ArticleColumns.URL, ArticleColumns.ID}, null, null, null, null, null);
+//			final Cursor c = context.getContentResolver().query(NewsContentProvider.ARTICLES_CONTENT_URI, new String[] { ArticleColumns.URL, ArticleColumns.ID}, null, null, null);
 			try {
 				while (c.moveToNext()) {
 					final int indexLink = c.getColumnIndex(ArticleColumns.URL);
@@ -103,17 +181,18 @@ public class Rss {
 			} finally {
 				c.close();
 			}
-			
+
 			for (Article article : downloadedArticles) {
 				final String key = article.getUrl().toString();
 				if (existing.containsKey(key)) {
 					presentFreshArticles.put(article, String.valueOf(existing.get(key)));
 				}
 			}
+
 			for (Article article : presentFreshArticles.keySet()) {
 				downloadedArticles.remove(article);
 			}
-			
+
 			if (downloadedArticles.size() > 0) {
 				long[] ids = this.sqlHelper.insertArticles(feed.getFeedId(), downloadedArticles, db);
 				int index = 0;
@@ -125,7 +204,7 @@ public class Rss {
 
 			final FetchContentTask task = new FetchContentTask(downloadedArticles);
 			task.start();
-			
+
 			if (presentFreshArticles.size() > 0) {
 				this.sqlHelper.markArticlesFresh(presentFreshArticles.values(), db);
 			}
@@ -136,7 +215,7 @@ public class Rss {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-//			downloadContent(downloadedArticles);
+			downloadContent(downloadedArticles);
 		} finally {
 			if (db != null) {
 				db.endTransaction();
@@ -152,7 +231,7 @@ public class Rss {
 		ContentValues values = new ContentValues();
 		values.put(NewsSqlHelper.ArticleColumns.CONTENT, html);
 
-		final Uri uri = ContentUris.withAppendedId(NewsContentProvider.CONTENT_URI, article.getArticleId());
+		final Uri uri = ContentUris.withAppendedId(NewsContentProvider.ARTICLES_CONTENT_URI, article.getArticleId());
 		this.context.getContentResolver().update(uri, values, null, null);
 	}
 

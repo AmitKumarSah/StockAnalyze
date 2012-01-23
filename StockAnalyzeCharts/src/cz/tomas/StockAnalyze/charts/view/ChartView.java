@@ -416,7 +416,7 @@ public class ChartView extends View {
 
 	void setEnablePainting(boolean enabled) {
 		this.drawPainting = enabled;
-		if (! enabled && this.paint != null) {
+		if (! enabled && this.currentPaintingPath != null) {
 			this.currentPaintingPath.reset();
 		}
 	}

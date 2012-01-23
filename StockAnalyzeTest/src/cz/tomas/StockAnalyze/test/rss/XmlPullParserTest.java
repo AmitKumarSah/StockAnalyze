@@ -17,20 +17,17 @@
  ******************************************************************************/
 package cz.tomas.StockAnalyze.test.rss;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.List;
-
-import org.xmlpull.v1.XmlPullParserException;
-
-import cz.tomas.StockAnalyze.News.Article;
-import cz.tomas.StockAnalyze.News.Feed;
-import cz.tomas.StockAnalyze.News.RssProcessor;
-
 import android.content.Context;
 import android.test.AndroidTestCase;
 import android.test.IsolatedContext;
 import android.test.mock.MockContentResolver;
+import cz.tomas.StockAnalyze.News.Article;
+import cz.tomas.StockAnalyze.News.Feed;
+import cz.tomas.StockAnalyze.News.RssProcessor;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Collection;
 
 public class XmlPullParserTest extends AndroidTestCase {
 	URL dataUrl1;
@@ -87,21 +84,21 @@ public class XmlPullParserTest extends AndroidTestCase {
         assertNotNull(this.context);
     }
 	
-	public void testFetchArticlesCount() throws XmlPullParserException {
+	public void testFetchArticlesCount() throws Exception {
 		RssProcessor handler = new RssProcessor();
-		List<Article> articles = handler.parse(this.feed);
+		Collection<Article> articles = handler.parse(this.feed);
 		
 		assertEquals(15, articles.size());
 	}
 	
-	public void testArticleContent() throws XmlPullParserException {
+	public void testArticleContent() throws Exception {
 		String articleTitle = "Technická analýza RWE";
 		String articleContent = "Dnes jsme zveřejnili technickou analýzu německé společnosti RWE.brbrpAnalýzu naleznete v přiloženém souboru.ppbrDaniel Marván, Fio banka, a.s.p";
 		
 		RssProcessor handler = new RssProcessor();
-		List<Article> articles = handler.parse(this.feed);
+		Collection<Article> articles = handler.parse(this.feed);
 		if (articles.size() > 0) {
-			Article article = articles.get(0);
+			Article article = (Article) articles.toArray()[0];
 			assertEquals(articleTitle, article.getTitle());
 			assertEquals(articleContent, article.getDescription());
 		}
