@@ -84,7 +84,7 @@ public final class NewsContentProvider extends ContentProvider {
 				final long feedId = ContentUris.parseId(uri);
 				selection = TextUtils.isEmpty(selection) ?
 						String.format("%s=?", ArticleColumns.FEED_ID) :
-						String.format("%s AND %s=?", selection, ArticleColumns.FEED_ID);
+						String.format("%s=? AND %s", ArticleColumns.FEED_ID, selection);
 				String[] args = null;
 				if (selectionArgs != null) {
 					args = new String[selectionArgs.length + 1];
@@ -174,8 +174,18 @@ public final class NewsContentProvider extends ContentProvider {
 		case FEED_ARTICLES_ID:
 			final long feedId = ContentUris.parseId(uri);
 			db = mSqlHelper.getWritableDatabase();
-			count = db.update(NewsSqlHelper.ARTICLES_TABLE_NAME, values,
-					DbQueryUtils.getEqualityClause(ArticleColumns.FEED_ID, String.valueOf(feedId)), null);
+			selection = TextUtils.isEmpty(selection) ?
+					String.format("%s=?", ArticleColumns.FEED_ID) :
+					String.format("%s=? AND %s", ArticleColumns.FEED_ID, selection);
+			String[] args = null;
+			if (selectionArgs != null) {
+				args = new String[selectionArgs.length + 1];
+				System.arraycopy(new String[] {String.valueOf(feedId)}, 0, args, 0, 1);
+				System.arraycopy(selectionArgs, 0, args, 1, selectionArgs.length);
+			} else {
+				args = new String[] {String.valueOf(feedId)};
+			}
+			count = db.update(NewsSqlHelper.ARTICLES_TABLE_NAME, values, selection, args);
 			break;
 		default:
 			throw new IllegalArgumentException("Unknown URI " + uri);	
@@ -208,5 +218,10 @@ public final class NewsContentProvider extends ContentProvider {
 		} finally {
 			db.endTransaction();
 		}
+	}
+
+	@Override
+	public void shutdown() {
+		super.shutdown();
 	}
 }

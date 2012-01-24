@@ -160,7 +160,7 @@ public class NewsActivity extends BaseFragmentActivity implements LoaderCallback
 		this.adapter.swapCursor(null);
 	}
 	
-	private class NewsRefreshTask extends AsyncTask<Void, Integer, Void> {
+	private class NewsRefreshTask extends AsyncTask<Void, Integer, Boolean> {
 
 		@Override
 		protected void onPreExecute() {
@@ -170,18 +170,24 @@ public class NewsActivity extends BaseFragmentActivity implements LoaderCallback
 		}
 
 		@Override
-		protected Void doInBackground(Void... params) {
+		protected Boolean doInBackground(Void... params) {
 			Rss rss = (Rss) getApplicationContext().getSystemService(Application.RSS_SERVICE);
 			try {
 				rss.fetchArticles();
 			} catch (Exception e) {
 				Log.e(Utils.LOG_TAG, "failed to refresh news", e);
+				return false;
 			}
-			return null;
+			return true;
 		}
 
 		@Override
-		protected void onPostExecute(Void result) {
-			super.onPostExecute(result);		}
+		protected void onPostExecute(Boolean result) {
+			if (result == null || result == false) {
+				// error
+				getActionBarHelper().setRefreshActionItemState(false);
+				listView.onRefreshComplete();
+			}
+		}
 	}
 }

@@ -47,7 +47,8 @@ public class Rss {
 	final RssProcessor handler;
 	final NewsSqlHelper sqlHelper;
 	private final Context context;
-	
+	private StringBuilder builder;
+
 
 	/**
 	 * constructor, Context is required to connect to database
@@ -56,6 +57,7 @@ public class Rss {
 		this.handler = new RssProcessor(context);
 		this.sqlHelper = NewsSqlHelper.getInstance(context);
 		this.context = context;
+		this.builder = new StringBuilder();
 	}
 	
 	/**
@@ -131,11 +133,20 @@ public class Rss {
 			operations.add(insertBuilder.build());
 		}
 
-		// mark downloaded & already present articles as fresh
-		for (String articleId : presentFreshArticles.values()) {
-			ContentProviderOperation.Builder updateBuilder = ContentProviderOperation.newUpdate(feedArticlesUri);
+		if (presentFreshArticles.size() > 0) {
+			builder.setLength(0);
+
+			final int size = presentFreshArticles.size();
+			for (int i = 0; i < size; i++) {
+				builder.append("?,");
+			}
+			builder.setLength(builder.length() - 1);
+			final String selection = String.format("%s in (%s)", ArticleColumns.ID, builder.toString());
+			final String[] args = presentFreshArticles.values().toArray(new String[presentFreshArticles.size()]);
+
+			ContentProviderOperation.Builder updateBuilder = ContentProviderOperation.newUpdate(NewsContentProvider.ARTICLES_CONTENT_URI);
+			updateBuilder.withSelection(selection, args);
 			updateBuilder.withValue(ArticleColumns.FLAG, NewsSqlHelper.FLAG_FRESH);
-			updateBuilder.withSelection(String.format("%s=?", ArticleColumns.ID), new String[]{articleId});
 			operations.add(updateBuilder.build());
 		}
 
@@ -144,7 +155,7 @@ public class Rss {
 		deleteBuilder.withSelection(String.format("%s=?", ArticleColumns.FLAG), new String[] { String.valueOf(NewsSqlHelper.FLAG_TO_DELETE) });
 		operations.add(deleteBuilder.build());
 
-		ContentProviderResult[] results = context.getContentResolver().applyBatch(NewsContentProvider.AUTHORITY, operations);
+		context.getContentResolver().applyBatch(NewsContentProvider.AUTHORITY, operations);
 
 		downloadContent(downloadedArticles);
 	}
