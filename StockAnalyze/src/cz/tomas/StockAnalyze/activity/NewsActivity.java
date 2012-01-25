@@ -92,17 +92,6 @@ public class NewsActivity extends BaseFragmentActivity implements LoaderCallback
 		
 		this.getSupportLoaderManager().initLoader(0, null, this);
 	}
-	
-	@Override
-	protected void onResume() {
-		super.onResume();
-
-//		final long current = SystemClock.elapsedRealtime();
-//		if (current - lastUpdateTime > UPDATE_INTERVAL) {
-//			this.refresh();
-//			lastUpdateTime = current;
-//		}
-	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

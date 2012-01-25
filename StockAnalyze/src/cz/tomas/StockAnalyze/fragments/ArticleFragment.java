@@ -1,8 +1,5 @@
 package cz.tomas.StockAnalyze.fragments;
 
-import java.util.GregorianCalendar;
-import java.util.TimeZone;
-
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -12,11 +9,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.TextView;
 import android.widget.FrameLayout.LayoutParams;
-import cz.tomas.StockAnalyze.R;
+import android.widget.TextView;
 import cz.tomas.StockAnalyze.News.ArticlePagerAdapter;
+import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
+
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 public final class ArticleFragment extends Fragment {
 
@@ -46,6 +46,8 @@ public final class ArticleFragment extends Fragment {
 			
 			final TextView txtContent = new TextView(view.getContext());
 			txtContent.setLayoutParams(new FrameLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+			final int padding = (int) (getResources().getDisplayMetrics().density * 9);
+			txtContent.setPadding(padding, padding, padding, padding);
 			articleContainer.addView(txtContent);
 			
 			if (content != null) {

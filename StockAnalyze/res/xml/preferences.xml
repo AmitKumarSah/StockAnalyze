@@ -50,4 +50,11 @@
 			android:summary="@string/prefPortfolioIncludeFeeSummary"
 			android:key="prefPortfolioIncludeFee" />
 	</PreferenceCategory>
+	<PreferenceCategory android:title="@string/prefGroupNews">
+		<CheckBoxPreference
+			android:title="@string/prefFullArticle"
+			android:defaultValue="false"
+			android:summary="@string/prefFullArticleSummary"
+			android:key="prefFullArticle" />
+	</PreferenceCategory>
 </PreferenceScreen>

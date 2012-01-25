@@ -56,6 +56,7 @@ public class AppPreferencesActivity extends BasePreferenceActivity {
 		CheckBoxPreference backgroundUpdatesPref = (CheckBoxPreference) findPreference("prefEnableBackgroundUpdate");
 		ListPreference updateIntervalPreference = (ListPreference) findPreference("prefUpdateTimeInterval");
 		CheckBoxPreference portfolioIncludeFeePref = (CheckBoxPreference) findPreference("prefPortfolioIncludeFee");
+		CheckBoxPreference fullArticle = (CheckBoxPreference) findPreference("prefFullArticle");
 		
 		updateNotifPref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			
@@ -108,6 +109,16 @@ public class AppPreferencesActivity extends BasePreferenceActivity {
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				Editor editor = sharedPreferences.edit();
 				editor.putBoolean(Utils.PREF_PORTFOLIO_INCLUDE_FEE, (Boolean) newValue);
+				editor.commit();
+				return true;
+			}
+		});
+		fullArticle.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				Editor editor = sharedPreferences.edit();
+				editor.putBoolean(Utils.PREF_FULL_ARTICLE, (Boolean) newValue);
 				editor.commit();
 				return true;
 			}

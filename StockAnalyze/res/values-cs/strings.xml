@@ -104,6 +104,9 @@ Nikdy se nepouštějte do obchodů, jejichž podstatě plně nerozumíte. Obchod
     <string name="prefAutoUpdateIntervalTitle">Interval aktualizace</string>
     <string name="prefNotifUpdateTitle">Notifikace aktualizace</string>
     <string name="prefNotifPermaTitle">Trvalé notifikace</string>
+	<string name="prefFullArticleSummary">Stáhnout celé články pro off-čtení.</string>
+	<string name="prefFullArticle">Stahovat články.</string>
+	<string name="prefGroupNews">Zprávy</string>
     
     <string name="AppPreferencesActivityTitle">Nastavení aplikace</string>
     

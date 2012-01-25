@@ -20,13 +20,13 @@
  */
 package cz.tomas.StockAnalyze.utils;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
-
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * helper class with various helper methods and string const names
@@ -49,10 +49,12 @@ public class Utils {
 	public static final String PREF_HOME_CHART_TICKER = "prefHomeChartTicker";
 	public static final String PREF_HOME_CHART_MARKET_ID = "prefHomeChartMarketId";
 	public static final String PREF_URLS_TIME = "prefGaeUrlUpdate";
-	
+	public static final String PREF_FULL_ARTICLE = "prefNewsFullArticle";
+
 	public static final boolean PREF_DEF_PERMANENT_NOTIF = false;
 	public static final boolean PREF_DEF_UPDATE_NOTIF = true;
 	public static final boolean PREF_DEF_ENABLE_BACKGROUND_UPDATE = true;
+	public static final boolean PREF_DEF_FULL_ARTICLE = false;
 	
 	public static final TimeZone PRAGUE_TIME_ZONE = TimeZone.getTimeZone("Europe/Prague");
 	

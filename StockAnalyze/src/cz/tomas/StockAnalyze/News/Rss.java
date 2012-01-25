@@ -157,7 +157,11 @@ public class Rss {
 
 		context.getContentResolver().applyBatch(NewsContentProvider.AUTHORITY, operations);
 
-		downloadContent(downloadedArticles);
+		boolean downloadContent = context.getSharedPreferences(Utils.PREF_NAME, 0)
+				.getBoolean(Utils.PREF_FULL_ARTICLE, Utils.PREF_DEF_FULL_ARTICLE);
+		if (downloadContent) {
+			downloadContent(downloadedArticles);
+		}
 	}
 
 	/**

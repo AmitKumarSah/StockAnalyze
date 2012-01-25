@@ -1,9 +1,5 @@
 package cz.tomas.StockAnalyze.News;
 
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -11,8 +7,13 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.util.Log;
+import cz.tomas.StockAnalyze.fragments.ArticleFragment;
 import cz.tomas.StockAnalyze.fragments.WebArticleFragment;
 import cz.tomas.StockAnalyze.utils.Utils;
+
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 public final class ArticlePagerAdapter extends FragmentPagerAdapter {
 
@@ -24,9 +25,13 @@ public final class ArticlePagerAdapter extends FragmentPagerAdapter {
 	//private Context context;
 	private List<Article> articles;
 	
+	private final boolean useWebView;
+	
 	public ArticlePagerAdapter(Context context, FragmentManager fm) {
 		super(fm);
 		this.articles = new ArrayList<Article>();
+		useWebView = context.getSharedPreferences(Utils.PREF_NAME, 0)
+				.getBoolean(Utils.PREF_FULL_ARTICLE, Utils.PREF_DEF_FULL_ARTICLE);
 	}
 	
 	public void setData(Cursor c) {
@@ -58,19 +63,17 @@ public final class ArticlePagerAdapter extends FragmentPagerAdapter {
 	 */
 	@Override
 	public Fragment getItem(int position) {
-		final WebArticleFragment fragment = new WebArticleFragment();
+		final Fragment fragment = useWebView ? new WebArticleFragment() : new ArticleFragment();
 		
 		Article article = this.articles.get(position);
 		if (article != null) {
 			final Bundle bundle = new Bundle(3);
 			bundle.putString(ARTICLE_TITLE, article.getTitle());
 			bundle.putLong(ARTICLE_DATE, article.getDate());
-			bundle.putString(ARTICLE_CONTENT, article.getContent());
-//			if (article.getContent() != null) {
-//				bundle.putString(ARTICLE_CONTENT, article.getContent());
-//			} else {
-//				bundle.putString(ARTICLE_CONTENT, article.getDescription());
-//			}
+			//bundle.putString(ARTICLE_CONTENT, article.getContent());
+			if (article.getContent() != null && ! useWebView) {
+				bundle.putString(ARTICLE_CONTENT, article.getDescription());
+			}
 			bundle.putString(ARTICLE_URL, article.getMobilizedUrl());
 			fragment.setArguments(bundle);
 		}
