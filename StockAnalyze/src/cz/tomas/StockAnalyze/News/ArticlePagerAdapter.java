@@ -70,8 +70,10 @@ public final class ArticlePagerAdapter extends FragmentPagerAdapter {
 			final Bundle bundle = new Bundle(3);
 			bundle.putString(ARTICLE_TITLE, article.getTitle());
 			bundle.putLong(ARTICLE_DATE, article.getDate());
-			//bundle.putString(ARTICLE_CONTENT, article.getContent());
-			if (article.getContent() != null && ! useWebView) {
+
+			if (article.getContent() != null) {
+				bundle.putString(ARTICLE_CONTENT, article.getContent());
+			} else if (! useWebView) {
 				bundle.putString(ARTICLE_CONTENT, article.getDescription());
 			}
 			bundle.putString(ARTICLE_URL, article.getMobilizedUrl());

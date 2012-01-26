@@ -33,12 +33,11 @@ public final class ArticleFragment extends Fragment {
 			final String title = arguments.getString(ArticlePagerAdapter.ARTICLE_TITLE);
 			final long date = arguments.getLong(ArticlePagerAdapter.ARTICLE_DATE);
 			final GregorianCalendar cal = new GregorianCalendar();
+
 			cal.setTimeInMillis(date);
 			String dateText = FormattingUtils.formatDate(cal);
 			dateText += " " + cal.getTimeZone().getDisplayName(true, TimeZone.SHORT);
 			final String content = arguments.getString(ArticlePagerAdapter.ARTICLE_CONTENT);
-			
-			//final TextView txtContent = (TextView) view.findViewById(R.id.newsArticleContent);
 
 			final FrameLayout articleContainer = (FrameLayout) view.findViewById(R.id.newsArticleContentContainer);
 			final TextView txtDate = (TextView) view.findViewById(R.id.newsArticleDate);
@@ -60,9 +59,6 @@ public final class ArticleFragment extends Fragment {
 						return spanned;
 					}
 
-					/* (non-Javadoc)
-					 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
-					 */
 					@Override
 					protected void onPostExecute(Spanned result) {
 						super.onPostExecute(result);
