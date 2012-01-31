@@ -30,9 +30,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
-import cz.tomas.StockAnalyze.R;
+import com.crittercism.app.Crittercism;
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
+import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.charts.view.CompositeChartView;
 import cz.tomas.StockAnalyze.ui.widgets.HomeBlockView;
 import cz.tomas.StockAnalyze.ui.widgets.PickStockDialog;
@@ -48,11 +49,12 @@ public class HomeActivity extends ChartActivity implements OnClickListener {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
+		Crittercism.init(getApplicationContext(), "4f017b27b0931504d400017c");
 		// this will set default values for first use
 		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 		this.setContentView(R.layout.home_layout);
-				
+
 		this.chartView = (CompositeChartView) this.findViewById(R.id.stockChartView);
 		this.chartView.setEnableTracking(false);
 		this.pref = getSharedPreferences(Utils.PREF_NAME, 0);
