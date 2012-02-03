@@ -1,25 +1,18 @@
 package cz.tomas.StockAnalyze.Data.GaeData;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
-import java.lang.reflect.Type;
-import java.util.Map;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.text.TextUtils;
 import android.util.Log;
-
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-
 import cz.tomas.StockAnalyze.utils.DownloadService;
 import cz.tomas.StockAnalyze.utils.Utils;
+
+import java.io.*;
+import java.lang.reflect.Type;
+import java.util.Map;
 
 /**
  * provider for URLs for remote backend
@@ -96,7 +89,8 @@ public final class UrlProvider {
 					break;
 				}
 			}
-		} else {
+		}
+		if (cacheFile == null) {
 			cacheFile = new File(cacheDir, FILE_CACHE);
 		}
 		return cacheFile;

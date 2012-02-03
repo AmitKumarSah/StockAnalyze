@@ -20,15 +20,6 @@
  */
 package cz.tomas.StockAnalyze.Data;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.SystemClock;
@@ -47,6 +38,10 @@ import cz.tomas.StockAnalyze.StockList.StockComparator;
 import cz.tomas.StockAnalyze.StockList.StockCompareTypes;
 import cz.tomas.StockAnalyze.utils.Markets;
 import cz.tomas.StockAnalyze.utils.Utils;
+
+import java.io.IOException;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * main class for managing stock data, 
@@ -174,11 +169,13 @@ public class DataManager implements IStockDataListener {
 	/**
 	 * get all stock items from database for given Market,
 	 * if stock items weren't found, would try to download them
-	 * @returns map stock id vs StockItem, ordered by stock ticker
+	 *
+	 * @return map stock id vs StockItem, ordered by stock ticker
 	 */
 	public synchronized Map<String, StockItem> getStockItems(Market market, boolean includeIndeces) {
 		final boolean isStockListDirty = isStockListDirty();
-		Map<String, StockItem> items = this.sqlStore.getStockItems(market, "ticker", includeIndeces);
+
+		Map<String, StockItem> items = this.sqlStore.getStockItems(market, DataSqlHelper.StockColumns.NAME, includeIndeces);
 		if (items == null || items.size() <= 1 || isStockListDirty) {		// one item is not enough - might be the index
 			try {
 				if (includeIndeces && market == null) {
@@ -196,13 +193,13 @@ public class DataManager implements IStockDataListener {
 
 	/**
 	 * check if stock list was downloaded and isn't too old
-	 * 
-	 * @param prefs
+	 *
 	 * @return true if stock list needs to be refreshed
 	 */
 	protected boolean isStockListDirty() {
-		SharedPreferences prefs = this.context.getSharedPreferences(Utils.PREF_NAME, 0);
-		long lastUpdate = prefs.getLong(Utils.PREF_LAST_STOCK_LIST_UPDATE_TIME, 0);
+		SharedPreferences preferences = this.context.getSharedPreferences(Utils.PREF_NAME, 0);
+
+		long lastUpdate = preferences.getLong(Utils.PREF_LAST_STOCK_LIST_UPDATE_TIME, 0);
 		long diff = System.currentTimeMillis() - lastUpdate; 
 		long dayDiff = diff / DAY_IN_MILISECONDS; 
 		boolean isStockListDirty = dayDiff > STOCK_LIST_EXPIRATION_DAYS;
@@ -231,8 +228,10 @@ public class DataManager implements IStockDataListener {
 			items = this.sqlStore.updateStockList(stocks, currentItems);
 			this.sqlStore.releaseDb(true, this);
 		}
-		SharedPreferences prefs = this.context.getSharedPreferences(Utils.PREF_NAME, 0);
-		prefs.edit().putLong(Utils.PREF_LAST_STOCK_LIST_UPDATE_TIME, System.currentTimeMillis()).commit();
+		SharedPreferences preferences = this.context.getSharedPreferences(Utils.PREF_NAME, 0);
+		preferences.edit()
+				.putLong(Utils.PREF_LAST_STOCK_LIST_UPDATE_TIME, System.currentTimeMillis())
+				.commit();
 		return items;
 	}
 	
@@ -240,7 +239,7 @@ public class DataManager implements IStockDataListener {
 	 * get single stock item based on its id
 	 * 
 	 * @param id
-	 * @param string 
+	 * @param marketId
 	 * @return
 	 * @throws NullPointerException
 	 */
@@ -264,7 +263,7 @@ public class DataManager implements IStockDataListener {
 	 * @return
 	 */
 	public synchronized DayData getLastOfflineValue(String stockId) {
-		DayData data = this.sqlStore.getLastAvailableDayData(stockId);
+		DayData data = this.sqlStore.getDayData(stockId);
 		return data;
 	}
 	
@@ -314,7 +313,7 @@ public class DataManager implements IStockDataListener {
 		DayData data = null;
 		//Calendar now = Calendar.getInstance();
 		
-		data = this.sqlStore.getDayData(item);
+		data = this.sqlStore.getDayData(item.getId());
 		// we still can be without data from db - so we need to download it
 		// of try to search for older from database
 		if (data == null && Utils.isOnline(this.context)) {
@@ -331,7 +330,7 @@ public class DataManager implements IStockDataListener {
 				throw e;
 			}
 			if (val > 0) {
-				this.sqlStore.insertDayData(item, data);
+				this.sqlStore.insertDayData(item.getId(), data);
 			}
 		}
 		if (data == null ) {

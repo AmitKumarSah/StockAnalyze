@@ -107,7 +107,7 @@ Never let go to the trades, which nature you do not fully understand. Trading an
     <string name="prefAutoUpdateIntervalTitle">Update Interval</string>
     <string name="prefNotifUpdateTitle">Update Notification</string>
     <string name="prefNotifPermaTitle">Permanent Notification</string>
-	<string name="prefFullArticleSummary">Download full article content for offline use.</string>
+	<string name="prefFullArticleSummary">Download full article content for off-line use.</string>
 	<string name="prefFullArticle">Download articles.</string>
 	<string name="prefGroupNews">News</string>
     

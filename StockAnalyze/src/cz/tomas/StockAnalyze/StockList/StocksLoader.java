@@ -1,10 +1,9 @@
 package cz.tomas.StockAnalyze.StockList;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.Semaphore;
-
+import android.content.Context;
+import android.os.SystemClock;
+import android.support.v4.content.AsyncTaskLoader;
+import android.util.Log;
 import cz.tomas.StockAnalyze.Application;
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.IStockDataProvider;
@@ -13,10 +12,11 @@ import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.utils.Utils;
-import android.content.Context;
-import android.os.SystemClock;
-import android.support.v4.content.AsyncTaskLoader;
-import android.util.Log;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.Semaphore;
 
 /**
  * Loader for {@link StockItem} and {@link DayData} that can be shown via {@link StockListAdapter}
@@ -25,6 +25,7 @@ import android.util.Log;
  */
 public final class StocksLoader extends AsyncTaskLoader<Map<StockItem, DayData>> implements IStockDataListener {
 
+	public static final boolean DEBUG = Utils.DEBUG;
 	private final Semaphore semaphore;
 	private final DataManager dataManager;
 	private final Market market;
@@ -58,10 +59,10 @@ public final class StocksLoader extends AsyncTaskLoader<Map<StockItem, DayData>>
 	public Map<StockItem, DayData> loadInBackground() {
 		Map<StockItem, DayData> items = null;
 		try {
-			if (Utils.DEBUG) Log.d(Utils.LOG_TAG, "adapter's semaphopre waiting queue: " + semaphore.getQueueLength());
+			if (DEBUG) Log.d(Utils.LOG_TAG, "adapter's semaphore waiting queue: " + semaphore.getQueueLength());
 			semaphore.acquire();
-			long startTime = 0;
-			if (Utils.DEBUG) {
+			long startTime;
+			if (DEBUG) {
 				startTime = SystemClock.elapsedRealtime();
 			}
 			
@@ -70,7 +71,7 @@ public final class StocksLoader extends AsyncTaskLoader<Map<StockItem, DayData>>
 			// first, get all stock items we need
 			try {
 				stocks = dataManager.getStockItems(market, includeIndeces);
-				if (Utils.DEBUG) {
+				if (DEBUG) {
 					long diff = SystemClock.elapsedRealtime() - startTime;
 					Log.d(Utils.LOG_TAG, "stock loader - stocks read time: " + diff);
 				}
@@ -79,17 +80,17 @@ public final class StocksLoader extends AsyncTaskLoader<Map<StockItem, DayData>>
 			}
 			try {
 				if (stocks != null) {
-					Map<StockItem, DayData> datas = dataManager.getLastDataSet(stocks);
-					items = new LinkedHashMap<StockItem, DayData>(datas.size());
-					if (Utils.DEBUG) {
+					Map<StockItem, DayData> dataSets = dataManager.getLastDataSet(stocks);
+					items = new LinkedHashMap<StockItem, DayData>(dataSets.size());
+					if (DEBUG) {
 						long diff = SystemClock.elapsedRealtime() - startTime;
 						Log.d(Utils.LOG_TAG, "stock loader - day data read time: " + diff);
 					}
 					// we need items sorted the same way as stocks are
-					StockItem key = null;
+					StockItem key;
 					for (Entry<String, StockItem> entry : stocks.entrySet()) {
 						key = entry.getValue();
-						items.put(key, datas.get(key));
+						items.put(key, dataSets.get(key));
 					}
 					Log.d(Utils.LOG_TAG, "StockList: loaded data from database: " + items.size());
 				}
@@ -97,7 +98,7 @@ public final class StocksLoader extends AsyncTaskLoader<Map<StockItem, DayData>>
 				Log.e(Utils.LOG_TAG, "Failed to get stock day data. ", e);
 			}
 
-			if (Utils.DEBUG) {
+			if (DEBUG) {
 				long diff = SystemClock.elapsedRealtime() - startTime;
 				Log.d(Utils.LOG_TAG, "stock loader time: " + diff);
 			}
