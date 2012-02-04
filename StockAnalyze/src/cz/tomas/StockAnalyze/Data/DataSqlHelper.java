@@ -120,7 +120,7 @@ public class DataSqlHelper extends AbstractSqlHelper {
 		onCreate(db);
 	}
 
-	public class StockColumns {
+	public static class StockColumns {
 
 		public static final String _ID = "_id";
 		public static final String TICKER = "ticker";
@@ -129,6 +129,7 @@ public class DataSqlHelper extends AbstractSqlHelper {
 		public static final String MARKET_ID = "market_id";
 		public static final String NAME = "name";
 		public static final String FLAG = "flag";
+		public static final String[] PROJECTION = new String[]{"_id", "ticker", "name", "market_id"};
 	}
 
 	public static class MarketColumns {
@@ -151,6 +152,9 @@ public class DataSqlHelper extends AbstractSqlHelper {
 		public static final String LAST_UPDATE = "last_update";
 		public static final String PRICE = "price";
 		public static final String VOLUME = "volume";
+		public static final String[] PROJECTION = new String[]{
+				"price", "change", "year_max", "year_min", "date", "volume", "_id", "last_update", "stock_id" };
+		public static final String DEFAULT_SORT = "date DESC";
 	}
 
 	public static class PortfolioColumns {

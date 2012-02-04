@@ -53,7 +53,7 @@ import java.util.Map.Entry;
  */
 public class DataManager implements IStockDataListener {
 
-	private static final int DAY_IN_MILISECONDS = 1000 * 60 * 60 * 24;
+	private static final int DAY_IN_MILLISECONDS = 1000 * 60 * 60 * 24;
 
 	private final int STOCK_LIST_EXPIRATION_DAYS = 2;
 	
@@ -201,7 +201,7 @@ public class DataManager implements IStockDataListener {
 
 		long lastUpdate = preferences.getLong(Utils.PREF_LAST_STOCK_LIST_UPDATE_TIME, 0);
 		long diff = System.currentTimeMillis() - lastUpdate; 
-		long dayDiff = diff / DAY_IN_MILISECONDS; 
+		long dayDiff = diff / DAY_IN_MILLISECONDS;
 		boolean isStockListDirty = dayDiff > STOCK_LIST_EXPIRATION_DAYS;
 		
 		return isStockListDirty;

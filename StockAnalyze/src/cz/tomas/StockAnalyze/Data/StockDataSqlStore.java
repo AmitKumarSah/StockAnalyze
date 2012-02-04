@@ -137,6 +137,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 	
 	/**
 	 * update stock item
+	 *
 	 * @param item item to update
 	 * @param db db to work with
 	 * @return count of updated items
@@ -150,7 +151,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 			values.put(StockColumns.NAME, item.getName());
 			values.put(StockColumns.IS_INDEX, item.isIndex());
 			if (item.getMarket() != null) {
-				values.put("market_id", item.getMarket().getId());
+				values.put(StockColumns.MARKET_ID, item.getMarket().getId());
 			} else {
 				Log.w(Utils.LOG_TAG, " stock item is without market " + item);
 			}
@@ -171,14 +172,14 @@ public class StockDataSqlStore extends DataSqlHelper {
 			}
 			ContentValues values = new ContentValues();
 	
-			values.put("date", Utils.createDateOnlyCalendar(newData.getDate()).getTimeInMillis());
-			values.put("last_update", newData.getLastUpdate());
-			values.put("price", newData.getPrice());
-			values.put("change", newData.getChange());
-			values.put("stock_id", stockId);
-			values.put("year_max", newData.getYearMaximum());
-			values.put("year_min", newData.getYearMinimum());
-			values.put("volume", newData.getVolume());
+			values.put(DayDataColumns.DATE, Utils.createDateOnlyCalendar(newData.getDate()).getTimeInMillis());
+			values.put(DayDataColumns.LAST_UPDATE, newData.getLastUpdate());
+			values.put(DayDataColumns.PRICE, newData.getPrice());
+			values.put(DayDataColumns.CHANGE, newData.getChange());
+			values.put(DayDataColumns.STOCK_ID, stockId);
+			values.put(DayDataColumns.YEAR_MAX, newData.getYearMaximum());
+			values.put(DayDataColumns.YEAR_MIN, newData.getYearMinimum());
+			values.put(DayDataColumns.VOLUME, newData.getVolume());
 			
 			db.insert(DAY_DATA_TABLE_NAME, null, values);
 		} catch (SQLException e) {
@@ -212,23 +213,23 @@ public class StockDataSqlStore extends DataSqlHelper {
 		try {
 			ContentValues values = new ContentValues();
 
-			if (DEBUG) Log.d(Utils.LOG_TAG, "updating day data for " + newData.toString() + " to db");
+			if (DEBUG) Log.d(Utils.LOG_TAG, "updating day data to " + newData.toString());
 
-			values.put("date" ,Utils.createDateOnlyCalendar(newData.getDate()).getTimeInMillis());
-			values.put("last_update", newData.getLastUpdate());
-			values.put("price", newData.getPrice());
-			values.put("change", newData.getChange());
+			values.put(DayDataColumns.DATE ,Utils.createDateOnlyCalendar(newData.getDate()).getTimeInMillis());
+			values.put(DayDataColumns.LAST_UPDATE, newData.getLastUpdate());
+			values.put(DayDataColumns.PRICE, newData.getPrice());
+			values.put(DayDataColumns.CHANGE, newData.getChange());
 			if (newData.getVolume() > 0) {
-				values.put("volume", newData.getVolume());
+				values.put(DayDataColumns.VOLUME, newData.getVolume());
 			}
 			if (newData.getYearMaximum() > 0) {
-				values.put("year_max", newData.getYearMaximum());
+				values.put(DayDataColumns.YEAR_MAX, newData.getYearMaximum());
 			}
 			if (newData.getYearMinimum() > 0) {
-				values.put("year_min", newData.getYearMinimum());
+				values.put(DayDataColumns.YEAR_MIN, newData.getYearMinimum());
 			}
 
-			return db.update(DAY_DATA_TABLE_NAME, values,"stock_id=?", new String[] { stockId });
+			return db.update(DAY_DATA_TABLE_NAME, values, DayDataColumns.STOCK_ID + "=?", new String[] { stockId });
 		} catch (Exception e) {
 			Log.e(Utils.LOG_TAG, "Failed to UPDATE stock item.", e);
 		}
@@ -244,13 +245,14 @@ public class StockDataSqlStore extends DataSqlHelper {
 			Cursor c = null;
 			try {
 				if (market != null) {
-					c = db.query(STOCK_TABLE_NAME, new String[] { "_id", "ticker", "name", "market_id", "flag" },
-							"is_index=? AND market_id=? AND flag != ?", new String[]
-							{ includeIndeces ? "1" : "0", market.getId(), FLAG_REMOVED_STRING }, null, null, orderBy);
+					c = db.query(STOCK_TABLE_NAME, StockColumns.PROJECTION,
+							String.format("%s=? AND %s=? AND %s != ?", StockColumns.IS_INDEX, StockColumns.MARKET_ID, StockColumns.FLAG),
+							new String[] { includeIndeces ? "1" : "0", market.getId(), FLAG_REMOVED_STRING },
+							null, null, orderBy);
 				} else {
-					c = db.query(STOCK_TABLE_NAME, new String[] { "_id", "ticker", "name", "market_id", "flag" },
-							"is_index=? AND flag != ?", new String[]
-							{ includeIndeces ? "1" : "0", FLAG_REMOVED_STRING }, null, null, orderBy);
+					c = db.query(STOCK_TABLE_NAME, StockColumns.PROJECTION,
+							String.format("%s=? AND %s != ?", StockColumns.IS_INDEX, StockColumns.FLAG),
+							new String[] { includeIndeces ? "1" : "0", FLAG_REMOVED_STRING }, null, null, orderBy);
 				}
 
 				if (c.moveToFirst()) {
@@ -259,7 +261,6 @@ public class StockDataSqlStore extends DataSqlHelper {
 						String ticker = c.getString(c.getColumnIndex(StockColumns.TICKER));
 						String name = c.getString(c.getColumnIndex(StockColumns.NAME));
 						String marketId = c.getString(c.getColumnIndex(StockColumns.MARKET_ID));
-						int flag = c.getInt(c.getColumnIndex(StockColumns.FLAG));
 						StockItem item = new StockItem(ticker, id, name, Markets.getMarket(marketId));
 						items.put(id, item);
 					} while (c.moveToNext());
@@ -293,7 +294,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 			SQLiteDatabase db = this.getReadableDatabase();
 			Cursor c = null;
 			try {
-				c = db.query(STOCK_TABLE_NAME, new String[] { "_id", "ticker", "name", "market_id" }, "_id=?", new String[] { id }, null, null, null);
+				c = db.query(STOCK_TABLE_NAME, StockColumns.PROJECTION, StockColumns._ID + "=?", new String[] { id }, null, null, null);
 				if (c.moveToFirst()) {
 					String ticker = c.getString(1);
 					String name = c.getString(2);
@@ -331,21 +332,20 @@ public class StockDataSqlStore extends DataSqlHelper {
 			SQLiteDatabase db = this.getWritableDatabase();
 			Cursor c = null;
 			try {
-				c = db.query(DAY_DATA_TABLE_NAME, new String[] {
-						"price", "change", "year_max", "year_min", "date", "volume", "_id", "last_update" }, 
-						"stock_id=?", new String[] { stockId }, null, null, null);
+				c = db.query(DAY_DATA_TABLE_NAME, DayDataColumns.PROJECTION,
+						DayDataColumns.STOCK_ID + "=?", new String[] { stockId }, null, null, null);
 
 				if (c.moveToFirst()) {
 					float price = c.getFloat(0);
 					float change = c.getFloat(1);
 					float max = c.getFloat(2);
 					float min = c.getFloat(3);
-					long millisecs = c.getLong(4);
+					long milliseconds = c.getLong(4);
 					float volume = c.getFloat(5);
 					long id = c.getLong(6);
 					long lastUpdate = c.getLong(7);
 					
-					Date date = new Date(millisecs);
+					Date date = new Date(milliseconds);
 					data = new DayData(price, change, date, volume, max, min, lastUpdate, id);
 				}
 			} catch (SQLException e) {
@@ -389,18 +389,13 @@ public class StockDataSqlStore extends DataSqlHelper {
 						index++;
 					}
 				}
-				
-				// order by given column, if any, and by date, so we get last results 
-				if (orderBy != null && orderBy.length() > 0) {
-					orderBy += ", date DESC";
-				} else {
-					orderBy = "date DESC";
+
+				if (orderBy == null || orderBy.length() <= 0) {
+					orderBy = DayDataColumns.DEFAULT_SORT;
 				}
-				
-				// data is grouped by stock-id and sorted by date, 
-				// so we get last result for all stock items
-				c = db.query(DAY_DATA_TABLE_NAME, new String[] {
-						"price", "change", "year_max", "year_min", "date", "volume", "_id", "last_update", "stock_id" }, 
+
+				// data is grouped by stock-id
+				c = db.query(DAY_DATA_TABLE_NAME, DayDataColumns.PROJECTION,
 						selectionBuilder.toString(), whereArgs, null, null, orderBy, String.valueOf(stockItems.size()));
 				
 				if (c.moveToFirst()) {
