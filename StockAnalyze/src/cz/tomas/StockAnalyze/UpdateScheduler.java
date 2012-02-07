@@ -63,19 +63,21 @@ import java.util.concurrent.Semaphore;
  *
  */
 public class UpdateScheduler implements IMarketListener{
+
+	public static final String ARG_INTRA = "intraday";
 	
-	private final Context context;
-	private final SharedPreferences preferences;
-	
-	private final int DEFAULT_REFRESH_INTERVAL = 120;		//minutes
-	private final int REQUEST_CODE = 13215564;
+	private static final int DEFAULT_REFRESH_INTERVAL = 120;		//minutes
+	private static final int REQUEST_CODE = 13215564;
 	
 	public static final String INTRA_UPDATE_ACTION = "cz.tomas.StockAnalyze.INTRADAY_DATA_UPDATE";
 	public static final String DAY_UPDATE_ACTION = "cz.tomas.StockAnalyze.DAY_DATA_UPDATE";
 	
-	private final int DAY_UPDATE_HOUR = 18;
-	private final int INTRADAY_START_UPDATE_HOUR = 9;
-	
+	private static final int DAY_UPDATE_HOUR = 18;
+	private static final int INTRADAY_START_UPDATE_HOUR = 9;
+
+	private final Context context;
+	private final SharedPreferences preferences;
+
 	private final PendingIntent intraUpdateIntent;
 	private final PendingIntent dayUpdateIntent;
 	private final List<IUpdateSchedulerListener> listeners;
@@ -89,15 +91,14 @@ public class UpdateScheduler implements IMarketListener{
 		this.listeners = new ArrayList<IUpdateSchedulerListener>();
 		
 		Intent intent = new Intent(INTRA_UPDATE_ACTION, null, this.context, AlarmReceiver.class);
-		intent.putExtra("intraday", true);
+		intent.putExtra(ARG_INTRA, true);
 		intraUpdateIntent = PendingIntent.getBroadcast(this.context,
 				REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 		
 		intent = new Intent(DAY_UPDATE_ACTION, null, this.context, AlarmReceiver.class);
-		intent.putExtra("intraday", false);
+		intent.putExtra(ARG_INTRA, false);
 		dayUpdateIntent = PendingIntent.getBroadcast(this.context,
 				REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-		Log.i(Utils.LOG_TAG, "update intents equality: " + dayUpdateIntent.equals(intraUpdateIntent));
 		this.preferences = context.getSharedPreferences(Utils.PREF_NAME, 0);
 		
 		this.preferences.registerOnSharedPreferenceChangeListener(new OnSharedPreferenceChangeListener() {
@@ -121,11 +122,10 @@ public class UpdateScheduler implements IMarketListener{
 	
 	/**
 	 * check whether the scheduler is currently actively updating data
-	 * @return
+	 * @return true if scheduler is currently performing an update
 	 */
 	boolean isSchedulerRunning() {
 		return this.semaphore.availablePermits() == 0;
-		//return isSchedulerRunning;
 	}
 	
 	/**
@@ -144,6 +144,11 @@ public class UpdateScheduler implements IMarketListener{
 	 * send event to flurry analysis
 	 */
 	public void performScheduledUpdate() {
+		if (markets == null) {
+			// if we are starting application and markets haven't been loaded yet, we need to wait for them
+			Log.d(Utils.LOG_TAG, "cannot perform scheduled update now, because we don't have loaded markets");
+			return;
+		}
 		final boolean isSynchronizationEnabled = ContentResolver.getMasterSyncAutomatically();
 		if (! isSchedulerRunning() && isSynchronizationEnabled) {
 			Log.i(Utils.LOG_TAG, "going to perform scheduled update");
@@ -184,6 +189,8 @@ public class UpdateScheduler implements IMarketListener{
 	
 	/**
 	 * update real time data immediately for given market
+	 *
+	 * @param market market to perform update on
 	 */
 	public void updateImmediately(Market market) {
 		for (IUpdateSchedulerListener listener : this.listeners) {
@@ -195,7 +202,9 @@ public class UpdateScheduler implements IMarketListener{
 	}
 
 	/**
-	 * execute refresh task on realtime provider
+	 * execute refresh task on real time provider
+	 *
+	 * @param market market to perform update on
 	 */
 	private void performUpdateInternal(Market market) {
 		if (! Utils.isOnline(this.context)) {
@@ -216,13 +225,15 @@ public class UpdateScheduler implements IMarketListener{
 	/**
 	 * schedule next update via Alarm and according to preferences.
 	 * Scheduling also takes takes cares about days without trading (e.g. weekends)
+	 *
+	 * @param intraDay true if this is intraday update
 	 */
 	private void scheduleAlarm(boolean intraDay) {
 		// get a Calendar object with current time
 		Calendar cal = Calendar.getInstance(Utils.PRAGUE_TIME_ZONE);
 		final int today = cal.get(Calendar.DAY_OF_YEAR);
 		cal = Utils.getNextValidDate(cal);
-		PendingIntent pendingIntent = null;
+		PendingIntent pendingIntent;
 		if (intraDay) {
 			// if calendar was moved forward (from weekend to Monday),
 			// set update time to morning 
@@ -243,7 +254,7 @@ public class UpdateScheduler implements IMarketListener{
 			cal.set(Calendar.MINUTE,1);
 			pendingIntent = dayUpdateIntent;
 		}
-		Log.d(Utils.LOG_TAG, "SHEDULING " + (intraDay? "intraday" : "day") + " ALARM TO " + FormattingUtils.formatStockDate(cal));
+		Log.d(Utils.LOG_TAG, "SCHEDULING " + (intraDay? "intra" : "day") + " ALARM TO " + FormattingUtils.formatStockDate(cal));
 		
 		// Get the AlarmManager service
 		final AlarmManager am = (AlarmManager) this.context.getSystemService(Context.ALARM_SERVICE);
@@ -260,6 +271,7 @@ public class UpdateScheduler implements IMarketListener{
 
 	@Override
 	public void onMarketsAvailable(Market[] markets) {
+		Log.d(Utils.LOG_TAG, String.format("received markets %s, performing update...", markets));
 		this.markets = markets;
 		this.updateImmediately();
 	}

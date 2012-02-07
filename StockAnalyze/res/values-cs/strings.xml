@@ -90,8 +90,6 @@ Nikdy se nepouštějte do obchodů, jejichž podstatě plně nerozumíte. Obchod
     <string name="portfolioSellPrice">Prodejní cena</string>
     <string name="noPortfolioItems">V portfoliu nejsou žádné položky…</string>
     
-    <string name="failedScheduleUpdate">Chyba při plánování denní aktualizace!</string>
-    
     <string name="prefPermanentNotification">Povolte pro zobrazení trvalé notifikace pro rychlý přístup</string>
     <string name="prefUpdateNotification">Ukázat notifikace během aktualizace.</string>
     <string name="prefPortfolioIncludeFeeSummary">Zaškrtněte pro zapořítání poplatků</string>

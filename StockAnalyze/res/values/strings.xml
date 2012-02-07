@@ -93,8 +93,6 @@ Never let go to the trades, which nature you do not fully understand. Trading an
     <string name="portfolioSellPrice">Sell price</string>
     <string name="noPortfolioItems">No portfolio items…</string>
     
-    <string name="failedScheduleUpdate">Failed to schedule intraday update!</string>
-    
     <string name="prefPermanentNotification">Enable to show permanent notification for quick access.</string>
     <string name="prefUpdateNotification">Show notification when updating data.</string>
     <string name="prefPortfolioIncludeFeeSummary">Check to subtract fees from portfolio values</string>

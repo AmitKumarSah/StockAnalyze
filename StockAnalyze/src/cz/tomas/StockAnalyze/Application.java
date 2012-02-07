@@ -69,11 +69,11 @@ public class Application extends android.app.Application {
 		// do immediate update and schedule next one
 		try {
 			if (! this.scheduler.isSchedulerRunning()) {
-				this.scheduler.updateImmediately();
+				//this.scheduler.updateImmediately();
 				this.scheduler.scheduleNextIntraDayUpdate();
 			}
 		} catch (Exception e) {
-			Log.e(Utils.LOG_TAG, "Failed to schedule updates!", e);
+			Log.e(Utils.LOG_TAG, "Failed to schedule or perform updates!", e);
 		}
 		
 		super.onCreate();

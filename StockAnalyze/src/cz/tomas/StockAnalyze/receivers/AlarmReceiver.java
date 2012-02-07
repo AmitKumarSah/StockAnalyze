@@ -17,15 +17,13 @@
  ******************************************************************************/
 package cz.tomas.StockAnalyze.receivers;
 
-import cz.tomas.StockAnalyze.Application;
-import cz.tomas.StockAnalyze.R;
-import cz.tomas.StockAnalyze.UpdateScheduler;
-import cz.tomas.StockAnalyze.utils.Utils;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
-import android.widget.Toast;
+import cz.tomas.StockAnalyze.Application;
+import cz.tomas.StockAnalyze.UpdateScheduler;
+import cz.tomas.StockAnalyze.utils.Utils;
 
 public class AlarmReceiver extends BroadcastReceiver {
 
@@ -35,7 +33,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 	 */
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		boolean intra = intent.getExtras().getBoolean("intraday", true);
+		boolean intra = intent.getExtras().getBoolean(UpdateScheduler.ARG_INTRA, true);
 		UpdateScheduler scheduler = (UpdateScheduler) context.getSystemService(Application.UPDATE_SCHEDULER_SERVICE);
 		if (intra) {
 			scheduler.scheduleNextIntraDayUpdate();
@@ -46,12 +44,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 		try {
 			scheduler.performScheduledUpdate();
 		} catch (Exception e) {
-			String message = context.getString(R.string.failedScheduleUpdate);
-			if (e.getMessage() != null)
-				message += "\n" + e.getMessage();
-			
-			Log.e(Utils.LOG_TAG, message, e);
-			Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+			Log.e(Utils.LOG_TAG, "failed to perform scheduled update", e);
 		}
 	}
 
