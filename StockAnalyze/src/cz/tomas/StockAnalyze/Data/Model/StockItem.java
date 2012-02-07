@@ -84,7 +84,7 @@ public class StockItem implements Parcelable {
 	
 	@Override
 	public String toString() {
-		return "StockItem [name=" + name + ", ticker=" + ticker + ", market=" + this.market.getName() + "]";
+		return "StockItem [name=" + name + ", ticker=" + ticker + ", market=" + this.market + "]";
 	}
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()

@@ -13,9 +13,7 @@ import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.utils.Utils;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.Semaphore;
 
 /**
@@ -29,13 +27,11 @@ public final class StocksLoader extends AsyncTaskLoader<Map<StockItem, DayData>>
 	private final Semaphore semaphore;
 	private final DataManager dataManager;
 	private final Market market;
-	private final boolean includeIndeces;
 	
 	private Map<StockItem, DayData> cachedData;
 	
-	public StocksLoader(Context context, Market market, boolean includeIndeces) {
+	public StocksLoader(Context context, Market market) {
 		super(context);
-		this.includeIndeces = includeIndeces;
 		this.semaphore = new Semaphore(1);
 		this.dataManager = (DataManager) context.getApplicationContext().getSystemService(Application.DATA_MANAGER_SERVICE);
 		this.market = market;
@@ -50,12 +46,6 @@ public final class StocksLoader extends AsyncTaskLoader<Map<StockItem, DayData>>
 	}
 
 	@Override
-	public void onCanceled(Map<StockItem, DayData> data) {
-		// TODO Auto-generated method stub
-		super.onCanceled(data);
-	}
-
-	@Override
 	public Map<StockItem, DayData> loadInBackground() {
 		Map<StockItem, DayData> items = null;
 		try {
@@ -67,33 +57,13 @@ public final class StocksLoader extends AsyncTaskLoader<Map<StockItem, DayData>>
 			}
 			
 			dataManager.acquireDb(this.getClass().getName());
-			Map<String,StockItem> stocks = null;
-			// first, get all stock items we need
 			try {
-				stocks = dataManager.getStockItems(market, includeIndeces);
+				items = dataManager.getLastDataSet(market);
 				if (DEBUG) {
 					long diff = SystemClock.elapsedRealtime() - startTime;
-					Log.d(Utils.LOG_TAG, "stock loader - stocks read time: " + diff);
+					Log.d(Utils.LOG_TAG, "stock loader - day data read time: " + diff);
 				}
-			} catch (Exception e) {
-				Log.e(Utils.LOG_TAG, "Failed to get stock list. ", e);
-			}
-			try {
-				if (stocks != null) {
-					Map<StockItem, DayData> dataSets = dataManager.getLastDataSet(stocks);
-					items = new LinkedHashMap<StockItem, DayData>(dataSets.size());
-					if (DEBUG) {
-						long diff = SystemClock.elapsedRealtime() - startTime;
-						Log.d(Utils.LOG_TAG, "stock loader - day data read time: " + diff);
-					}
-					// we need items sorted the same way as stocks are
-					StockItem key;
-					for (Entry<String, StockItem> entry : stocks.entrySet()) {
-						key = entry.getValue();
-						items.put(key, dataSets.get(key));
-					}
-					Log.d(Utils.LOG_TAG, "StockList: loaded data from database: " + items.size());
-				}
+				Log.d(Utils.LOG_TAG, "StockList: loaded data from database: " + items.size());
 			} catch (Exception e) {
 				Log.e(Utils.LOG_TAG, "Failed to get stock day data. ", e);
 			}

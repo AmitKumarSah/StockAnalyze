@@ -30,7 +30,8 @@ import android.util.Log;
 public class DataSqlHelper extends AbstractSqlHelper {
 
 	protected static final boolean DEBUG = Utils.DEBUG;
-	private final static int DATABASE_VERSION_NUMBER = 18;
+
+	private final static int DATABASE_VERSION_NUMBER = 21;
 
 	private final static String DATABASE_FILE_NAME = "stocks.db";
 
@@ -56,13 +57,21 @@ public class DataSqlHelper extends AbstractSqlHelper {
 		         MarketColumns._ID + " text PRIMARY KEY," +
 		         MarketColumns.NAME + " text not null, " +
 		         MarketColumns.CURRENCY + " text not null, " +
+		         MarketColumns.COUNTRY + " text not null, " +
 		         MarketColumns.UI_ORDER + " integer, " +
-		         MarketColumns.DESCRIPTION + " text);";
+		         MarketColumns.DESCRIPTION + " text," +
+		         MarketColumns.OPEN_FROM + " integer," +
+		         MarketColumns.OPEN_TO + " integer," +
+		         MarketColumns.FEE_MIN + " real," +
+		         MarketColumns.FEE_MAX + " real," +
+		         MarketColumns.INDEX_ID + " text," +
+		         MarketColumns.FEE_PERC + " real" +
+		         ");";
 
 	private static final String DAY_DATA_TABLE_CREATE =
 		"CREATE TABLE " + DAY_DATA_TABLE_NAME + " (" +
 				DayDataColumns._ID + " integer PRIMARY KEY AUTOINCREMENT," +
-				DayDataColumns.STOCK_ID + " varchar(50)," +
+				DayDataColumns.STOCK_ID + " text," +
 				DayDataColumns.YEAR_MIN + " real," +
 				DayDataColumns.YEAR_MAX + " real," +
 				DayDataColumns.CHANGE + " real not null," +
@@ -137,8 +146,18 @@ public class DataSqlHelper extends AbstractSqlHelper {
 		public static final String _ID = "_id";
 		public static final String NAME = "name";
 		public static final String CURRENCY = "currency";
+		public static final String COUNTRY = "country";
 		public static final String UI_ORDER = "ui_order";
 		public static final String DESCRIPTION = "description";
+		public static final String OPEN_FROM = "open_from";
+		public static final String OPEN_TO = "open_top";
+		public static final String FEE_MIN = "fee_min";
+		public static final String FEE_MAX = "fee_max";
+		public static final String FEE_PERC = "fee_perc";
+		public static final String INDEX_ID = "index_id";
+
+		public static final String[] PROJECTION = new String[]{ _ID, NAME, CURRENCY, COUNTRY, UI_ORDER, DESCRIPTION,
+													OPEN_FROM, OPEN_TO, FEE_MAX, FEE_MIN, FEE_PERC };
 	}
 
 	public static class DayDataColumns {
@@ -152,7 +171,7 @@ public class DataSqlHelper extends AbstractSqlHelper {
 		public static final String LAST_UPDATE = "last_update";
 		public static final String PRICE = "price";
 		public static final String VOLUME = "volume";
-		public static final String[] PROJECTION = new String[]{
+		public static final String[] PROJECTION = new String[] {
 				"price", "change", "year_max", "year_min", "date", "volume", "_id", "last_update", "stock_id" };
 		public static final String DEFAULT_SORT = "date DESC";
 	}

@@ -20,15 +20,6 @@
  */
 package cz.tomas.StockAnalyze.Data.PsePatriaData;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import android.os.Handler;
 import android.util.Log;
 import cz.tomas.StockAnalyze.Data.DataManager;
@@ -36,11 +27,13 @@ import cz.tomas.StockAnalyze.Data.DataProviderAdviser;
 import cz.tomas.StockAnalyze.Data.IStockDataProvider;
 import cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
-import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetDataException;
-import cz.tomas.StockAnalyze.utils.Markets;
 import cz.tomas.StockAnalyze.utils.Utils;
+
+import java.io.IOException;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Adapter from PsePatriaDataProvider, that can registered in {@link DataManager}
@@ -96,8 +89,6 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 	 */
 	private Map<String, String> tickerIsinMapping;
 	
-	private Market market;
-	
 	private UpdateTask updateTask;
 	private Handler updateHandler;
 	
@@ -121,8 +112,7 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 		this.tickerIsinMapping.put("BAATELEC", "CZ0009093209");
 		this.tickerIsinMapping.put("BAAUNIPE", "CZ0009091500");
 		this.tickerIsinMapping.put("BAAVIG", "AT0000908504");
-		
-		market = Markets.CZ;
+
 		this.eventListeners = new ArrayList<IStockDataListener>();
 		this.updateTask = new UpdateTask();
 	}
@@ -162,7 +152,6 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 	/** 
 	 * get data from within the one day
 	 * NOT supported by this provider
-	 * @see cz.tomas.StockAnalyze.Data.IStockDataProvider#getIntraDayData(java.lang.String, java.util.Date, int)
 	 */
 	@Override
 	public Map<Long, Float> getIntraDayData(String ticker, Date date) {
@@ -193,7 +182,7 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 				String isin = null;
 				if (this.tickerIsinMapping.containsKey(item.getKey()))
 					isin = this.tickerIsinMapping.get(item.getKey());
-				StockItem stockItem = new StockItem(item.getKey(), isin, data.getName(), this.market);
+				StockItem stockItem = new StockItem(item.getKey(), isin, data.getName(), null);
 				items.add(stockItem);
 			}
 		return items;
@@ -240,7 +229,7 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 	 */
 	@Override
 	public DataProviderAdviser getAdviser() {
-		DataProviderAdviser adviser = new DataProviderAdviser(true, false, false, this.market);
+		DataProviderAdviser adviser = new DataProviderAdviser(true, false, false, "cz");
 		return adviser;
 	}
 

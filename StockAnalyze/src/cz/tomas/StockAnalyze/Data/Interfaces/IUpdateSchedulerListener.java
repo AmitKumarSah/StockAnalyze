@@ -15,5 +15,5 @@ import cz.tomas.StockAnalyze.Data.Model.Market;
 public interface IUpdateSchedulerListener {
 
 	void onUpdateBegin(Market... markets);
-	void onUpdateFinished(boolean succes);
+	void onUpdateFinished(boolean success);
 }

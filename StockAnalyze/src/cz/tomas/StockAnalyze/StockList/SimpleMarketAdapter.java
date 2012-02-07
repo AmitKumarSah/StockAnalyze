@@ -1,12 +1,5 @@
 package cz.tomas.StockAnalyze.StockList;
 
-import java.util.List;
-
-import cz.tomas.StockAnalyze.Data.DataManager;
-import cz.tomas.StockAnalyze.Data.Model.Market;
-import cz.tomas.StockAnalyze.utils.Markets;
-import cz.tomas.StockAnalyze.utils.Utils;
-
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +7,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import cz.tomas.StockAnalyze.Data.DataManager;
+import cz.tomas.StockAnalyze.Data.Model.Market;
+import cz.tomas.StockAnalyze.utils.Markets;
+import cz.tomas.StockAnalyze.utils.Utils;
+
+import java.util.Collection;
 
 public final class SimpleMarketAdapter extends ArrayAdapter<Market> {
 
@@ -24,7 +23,7 @@ public final class SimpleMarketAdapter extends ArrayAdapter<Market> {
 		
 		this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		
-		List<Market> markets = DataManager.getInstance(context).getMarkets();
+		Collection<Market> markets = DataManager.getInstance(context).getMarkets();
 		for (Market market : markets) {
 			this.add(market);
 		}

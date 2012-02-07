@@ -20,12 +20,6 @@
  */
 package cz.tomas.StockAnalyze.Portfolio;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -33,7 +27,12 @@ import android.database.sqlite.SQLiteDatabase;
 import cz.tomas.StockAnalyze.Data.DataSqlHelper;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.PortfolioItem;
-import cz.tomas.StockAnalyze.utils.Markets;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /*
  * 
@@ -129,8 +128,7 @@ public class PortfolioSqlHelper extends DataSqlHelper {
 					String marketId = c.getString(9);
 					int id = c.getInt(10);
 					// return only items that have same currency as requested
-					Market m = Markets.getMarket(marketId);
-					if (m.getCurrencyCode().equals(market.getCurrencyCode())) {
+					if (market.getCurrencyCode().equals(market.getCurrencyCode())) {
 						PortfolioItem item = new PortfolioItem(id, stockId, name, count, buyPrice, sellPrice, 
 								buyDate, sellDate, buyFee, sellFee, marketId);
 						items.put(stockId, item);

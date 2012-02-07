@@ -17,22 +17,16 @@
  ******************************************************************************/
 package cz.tomas.StockAnalyze.Data.PseCsvData;
 
-import java.io.IOException;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
 import android.util.Log;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.utils.DownloadService;
-import cz.tomas.StockAnalyze.utils.Markets;
+
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * Data provider for Prague Stock Exchange
@@ -71,18 +65,12 @@ class PseCsvDataProvider {
 
 	public PseCsvDataProvider() {
 		this.parser = new PseCsvParser();
-		
-		//this.updateTimes = new HashMap<String, Long>();
+
 		this.lasUpdateTime = 0;
-		market = Markets.CZ;
 	}
 
 	void setDownloadListener(IDownloadListener listener) {
 		this.downloadListener = listener;
-	}
-	
-	public Market getMarket() {
-		return this.market;
 	}
 
 	/**
@@ -105,7 +93,6 @@ class PseCsvDataProvider {
 	}
 
 	/**
-	 * @param ticker stock ticker
 	 * @param remoteFileName remote csv file to download
 	 * @return parsed price
 	 * @throws IOException

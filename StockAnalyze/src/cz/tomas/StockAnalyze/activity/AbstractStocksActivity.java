@@ -13,7 +13,7 @@ public class AbstractStocksActivity extends BaseFragmentActivity {
 	private final IUpdateSchedulerListener updateListener = new IUpdateSchedulerListener() {
 			
 			@Override
-			public void onUpdateFinished(boolean succes) {
+			public void onUpdateFinished(boolean success) {
 				getActionBarHelper().setRefreshActionItemState(false);
 			}
 			
@@ -36,7 +36,7 @@ public class AbstractStocksActivity extends BaseFragmentActivity {
 	}
 
 	protected void updateImmediatly(Market market) {
-		this.sheduler.updateImmediatly(market);
+		this.sheduler.updateImmediately(market);
 	}
 
 	@Override

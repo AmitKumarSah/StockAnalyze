@@ -56,7 +56,7 @@ public final class StockGridFragment extends Fragment implements IStockFragment 
 
 			@Override
 			public void onItemClick(AdapterView<?> adapterView, View arg1, int position, long arg3) {
-				StockItem stock = (StockItem) adapter.getItem(position);
+				StockItem stock = adapter.getItem(position);
 				NavUtils.goToStockDetail(stock, adapter.getDayData(stock), getActivity());
 			}
 		});

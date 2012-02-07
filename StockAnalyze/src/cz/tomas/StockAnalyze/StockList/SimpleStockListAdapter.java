@@ -1,7 +1,5 @@
 package cz.tomas.StockAnalyze.StockList;
 
-import java.util.Map;
-
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -17,6 +15,8 @@ import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.utils.Utils;
 
+import java.util.Map;
+
 /**
  * adapter for pick stock dialog on home screen
  * @author tomas
@@ -30,23 +30,19 @@ public final class SimpleStockListAdapter extends BaseAdapter {
 	
 	private final LayoutInflater inflater;
 	private IListAdapterListener<StockItem> listener;
-	private final boolean indeces;
-	
+
 	/**
 	 * @param market
 	 */
-	public SimpleStockListAdapter(Context context, Market market, IListAdapterListener<StockItem> listener, boolean indeces) {
+	public SimpleStockListAdapter(Context context, Market market, IListAdapterListener<StockItem> listener) {
 		super();
 		//this.market = market;
 		this.context = context;
 		this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.listener = listener;
-		this.indeces = indeces;
-		
+
 		final StockListTask task = new StockListTask();
-		// indeces have market of their country, so we can't use it,
-		// to get indeces only from db
-		task.execute(indeces ? null : market);
+		task.execute(market);
 	}
 
 	@Override
@@ -110,7 +106,7 @@ public final class SimpleStockListAdapter extends BaseAdapter {
 			try {
 				final Market market = params[0];
 				final DataManager dataManager = (DataManager) context.getApplicationContext().getSystemService(Application.DATA_MANAGER_SERVICE);
-				stockItems = dataManager.getStockItems(market, indeces);
+				stockItems = dataManager.getStockItems(market);
 				
 				stocks = new StockItem[stockItems.size()];
 			} catch (Exception e) {

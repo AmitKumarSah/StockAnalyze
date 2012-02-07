@@ -43,6 +43,11 @@ public final class UrlProvider {
 	 * indeces data
 	 */
 	static final String TYPE_INDATA = "INDATA";
+
+	/**
+	 * market data
+	 */
+	public static final String TYPE_MDATA = "MDATA";
 	
 	private static final String FILE_CACHE = "gae-url.list";
 	

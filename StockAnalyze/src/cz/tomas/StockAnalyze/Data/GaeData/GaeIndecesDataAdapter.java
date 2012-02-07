@@ -1,8 +1,5 @@
 package cz.tomas.StockAnalyze.Data.GaeData;
 
-import java.util.List;
-import java.util.Map;
-
 import android.content.Context;
 import android.util.Log;
 import cz.tomas.StockAnalyze.Data.DataProviderAdviser;
@@ -10,11 +7,15 @@ import cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetDataException;
-import cz.tomas.StockAnalyze.utils.Markets;
 import cz.tomas.StockAnalyze.utils.Utils;
+
+import java.util.List;
+import java.util.Map;
 
 
 public final class GaeIndecesDataAdapter extends GaeDataAdapter {
+
+	public static final String MARKET_CODE = "world";
 
 	public GaeIndecesDataAdapter(Context context) {
 		super(context);
@@ -77,7 +78,7 @@ public final class GaeIndecesDataAdapter extends GaeDataAdapter {
 
 	@Override
 	public DataProviderAdviser getAdviser() {
-		DataProviderAdviser adviser = new DataProviderAdviser(true, true, true, Markets.GLOBAL);
+		DataProviderAdviser adviser = new DataProviderAdviser(true, true, true, MARKET_CODE);
 		return adviser;
 	}
 }

@@ -1,9 +1,5 @@
 package cz.tomas.StockAnalyze.Portfolio;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -12,13 +8,13 @@ import android.util.Log;
 import cz.tomas.StockAnalyze.Application;
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.Interfaces.IUpdateDateChangedListener;
-import cz.tomas.StockAnalyze.Data.Model.DayData;
-import cz.tomas.StockAnalyze.Data.Model.Market;
-import cz.tomas.StockAnalyze.Data.Model.PortfolioItem;
-import cz.tomas.StockAnalyze.Data.Model.PortfolioSum;
-import cz.tomas.StockAnalyze.Data.Model.StockItem;
+import cz.tomas.StockAnalyze.Data.Model.*;
 import cz.tomas.StockAnalyze.Portfolio.Portfolio.IPortfolioListener;
 import cz.tomas.StockAnalyze.utils.Utils;
+
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * loader for portfolio  items, also connected for possible sources of portfolio changes
@@ -66,7 +62,7 @@ public final class PortfolioLoader extends AsyncTaskLoader<PortfolioListData> im
 						datas.put(portfolioItem, dayData);
 						
 						// load also needed stock items
-						StockItem stockItem = dataManager.getStockItem(portfolioItem.getStockId(), portfolioItem.getMarketId());
+						StockItem stockItem = dataManager.getStockItem(portfolioItem.getStockId());
 						stockItems.put(portfolioItem.getStockId(), stockItem);
 
 						double itemValue = portfolioItem.getCurrentStockCount() * dayData.getPrice();

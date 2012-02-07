@@ -1,26 +1,26 @@
 package cz.tomas.StockAnalyze.fragments;
 
-import java.util.Map;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AbsListView;
-import android.widget.ListAdapter;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import cz.tomas.StockAnalyze.R;
+import android.widget.ListAdapter;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
+import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.StockList.StockListAdapter;
 import cz.tomas.StockAnalyze.StockList.StocksLoader;
 import cz.tomas.StockAnalyze.utils.NavUtils;
+
+import java.util.Map;
 
 /**
  * Helper class containing common functionality from stock fragments,
@@ -37,14 +37,12 @@ final class StockFragmentHelper implements LoaderCallbacks<Map<StockItem, DayDat
 	
 	private final IStockFragment fragment;
 	private final Market market;
-	private final boolean includeIndeces;
 	private final StockListAdapter adapter;
 	
 	StockFragmentHelper(IStockFragment fragment, Bundle bundle, StockListAdapter adapter) {
 		this.fragment = fragment;
 		this.adapter = adapter;
 
-		this.includeIndeces = bundle.getBoolean(StockGridFragment.ARG_INLCUDE_INDECES);
 		this.market = (Market) bundle.get(StockGridFragment.ARG_MARKET);
 	}
 	
@@ -76,15 +74,14 @@ final class StockFragmentHelper implements LoaderCallbacks<Map<StockItem, DayDat
 		}
 	}
 	
-	void onCreateContextMenu(ContextMenu menu, View v,
-			ContextMenuInfo menuInfo) {
+	void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		MenuInflater inflater = this.fragment.getActivity().getMenuInflater();
 		inflater.inflate(R.menu.stock_item_context_menu, menu);
 	}
 	
 	@Override
 	public Loader<Map<StockItem, DayData>> onCreateLoader(int id, Bundle args) {
-		return new StocksLoader(this.fragment.getActivity(), this.market, this.includeIndeces);
+		return new StocksLoader(this.fragment.getActivity(), this.market);
 	}
 
 	@Override

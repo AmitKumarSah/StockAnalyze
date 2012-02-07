@@ -156,7 +156,7 @@ public class PseCsvDataAdapter implements IStockDataProvider {
 
 	@Override
 	public DataProviderAdviser getAdviser() {
-		DataProviderAdviser adviser = new DataProviderAdviser(false, true, true, this.provider.getMarket());
+		DataProviderAdviser adviser = new DataProviderAdviser(false, true, true, "cz");
 		return adviser;
 	}
 

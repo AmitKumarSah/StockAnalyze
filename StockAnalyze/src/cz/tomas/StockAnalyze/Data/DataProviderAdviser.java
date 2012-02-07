@@ -20,8 +20,6 @@
  */
 package cz.tomas.StockAnalyze.Data;
 
-import cz.tomas.StockAnalyze.Data.Model.Market;
-
 /**
  * @author tomas
  * class advising about data provider, it is used in DataProviderFactory 
@@ -29,17 +27,17 @@ import cz.tomas.StockAnalyze.Data.Model.Market;
  */
 public class DataProviderAdviser {
 
-	boolean isRealTime;
-	boolean supportHistorical;
-	boolean supportStatistics;
-	Market market;
+	private final boolean isRealTime;
+	private final boolean supportHistorical;
+	private final boolean supportStatistics;
+	private final String marketCode;
 	
 	public DataProviderAdviser(boolean isRealTime, boolean supportHistorical,
-			boolean supportStatistics, Market market) {
+			boolean supportStatistics, String marketCode) {
 		this.isRealTime = isRealTime;
 		this.supportHistorical = supportHistorical;
 		this.supportStatistics = supportStatistics;
-		this.market = market;
+		this.marketCode = marketCode;
 	}
 
 	/**
@@ -65,46 +63,6 @@ public class DataProviderAdviser {
 	public boolean supportStatistics() {
 		return supportStatistics;
 	}	
-	
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + (isRealTime ? 1231 : 1237);
-		result = prime * result + ((market == null) ? 0 : market.hashCode());
-		result = prime * result + (supportHistorical ? 1231 : 1237);
-		result = prime * result + (supportStatistics ? 1231 : 1237);
-		return result;
-	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		DataProviderAdviser other = (DataProviderAdviser) obj;
-		if (isRealTime != other.isRealTime)
-			return false;
-		if (market == null) {
-			if (other.market != null)
-				return false;
-		} else if (!market.equals(other.market))
-			return false;
-		if (supportHistorical != other.supportHistorical)
-			return false;
-		if (supportStatistics != other.supportStatistics)
-			return false;
-		return true;
-	}
 
 	/* 
 	 * string representation
@@ -114,12 +72,12 @@ public class DataProviderAdviser {
 	public String toString() {
 		return "DataProviderAdviser [isRealTime=" + isRealTime
 				+ ", supportHistorical=" + supportHistorical
-				+ ", supportStatistics=" + supportStatistics + ", market="
-				+ market + "]";
+				+ ", supportStatistics=" + supportStatistics + ", marketCode="
+				+ marketCode + "]";
 	}
 
-	public Market getMarket() {
-		return this.market;
+	public String getMarketCode() {
+		return this.marketCode;
 	}
 	
 	

@@ -20,9 +20,6 @@
  */
 package cz.tomas.StockAnalyze;
 
-import java.util.Calendar;
-import java.util.Map;
-
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -30,15 +27,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.widget.RemoteViews;
-
-import cz.tomas.StockAnalyze.Data.IStockDataProvider;
-import cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener;
 import cz.tomas.StockAnalyze.Data.Interfaces.IUpdateSchedulerListener;
-import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.activity.StocksActivity;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
+
+import java.util.Calendar;
 
 /**
  * Supervisor over notifications from application
@@ -46,7 +41,7 @@ import cz.tomas.StockAnalyze.utils.Utils;
  * @author tomas
  *
  */
-public class NotificationSupervisor implements IUpdateSchedulerListener, IStockDataListener {
+public class NotificationSupervisor implements IUpdateSchedulerListener {
 
 	private Context context;
 	private final NotificationManager notificationManager;
@@ -70,25 +65,6 @@ public class NotificationSupervisor implements IUpdateSchedulerListener, IStockD
 		this.updateFinishedMessage = this.context.getText(R.string.dataUpdated);
 		this.noUpdateMessage = this.context.getText(R.string.noDataUpdated);
 		this.pref = this.context.getSharedPreferences(Utils.PREF_NAME, 0);
-	}
-
-	/** 
-	 * update existing notification
-	 * @see cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener#OnStockDataUpdated(cz.tomas.StockAnalyze.Data.IStockDataProvider)
-	 */
-	@Override
-	public void OnStockDataUpdated(IStockDataProvider sender, Map<String,DayData> dataMap) {
-		showFinishNotification();
-	}
-
-	/** 
-	 * create notification about data update, that is just proceeding
-	 * @see cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener#OnStockDataUpdateBegin(cz.tomas.StockAnalyze.Data.IStockDataProvider)
-	 */
-	@Override
-	public void OnStockDataUpdateBegin(IStockDataProvider sender) {
-		showStartNotfication(sender.getAdviser().getMarket());
-
 	}
 
 	private void showStartNotfication(Market... markets) {
@@ -166,18 +142,13 @@ public class NotificationSupervisor implements IUpdateSchedulerListener, IStockD
 	}
 
 	@Override
-	public void OnStockDataNoUpdate(IStockDataProvider sender) {
-		showNoUpdateNotification();
-	}
-
-	@Override
 	public void onUpdateBegin(Market... markets) {
 		this.showStartNotfication(markets);
 	}
 
 	@Override
-	public void onUpdateFinished(boolean succes) {
-		if (succes) {
+	public void onUpdateFinished(boolean success) {
+		if (success) {
 			this.showFinishNotification();
 		} else {
 			this.showNoUpdateNotification();

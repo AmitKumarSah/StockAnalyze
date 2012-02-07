@@ -1,5 +1,6 @@
 package cz.tomas.StockAnalyze.activity;
 
+import java.util.Collection;
 import java.util.List;
 
 import android.app.Dialog;
@@ -48,7 +49,7 @@ public final class PortfoliosActivity extends BaseFragmentActivity implements On
 		this.setContentView(R.layout.portfolios);
 		
 		this.pager = (ViewPager) this.findViewById(R.id.portfoliosViewPager);
-		List<Market> markets = DataManager.getInstance(this).getMarkets();
+		Collection<Market> markets = DataManager.getInstance(this).getMarkets();
 		this.pager.setAdapter(new PortfolioPagerAdapter(getSupportFragmentManager(), markets));
 		
 		//Bind the title indicator to the adapter

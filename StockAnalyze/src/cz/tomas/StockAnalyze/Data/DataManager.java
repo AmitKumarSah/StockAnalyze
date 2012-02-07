@@ -22,20 +22,19 @@ package cz.tomas.StockAnalyze.Data;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.SystemClock;
+import android.os.Handler;
 import android.util.Log;
 import cz.tomas.StockAnalyze.Application;
 import cz.tomas.StockAnalyze.Data.GaeData.GaeIndecesDataAdapter;
 import cz.tomas.StockAnalyze.Data.GaeData.GaePseDataAdapter;
 import cz.tomas.StockAnalyze.Data.GaeData.GaeXetraAdapter;
+import cz.tomas.StockAnalyze.Data.Interfaces.IMarketListener;
 import cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener;
 import cz.tomas.StockAnalyze.Data.Interfaces.IUpdateDateChangedListener;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetDataException;
-import cz.tomas.StockAnalyze.StockList.StockComparator;
-import cz.tomas.StockAnalyze.StockList.StockCompareTypes;
 import cz.tomas.StockAnalyze.utils.Markets;
 import cz.tomas.StockAnalyze.utils.Utils;
 
@@ -55,9 +54,8 @@ public class DataManager implements IStockDataListener {
 
 	private static final int DAY_IN_MILLISECONDS = 1000 * 60 * 60 * 24;
 
-	private final int STOCK_LIST_EXPIRATION_DAYS = 2;
-	
-	public static final int TIME_PERIOD_NONE = 0;
+	private static final int STOCK_LIST_EXPIRATION_DAYS = 2;
+
 	public static final int TIME_PERIOD_DAY = 1;
 	public static final int TIME_PERIOD_WEEK = 2;
 	public static final int TIME_PERIOD_MONTH = 3;
@@ -69,11 +67,13 @@ public class DataManager implements IStockDataListener {
 		
 	private List<IUpdateDateChangedListener> updateDateChangedListeners;
 	private List<IStockDataListener> updateStockDataListeners;
-	private final List<Market> markets;
+	private Map<String, Market> markets;
 	
 	private final Context context;
 	private static DataManager instance;
-	private long lastUpdateTime;
+	private Handler handler;
+
+	private IMarketListener marketListener;
 	
 	public static DataManager getInstance(Context context) {
 		if (instance == null) {
@@ -85,108 +85,125 @@ public class DataManager implements IStockDataListener {
 	
 	private DataManager(Context context) {
 		this.context = context;
+		this.handler = new Handler();
 		
 		this.sqlStore = StockDataSqlStore.getInstance(context);
-		this.markets = new ArrayList<Market>();
-		this.markets.add(Markets.CZ);
-		this.markets.add(Markets.DE);
-		
-		//IStockDataProvider pse = new PseCsvDataAdapter();
-		//IStockDataProvider patriaPse = new PsePatriaDataAdapter();
+
 		IStockDataProvider gaePse = new GaePseDataAdapter(context);
-		IStockDataProvider gaeIndeces = new GaeIndecesDataAdapter(context);
+		IStockDataProvider gaeIndices = new GaeIndecesDataAdapter(context);
 		IStockDataProvider gaeXetra = new GaeXetraAdapter(context);
-		
-		//DataProviderFactory.registerDataProvider(pse);
+
 		DataProviderFactory.registerDataProvider(gaePse);
-		DataProviderFactory.registerDataProvider(gaeIndeces);
+		DataProviderFactory.registerDataProvider(gaeIndices);
 		DataProviderFactory.registerDataProvider(gaeXetra);
-		//DataProviderFactory.registerDataProvider(patriaPse);
 		
 		this.updateDateChangedListeners = new ArrayList<IUpdateDateChangedListener>();
 		this.updateStockDataListeners = new ArrayList<IStockDataListener>();
-		
-//		patriaPse.enable(true);
-//		patriaPse.addListener(this);
-//		patriaPse.addListener(supervisor);
 
 		gaeXetra.enable(true);
 		gaeXetra.addListener(this);
-		//gaeXetra.addListener(supervisor);
 		
 		gaePse.enable(true);
 		gaePse.addListener(this);
-		//gaePse.addListener(supervisor);
 		
-		gaeIndeces.enable(true);
-		gaeIndeces.addListener(this);
-		//gaeIndeces.addListener(supervisor);
+		gaeIndices.enable(true);
+		gaeIndices.addListener(this);
+
+		// load markets
+		Thread marketsThread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				loadMarkets();
+			}
+		});
+		marketsThread.start();
 	}
 	
 	public static boolean isInitialized() {
 		return instance != null;
 	}
-	
-	/**
-	 * get supported markets
-	 * @return
-	 */
-	public List<Market> getMarkets() {
-		return this.markets;
+
+	public void setMarketListener(IMarketListener marketListener) {
+		this.marketListener = marketListener;
 	}
 
 	/**
-	 * search for stocks with pattern in name or in ticker,
-	 * consider only stocks from given market
-	 * use star (*) for all stock items 
+	 * get supported markets
+	 * @return collection of markets or null if they are not yet avaialable
 	 */
-	public List<StockItem> search(String pattern, Market market) throws NullPointerException, FailedToGetDataException {
-		// FIXME
-		IStockDataProvider provider = DataProviderFactory.getRealTimeDataProvider(market);
-		if (provider == null)
-			throw new NullPointerException("failed to find appropriate data provider to search for stock");
-		List<StockItem> stocks = provider.getAvailableStockList();
-		if (stocks == null)
-			throw new NullPointerException("can't get list of available stock items");
-		List<StockItem> results = new ArrayList<StockItem>();
-		
-		if (pattern.equals("*"))
-			results = stocks;
-		else {
-			for (StockItem stock : stocks) {
-				if (stock != null && stock.getTicker() != null
-						&& stock.getName() != null) {
-					// search for pattern
-					if (stock.getTicker().contains(pattern.toUpperCase())
-							|| stock.getName().contains(pattern.toUpperCase()))
-						results.add(stock);
-				}
-			}
+	public Collection<Market> getMarkets() {
+		if (this.markets == null || this.markets.size() == 0) {
+			return null;
 		}
-		return results;
+		return this.markets.values();
 	}
-	
+
+	/**
+	 * initial data load for whole application,
+	 * load or download markets, refresh them if necessary
+	 * and also check for stock items
+	 */
+	private void loadMarkets() {
+		this.sqlStore.acquireDb(this);
+		this.markets = this.sqlStore.getMarkets();
+		if (this.markets == null || this.markets.size() == 0) {
+			Log.d(Utils.LOG_TAG, "downloading markets...");
+ 			MarketProvider provider = new MarketProvider();
+			try {
+				this.markets = provider.getMarkets(this.context);
+				this.sqlStore.updateMarkets(this.markets);
+
+				for (Market market : markets.values()) {
+					this.downloadStockItems(market);
+				}
+				this.downloadStockItems(Markets.GLOBAL);
+				SharedPreferences preferences = this.context.getSharedPreferences(Utils.PREF_NAME, 0);
+				preferences.edit()
+						.putLong(Utils.PREF_LAST_STOCK_LIST_UPDATE_TIME, System.currentTimeMillis())
+						.commit();
+			} catch (IOException e) {
+				Log.e(Utils.LOG_TAG, "failed to read markets", e);
+			}
+		} else if (isStockListDirty()) {
+			Log.d(Utils.LOG_TAG, "refreshing stock list");
+			for (Market market : markets.values()) {
+				this.downloadStockItems(market);
+			}
+			this.downloadStockItems(Markets.GLOBAL);
+			SharedPreferences preferences = this.context.getSharedPreferences(Utils.PREF_NAME, 0);
+			preferences.edit()
+					.putLong(Utils.PREF_LAST_STOCK_LIST_UPDATE_TIME, System.currentTimeMillis())
+					.commit();
+		}
+		this.sqlStore.releaseDb(true, this);
+
+		this.handler.post(new Runnable() {
+			@Override
+			public void run() {
+				fireMarketReady();
+			}
+		});
+	}
+
+	private void fireMarketReady() {
+		if (marketListener != null) {
+			final Market[] allMarkets = new Market[this.markets.size() + 1];
+			this.markets.values().toArray(allMarkets);
+			allMarkets[allMarkets.length -1] = Markets.GLOBAL;
+			
+			marketListener.onMarketsAvailable(allMarkets);
+		}
+	}
+
 	/**
 	 * get all stock items from database for given Market,
 	 * if stock items weren't found, would try to download them
 	 *
+	 * @param market market of stocks we want
 	 * @return map stock id vs StockItem, ordered by stock ticker
 	 */
-	public synchronized Map<String, StockItem> getStockItems(Market market, boolean includeIndeces) {
-		final boolean isStockListDirty = isStockListDirty();
-
-		Map<String, StockItem> items = this.sqlStore.getStockItems(market, DataSqlHelper.StockColumns.NAME, includeIndeces);
-		if (items == null || items.size() <= 1 || isStockListDirty) {		// one item is not enough - might be the index
-			try {
-				if (includeIndeces && market == null) {
-					items = downloadStockItems(Markets.GLOBAL, items);
-				} else {
-					items = downloadStockItems(market, items);
-				}
-			} catch (Exception e) {
-				Log.e(Utils.LOG_TAG, "failed to download stock list for market " + market, e);
-			}
-		}
+	public synchronized Map<String, StockItem> getStockItems(Market market) {
+		Map<String, StockItem> items = this.sqlStore.getStockItems(market, DataSqlHelper.StockColumns.NAME);
 			
 		return items;
 	}
@@ -196,7 +213,7 @@ public class DataManager implements IStockDataListener {
 	 *
 	 * @return true if stock list needs to be refreshed
 	 */
-	protected boolean isStockListDirty() {
+	private boolean isStockListDirty() {
 		SharedPreferences preferences = this.context.getSharedPreferences(Utils.PREF_NAME, 0);
 
 		long lastUpdate = preferences.getLong(Utils.PREF_LAST_STOCK_LIST_UPDATE_TIME, 0);
@@ -210,69 +227,48 @@ public class DataManager implements IStockDataListener {
 	/**
 	 * download stock items using StockProvider
 	 * and store them in database
-	 * @param market
-	 * @return
+	 * @param market market to download stocks for
+	 * @return downloaded stock items
 	 */
-	private Map<String, StockItem> downloadStockItems(Market market, Map<String, StockItem> currentItems) {
-		Log.d(Utils.LOG_TAG, "downloading stock item list");
+	private Map<String, StockItem> downloadStockItems(Market market) {
+		Log.d(Utils.LOG_TAG, "downloading stock item list for " + market);
 		if (market == null) {
 			throw new NullPointerException("market can't be null to get stock list");
 		}
 		IStockDataProvider provider = DataProviderFactory.getDataProvider(market);
 		List<StockItem> stocks = provider.getAvailableStockList();
-		Collections.sort(stocks, new StockComparator(StockCompareTypes.Ticker, null));
 		
 		Map<String, StockItem> items = null;
 		if (stocks != null && stocks.size() > 0) {
-			this.sqlStore.acquireDb(this);
-			items = this.sqlStore.updateStockList(stocks, currentItems);
-			this.sqlStore.releaseDb(true, this);
+			items = this.sqlStore.updateStockList(stocks, market);
 		}
-		SharedPreferences preferences = this.context.getSharedPreferences(Utils.PREF_NAME, 0);
-		preferences.edit()
-				.putLong(Utils.PREF_LAST_STOCK_LIST_UPDATE_TIME, System.currentTimeMillis())
-				.commit();
 		return items;
 	}
 	
 	/**
 	 * get single stock item based on its id
 	 * 
-	 * @param id
-	 * @param marketId
-	 * @return
+	 * @param id stick id to query stock item in db
+	 * @return found sotck item or null
 	 * @throws NullPointerException
 	 */
-	public StockItem getStockItem(String id, String marketId) throws NullPointerException {
-		return getStockItem(id, Markets.getMarket(marketId));
-	}
-	
-	public StockItem getStockItem(String id, Market market) throws NullPointerException {
+	public StockItem getStockItem(String id) throws NullPointerException {
 		StockItem item = this.sqlStore.getStockItem(id);
-		
-		if (item == null) {
-			Map<String, StockItem> items = downloadStockItems(market, null);
-			item = items.get(id);
-		}
-		return item; 
+		return item;
 	}
-	
+
 	/**
 	 * return last data from database, not even trying to go online
-	 * @param stockId
-	 * @return
+	 * @param stockId id of stock
+	 * @return data for given stock or null if not found
 	 */
 	public synchronized DayData getLastOfflineValue(String stockId) {
 		DayData data = this.sqlStore.getDayData(stockId);
 		return data;
 	}
-	
-	/**
-	 * get last day data for set of stock items
-	 * @return {@link Map} of {@link StockItem} vs. {@link DayData}
-	 */
-	public synchronized Map<StockItem,DayData>  getLastDataSet(Map<String, StockItem> stockItems) {
-		Map<StockItem,DayData> dbData = this.sqlStore.getLastDataSet(stockItems, null);
+
+	public Map<StockItem,DayData> getLastDataSet(Market market) {
+		Map<StockItem,DayData> dbData = this.sqlStore.getLastDataSet(market, null);
 		return dbData;
 	}
 	
@@ -280,7 +276,7 @@ public class DataManager implements IStockDataListener {
 	 * get historical or intraday data
 	 * 
 	 * @param item see {@link DataManager} constant fields
-	 * @param timePeriod
+	 * @param timePeriod chart time period, see {@link}
 	 * @param includeToday
 	 * @return
 	 * @throws FailedToGetDataException
@@ -338,7 +334,7 @@ public class DataManager implements IStockDataListener {
 		} else if (data.getPrice() == 0) {
 			// this is special case when the data is downloaded, but the price is not valid,
 			// so we take old data's price and set it to the output DayData object
-			// (it happens in patria provider and zeor is reported
+			// (it happens in patria provider and zero is reported
 			// if there wasn't any trade yet)
 			data = createDataWithPrice(item, data);
 		}
@@ -371,7 +367,7 @@ public class DataManager implements IStockDataListener {
 	}
 	
 	private void fireUpdateStockDataListenerUpdate(IStockDataProvider sender, Map<String, DayData> dataMap) {
-		this.lastUpdateTime = SystemClock.elapsedRealtime();
+		//this.lastUpdateTime = SystemClock.elapsedRealtime();
 		for (IStockDataListener listener : this.updateStockDataListeners) {
 			listener.OnStockDataUpdated(sender, dataMap);
 		}
@@ -433,9 +429,6 @@ public class DataManager implements IStockDataListener {
 				this.sqlStore.insertDayDataSet(receivedData);
 			} else {
 				for (Entry<String, DayData> entry : dataMap.entrySet()) {
-					if (this.isStockListDirty()) {
-						this.downloadStockItems(sender.getAdviser().getMarket(), null);
-					}
 					this.sqlStore.insertDayData(entry.getKey(), entry.getValue());
 				}
 			}
@@ -462,14 +455,8 @@ public class DataManager implements IStockDataListener {
 
 	@Override
 	public void OnStockDataUpdateBegin(IStockDataProvider sender) {
-
 	}
 	@Override
 	public void OnStockDataNoUpdate(IStockDataProvider sender) {
-
-	}
-
-	public long getLastUpdateTime() {
-		return this.lastUpdateTime;
 	}
 }

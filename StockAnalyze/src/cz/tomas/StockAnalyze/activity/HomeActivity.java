@@ -38,7 +38,6 @@ import cz.tomas.StockAnalyze.charts.view.CompositeChartView;
 import cz.tomas.StockAnalyze.ui.widgets.HomeBlockView;
 import cz.tomas.StockAnalyze.ui.widgets.PickStockDialog;
 import cz.tomas.StockAnalyze.ui.widgets.PickStockDialog.IStockDialogListener;
-import cz.tomas.StockAnalyze.utils.Markets;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 
@@ -81,9 +80,8 @@ public class HomeActivity extends ChartActivity implements OnClickListener {
 		public void run() {
 			try {
 				String ticker = pref.getString(Utils.PREF_HOME_CHART_TICKER, "PX");
-				String marketId = pref.getString(Utils.PREF_HOME_CHART_MARKET_ID, Markets.CZ.getId());
 				
-				HomeActivity.this.stockItem = HomeActivity.this.dataManager.getStockItem(ticker, Markets.getMarket(marketId));
+				HomeActivity.this.stockItem = HomeActivity.this.dataManager.getStockItem(ticker);
 			} catch (Exception e) {
 				Log.e(Utils.LOG_TAG, "filed to get stock item for home screen chart", e);
 			}

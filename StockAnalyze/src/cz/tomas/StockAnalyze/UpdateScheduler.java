@@ -20,11 +20,6 @@
  */
 package cz.tomas.StockAnalyze;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.concurrent.Semaphore;
-
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.ContentResolver;
@@ -38,12 +33,18 @@ import android.util.Log;
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.DataProviderFactory;
 import cz.tomas.StockAnalyze.Data.IStockDataProvider;
+import cz.tomas.StockAnalyze.Data.Interfaces.IMarketListener;
 import cz.tomas.StockAnalyze.Data.Interfaces.IUpdateSchedulerListener;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.receivers.AlarmReceiver;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.Markets;
 import cz.tomas.StockAnalyze.utils.Utils;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.concurrent.Semaphore;
 
 /**
  * UpdateScheduler service. allows to schedule different updates,
@@ -61,7 +62,7 @@ import cz.tomas.StockAnalyze.utils.Utils;
  * @author tomas
  *
  */
-public class UpdateScheduler {
+public class UpdateScheduler implements IMarketListener{
 	
 	private final Context context;
 	private final SharedPreferences preferences;
@@ -78,6 +79,7 @@ public class UpdateScheduler {
 	private final PendingIntent intraUpdateIntent;
 	private final PendingIntent dayUpdateIntent;
 	private final List<IUpdateSchedulerListener> listeners;
+	private Market[] markets;
 	
 	private Semaphore semaphore;
 	
@@ -105,7 +107,7 @@ public class UpdateScheduler {
 				// if there is change in update preferences, do an update or schedule new one
 				if (key.equals(Utils.PREF_ENABLE_BACKGROUND_UPDATE)) {
 					if (sharedPreferences.getBoolean(key, true)) {
-						perfromScheduledUpdate();
+						performScheduledUpdate();
 					}
 					scheduleNextIntraDayUpdate();
 				}
@@ -138,35 +140,24 @@ public class UpdateScheduler {
 	}
 	
 	/**
-	 * schedule next update with historical data provider
-	 */
-	public void scheduleNextDayUpdate() {
-		//if (! this.isDayUpdateScheduled)
-			this.scheduleAlarm(false);
-	}
-	
-	/**
 	 * perform update scheduled by alarm,
 	 * send event to flurry analysis
 	 */
-	public void perfromScheduledUpdate() {
+	public void performScheduledUpdate() {
 		final boolean isSynchronizationEnabled = ContentResolver.getMasterSyncAutomatically();
 		if (! isSchedulerRunning() && isSynchronizationEnabled) {
 			Log.i(Utils.LOG_TAG, "going to perform scheduled update");
-			//		FlurryAgent.onStartSession(this.context, "UpdateSheduler");
-			//		Map<String, String> pars = new HashMap<String, String>();
-			//		pars.put(Consts.FLURRY_KEY_SCHEDULED_UPDATE_DAY, String.valueOf(Calendar.getInstance().get(Calendar.DAY_OF_WEEK)));
-			//		FlurryAgent.onEvent(Consts.FLURRY_EVENT_SCHEDULED_UPDATE, pars);
 
 			for (IUpdateSchedulerListener listener : this.listeners) {
 				if (listener != null) {
-					listener.onUpdateBegin(Markets.CZ, Markets.DE, Markets.GLOBAL);
+					listener.onUpdateBegin(markets);
 				}
 			}
-			this.performUpdateInternal(Markets.CZ);
-			this.performUpdateInternal(Markets.DE);
+
+			for (Market market : markets) {
+				this.performUpdateInternal(market);
+			}
 			this.performUpdateInternal(Markets.GLOBAL);
-			//		FlurryAgent.onEndSession(this.context);
 		} else {
 			Log.i(Utils.LOG_TAG, "skipping scheduled update because one is already running");
 		}
@@ -175,21 +166,26 @@ public class UpdateScheduler {
 	/**
 	 * update real time data immediately for all markets
 	 */
-	public void updateImmediatly() {
+	public void updateImmediately() {
+		if (markets == null) {
+			Log.d(Utils.LOG_TAG, "cannot do immediate update, because we don't have loaded markets");
+			return;
+		}
 		for (IUpdateSchedulerListener listener : this.listeners) {
 			if (listener != null) {
-				listener.onUpdateBegin(Markets.CZ, Markets.DE, Markets.GLOBAL);
+				listener.onUpdateBegin(markets);
 			}
 		}
-		this.performUpdateInternal(Markets.CZ);
-		this.performUpdateInternal(Markets.DE);
-		this.performUpdateInternal(Markets.GLOBAL);
+
+		for (Market market : markets) {
+			this.performUpdateInternal(market);
+		}
 	}
 	
 	/**
 	 * update real time data immediately for given market
 	 */
-	public void updateImmediatly(Market market) {
+	public void updateImmediately(Market market) {
 		for (IUpdateSchedulerListener listener : this.listeners) {
 			if (listener != null) {
 				listener.onUpdateBegin(market);
@@ -260,6 +256,12 @@ public class UpdateScheduler {
 	
 	public boolean removeListener(IUpdateSchedulerListener listener) {
 		return this.listeners.remove(listener);
+	}
+
+	@Override
+	public void onMarketsAvailable(Market[] markets) {
+		this.markets = markets;
+		this.updateImmediately();
 	}
 
 	/**

@@ -6,21 +6,15 @@ import android.graphics.Color;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
-import android.widget.AdapterView;
+import android.widget.*;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.BaseAdapter;
-import android.widget.FrameLayout;
-import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.RadioGroup.LayoutParams;
-import android.widget.TextView;
-import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.Interfaces.IListAdapterListener;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
+import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.StockList.SimpleMarketAdapter;
 import cz.tomas.StockAnalyze.StockList.SimpleStockListAdapter;
-import cz.tomas.StockAnalyze.utils.Markets;
 import cz.tomas.StockAnalyze.utils.Utils;
 
 public final class PickStockDialog extends Dialog implements IListAdapterListener<StockItem> {
@@ -81,9 +75,8 @@ public final class PickStockDialog extends Dialog implements IListAdapterListene
 				if (currentAdapter == ADAPTER_MARKETS) {
 					final Market market = (Market) marketAdapter.getItem(position);
 					if (market != null) {
-						final boolean indecesMarket = market.equals(Markets.GLOBAL);
 						currentAdapter = ADAPTER_STOCKS;
-						stocksAdapter = new SimpleStockListAdapter(getContext(), market, PickStockDialog.this, indecesMarket);
+						stocksAdapter = new SimpleStockListAdapter(getContext(), market, PickStockDialog.this);
 						setTitle(R.string.pickStock);
 						list.setAdapter(stocksAdapter);
 					} else {

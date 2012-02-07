@@ -9,6 +9,8 @@ import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.fragments.PortfolioListFragment;
 import cz.tomas.StockAnalyze.fragments.StockListFragment;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -20,10 +22,10 @@ public final class PortfolioPagerAdapter extends FragmentPagerAdapter implements
 
 	private List<Market> markets;
 	
-	public PortfolioPagerAdapter(FragmentManager fm, List<Market> markets) {
+	public PortfolioPagerAdapter(FragmentManager fm, Collection<Market> markets) {
 		super(fm);
 		
-		this.markets = markets;
+		this.markets = new ArrayList<Market>(markets);
 	}
 
 	public String getFragmentTag(int position) {

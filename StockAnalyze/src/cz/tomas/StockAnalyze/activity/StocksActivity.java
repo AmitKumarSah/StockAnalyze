@@ -1,23 +1,21 @@
 package cz.tomas.StockAnalyze.activity;
 
-import java.util.List;
-
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-
 import com.jakewharton.android.viewpagerindicator.TitlePageIndicator;
-
 import cz.tomas.StockAnalyze.Application;
-import cz.tomas.StockAnalyze.R;
-import cz.tomas.StockAnalyze.UpdateScheduler;
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.Model.Market;
+import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.StockList.StocksPagerAdapter;
+import cz.tomas.StockAnalyze.UpdateScheduler;
 import cz.tomas.StockAnalyze.utils.NavUtils;
+
+import java.util.Collection;
 
 /**
  * activity containing {@link ViewPager} with stock list for {@link Market} on each page
@@ -41,10 +39,10 @@ public final class StocksActivity extends AbstractStocksActivity implements OnPa
 		this.sheduler = (UpdateScheduler) this.getApplicationContext().getSystemService(Application.UPDATE_SCHEDULER_SERVICE);
 
 		this.pager = (ViewPager) this.findViewById(R.id.stocksViewPager);
-		List<Market> markets = DataManager.getInstance(this).getMarkets();
+		Collection<Market> markets = DataManager.getInstance(this).getMarkets();
 		this.pager.setAdapter(new StocksPagerAdapter(getSupportFragmentManager(), markets));
 		if (markets != null) {
-			this.selectedMarket = markets.get(0);
+			this.selectedMarket = markets.iterator().next();
 		}
 		//Bind the title indicator to the adapter
 		TitlePageIndicator titleIndicator = (TitlePageIndicator)findViewById(R.id.pagerTitles);
@@ -84,7 +82,6 @@ public final class StocksActivity extends AbstractStocksActivity implements OnPa
 
 	@Override
 	public void onPageSelected(int position) {
-		Market market = ((StocksPagerAdapter) this.pager.getAdapter()).getMarketByPosition(position);
-		this.selectedMarket = market;
+		this.selectedMarket = ((StocksPagerAdapter) this.pager.getAdapter()).getMarketByPosition(position);
 	}
 }

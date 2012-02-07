@@ -40,11 +40,11 @@ public class AlarmReceiver extends BroadcastReceiver {
 		if (intra) {
 			scheduler.scheduleNextIntraDayUpdate();
 		} else {
-			scheduler.scheduleNextDayUpdate();
+			//scheduler.scheduleNextDayUpdate();
 		}
 		
 		try {
-			scheduler.perfromScheduledUpdate();
+			scheduler.performScheduledUpdate();
 		} catch (Exception e) {
 			String message = context.getString(R.string.failedScheduleUpdate);
 			if (e.getMessage() != null)

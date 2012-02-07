@@ -61,15 +61,16 @@ public class Application extends android.app.Application {
 		Log.i(Utils.LOG_TAG, "STARTING THE APPLICATION");
 		this.scheduler = new UpdateScheduler(this);
 		this.dataManager = DataManager.getInstance(this);
+		this.dataManager.setMarketListener(this.scheduler);
+
 		NotificationSupervisor supervisor = new NotificationSupervisor(this);
 		this.scheduler.addListener(supervisor);
 
 		// do immediate update and schedule next one
 		try {
 			if (! this.scheduler.isSchedulerRunning()) {
-				this.scheduler.updateImmediatly();
+				this.scheduler.updateImmediately();
 				this.scheduler.scheduleNextIntraDayUpdate();
-				//this.scheduler.scheduleNextDayUpdate();
 			}
 		} catch (Exception e) {
 			Log.e(Utils.LOG_TAG, "Failed to schedule updates!", e);

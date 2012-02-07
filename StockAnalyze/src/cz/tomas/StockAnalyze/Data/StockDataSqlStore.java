@@ -25,39 +25,15 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.text.TextUtils;
 import android.util.Log;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
-import cz.tomas.StockAnalyze.utils.Markets;
 import cz.tomas.StockAnalyze.utils.Utils;
 
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-
-
-/*
- 	Stock table:
-		private static final String STOCK_TABLE_CREATE =
-	         "CREATE TABLE " + STOCK_TABLE_NAME + " (" +
-	         "id varchar(50) PRIMARY KEY," +
-	         "ticker varchar(10) not null, " +
-	         "name TEXT);";
-	Day data table:	
-		private static final String DAY_DATA_TABLE_CRETE = 
-			"CREATE TABLE " + DAY_DATA_TABLE_NAME + " (" +
-	         "id integer PRIMARY KEY AUTOINCREMENT," +
-	         "stock_id varchar(50)," +
-	         "FOREIGN KEY(stock_id) REFERENCES " + STOCK_TABLE_NAME + "(id));" +
-	         "year_min real," +
-	         "year_max real," +
-	         "change real not null," +
-	         "date TEXT not null, " +				//ISO8601 strings "YYYY-MM-DD HH:MM:SS.SSS"
-	         "price real not null);";
- */
 
 
 /**
@@ -237,31 +213,28 @@ public class StockDataSqlStore extends DataSqlHelper {
 	}
 
 
-	public Map<String, StockItem> getStockItems(Market market, String orderBy, boolean includeIndeces) {
+	public Map<String, StockItem> getStockItems(Market market, String orderBy) {
+		if (market == null) {
+			throw new IllegalArgumentException("market cannot be null");
+		}
 		// LinkedHashMap preserve order of added items
 		final Map<String, StockItem> items = new LinkedHashMap<String, StockItem>();
 		try {
 			SQLiteDatabase db = this.getWritableDatabase();
 			Cursor c = null;
 			try {
-				if (market != null) {
-					c = db.query(STOCK_TABLE_NAME, StockColumns.PROJECTION,
-							String.format("%s=? AND %s=? AND %s != ?", StockColumns.IS_INDEX, StockColumns.MARKET_ID, StockColumns.FLAG),
-							new String[] { includeIndeces ? "1" : "0", market.getId(), FLAG_REMOVED_STRING },
-							null, null, orderBy);
-				} else {
-					c = db.query(STOCK_TABLE_NAME, StockColumns.PROJECTION,
-							String.format("%s=? AND %s != ?", StockColumns.IS_INDEX, StockColumns.FLAG),
-							new String[] { includeIndeces ? "1" : "0", FLAG_REMOVED_STRING }, null, null, orderBy);
-				}
+				c = db.query(STOCK_TABLE_NAME, StockColumns.PROJECTION,
+						String.format("%s=? AND %s != ?", StockColumns.MARKET_ID, StockColumns.FLAG),
+						new String[] { market.getId(), FLAG_REMOVED_STRING },
+						null, null, orderBy);
 
 				if (c.moveToFirst()) {
 					do {
 						String id = c.getString(c.getColumnIndex(StockColumns._ID));
 						String ticker = c.getString(c.getColumnIndex(StockColumns.TICKER));
 						String name = c.getString(c.getColumnIndex(StockColumns.NAME));
-						String marketId = c.getString(c.getColumnIndex(StockColumns.MARKET_ID));
-						StockItem item = new StockItem(ticker, id, name, Markets.getMarket(marketId));
+						//String marketId = c.getString(c.getColumnIndex(StockColumns.MARKET_ID));
+						StockItem item = new StockItem(ticker, id, name, market);
 						items.put(id, item);
 					} while (c.moveToNext());
 				}
@@ -299,7 +272,9 @@ public class StockDataSqlStore extends DataSqlHelper {
 					String ticker = c.getString(1);
 					String name = c.getString(2);
 					String marketId = c.getString(3);
-					item = new StockItem(ticker, id, name, Markets.getMarket(marketId));
+					
+					final Market market = getMarket(marketId, db);
+					item = new StockItem(ticker, id, name, market);
 				}
 				
 			} catch (SQLException e) {
@@ -384,7 +359,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 					if (stockItem.getKey() != null) {
 						if (selectionBuilder.length() > 1)
 							selectionBuilder.append(" or ");
-						selectionBuilder.append("stock_id=?");
+						selectionBuilder.append(DayDataColumns.STOCK_ID + "=?");
 						whereArgs[index] = stockItem.getKey();
 						index++;
 					}
@@ -417,7 +392,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 					} while (c.moveToNext());
 				}
 			} catch (SQLException e) {
-				Log.e(Utils.LOG_TAG, "sql exception occured", e);
+				Log.e(Utils.LOG_TAG, "sql exception occurred", e);
 			} catch (IllegalStateException e) {
 				Log.e(Utils.LOG_TAG, "database is in an illegal state!", e);
 			} finally {
@@ -436,18 +411,19 @@ public class StockDataSqlStore extends DataSqlHelper {
 
 	/**
 	 * update stocks in db with new one and deleting old one, not present in given list
-	 * 
+	 *
+	 * @param market market the the stocks to update belongs to
 	 * @param stocks list of stocks to update
-	 * @param currentItems current stock items
 	 * @return updated map of stocks and datas
 	 */
-	public Map<String, StockItem>  updateStockList(List<StockItem> stocks, Map<String, StockItem> currentItems) {
+	public Map<String, StockItem>  updateStockList(List<StockItem> stocks, Market market) {
 		Map<String, StockItem> items = new LinkedHashMap<String, StockItem>();
 		Log.i(Utils.LOG_TAG, "storing stock items to db ... " + items.size());
 		
 		SQLiteDatabase db = this.getWritableDatabase();
 		try {
 			db.beginTransaction();
+			Map<String, StockItem> currentItems = this.getStockItems(market, null);
 			for (StockItem stockItem : stocks) {
 				items.put(stockItem.getId(), stockItem);
 				this.insertStockItem(stockItem);
@@ -466,5 +442,111 @@ public class StockDataSqlStore extends DataSqlHelper {
 			db.endTransaction();
 		}
 		return items;
+	}
+	
+	public Map<String, Market> getMarkets() {
+		Map<String, Market> markets = null;
+		SQLiteDatabase db = this.getWritableDatabase();
+		Cursor cursor = null;
+		try {
+			cursor = db.query(MARKET_TABLE_NAME, MarketColumns.PROJECTION, null, null, null, null, MarketColumns.UI_ORDER);
+			if (cursor.moveToFirst()) {
+				markets = new LinkedHashMap<String, Market>(cursor.getCount());
+				do {
+					String id = cursor.getString(cursor.getColumnIndex(MarketColumns._ID));
+					String name = cursor.getString(cursor.getColumnIndex(MarketColumns.NAME));
+					String desc = cursor.getString(cursor.getColumnIndex(MarketColumns.DESCRIPTION));
+					String country = cursor.getString(cursor.getColumnIndex(MarketColumns.COUNTRY));
+					String currency = cursor.getString(cursor.getColumnIndex(MarketColumns.CURRENCY));
+					//int order = cursor.getInt(cursor.getColumnIndex(MarketColumns.UI_ORDER));
+					long openFrom = cursor.getLong(cursor.getColumnIndex(MarketColumns.OPEN_FROM));
+					long openTo = cursor.getLong(cursor.getColumnIndex(MarketColumns.OPEN_TO));
+					double feeMax = cursor.getDouble(cursor.getColumnIndex(MarketColumns.FEE_MAX));
+					double feeMin = cursor.getDouble(cursor.getColumnIndex(MarketColumns.FEE_MIN));
+					double feePerc = cursor.getDouble(cursor.getColumnIndex(MarketColumns.FEE_PERC));
+
+					Market market = new Market(name, id,currency,desc, country, feePerc, feeMax, feeMin, openTo, openFrom);
+					markets.put(id, market);
+				} while (cursor.moveToNext());
+			}
+		} catch (Exception e) {
+			Log.e(Utils.LOG_TAG, "failed tp read markets", e);
+		} finally {
+			if (cursor != null) {
+				cursor.close();
+			}
+			this.close();
+		}
+		return markets;
+	}
+	
+	private Market getMarket(String marketId, SQLiteDatabase db) {
+		if (TextUtils.isEmpty(marketId)) {
+			throw new IllegalArgumentException("market id cannot be empty");
+		}
+		Cursor cursor = null;
+		try {
+			cursor = db.query(MARKET_TABLE_NAME, MarketColumns.PROJECTION, MarketColumns._ID + "=?",
+					new String[] {marketId}, null, null, null);
+			if (cursor.moveToFirst()) {
+				String id = cursor.getString(cursor.getColumnIndex(MarketColumns._ID));
+				String name = cursor.getString(cursor.getColumnIndex(MarketColumns.NAME));
+				String desc = cursor.getString(cursor.getColumnIndex(MarketColumns.DESCRIPTION));
+				String country = cursor.getString(cursor.getColumnIndex(MarketColumns.COUNTRY));
+				String currency = cursor.getString(cursor.getColumnIndex(MarketColumns.CURRENCY));
+				//int order = cursor.getInt(cursor.getColumnIndex(MarketColumns.UI_ORDER));
+				long openFrom = cursor.getLong(cursor.getColumnIndex(MarketColumns.OPEN_FROM));
+				long openTo = cursor.getLong(cursor.getColumnIndex(MarketColumns.OPEN_TO));
+				double feeMax = cursor.getDouble(cursor.getColumnIndex(MarketColumns.FEE_MAX));
+				double feeMin = cursor.getDouble(cursor.getColumnIndex(MarketColumns.FEE_MIN));
+				double feePerc = cursor.getDouble(cursor.getColumnIndex(MarketColumns.FEE_PERC));
+
+				return new Market(name, id,currency,desc, country, feePerc, feeMax, feeMin, openTo, openFrom);
+			}
+		} finally {
+			if (cursor != null) {
+				cursor.close();
+			}
+		}
+		return null;
+	}
+
+	public void updateMarkets(Map<String, Market> markets) {
+		SQLiteDatabase db = this.getWritableDatabase();
+
+		try{
+			db.beginTransaction();
+			db.delete(MARKET_TABLE_NAME, null, null);
+
+			for (Market market : markets.values()) {
+				ContentValues values = new ContentValues();
+				values.put(MarketColumns.NAME, market.getName());
+				values.put(MarketColumns.COUNTRY, market.getCountry());
+				values.put(MarketColumns.CURRENCY, market.getCurrencyCode());
+				values.put(MarketColumns.DESCRIPTION, market.getDescription());
+				values.put(MarketColumns.FEE_MAX, market.getFeeMax());
+				values.put(MarketColumns.FEE_MIN, market.getFeeMin());
+				values.put(MarketColumns.FEE_PERC, market.getFeePerc());
+				values.put(MarketColumns.OPEN_FROM, market.getOpenFrom());
+				values.put(MarketColumns.OPEN_TO, market.getOpenTo());
+
+				int count = db.update(MARKET_TABLE_NAME, values, MarketColumns._ID+ "=?", new String[] { market.getId() });
+				if (count == 0) {
+					Log.d(Utils.LOG_TAG, "inserting market " + market);
+					values.put(MarketColumns._ID, market.getId());
+					db.insert(MARKET_TABLE_NAME, null, values);
+				}
+			}
+			db.setTransactionSuccessful();
+		} finally {
+			db.endTransaction();
+			this.close();
+		}
+	}
+
+	public Map<StockItem, DayData> getLastDataSet(Market market, String orderBy) {
+		Map<String, StockItem> stocks = getStockItems(market, null);
+		
+		return this.getLastDataSet(stocks, orderBy);
 	}
 }

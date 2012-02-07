@@ -20,14 +20,13 @@
  */
 package cz.tomas.StockAnalyze.Data;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import cz.tomas.StockAnalyze.Data.GaeData.GaePseDataAdapter;
 import cz.tomas.StockAnalyze.Data.GaeData.GaeIndecesDataAdapter;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Factory for data providers
@@ -44,71 +43,62 @@ public class DataProviderFactory {
 		providers.put(provider.getId(), provider);
 	}
 	
-	/**
-	 * get data provider that knows the stock based on ticker,
-	 * if no provider knows the ticker, null is returned
-	 */
-	public static IStockDataProvider getDataProvider(String ticker) {
-		if (ticker.toUpperCase().startsWith("BAA") || 
-				ticker.toUpperCase().equals("PX")) {
-			return providers.get(GaePseDataAdapter.ID);
-		}
-		
-		return null;
-	}
-	
-	/**
-	 * get default DataProvider
-	 */
-	public static IStockDataProvider getDataProvider() {
-		return providers.get(GaePseDataAdapter.ID);
-	}
-	
+//	/**
+//	 * get data provider that knows the stock based on ticker,
+//	 * if no provider knows the ticker, null is returned
+//	 *
+//	 * @param
+//	 * @return stock provider
+//	 */
+//	public static IStockDataProvider getDataProvider(String ticker) {
+//		if (ticker.toUpperCase().startsWith("BAA") ||
+//				ticker.toUpperCase().equals("PX")) {
+//			return providers.get(GaePseDataAdapter.ID);
+//		} else if (ticker.endsWith("GR")) {
+//			return providers.get(GaeXetraAdapter.ID);
+//		}
+//
+//		return null;
+//	}
+//
 	/**
 	 * get real time data provider for market specified
 	 * if no provider fits the condition, null is returned
+	 *
+	 * @param market market for get default provider for
+	 * @return stock provider, if given market is null, indeces provider
 	 */
 	public static IStockDataProvider getDataProvider(Market market) {
-		if (market == null)
-			return getDataProvider();
+		if (market == null) {
+			return providers.get(GaeIndecesDataAdapter.ID);
+		}
 		
 		for (Entry<String, IStockDataProvider> provider : providers.entrySet()) {
 			DataProviderAdviser providerAdviser =  provider.getValue().getAdviser();
 			
-			if (market.equals(providerAdviser.getMarket()))
+			if (market.getCountry().equals(providerAdviser.getMarketCode())) {
 				return provider.getValue();
+			}
 		}
 		
 		return null;
 	}
-	
-	/**
-	 * get data provider based on adviser,
-	 * if no provider fits the condition, null is returned
-	 */
-	public static IStockDataProvider getDataProvider(DataProviderAdviser adviser) {
-		
-		for (Entry<String, IStockDataProvider> provider : providers.entrySet()) {
-			DataProviderAdviser providerAdviser =  provider.getValue().getAdviser();
-			
-			if (providerAdviser.equals(adviser))
-				return provider.getValue();
-		}
-		
-		return null;
-	}
-	
+
 	/**
 	 * get real time data provider for market specified
 	 * if no provider fits the condition, null is returned
+	 * @param market market to get provider for
+	 *
+	 * @return stock provider
 	 */
 	public static IStockDataProvider getRealTimeDataProvider(Market market) {
 		
 		for (Entry<String, IStockDataProvider> provider : providers.entrySet()) {
 			DataProviderAdviser providerAdviser =  provider.getValue().getAdviser();
 			
-			if (providerAdviser.isRealTime() && market.equals(providerAdviser.getMarket()))
+			if (providerAdviser.isRealTime() && market.getCountry().equals(providerAdviser.getMarketCode())) {
 				return provider.getValue();
+			}
 		}
 		
 		return null;
@@ -117,6 +107,10 @@ public class DataProviderFactory {
 	/**
 	 * get real time data provider for market specified
 	 * if no provider fits the condition, null is returned
+	 *
+	 * @param item stock item to get provide for
+	 *
+	 * @return stock provider
 	 */
 	public static IStockDataProvider getHistoricalDataProvider(StockItem item) {
 		if (item.isIndex()) {
@@ -126,8 +120,9 @@ public class DataProviderFactory {
 		for (Entry<String, IStockDataProvider> provider : providers.entrySet()) {
 			DataProviderAdviser providerAdviser =  provider.getValue().getAdviser();
 			
-			if (providerAdviser.supportHistorical() && market.equals(providerAdviser.getMarket()))
+			if (providerAdviser.supportHistorical() && market.getCountry().equals(providerAdviser.getMarketCode())) {
 				return provider.getValue();
+			}
 		}
 		
 		return null;
