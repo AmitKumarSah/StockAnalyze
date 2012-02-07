@@ -23,6 +23,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -79,9 +80,11 @@ public class HomeActivity extends ChartActivity implements OnClickListener {
 	private final Runnable chartRunnable = new Runnable() {
 		public void run() {
 			try {
-				String ticker = pref.getString(Utils.PREF_HOME_CHART_TICKER, "PX");
-				
-				HomeActivity.this.stockItem = HomeActivity.this.dataManager.getStockItem(ticker);
+				String ticker = pref.getString(Utils.PREF_HOME_CHART_TICKER, null);
+
+				if (!TextUtils.isEmpty(ticker)) {
+					HomeActivity.this.stockItem = HomeActivity.this.dataManager.getStockItem(ticker);
+				}
 			} catch (Exception e) {
 				Log.e(Utils.LOG_TAG, "filed to get stock item for home screen chart", e);
 			}
@@ -160,10 +163,7 @@ public class HomeActivity extends ChartActivity implements OnClickListener {
 	public void onClick(View v) {
 		startChildActivity(v);
 	}
-	
-	/**
-	 * @param v
-	 */
+
 	private void startChildActivity(View v) {
 		String target = null;
 		if (v instanceof HomeBlockView) {
@@ -178,7 +178,7 @@ public class HomeActivity extends ChartActivity implements OnClickListener {
 				}
 			} catch (Exception e) {
 				Log.e(Utils.LOG_TAG, "failed to start activity", e);
-				Toast.makeText(this, "Failed to start:\n" + (target == null ? "unkown" : target), Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, "Failed to start:\n" + (target == null ? "unknown" : target), Toast.LENGTH_SHORT).show();
 			}
 		}
 	}

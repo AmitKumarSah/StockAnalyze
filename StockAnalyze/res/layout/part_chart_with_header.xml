@@ -12,6 +12,7 @@
     		android:visibility="gone"
     		android:clickable="true"
     		android:focusable="true"
+			android:text="@string/pickStock"
     		android:layout_width="wrap_content" 
     		android:layout_height="wrap_content"/>
     	

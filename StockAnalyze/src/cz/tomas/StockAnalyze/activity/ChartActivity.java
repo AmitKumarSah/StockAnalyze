@@ -75,17 +75,11 @@ public abstract class ChartActivity extends BaseActivity {
 	protected static final int DIALOG_PICK_STOCK = 0;
 
 	private class ChartDataCache {
-		Map<Long, Float> dataSet;
-		long creationTime;
-		
-		/**
-		 * @param dataSet
-		 * @param timePeriod
-		 */
+		final Map<Long, Float> dataSet;
+		final long creationTime;
+
 		public ChartDataCache(Map<Long, Float> dataSet) {
-			super();
 			this.dataSet = dataSet;
-			//this.timePeriod = timePeriod;
 			this.creationTime = SystemClock.elapsedRealtime(); 
 		}
 		
@@ -304,9 +298,6 @@ public abstract class ChartActivity extends BaseActivity {
 		}
 	}
 
-	/**
-	 * @param stockItem
-	 */
 	protected void updateChart() {
 		this.chartTask = new DrawChartTask();
 		chartTask.execute(this.stockItem);
@@ -526,9 +517,8 @@ public abstract class ChartActivity extends BaseActivity {
 		}
 
 		/**
-		 * @param key
-		 * @param chartData
-		 * @return
+		 * @param key key to cache
+		 * @return cached data or null
 		 */
 		private ChartDataCache getCacheData(String key) {
 			final long currentTime = SystemClock.elapsedRealtime();
