@@ -32,9 +32,11 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
 import com.crittercism.app.Crittercism;
+import cz.tomas.StockAnalyze.Application;
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.R;
+import cz.tomas.StockAnalyze.UpdateScheduler;
 import cz.tomas.StockAnalyze.charts.view.CompositeChartView;
 import cz.tomas.StockAnalyze.ui.widgets.HomeBlockView;
 import cz.tomas.StockAnalyze.ui.widgets.PickStockDialog;
@@ -45,6 +47,8 @@ import cz.tomas.StockAnalyze.utils.Utils;
 public class HomeActivity extends ChartActivity implements OnClickListener {
 	
 	private SharedPreferences pref;
+	
+	private static boolean isDataUpdated;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +79,12 @@ public class HomeActivity extends ChartActivity implements OnClickListener {
 		thread.start();
 
 		this.getActionBarHelper().setDisplayHomeAsUpEnabled(false);
+		if (! isDataUpdated) {
+			// user just launched the application, let's make an update
+			UpdateScheduler scheduler = (UpdateScheduler) getApplicationContext().getSystemService(Application.UPDATE_SCHEDULER_SERVICE);
+			scheduler.updateImmediately();
+			isDataUpdated = true;
+		}
 	}
 	
 	private final Runnable chartRunnable = new Runnable() {
@@ -86,7 +96,7 @@ public class HomeActivity extends ChartActivity implements OnClickListener {
 					HomeActivity.this.stockItem = HomeActivity.this.dataManager.getStockItem(ticker);
 				}
 			} catch (Exception e) {
-				Log.e(Utils.LOG_TAG, "filed to get stock item for home screen chart", e);
+				Log.e(Utils.LOG_TAG, "failed to get stock item for home screen chart", e);
 			}
 			runOnUiThread(new Runnable() {
 				

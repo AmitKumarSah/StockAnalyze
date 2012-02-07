@@ -89,6 +89,15 @@ public class DataManager implements IStockDataListener {
 		
 		this.sqlStore = StockDataSqlStore.getInstance(context);
 
+		// load markets, this is essential for whole application
+		Thread marketsThread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				loadMarkets();
+			}
+		});
+		marketsThread.start();
+
 		IStockDataProvider gaePse = new GaePseDataAdapter(context);
 		IStockDataProvider gaeIndices = new GaeIndecesDataAdapter(context);
 		IStockDataProvider gaeXetra = new GaeXetraAdapter(context);
@@ -108,15 +117,6 @@ public class DataManager implements IStockDataListener {
 		
 		gaeIndices.enable(true);
 		gaeIndices.addListener(this);
-
-		// load markets
-		Thread marketsThread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				loadMarkets();
-			}
-		});
-		marketsThread.start();
 	}
 	
 	public static boolean isInitialized() {

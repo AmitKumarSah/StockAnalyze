@@ -85,6 +85,8 @@ public class UpdateScheduler implements IMarketListener{
 	
 	private Semaphore semaphore;
 	
+	private boolean isUpdateAwaiting;
+	
 	UpdateScheduler(Context context) {
 		this.context = context;
 		this.semaphore = new Semaphore(1);
@@ -145,6 +147,7 @@ public class UpdateScheduler implements IMarketListener{
 	 */
 	public void performScheduledUpdate() {
 		if (markets == null) {
+			this.isUpdateAwaiting = true;
 			// if we are starting application and markets haven't been loaded yet, we need to wait for them
 			Log.d(Utils.LOG_TAG, "cannot perform scheduled update now, because we don't have loaded markets");
 			return;
@@ -173,6 +176,7 @@ public class UpdateScheduler implements IMarketListener{
 	 */
 	public void updateImmediately() {
 		if (markets == null) {
+			this.isUpdateAwaiting = true;
 			Log.d(Utils.LOG_TAG, "cannot do immediate update, because we don't have loaded markets");
 			return;
 		}
@@ -271,9 +275,12 @@ public class UpdateScheduler implements IMarketListener{
 
 	@Override
 	public void onMarketsAvailable(Market[] markets) {
-		Log.d(Utils.LOG_TAG, String.format("received markets %s, performing update...", markets));
+		Log.d(Utils.LOG_TAG, String.format("received markets %s, performing update = %s", markets, isUpdateAwaiting));
 		this.markets = markets;
-		this.updateImmediately();
+		if (isUpdateAwaiting) {
+			isUpdateAwaiting = false;
+			this.updateImmediately();
+		}
 	}
 
 	/**
