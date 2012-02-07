@@ -20,12 +20,6 @@
  */
 package cz.tomas.StockAnalyze.activity;
 
-import java.io.IOException;
-import java.text.NumberFormat;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.TimeZone;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -36,12 +30,20 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
 import android.widget.Toast;
-import cz.tomas.StockAnalyze.R;
+import cz.tomas.StockAnalyze.Application;
 import cz.tomas.StockAnalyze.Data.DataManager;
+import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.charts.view.CompositeChartView;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
+
+import java.io.IOException;
+import java.text.NumberFormat;
+import java.util.Calendar;
+import java.util.Currency;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 /**
  * activity with detail information of stock or index
@@ -136,7 +138,7 @@ public final class StockDetailActivity extends ChartActivity {
 		TextView txtMax = (TextView) this.findViewById(R.id.txtDetailMax);
 		TextView txtMin = (TextView) this.findViewById(R.id.txtDetailMin);
 		
-		final DataManager manager = DataManager.getInstance(this);
+		final DataManager manager = (DataManager) getApplicationContext().getSystemService(Application.DATA_MANAGER_SERVICE);
 		
 		if (txtPrice != null) {
 			txtPrice.setText(R.string.loading);
@@ -145,12 +147,15 @@ public final class StockDetailActivity extends ChartActivity {
 			Log.w(Utils.LOG_TAG, "data incoming to detail don't contain DayData. Loading them from db...");
 			this.dayData = manager.getLastValue(stockItem);
 		}
-		
-		final NumberFormat priceFormat = FormattingUtils.getPriceFormat(stockItem.getMarket().getCurrency());
+
+		final Currency currency = stockItem.getMarket().getCurrency();
+		final NumberFormat priceFormat = currency != null ?
+				FormattingUtils.getPriceFormat(currency) : FormattingUtils.getVolumeFormat();
 		final NumberFormat percentFormat = FormattingUtils.getPercentFormat();
 
-		if (this.dayData == null)
+		if (this.dayData == null) {
 			throw new NullPointerException("Day data is null!");
+		}
 		
 		if (txtHeader != null) {
 			Calendar cal = new GregorianCalendar();

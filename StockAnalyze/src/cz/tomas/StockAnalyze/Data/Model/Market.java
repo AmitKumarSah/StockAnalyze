@@ -20,6 +20,8 @@
  */
 package cz.tomas.StockAnalyze.Data.Model;
 
+import android.text.TextUtils;
+
 import java.io.Serializable;
 import java.util.Currency;
 
@@ -80,6 +82,9 @@ public class Market implements Serializable {
 	 * @return the currency
 	 */
 	public Currency getCurrency() {
+		if (TextUtils.isEmpty(this.currency)) {
+			return null;
+		}
 		return Currency.getInstance(currency);
 	}
 

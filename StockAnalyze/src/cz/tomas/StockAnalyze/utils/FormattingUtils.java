@@ -20,17 +20,14 @@
  */
 package cz.tomas.StockAnalyze.utils;
 
-import java.text.DateFormat;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import android.text.TextUtils;
+import android.util.Log;
+
+import java.text.*;
 import java.util.Calendar;
 import java.util.Currency;
 import java.util.Date;
 import java.util.Locale;
-
-import android.util.Log;
 
 /**
  * @author tomas
@@ -47,7 +44,6 @@ public final class FormattingUtils {
 	 */
 	static DateFormat lastSuccessfulDateFormat;
 	
-	static NumberFormat priceFormatCzk = null;
 	static NumberFormat percentFormat = null;
 	static NumberFormat volumeFormat = null;
 	
@@ -80,32 +76,26 @@ public final class FormattingUtils {
 		return percentFormat;
 	}
 	
-	public static NumberFormat getPriceFormatCzk() {
-		if (priceFormatCzk == null) {
-			priceFormatCzk = DecimalFormat.getCurrencyInstance();
-			priceFormatCzk.setCurrency(Currency.getInstance("CZK"));
-		}
-		
-		return priceFormatCzk;
-	}
-	
 	public static NumberFormat getPriceFormat(Currency cur) {
-		NumberFormat priceFormat = null;
-		if (cur.getCurrencyCode().equals("CZK")) {
-			priceFormat = getPriceFormatCzk();
-		}
-		else {
-			priceFormat = DecimalFormat.getCurrencyInstance();
+		NumberFormat priceFormat = DecimalFormat.getCurrencyInstance();
+		if (cur != null) {
 			priceFormat.setCurrency(cur);
 		}
+
 		return priceFormat;
 	}
 	
 	/**
 	 * parse date string with predefined parser, preferring English parser
+	 *
+	 * @param date parse date as string
 	 * @return parsed Date or null if failed
+	 * @throws ParseException for invalid date format
 	 */
 	public static Date parse(String date) throws ParseException {
+		if (TextUtils.isEmpty(date)) {
+			throw new IllegalArgumentException("date cannot be empty");
+		}
 		Date result = null;
 		if (lastSuccessfulDateFormat != null) {
 			try {
@@ -124,7 +114,7 @@ public final class FormattingUtils {
 					lastSuccessfulDateFormat = getCzechFormatter();
 				} catch (Exception e1) {
 					Log.d(Utils.LOG_TAG, "failed to parse date " + date
-							+ " with czech or english parse format");
+							+ " with czech or english parse format", e1);
 				}
 			}
 		}
@@ -134,35 +124,40 @@ public final class FormattingUtils {
 	public static String formatStockShortDate(long ms) {
 		Calendar cal = Calendar.getInstance(Utils.PRAGUE_TIME_ZONE);
 		cal.setTimeInMillis(ms);
-		DateFormat formatter = null;
-		formatter = DateFormat.getDateInstance(DateFormat.SHORT);
+		DateFormat formatter = DateFormat.getDateInstance(DateFormat.SHORT);
 		return formatter.format(cal.getTime());
 	}
 	
 	public static String formatStockShortDate(Calendar cal) {
-		DateFormat formatter = null;
-		formatter = DateFormat.getDateInstance(DateFormat.SHORT);
+		if (cal == null) {
+			throw new IllegalArgumentException("calendar cannot be null");
+		}
+		DateFormat formatter = DateFormat.getDateInstance(DateFormat.SHORT);
 		return formatter.format(cal.getTime());
 	}
 	
 	public static String formatStockShortTime(Calendar cal) {
-		DateFormat formatter = null;
-		formatter = DateFormat.getTimeInstance(DateFormat.SHORT);
+		if (cal == null) {
+			throw new IllegalArgumentException("calendar cannot be null");
+		}
+		DateFormat formatter = DateFormat.getTimeInstance(DateFormat.SHORT);
 		return formatter.format(cal.getTime());
 	}
 
 	public static String formatStockDate(Calendar cal) {
-		DateFormat formatter = null;
-//		if (cal.get(Calendar.HOUR_OF_DAY) != 0 && cal.get(Calendar.MINUTE) != 0)
-//			formatter = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.MEDIUM);
-//		else
-//			formatter = DateFormat.getDateInstance(DateFormat.LONG);
+		if (cal == null) {
+			throw new IllegalArgumentException("calendar cannot be null");
+		}
+		DateFormat formatter;
 		formatter = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.MEDIUM);
 		return formatter.format(cal.getTime());
 	}
 	
 	public static String formatDate(Calendar cal) {
-		DateFormat formatter = null;
+		if (cal == null) {
+			throw new IllegalArgumentException("calendar cannot be null");
+		}
+		DateFormat formatter;
 		formatter = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.MEDIUM);
 		return formatter.format(cal.getTime());
 	}
