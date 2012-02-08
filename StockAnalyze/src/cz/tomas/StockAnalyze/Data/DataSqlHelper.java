@@ -138,7 +138,12 @@ public class DataSqlHelper extends AbstractSqlHelper {
 		public static final String MARKET_ID = "market_id";
 		public static final String NAME = "name";
 		public static final String FLAG = "flag";
-		public static final String[] PROJECTION = new String[]{"_id", "ticker", "name", "market_id"};
+
+		public static final String DEFAULT_SORT = NAME + " ASC";
+
+		public static final String[] PROJECTION = new String[] {"_id", "ticker", "name", "market_id"};
+		public static final String PROJECTION_JOIN_STRING =
+				"stock._id, stock.ticker, stock.name, stock.market_id";
 	}
 
 	public static class MarketColumns {
@@ -172,7 +177,9 @@ public class DataSqlHelper extends AbstractSqlHelper {
 		public static final String PRICE = "price";
 		public static final String VOLUME = "volume";
 		public static final String[] PROJECTION = new String[] {
-				"price", "change", "year_max", "year_min", "date", "volume", "_id", "last_update", "stock_id" };
+				"_id", "price", "change", "year_max", "year_min", "date", "volume", "last_update", "stock_id" };
+		public static final String PROJECTION_JOIN_STRING =
+				"data._id, data.price, data.change, data.year_max, data.year_min, data.date, data.volume, data.last_update, data.stock_id";
 		public static final String DEFAULT_SORT = "date DESC";
 	}
 

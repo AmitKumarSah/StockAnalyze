@@ -113,8 +113,7 @@ public class UpdateScheduler implements IMarketListener{
 						performScheduledUpdate();
 					}
 					scheduleNextIntraDayUpdate();
-				}
-				else if (key.equals(Utils.PREF_INTERVAL_BACKGROUND_UPDATE)) {
+				} else if (key.equals(Utils.PREF_INTERVAL_BACKGROUND_UPDATE)) {
 					scheduleNextIntraDayUpdate();
 				}
 					
@@ -275,7 +274,7 @@ public class UpdateScheduler implements IMarketListener{
 
 	@Override
 	public void onMarketsAvailable(Market[] markets) {
-		Log.d(Utils.LOG_TAG, String.format("received markets %s, performing update = %s", markets, isUpdateAwaiting));
+		Log.d(Utils.LOG_TAG, String.format("received markets %s, performing update = %b", markets, isUpdateAwaiting));
 		this.markets = markets;
 		if (isUpdateAwaiting) {
 			isUpdateAwaiting = false;

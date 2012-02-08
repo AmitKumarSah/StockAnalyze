@@ -71,10 +71,10 @@ public class DataManager implements IStockDataListener {
 	
 	private final Context context;
 	private static DataManager instance;
+	private IMarketListener marketListener;
+
 	private Handler handler;
 
-	private IMarketListener marketListener;
-	
 	public static DataManager getInstance(Context context) {
 		if (instance == null) {
 			instance = new DataManager(context.getApplicationContext());

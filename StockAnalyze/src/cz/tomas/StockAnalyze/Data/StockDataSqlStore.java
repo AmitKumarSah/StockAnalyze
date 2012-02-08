@@ -311,17 +311,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 						DayDataColumns.STOCK_ID + "=?", new String[] { stockId }, null, null, null);
 
 				if (c.moveToFirst()) {
-					float price = c.getFloat(0);
-					float change = c.getFloat(1);
-					float max = c.getFloat(2);
-					float min = c.getFloat(3);
-					long milliseconds = c.getLong(4);
-					float volume = c.getFloat(5);
-					long id = c.getLong(6);
-					long lastUpdate = c.getLong(7);
-					
-					Date date = new Date(milliseconds);
-					data = new DayData(price, change, date, volume, max, min, lastUpdate, id);
+					data = readDayData(c, c.getColumnIndex(DayDataColumns._ID));
 				}
 			} catch (SQLException e) {
 				Log.e(Utils.LOG_TAG, e.toString());
@@ -339,74 +329,26 @@ public class StockDataSqlStore extends DataSqlHelper {
 		return data;
 	}
 
-	/**
-	 * get day datas for given stock items
-	 * @param stockItems stock items we want data for
-	 * @param orderBy order clause (without ORDER BY)
-	 * @return last available day data
-	 */
-	public Map<StockItem, DayData> getLastDataSet(Map<String, StockItem> stockItems, String orderBy) {
-		Map<StockItem, DayData> dbData = new LinkedHashMap<StockItem, DayData>();
-		
-		try {
-			SQLiteDatabase db = this.getWritableDatabase();
-			Cursor c = null;
-			try {
-				StringBuilder selectionBuilder = new StringBuilder();
-				String[] whereArgs = new String[stockItems.size()];
-				int index = 0;
-				for (Entry<String, StockItem> stockItem : stockItems.entrySet()) {
-					if (stockItem.getKey() != null) {
-						if (selectionBuilder.length() > 1)
-							selectionBuilder.append(" or ");
-						selectionBuilder.append(DayDataColumns.STOCK_ID + "=?");
-						whereArgs[index] = stockItem.getKey();
-						index++;
-					}
-				}
+	private DayData readDayData(Cursor c, int idColumn) {
+		float price = c.getFloat(c.getColumnIndex(DayDataColumns.PRICE));
+		float change = c.getFloat(c.getColumnIndex(DayDataColumns.CHANGE));
+		float max = c.getFloat(c.getColumnIndex(DayDataColumns.YEAR_MAX));
+		float min = c.getFloat(c.getColumnIndex(DayDataColumns.YEAR_MIN));
+		long milliseconds = c.getLong(c.getColumnIndex(DayDataColumns.DATE));
+		float volume = c.getFloat(c.getColumnIndex(DayDataColumns.VOLUME));
+		long id = c.getLong(idColumn);
+		long lastUpdate = c.getLong(c.getColumnIndex(DayDataColumns.LAST_UPDATE));
 
-				if (orderBy == null || orderBy.length() <= 0) {
-					orderBy = DayDataColumns.DEFAULT_SORT;
-				}
+		Date date = new Date(milliseconds);
+		return new DayData(price, change, date, volume, max, min, lastUpdate, id);
+	}
 
-				// data is grouped by stock-id
-				c = db.query(DAY_DATA_TABLE_NAME, DayDataColumns.PROJECTION,
-						selectionBuilder.toString(), whereArgs, null, null, orderBy, String.valueOf(stockItems.size()));
-				
-				if (c.moveToFirst()) {
-					do {
-						float price = c.getFloat(0);
-						float change = c.getFloat(1);
-						float max = c.getFloat(2);
-						float min = c.getFloat(3);
-						long millisecs = c.getLong(4);
-						float volume = c.getFloat(5);
-						long id = c.getLong(6);
-						long lastUpdate = c.getLong(7);
-						String stockId = c.getString(8);
-						
-						Date date = new Date(millisecs);
-						DayData data = new DayData(price, change, date, volume, max, min, lastUpdate, id);
-						StockItem stock = stockItems.get(stockId);
-						dbData.put(stock, data);
-					} while (c.moveToNext());
-				}
-			} catch (SQLException e) {
-				Log.e(Utils.LOG_TAG, "sql exception occurred", e);
-			} catch (IllegalStateException e) {
-				Log.e(Utils.LOG_TAG, "database is in an illegal state!", e);
-			} finally {
-				if (c != null) {
-					c.close();
-				}
-			}
-		} catch (SQLException e) {
-			Log.e(Utils.LOG_TAG, "failed to get data.", e);
-		} finally {
-			this.close();
-		}
-		
-		return dbData;
+	private StockItem readStockItem(Market market, Cursor c, int idColumn) {
+		String id = c.getString(idColumn);
+		String ticker = c.getString(c.getColumnIndex(StockColumns.TICKER));
+		String name = c.getString(c.getColumnIndex(StockColumns.NAME));
+		//String marketId = c.getString(c.getColumnIndex(StockColumns.MARKET_ID));
+		return new StockItem(ticker, id, name, market);
 	}
 
 	/**
@@ -545,8 +487,35 @@ public class StockDataSqlStore extends DataSqlHelper {
 	}
 
 	public Map<StockItem, DayData> getLastDataSet(Market market, String orderBy) {
-		Map<String, StockItem> stocks = getStockItems(market, null);
-		
-		return this.getLastDataSet(stocks, orderBy);
+		Map<StockItem, DayData> dataSet = null;
+		SQLiteDatabase db = this.getWritableDatabase();
+
+		Cursor c = null;
+		try {
+			if (TextUtils.isEmpty(orderBy)) {
+				orderBy = StockColumns.DEFAULT_SORT;
+			}
+			final String sql = String.format("SELECT %s, %s FROM %s stock INNER JOIN %s data on stock.%s = data.%s WHERE stock.%s=? ORDER BY stock.%s",
+					DayDataColumns.PROJECTION_JOIN_STRING, StockColumns.PROJECTION_JOIN_STRING, STOCK_TABLE_NAME,
+					DAY_DATA_TABLE_NAME, StockColumns._ID, DayDataColumns.STOCK_ID, StockColumns.MARKET_ID, orderBy);
+			c = db.rawQuery(sql, new String[] {market.getId()});
+
+			if (c.moveToFirst()) {
+				dataSet = new LinkedHashMap<StockItem, DayData>(c.getCount());
+				// there are _id columns in both tables, we need to get ids explicitly
+				int stockIdIndex = DayDataColumns.PROJECTION.length;
+				do {
+					DayData dayData = readDayData(c, 0);
+					StockItem item = readStockItem(market, c, stockIdIndex);
+					dataSet.put(item, dayData);
+				} while (c.moveToNext());
+			}
+		} finally {
+			if (c != null) {
+				c.close();
+			}
+			this.close();
+		}
+		return dataSet;
 	}
 }
