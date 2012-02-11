@@ -15,6 +15,7 @@ Feature highlights:
 
 This software uses following libraries:
 https://github.com/JakeWharton/Android-ViewPagerIndicator
+https://github.com/chrisbanes/Android-PullToRefresh
 http://code.google.com/p/google-gson/
 
 Project page at github: 
