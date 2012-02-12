@@ -61,7 +61,7 @@ public class Application extends android.app.Application {
 		Log.i(Utils.LOG_TAG, "STARTING THE APPLICATION");
 		this.scheduler = new UpdateScheduler(this);
 		this.dataManager = DataManager.getInstance(this);
-		this.dataManager.setMarketListener(this.scheduler);
+		this.dataManager.addMarketListener(this.scheduler);
 
 		NotificationSupervisor supervisor = new NotificationSupervisor(this);
 		this.scheduler.addListener(supervisor);

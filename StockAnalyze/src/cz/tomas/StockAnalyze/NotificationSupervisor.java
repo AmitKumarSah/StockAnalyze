@@ -67,17 +67,19 @@ public class NotificationSupervisor implements IUpdateSchedulerListener {
 		this.pref = this.context.getSharedPreferences(Utils.PREF_NAME, 0);
 	}
 
-	private void showStartNotfication(Market... markets) {
+	private void showStartNotification(Market... markets) {
 		final boolean enableNotif = this.pref.getBoolean(Utils.PREF_UPDATE_NOTIF,  Utils.PREF_DEF_UPDATE_NOTIF);
 		
-		if (markets == null || enableNotif == false)
+		if (markets == null || ! enableNotif) {
 			return;
-		if (this.currentNotificationView == null)
+		}
+		if (this.currentNotificationView == null) {
 			this.currentNotificationView = new RemoteViews(this.context.getPackageName(), R.layout.custom_update_notification_layout);
+		}
 		this.currentNotificationView.setImageViewResource(R.id.notification_image, R.drawable.ic_stat_arrow);
 		this.stringBuilder.setLength(0);
 		this.stringBuilder.append(this.updateBeginMessage);
-		this.stringBuilder.append(" from ");
+		this.stringBuilder.append(" ");
 		int index = 0;
 		for (Market market : markets) {
 			if (market != null) {
@@ -88,18 +90,15 @@ public class NotificationSupervisor implements IUpdateSchedulerListener {
 				index++;
 			}
 		}
-//		this.currentNotificationView.setTextViewText(R.id.notification_text, this.stringBuilder.toString());
-//		this.currentNotificationView.setTextViewText(R.id.notification_subtext, this.context.getText(R.string.app_name));
-		
+
 		this.notification = new Notification(R.drawable.ic_stat_arrow, this.updateBeginMessage, System.currentTimeMillis());
-		//notification.defaults |= Notification.DEFAULT_SOUND;
 		this.notification.flags |= Notification.FLAG_AUTO_CANCEL;
 		//this.notification.contentView = this.currentNotificationView;
 		
 		// set intent to launch when the notification is tapped
 		Intent notificationIntent = new Intent(this.context, StocksActivity.class);
+		notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		this.contentIntent = PendingIntent.getActivity(this.context, 0, notificationIntent, 0);
-		//this.notification.contentIntent = contentIntent;
 		this.notification.setLatestEventInfo(this.context, this.context.getText(R.string.app_name), this.stringBuilder.toString(), contentIntent);
 		
 		notificationManager.notify(UPDATE_DATA_ID, this.notification);
@@ -143,7 +142,7 @@ public class NotificationSupervisor implements IUpdateSchedulerListener {
 
 	@Override
 	public void onUpdateBegin(Market... markets) {
-		this.showStartNotfication(markets);
+		this.showStartNotification(markets);
 	}
 
 	@Override

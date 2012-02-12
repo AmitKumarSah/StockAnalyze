@@ -8,9 +8,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
-import cz.tomas.StockAnalyze.Application;
 import cz.tomas.StockAnalyze.R;
-import cz.tomas.StockAnalyze.UpdateScheduler;
 import cz.tomas.StockAnalyze.fragments.StockGridFragment;
 import cz.tomas.StockAnalyze.utils.Markets;
 import cz.tomas.StockAnalyze.utils.NavUtils;
@@ -47,8 +45,6 @@ public final class IndecesListActivity extends AbstractStocksActivity {
 			tran.add(container.getId(), fragment, FRAGMENT_TAG);
 		}
 		tran.commit();
-		
-		this.sheduler = (UpdateScheduler) this.getApplicationContext().getSystemService(Application.UPDATE_SCHEDULER_SERVICE);
 	}
 	
 	@Override
@@ -56,7 +52,7 @@ public final class IndecesListActivity extends AbstractStocksActivity {
 	    // Handle item selection
 	    switch (item.getItemId()) {
 	    case R.id.menu_refresh:
-	    	updateImmediatly(Markets.GLOBAL);
+	    	updateImmediately(Markets.GLOBAL);
 	        return true;
 	    case R.id.menu_stock_list_settings:
 	    	NavUtils.goToSettings(this);

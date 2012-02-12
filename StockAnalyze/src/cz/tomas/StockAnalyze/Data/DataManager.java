@@ -54,7 +54,7 @@ public class DataManager implements IStockDataListener {
 
 	private static final int DAY_IN_MILLISECONDS = 1000 * 60 * 60 * 24;
 
-	private static final int STOCK_LIST_EXPIRATION_DAYS = 2;
+	private static final int MARKET_LIST_EXPIRATION_DAYS = 2;
 
 	public static final int TIME_PERIOD_DAY = 1;
 	public static final int TIME_PERIOD_WEEK = 2;
@@ -71,7 +71,8 @@ public class DataManager implements IStockDataListener {
 	
 	private final Context context;
 	private static DataManager instance;
-	private IMarketListener marketListener;
+	private final List<IMarketListener> marketListeners;
+	private boolean isMarketUpdateRunning;
 
 	private Handler handler;
 
@@ -86,17 +87,9 @@ public class DataManager implements IStockDataListener {
 	private DataManager(Context context) {
 		this.context = context;
 		this.handler = new Handler();
+		this.marketListeners = new ArrayList<IMarketListener>();
 		
 		this.sqlStore = StockDataSqlStore.getInstance(context);
-
-		// load markets, this is essential for whole application
-		Thread marketsThread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				loadMarkets();
-			}
-		});
-		marketsThread.start();
 
 		IStockDataProvider gaePse = new GaePseDataAdapter(context);
 		IStockDataProvider gaeIndices = new GaeIndecesDataAdapter(context);
@@ -117,22 +110,39 @@ public class DataManager implements IStockDataListener {
 		
 		gaeIndices.enable(true);
 		gaeIndices.addListener(this);
+
+		// load markets, this is essential for whole application
+		Thread marketsThread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				loadMarkets();
+			}
+		});
+		marketsThread.start();
 	}
 	
 	public static boolean isInitialized() {
 		return instance != null;
 	}
 
-	public void setMarketListener(IMarketListener marketListener) {
-		this.marketListener = marketListener;
+	public void addMarketListener(IMarketListener marketListener) {
+		this.marketListeners.add(marketListener);
+	}
+	
+	public boolean removeMarketListener(IMarketListener marketListener) {
+		return this.marketListeners.remove(marketListener);
 	}
 
 	/**
 	 * get supported markets
-	 * @return collection of markets or null if they are not yet avaialable
+	 * @return collection of markets or null if they are not yet available
 	 */
 	public Collection<Market> getMarkets() {
 		if (this.markets == null || this.markets.size() == 0) {
+			// if we aren't already loading markets, start so
+			if (! isMarketUpdateRunning) {
+				this.loadMarkets();
+			}
 			return null;
 		}
 		return this.markets.values();
@@ -144,10 +154,12 @@ public class DataManager implements IStockDataListener {
 	 * and also check for stock items
 	 */
 	private void loadMarkets() {
+		isMarketUpdateRunning = true;
 		this.sqlStore.acquireDb(this);
 		this.markets = this.sqlStore.getMarkets();
-		if (this.markets == null || this.markets.size() == 0) {
-			Log.d(Utils.LOG_TAG, "downloading markets...");
+		boolean isDirty = isMarketListDirty();
+		if (this.markets == null || this.markets.size() == 0 || isDirty) {
+			Log.d(Utils.LOG_TAG, "downloading markets, current: " + this.markets);
  			MarketProvider provider = new MarketProvider();
 			try {
 				this.markets = provider.getMarkets(this.context);
@@ -160,20 +172,11 @@ public class DataManager implements IStockDataListener {
 				SharedPreferences preferences = this.context.getSharedPreferences(Utils.PREF_NAME, 0);
 				preferences.edit()
 						.putLong(Utils.PREF_LAST_STOCK_LIST_UPDATE_TIME, System.currentTimeMillis())
+						.putLong(Utils.PREF_LAST_MARKET_LIST_UPDATE_TIME, System.currentTimeMillis())
 						.commit();
-			} catch (IOException e) {
+			} catch (Exception e) {
 				Log.e(Utils.LOG_TAG, "failed to read markets", e);
 			}
-		} else if (isStockListDirty()) {
-			Log.d(Utils.LOG_TAG, "refreshing stock list");
-			for (Market market : markets.values()) {
-				this.downloadStockItems(market);
-			}
-			this.downloadStockItems(Markets.GLOBAL);
-			SharedPreferences preferences = this.context.getSharedPreferences(Utils.PREF_NAME, 0);
-			preferences.edit()
-					.putLong(Utils.PREF_LAST_STOCK_LIST_UPDATE_TIME, System.currentTimeMillis())
-					.commit();
 		}
 		this.sqlStore.releaseDb(true, this);
 
@@ -181,17 +184,22 @@ public class DataManager implements IStockDataListener {
 			@Override
 			public void run() {
 				fireMarketReady();
+				isMarketUpdateRunning = false;
 			}
 		});
 	}
 
 	private void fireMarketReady() {
-		if (marketListener != null) {
-			final Market[] allMarkets = new Market[this.markets.size() + 1];
-			this.markets.values().toArray(allMarkets);
-			allMarkets[allMarkets.length -1] = Markets.GLOBAL;
-			
-			marketListener.onMarketsAvailable(allMarkets);
+		for (IMarketListener listener : marketListeners) {
+			if (this.markets == null) {
+				listener.onMarketsAvailable(null);
+			} else {
+				final Market[] allMarkets = new Market[this.markets.size() + 1];
+				this.markets.values().toArray(allMarkets);
+				allMarkets[allMarkets.length -1] = Markets.GLOBAL;
+
+				listener.onMarketsAvailable(allMarkets);
+			}
 		}
 	}
 
@@ -208,20 +216,31 @@ public class DataManager implements IStockDataListener {
 		return items;
 	}
 
-	/**
-	 * check if stock list was downloaded and isn't too old
-	 *
-	 * @return true if stock list needs to be refreshed
-	 */
-	private boolean isStockListDirty() {
+//	/**
+//	 * check if stock list was downloaded and isn't too old
+//	 *
+//	 * @return true if stock list needs to be refreshed
+//	 */
+//	private boolean isStockListDirty() {
+//		SharedPreferences preferences = this.context.getSharedPreferences(Utils.PREF_NAME, 0);
+//
+//		long lastUpdate = preferences.getLong(Utils.PREF_LAST_STOCK_LIST_UPDATE_TIME, 0);
+//		long diff = System.currentTimeMillis() - lastUpdate;
+//		long dayDiff = diff / DAY_IN_MILLISECONDS;
+//		boolean isStockListDirty = dayDiff > STOCK_LIST_EXPIRATION_DAYS;
+//
+//		return isStockListDirty;
+//	}
+
+	private boolean isMarketListDirty() {
 		SharedPreferences preferences = this.context.getSharedPreferences(Utils.PREF_NAME, 0);
 
-		long lastUpdate = preferences.getLong(Utils.PREF_LAST_STOCK_LIST_UPDATE_TIME, 0);
-		long diff = System.currentTimeMillis() - lastUpdate; 
+		long lastUpdate = preferences.getLong(Utils.PREF_LAST_MARKET_LIST_UPDATE_TIME, 0);
+		long diff = System.currentTimeMillis() - lastUpdate;
 		long dayDiff = diff / DAY_IN_MILLISECONDS;
-		boolean isStockListDirty = dayDiff > STOCK_LIST_EXPIRATION_DAYS;
-		
-		return isStockListDirty;
+		boolean isMarketListDirty = dayDiff > MARKET_LIST_EXPIRATION_DAYS;
+
+		return isMarketListDirty;
 	}
 
 	/**

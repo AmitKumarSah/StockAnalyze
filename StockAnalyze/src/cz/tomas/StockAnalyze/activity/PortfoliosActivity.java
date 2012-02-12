@@ -1,8 +1,5 @@
 package cz.tomas.StockAnalyze.activity;
 
-import java.util.Collection;
-import java.util.List;
-
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -12,18 +9,18 @@ import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-
-import com.jakewharton.android.viewpagerindicator.TitlePageIndicator;
-
-import cz.tomas.StockAnalyze.R;
+import com.viewpagerindicator.TitlePageIndicator;
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.Portfolio.PortfolioPagerAdapter;
+import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.activity.base.BaseFragmentActivity;
 import cz.tomas.StockAnalyze.ui.widgets.PickStockDialog;
 import cz.tomas.StockAnalyze.ui.widgets.PickStockDialog.IStockDialogListener;
 import cz.tomas.StockAnalyze.utils.NavUtils;
+
+import java.util.Collection;
 
 /**
  * activity vith {@link ViewPager} with portfolio for each currency as a page

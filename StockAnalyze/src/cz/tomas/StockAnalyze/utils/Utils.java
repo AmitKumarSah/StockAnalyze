@@ -45,6 +45,7 @@ public class Utils {
 	public static final String PREF_PORTFOLIO_INCLUDE_FEE = "prefPortfolioIncludeFee";
 	public static final String PREF_LAST_UPDATE_TIME = "prefLastUpdateTime";
 	public static final String PREF_LAST_STOCK_LIST_UPDATE_TIME = "cz.tomas.StockAnalyze:StockListUpdateTime";
+	public static final String PREF_LAST_MARKET_LIST_UPDATE_TIME = "cz.tomas.StockAnalyze:MarketListUpdateTime";
 	public static final String PREF_CHART_TIME_PERIOD = "prefChartTimePeriod";
 	public static final String PREF_HOME_CHART_TICKER = "prefHomeChartTicker";
 	public static final String PREF_HOME_CHART_MARKET_ID = "prefHomeChartMarketId";

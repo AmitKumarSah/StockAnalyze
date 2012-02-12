@@ -24,8 +24,10 @@ public final class SimpleMarketAdapter extends ArrayAdapter<Market> {
 		this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		
 		Collection<Market> markets = DataManager.getInstance(context).getMarkets();
-		for (Market market : markets) {
-			this.add(market);
+		if (markets != null) {
+			for (Market market : markets) {
+				this.add(market);
+			}
 		}
 		if (includeIndeces) {
 			this.add(Markets.GLOBAL);

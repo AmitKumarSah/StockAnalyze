@@ -27,6 +27,7 @@
     <string name="stockItemView">Zobrazit detaily</string>
     <string name="refresh">Aktualizovat</string>
     <string name="settings">Nastavení</string>
+	<string name="ok">OK</string>
     <string name="app_name">StockAnalyze</string>
     <string name="appAuthor">Tomáš Vondráček\ntomas.vondracek@gmail.com</string>
     <string name="appWww">http://tomas-vondracek.net</string>
@@ -155,4 +156,7 @@ Nikdy se nepouštějte do obchodů, jejichž podstatě plně nerozumíte. Obchod
     <string name="pickStock">Vyberte akcii</string>
     <string name="retry">Zkusit znovu</string>
     <string name="save">Uložit</string>
+
+	<string name="loadingMarkets">Aktualizuji seznam titulů...</string>
+	<string name="loadingMarketsFailed">Selhala aktualizace, zkuste to znovu pozdeji.</string>
 </resources>

@@ -17,10 +17,10 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import eu.inmite.prj.skoda.meet.R;
+import cz.tomas.StockAnalyze.R;
 
 /**
- * fragment with ok button, use {@link #newInstance(int, eu.inmite.prj.skoda.meet.fragment.dialog.ConfirmDialogFragment.IConfirmListener)} to instantiate the fragment
+ * fragment with ok button, use {@link #newInstance(int, ConfirmDialogFragment.IConfirmListener)} to instantiate the fragment
  */
 public class ConfirmDialogFragment extends DialogFragment {
 
@@ -62,7 +62,6 @@ public class ConfirmDialogFragment extends DialogFragment {
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 
 		final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
-				.setIcon(R.drawable.ic_home_meet_friends)
 				.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int whichButton) {
 						if (mListener != null) {

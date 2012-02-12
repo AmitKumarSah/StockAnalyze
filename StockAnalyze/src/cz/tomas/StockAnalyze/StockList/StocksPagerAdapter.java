@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import com.jakewharton.android.viewpagerindicator.TitleProvider;
+import com.viewpagerindicator.TitleProvider;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.fragments.StockGridFragment;
 import cz.tomas.StockAnalyze.fragments.StockListFragment;
@@ -18,12 +18,19 @@ import java.util.Collection;
  */
 public final class StocksPagerAdapter extends FragmentPagerAdapter implements TitleProvider {
 
-	private final Market[] markets;
+	private Market[] markets;
 	
 	public StocksPagerAdapter(FragmentManager fm, Collection<Market> markets) {
 		super(fm);
 
-		this.markets = markets.toArray(new Market[markets.size()]);
+		if (markets != null) {
+			this.markets = markets.toArray(new Market[markets.size()]);
+		}
+	}
+	
+	public void setMarkets(Market[] markets) {
+		this.markets = markets;
+		this.notifyDataSetChanged();
 	}
 
 	public Market getMarketByPosition(int position) {
@@ -47,6 +54,9 @@ public final class StocksPagerAdapter extends FragmentPagerAdapter implements Ti
 
 	@Override
 	public int getCount() {
+		if (this.markets == null) {
+			return 0;
+		}
 		return this.markets.length;
 	}
 
