@@ -20,22 +20,22 @@
  */
 package cz.tomas.StockAnalyze.test;
 
-import java.io.IOException;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
-
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.test.AndroidTestCase;
 import android.test.IsolatedContext;
 import android.test.mock.MockContentResolver;
 import cz.tomas.StockAnalyze.Data.DataManager;
-import cz.tomas.StockAnalyze.Data.StockDataSqlStore;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
+import cz.tomas.StockAnalyze.Data.StockDataSqlStore;
 import cz.tomas.StockAnalyze.utils.Markets;
 import cz.tomas.StockAnalyze.utils.Utils;
+
+import java.io.IOException;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * @author tomas
@@ -69,12 +69,12 @@ public class DataManagerTest extends AndroidTestCase {
 	
 	public void testLastAvailableData() throws NullPointerException, IOException {
 		// get all items from prague stock exchange
-		List<StockItem> items = this.dataManager.search("*", Markets.CZ);
+		Collection<StockItem> items = this.dataManager.getStockItems(Markets.GLOBAL).values();
 		Calendar yesterday = Calendar.getInstance();
 		yesterday.roll(Calendar.DAY_OF_MONTH, false);
 		
 		for (StockItem stockItem : items) {
-			sqlStore.insertDayData(stockItem, new DayData(1, 1, yesterday.getTime(), 1000, 1, 0, yesterday.getTimeInMillis()));
+			sqlStore.insertDayData(stockItem.getId(), new DayData(1, 1, yesterday.getTime(), 1000, 1, 0, yesterday.getTimeInMillis()));
 		}
 		
 		for (StockItem stockItem : items) {
@@ -84,13 +84,13 @@ public class DataManagerTest extends AndroidTestCase {
 	}
 	
 	public void testAllData() {
-		Map<String, StockItem> items = this.dataManager.getStockItems(Markets.getMarket("cz"), true);
+		Map<String, StockItem> items = this.dataManager.getStockItems(Markets.GLOBAL);
 		Calendar cal = Utils.createDateOnlyCalendar(Calendar.getInstance());
 		cal = Utils.getLastValidDate(cal);
 		for (StockItem stockItem : items.values()) {
-			sqlStore.insertDayData(stockItem, new DayData(1, 1, cal.getTime(), 1000, 1, 0, cal.getTimeInMillis()));
+			sqlStore.insertDayData(stockItem.getId(), new DayData(1, 1, cal.getTime(), 1000, 1, 0, cal.getTimeInMillis()));
 		}
-		Map<StockItem, DayData> data = this.dataManager.getLastDataSet(items);
+		Map<StockItem, DayData> data = this.dataManager.getLastDataSet(Markets.GLOBAL);
 		
 		assertEquals(items.size(), data.size());
 	}

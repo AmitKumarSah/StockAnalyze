@@ -20,17 +20,17 @@
  */
 package cz.tomas.StockAnalyze.test.portfolio;
 
-import java.sql.SQLException;
-import java.util.Calendar;
-import java.util.List;
-
-import cz.tomas.StockAnalyze.Data.Model.PortfolioItem;
-import cz.tomas.StockAnalyze.Portfolio.Portfolio;
-import cz.tomas.StockAnalyze.utils.Markets;
 import android.content.Context;
 import android.test.AndroidTestCase;
 import android.test.IsolatedContext;
 import android.test.mock.MockContentResolver;
+import cz.tomas.StockAnalyze.Data.Model.PortfolioItem;
+import cz.tomas.StockAnalyze.Portfolio.Portfolio;
+import cz.tomas.StockAnalyze.utils.Markets;
+
+import java.sql.SQLException;
+import java.util.Calendar;
+import java.util.List;
 
 /**
  * @author tomas
@@ -95,7 +95,7 @@ public class PortfolioTest extends AndroidTestCase {
 		String portfoliName = "default";
 		int count = 1000;
 		float price = 100.0f;
-		String marketId = Markets.CZ.getId();
+		String marketId = Markets.GLOBAL.getId();
 		
 		PortfolioItem item = new PortfolioItem(stockId, portfoliName, count, price, 0,
 				Calendar.getInstance().getTimeInMillis(), 0, marketId);
@@ -103,7 +103,7 @@ public class PortfolioTest extends AndroidTestCase {
 		this.portfolio.addToPortfolio(item);
 		this.portfolio.addToPortfolio(item);
 		
-		List<PortfolioItem> items = this.portfolio.getGroupedPortfolioItems(Markets.CZ);
+		List<PortfolioItem> items = this.portfolio.getGroupedPortfolioItems(Markets.GLOBAL);
 		assertEquals(1, items.size());
 		
 		PortfolioItem actualItem = items.get(0);
@@ -116,7 +116,7 @@ public class PortfolioTest extends AndroidTestCase {
 		String portfoliName = "default";
 		int count = 1000;
 		float price = 100.0f;
-		String marketId = Markets.CZ.getId();
+		String marketId = Markets.GLOBAL.getId();
 		
 		PortfolioItem item1 = new PortfolioItem(stockId, portfoliName, count, price, 0,
 				Calendar.getInstance().getTimeInMillis(), 0, marketId);
@@ -126,7 +126,7 @@ public class PortfolioTest extends AndroidTestCase {
 		this.portfolio.addToPortfolio(item1);
 		this.portfolio.addToPortfolio(item2);
 		
-		List<PortfolioItem> items = this.portfolio.getGroupedPortfolioItems(Markets.CZ);
+		List<PortfolioItem> items = this.portfolio.getGroupedPortfolioItems(Markets.GLOBAL);
 		assertEquals(1, items.size());
 		
 		PortfolioItem actualItem = items.get(0);
@@ -139,7 +139,7 @@ public class PortfolioTest extends AndroidTestCase {
 		String portfoliName = "default";
 		int count = 1000;
 		float price = 100.0f;
-		String marketId = Markets.CZ.getId();
+		String marketId = Markets.GLOBAL.getId();
 		
 		PortfolioItem item1 = new PortfolioItem(stockId, portfoliName, count, price, 0, 
 				Calendar.getInstance().getTimeInMillis(), 0, marketId);
@@ -149,7 +149,7 @@ public class PortfolioTest extends AndroidTestCase {
 		this.portfolio.addToPortfolio(item1);
 		this.portfolio.addToPortfolio(item2);
 		
-		List<PortfolioItem> items = this.portfolio.getGroupedPortfolioItems(Markets.CZ);
+		List<PortfolioItem> items = this.portfolio.getGroupedPortfolioItems(Markets.GLOBAL);
 		assertEquals(1, items.size());
 		
 		PortfolioItem actualItem = items.get(0);
