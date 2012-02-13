@@ -30,6 +30,7 @@ import android.util.Log;
 public class DataSqlHelper extends AbstractSqlHelper {
 
 	protected static final boolean DEBUG = Utils.DEBUG;
+	protected static final boolean VERBOSE = DEBUG && false;
 
 	private final static int DATABASE_VERSION_NUMBER = 21;
 

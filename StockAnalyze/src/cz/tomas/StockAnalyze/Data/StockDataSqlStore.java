@@ -189,7 +189,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 		try {
 			ContentValues values = new ContentValues();
 
-			if (DEBUG) Log.d(Utils.LOG_TAG, "updating day data to " + newData.toString());
+			if (VERBOSE) Log.d(Utils.LOG_TAG, "updating day data to " + newData.toString());
 
 			values.put(DayDataColumns.DATE ,Utils.createDateOnlyCalendar(newData.getDate()).getTimeInMillis());
 			values.put(DayDataColumns.LAST_UPDATE, newData.getLastUpdate());
