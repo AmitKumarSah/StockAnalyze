@@ -2,6 +2,6 @@
 <resources>
     <item type="integer" name="grid_columns">2</item>
     
-    <item type="integer" name="indicatorStyle">1</item>
+    <item type="integer" name="indicatorStyle">2</item>
     
 </resources>

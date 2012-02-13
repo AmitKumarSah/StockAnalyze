@@ -156,13 +156,15 @@
     </style>
     
 	<style name="MyTitlePageIndicator" parent="Widget.TitlePageIndicator">
-        <item name="footerColor">#AAAAAA</item>
+        <item name="footerColor">@color/actionbar_title_color</item>
         <item name="footerPadding">4dp</item>
         <item name="selectedColor">@android:color/black</item>
         <item name="selectedBold">false</item>
         <item name="textColor">#707070</item>
         <item name="textSize">12sp</item>
+		<item name="footerLineHeight">1dp</item>
         <item name="footerIndicatorStyle">@integer/indicatorStyle</item>
+		<item name="footerIndicatorUnderlinePadding">50dp</item>
     </style>
     
 	
