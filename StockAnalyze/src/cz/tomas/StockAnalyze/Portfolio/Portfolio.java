@@ -20,12 +20,6 @@
  */
 package cz.tomas.StockAnalyze.Portfolio;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
@@ -33,6 +27,10 @@ import android.util.Log;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.PortfolioItem;
 import cz.tomas.StockAnalyze.utils.Utils;
+
+import java.sql.SQLException;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * class wrapping all portfolio functionality

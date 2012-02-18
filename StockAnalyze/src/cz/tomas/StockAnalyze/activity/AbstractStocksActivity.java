@@ -1,8 +1,6 @@
 package cz.tomas.StockAnalyze.activity;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import cz.tomas.StockAnalyze.Application;
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.Interfaces.IMarketListener;
@@ -10,12 +8,9 @@ import cz.tomas.StockAnalyze.Data.Interfaces.IUpdateSchedulerListener;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.UpdateScheduler;
 import cz.tomas.StockAnalyze.activity.base.BaseFragmentActivity;
-import cz.tomas.StockAnalyze.fragments.ProgressDialogFragment;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 
 public abstract class AbstractStocksActivity extends BaseFragmentActivity {
-
-	private static final String TAG_PROGRESS = "progress";
 
 	protected UpdateScheduler scheduler;
 	protected DataManager dataManager;
@@ -72,40 +67,5 @@ public abstract class AbstractStocksActivity extends BaseFragmentActivity {
 	}
 
 	protected void onPrepareData(Market[] markets) {
-	}
-
-	/**
-	 * Immediately show {@link ProgressDialogFragment} with given texts. You can
-	 * access dialog instance later by finding fragment with tag
-	 * {@link #TAG_PROGRESS}
-	 *
-	 * @param titleId
-	 * @param messageId
-	 * @return
-	 */
-	protected DialogFragment showProgressDialog(int titleId, int messageId, DialogInterface.OnCancelListener listener) {
-		ProgressDialogFragment newFragment = ProgressDialogFragment.newInstance(
-				titleId, messageId);
-
-		newFragment.setCancelable(true);
-		newFragment.show(getSupportFragmentManager(), TAG_PROGRESS);
-		newFragment.setCancelListener(listener);
-
-		return newFragment;
-	}
-
-	/**
-	 * Dismiss dialog previously created with {@link #showProgressDialog(int, int, DialogInterface.OnCancelListener)}.
-	 * If there wasn't any dialog, nothing happens.
-	 */
-	protected void dismissProgress() {
-		try {
-			DialogFragment fragment = (DialogFragment) getSupportFragmentManager().findFragmentByTag(TAG_PROGRESS);
-			if (fragment != null) {
-				fragment.dismiss();
-			}
-		} catch (Exception e) {
-			// nothing
-		}
 	}
 }

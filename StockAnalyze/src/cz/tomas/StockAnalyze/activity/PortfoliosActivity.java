@@ -2,6 +2,7 @@ package cz.tomas.StockAnalyze.activity;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
@@ -10,12 +11,11 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import com.viewpagerindicator.TitlePageIndicator;
-import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.Portfolio.PortfolioPagerAdapter;
 import cz.tomas.StockAnalyze.R;
-import cz.tomas.StockAnalyze.activity.base.BaseFragmentActivity;
+import cz.tomas.StockAnalyze.fragments.ConfirmDialogFragment;
 import cz.tomas.StockAnalyze.ui.widgets.PickStockDialog;
 import cz.tomas.StockAnalyze.ui.widgets.PickStockDialog.IStockDialogListener;
 import cz.tomas.StockAnalyze.utils.NavUtils;
@@ -27,7 +27,7 @@ import java.util.Collection;
  * @author tomas
  *
  */
-public final class PortfoliosActivity extends BaseFragmentActivity implements OnPageChangeListener {
+public final class PortfoliosActivity extends AbstractStocksActivity implements OnPageChangeListener {
 
 	public static final int DIALOG_PROGRESS = 1000;
 	public static final int DIALOG_ADD_NEW = DIALOG_PROGRESS + 1;
@@ -46,8 +46,18 @@ public final class PortfoliosActivity extends BaseFragmentActivity implements On
 		this.setContentView(R.layout.portfolios);
 		
 		this.pager = (ViewPager) this.findViewById(R.id.portfoliosViewPager);
-		Collection<Market> markets = DataManager.getInstance(this).getMarkets();
-		this.pager.setAdapter(new PortfolioPagerAdapter(getSupportFragmentManager(), markets));
+		Collection<Market> markets = dataManager.getMarkets();
+
+		if (markets != null) {
+			onPrepareData(markets);
+		} else {
+			this.showProgressDialog(R.string.loading, R.string.loadingMarkets, new DialogInterface.OnCancelListener() {
+				@Override
+				public void onCancel(DialogInterface dialogInterface) {
+					finish();
+				}
+			});
+		}
 		
 		//Bind the title indicator to the adapter
 		TitlePageIndicator titleIndicator = (TitlePageIndicator)findViewById(R.id.portfoliosPagerTitles);
@@ -133,5 +143,21 @@ public final class PortfoliosActivity extends BaseFragmentActivity implements On
 	@Override
 	protected void onNavigateUp() {
 		NavUtils.goUp(this, HomeActivity.class);
+	}
+
+	protected void onPrepareData(Collection<Market> markets) {
+		this.dismissProgress();
+		if (markets == null || markets.size() == 0) {
+			ConfirmDialogFragment dialog = ConfirmDialogFragment.newInstance(R.string.loadingMarketsFailed, new ConfirmDialogFragment.IConfirmListener() {
+				@Override
+				public void onConfirmed(ConfirmDialogFragment fragment) {
+					finish();
+				}
+			});
+			dialog.show(getSupportFragmentManager(), TAG_CONFIRM);
+		} else {
+			this.pager.setAdapter(new PortfolioPagerAdapter(getSupportFragmentManager(), markets));
+			this.pager.setCurrentItem(0);
+		}
 	}
 }

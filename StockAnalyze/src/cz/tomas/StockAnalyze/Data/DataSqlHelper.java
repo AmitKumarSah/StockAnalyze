@@ -86,7 +86,7 @@ public class DataSqlHelper extends AbstractSqlHelper {
 	private static final String PORTFOLIO_TABLE_CREATE =
 		"CREATE TABLE " + PORTFOLIO_TABLE_NAME + " (" +
 				PortfolioColumns._ID + " integer PRIMARY KEY AUTOINCREMENT," +
-				PortfolioColumns.STOCK_ID + " varchar(50)," +
+				PortfolioColumns.STOCK_ID + " text," +
 				PortfolioColumns.BUY_DATE + " integer not null," +
 				PortfolioColumns.SELL_DATE + " integer," +
 				PortfolioColumns.COUNT + " integer not null," +
@@ -192,10 +192,27 @@ public class DataSqlHelper extends AbstractSqlHelper {
 		public static final String BUY_DATE = "buy_date";
 		public static final String SELL_DATE = "sell_date";
 		public static final String COUNT = "count";
+		public static final String COUNT_SUM = "SUM(count)";
 		public static final String BUY_PRICE = "buy_price";
+		public static final String BUY_PRICE_AVG = "AVG(buy_price)";
 		public static final String SELL_PRICE = "sell_price";
+		public static final String SELL_PRICE_AVG = "AVG(sell_price)";
 		public static final String BUY_FEE = "buy_fee";
+		public static final String BUY_FEE_SUM = "SUM(buy_fee)";
 		public static final String SELL_FEE = "sell_fee";
+		public static final String SELL_FEE_SUM = "SUM(sell_fee)";
 		public static final String MARKET_ID = "market_id";
+		
+		public static final String[] PROJECTION = new String[] {
+				_ID, NAME, STOCK_ID, BUY_DATE, SELL_DATE, COUNT, BUY_PRICE, SELL_PRICE, BUY_FEE, SELL_FEE, MARKET_ID
+		};
+
+		public static final String GROUPED_PROJECTION_STRING = "p._id,p.name,p.stock_id,p.buy_date,p.sell_date," +
+				"SUM(count),AVG(buy_price),AVG(sell_price),SUM(buy_fee),SUM(sell_fee),p.market_id";
+
+		public static final String[] PROJECTION_AGG = {"stock_id", "SUM(count)", "AVG(buy_price)", "AVG(sell_price)",
+				"buy_date", "sell_date", "name", "SUM(buy_fee)", "SUM(sell_fee)", "market_id", "_id"};
+
+		public static final String DEFAULT_SORT = "buy_date DESC";
 	}
 }

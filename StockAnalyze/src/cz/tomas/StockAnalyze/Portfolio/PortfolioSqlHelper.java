@@ -109,30 +109,65 @@ public class PortfolioSqlHelper extends DataSqlHelper {
 		SQLiteDatabase db = null;
 		try {
 			db = this.getWritableDatabase();
+			// get markets with currency of our market
+			final String marketSelection = MarketColumns.CURRENCY.concat("=?");
+			Cursor marketCursor = db.query(MARKET_TABLE_NAME, new String[] { MarketColumns._ID }, marketSelection,
+					new String[] { market.getCurrencyCode() }, null, null, null);
+
+			String[] ids = new String[marketCursor.getCount()];
+			try {
+				int index = 0;
+				if (marketCursor.moveToFirst()) {
+					do {
+						String id = marketCursor.getString(0);
+						ids[index] = id;
+						index++;
+					} while (marketCursor.moveToNext());
+				}
+			} finally {
+				marketCursor.close();
+			}
+			if (ids.length == 0) {
+				return null;
+			}
 			
-			String selection = bought ? "count > 0" : "count < 0";
-			c = db.query(PORTFOLIO_TABLE_NAME, new String [] {"stock_id", "SUM(count)", "AVG(buy_price)", "AVG(sell_price)",
-					"buy_date", "sell_date", "name", "SUM(buy_fee)", "SUM(sell_fee)", "market_id", "_id" },
-					selection, null, "stock_id", null, "buy_date");
+			StringBuilder builder = new StringBuilder(PortfolioColumns.MARKET_ID);
+			builder.append(" in (");
+			for (int i = 0; i < ids.length; i++) {
+				builder.append("?,");
+			}
+			builder.setLength(builder.length() - 1);
+			builder.append(")");
+
+			String portfolioSelection = bought ? "count > 0" : "count < 0";
+//			String sql = String.format("SELECT %s FROM %s p JOIN %s m on p.%s = m.%s WHERE m.%s=? AND %s" +
+//										" ORDER BY p.%s",
+//										PortfolioColumns.GROUPED_PROJECTION_STRING, PORTFOLIO_TABLE_NAME, MARKET_TABLE_NAME,
+//										PortfolioColumns.MARKET_ID, MarketColumns._ID, MarketColumns.CURRENCY, portfolioSelection,
+//										PortfolioColumns.STOCK_ID, PortfolioColumns.DEFAULT_SORT);
+//			c = db.query(PORTFOLIO_TABLE_NAME, new String [] {"stock_id", "SUM(count)", "AVG(buy_price)", "AVG(sell_price)",
+//					"buy_date", "sell_date", "name", "SUM(buy_fee)", "SUM(sell_fee)", "market_id", "_id" },
+//					selection, null, "stock_id", null, "buy_date");
+//			c = db.rawQuery(sql, new String[] { market.getCurrencyCode() });
+			final String selection = String.format("%s AND %s", portfolioSelection, builder.toString());
+			c = db.query(PORTFOLIO_TABLE_NAME, PortfolioColumns.PROJECTION_AGG,
+					selection, ids, "stock_id", null, PortfolioColumns.DEFAULT_SORT);
 			if (c.moveToFirst())
 				do {
-					String stockId = c.getString(0);
-					int count = c.getInt(1);
-					float buyPrice = c.getFloat(2);
-					float sellPrice = c.getFloat(3);
-					long buyDate = c.getLong(4);
-					long sellDate = c.getLong(5);
-					String name = c.getString(6);
-					float buyFee = c.getFloat(7);
-					float sellFee = c.getFloat(8);
-					String marketId = c.getString(9);
-					int id = c.getInt(10);
-					// return only items that have same currency as requested
-					if (market.getCurrencyCode().equals(market.getCurrencyCode())) {
-						PortfolioItem item = new PortfolioItem(id, stockId, name, count, buyPrice, sellPrice, 
-								buyDate, sellDate, buyFee, sellFee, marketId);
-						items.put(stockId, item);
-					}
+					String stockId = c.getString(c.getColumnIndex(PortfolioColumns.STOCK_ID));
+					int count = c.getInt(c.getColumnIndex(PortfolioColumns.COUNT_SUM));
+					float buyPrice = c.getFloat(c.getColumnIndex(PortfolioColumns.BUY_PRICE_AVG));
+					float sellPrice = c.getFloat(c.getColumnIndex(PortfolioColumns.SELL_PRICE_AVG));
+					long buyDate = c.getLong(c.getColumnIndex(PortfolioColumns.BUY_DATE));
+					long sellDate = c.getLong(c.getColumnIndex(PortfolioColumns.SELL_DATE));
+					String name = c.getString(c.getColumnIndex(PortfolioColumns.NAME));
+					float buyFee = c.getFloat(c.getColumnIndex(PortfolioColumns.BUY_FEE_SUM));
+					float sellFee = c.getFloat(c.getColumnIndex(PortfolioColumns.SELL_FEE_SUM));
+					String marketId = c.getString(c.getColumnIndex(PortfolioColumns.MARKET_ID));
+					int id = c.getInt(c.getColumnIndex(PortfolioColumns.MARKET_ID));
+					PortfolioItem item = new PortfolioItem(id, stockId, name, count, buyPrice, sellPrice,
+							buyDate, sellDate, buyFee, sellFee, marketId);
+					items.put(stockId, item);
 				} while(c.moveToNext());
 		} finally {
 			if (c != null)

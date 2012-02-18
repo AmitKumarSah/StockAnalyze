@@ -51,7 +51,7 @@ public final class PortfolioLoader extends AsyncTaskLoader<PortfolioListData> im
 			try {
 				items = portfolio.getGroupedPortfolioItems(market);
 			} catch (Exception e) {
-				Log.e(Utils.LOG_TAG, "failed to get groupped portfolio items", e);
+				Log.e(Utils.LOG_TAG, "failed to get grouped portfolio items", e);
 			}
 			try {
 				if (items != null) {
