@@ -216,22 +216,6 @@ public class DataManager implements IStockDataListener {
 		return items;
 	}
 
-//	/**
-//	 * check if stock list was downloaded and isn't too old
-//	 *
-//	 * @return true if stock list needs to be refreshed
-//	 */
-//	private boolean isStockListDirty() {
-//		SharedPreferences preferences = this.context.getSharedPreferences(Utils.PREF_NAME, 0);
-//
-//		long lastUpdate = preferences.getLong(Utils.PREF_LAST_STOCK_LIST_UPDATE_TIME, 0);
-//		long diff = System.currentTimeMillis() - lastUpdate;
-//		long dayDiff = diff / DAY_IN_MILLISECONDS;
-//		boolean isStockListDirty = dayDiff > STOCK_LIST_EXPIRATION_DAYS;
-//
-//		return isStockListDirty;
-//	}
-
 	private boolean isMarketListDirty() {
 		SharedPreferences preferences = this.context.getSharedPreferences(Utils.PREF_NAME, 0);
 
@@ -324,7 +308,7 @@ public class DataManager implements IStockDataListener {
 	 * check in db for todays data, try to download new one or check in db for older one  
 	 */
 	public synchronized DayData getLastValue(StockItem item) throws IOException, NullPointerException {
-		float val = -1;
+		float val;
 		DayData data = null;
 		//Calendar now = Calendar.getInstance();
 		

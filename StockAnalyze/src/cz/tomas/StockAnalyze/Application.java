@@ -17,6 +17,12 @@
  ******************************************************************************/
 package cz.tomas.StockAnalyze;
 
+import android.util.Log;
+import cz.tomas.StockAnalyze.Data.DataManager;
+import cz.tomas.StockAnalyze.News.Rss;
+import cz.tomas.StockAnalyze.Portfolio.Portfolio;
+import cz.tomas.StockAnalyze.activity.ChartActivity;
+import cz.tomas.StockAnalyze.utils.Utils;
 import org.apache.http.HttpVersion;
 import org.apache.http.conn.params.ConnManagerParams;
 import org.apache.http.conn.scheme.PlainSocketFactory;
@@ -30,13 +36,6 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
-
-import cz.tomas.StockAnalyze.Data.DataManager;
-import cz.tomas.StockAnalyze.News.Rss;
-import cz.tomas.StockAnalyze.Portfolio.Portfolio;
-import cz.tomas.StockAnalyze.activity.ChartActivity;
-import cz.tomas.StockAnalyze.utils.Utils;
-import android.util.Log;
 
 public class Application extends android.app.Application {
 

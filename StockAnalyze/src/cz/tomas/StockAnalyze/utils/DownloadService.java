@@ -20,33 +20,19 @@
  */
 package cz.tomas.StockAnalyze.utils;
 
+import android.net.http.AndroidHttpClient;
+import android.util.Log;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.util.ByteArrayBuffer;
+
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.zip.GZIPInputStream;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpVersion;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.conn.params.ConnManagerParams;
-import org.apache.http.conn.scheme.PlainSocketFactory;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
-import org.apache.http.params.HttpProtocolParams;
-import org.apache.http.protocol.HTTP;
-import org.apache.http.util.ByteArrayBuffer;
-
-import android.util.Log;
 
 /**
  * Service for accessing remote resources
@@ -57,11 +43,12 @@ import android.util.Log;
 public class DownloadService {
 
 	private static DownloadService instance;
-	private static DefaultHttpClient sDefaultHttpClient;
+	private AndroidHttpClient httpClient;
 
 	public static DownloadService GetInstance() {
-		if (instance == null)
+		if (instance == null) {
 			instance = new DownloadService();
+		}
 		return instance;
 	}	
 
@@ -69,19 +56,19 @@ public class DownloadService {
 	 * initialize http client
 	 */
 	public DownloadService() {
-		HttpParams params = new BasicHttpParams();
-		HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
-		HttpProtocolParams.setContentCharset(params, HTTP.UTF_8);
-		HttpProtocolParams.setUseExpectContinue(params, false);
-		ConnManagerParams.setMaxTotalConnections(params, 10);
-		HttpConnectionParams.setConnectionTimeout(params, 10 * 1000);
-		HttpConnectionParams.setSoTimeout(params, 10 * 1000);
+//		HttpParams params = new BasicHttpParams();
+//		HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
+//		HttpProtocolParams.setContentCharset(params, HTTP.UTF_8);
+//		HttpProtocolParams.setUseExpectContinue(params, false);
+//		ConnManagerParams.setMaxTotalConnections(params, 10);
+//		HttpConnectionParams.setConnectionTimeout(params, 10 * 1000);
+//		HttpConnectionParams.setSoTimeout(params, 10 * 1000);
+//
+//		SchemeRegistry schReg = new SchemeRegistry();
+//		schReg.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+//		schReg.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
 
-		SchemeRegistry schReg = new SchemeRegistry();
-		schReg.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
-		schReg.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
-		
-		sDefaultHttpClient = new DefaultHttpClient(new ThreadSafeClientConnManager(params, schReg), params);
+		httpClient = AndroidHttpClient.newInstance("android,gzip");
 	}
 
 
@@ -136,15 +123,15 @@ public class DownloadService {
 	 * @throws IllegalStateException
 	 */
 	private InputStream openHttpConnection(String downloadUrl)
-			throws IOException, ClientProtocolException, IllegalStateException {
-		HttpClient client = sDefaultHttpClient;
+			throws IOException, IllegalStateException {
 		HttpGet get = new HttpGet(downloadUrl);
-		HttpResponse response = client.execute(get);
 
-		InputStream is = null;
+		AndroidHttpClient.modifyRequestToAcceptGzipResponse(get);
+		HttpResponse response = httpClient.execute(get);
+
+		InputStream is;
 		HttpEntity entity = response.getEntity();
-		is = entity.getContent();
-
+		is = AndroidHttpClient.getUngzippedContent(entity);
 		return is;
 	}
 	
@@ -156,18 +143,7 @@ public class DownloadService {
 	public InputStream openHttpConnection(String urlString, boolean compress) throws IOException {
 		InputStream in = null;
 
-		InputStream stream = this.openHttpConnection(urlString);
-		if (compress) {
-			try {
-				InputStream gzipInput = new GZIPInputStream(stream);
-				in = gzipInput;
-			} catch (IOException e) {
-				Log.d(Utils.LOG_TAG, "DownloadService: Failed to create GZIP stream for " + urlString + ", using default one");
-				in = stream;
-			}
-		} else {
-			in = stream;
-		}
+		in = this.openHttpConnection(urlString);
 		return in;
 	}
 }
