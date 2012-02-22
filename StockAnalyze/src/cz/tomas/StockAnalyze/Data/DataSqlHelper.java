@@ -32,7 +32,7 @@ public class DataSqlHelper extends AbstractSqlHelper {
 	protected static final boolean DEBUG = Utils.DEBUG;
 	protected static final boolean VERBOSE = DEBUG && false;
 
-	private final static int DATABASE_VERSION_NUMBER = 21;
+	private final static int DATABASE_VERSION_NUMBER = 22;
 
 	private final static String DATABASE_FILE_NAME = "stocks.db";
 
@@ -115,6 +115,10 @@ public class DataSqlHelper extends AbstractSqlHelper {
 			db.execSQL(DAY_DATA_TABLE_CREATE);
 			Log.d(Utils.LOG_TAG, "creating portfolio table!");
 			db.execSQL(PORTFOLIO_TABLE_CREATE);
+
+			db.execSQL("create index if not exists in_stock_id on " + STOCK_TABLE_NAME + " (" + StockColumns._ID + ")");
+			db.execSQL("create index if not exists in_stock_name on " + STOCK_TABLE_NAME + " (" + StockColumns.NAME + ")");
+			db.execSQL("create index if not exists in_stock_name on " + MARKET_TABLE_NAME + " (" + MarketColumns._ID + ")");
 		} catch (SQLException e) {
 			Log.e(Utils.LOG_TAG, "Failed to create database!\n", e);
 		}
@@ -122,7 +126,7 @@ public class DataSqlHelper extends AbstractSqlHelper {
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		Log.d(Utils.LOG_TAG, "droping tables!");
+		Log.d(Utils.LOG_TAG, "dropping tables!");
 		db.execSQL(TABLE_DROP + DAY_DATA_TABLE_NAME);
 		db.execSQL(TABLE_DROP + STOCK_TABLE_NAME);
 		db.execSQL(TABLE_DROP + PORTFOLIO_TABLE_NAME);
