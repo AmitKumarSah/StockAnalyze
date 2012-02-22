@@ -1,6 +1,7 @@
 package cz.tomas.StockAnalyze.activity;
 
 import android.os.Bundle;
+import android.view.View;
 import cz.tomas.StockAnalyze.Application;
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.Interfaces.IMarketListener;
@@ -8,10 +9,15 @@ import cz.tomas.StockAnalyze.Data.Interfaces.IUpdateSchedulerListener;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.UpdateScheduler;
 import cz.tomas.StockAnalyze.activity.base.BaseFragmentActivity;
+import cz.tomas.StockAnalyze.ui.widgets.DragContainerView;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 
 public abstract class AbstractStocksActivity extends BaseFragmentActivity {
 
+	public interface IDragSupportingActivity<T> {
+		void onStartDrag(T data, View view, DragContainerView.IDragListener listener);
+	}
+	
 	protected UpdateScheduler scheduler;
 	protected DataManager dataManager;
 	

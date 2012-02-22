@@ -16,7 +16,8 @@
       You should have received a copy of the GNU General Public License
       along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		 android:id="@+id/container"
          android:orientation="vertical"
          android:layout_width="fill_parent"
          android:layout_height="fill_parent">
@@ -27,7 +28,14 @@
 	    android:layout_width="fill_parent"
 	    android:background="#DDDDDD"
 	    android:paddingBottom="2dp" />
-	<android.support.v4.view.ViewPager android:id="@+id/stocksViewPager" 
+	<android.support.v4.view.ViewPager android:id="@+id/stocksViewPager"
+		android:layout_below="@+id/pagerTitles"
 		android:layout_width="fill_parent" 
 		android:layout_height="fill_parent" />
- </LinearLayout>
+
+	<cz.tomas.StockAnalyze.ui.widgets.DragContainerView android:id="@+id/dragContainer"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:visibility="gone"
+		android:background="#22FFFFFF"/>
+ </RelativeLayout>

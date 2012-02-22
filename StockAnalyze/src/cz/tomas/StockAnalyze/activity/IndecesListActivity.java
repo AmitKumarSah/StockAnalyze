@@ -7,9 +7,11 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.FrameLayout;
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.fragments.StockGridFragment;
+import cz.tomas.StockAnalyze.ui.widgets.DragContainerView;
 import cz.tomas.StockAnalyze.utils.Markets;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 
@@ -18,7 +20,7 @@ import cz.tomas.StockAnalyze.utils.NavUtils;
  * @author tomas
  *
  */
-public final class IndecesListActivity extends AbstractStocksActivity {
+public final class IndecesListActivity extends AbstractStocksActivity implements AbstractStocksActivity.IDragSupportingActivity {
 	
 	private static final int CONTAINER_ID = 1000;
 	private static final String FRAGMENT_TAG = "stocklist";
@@ -40,7 +42,7 @@ public final class IndecesListActivity extends AbstractStocksActivity {
 			fragment = new StockGridFragment();
 			Bundle args = new Bundle();
 			args.putSerializable(StockGridFragment.ARG_MARKET, Markets.GLOBAL);
-			args.putBoolean(StockGridFragment.ARG_INLCUDE_INDECES, true);
+			args.putBoolean(StockGridFragment.ARA_INSECURE_INDICES, true);
 			fragment.setArguments(args);
 			tran.add(container.getId(), fragment, FRAGMENT_TAG);
 		}
@@ -67,5 +69,9 @@ public final class IndecesListActivity extends AbstractStocksActivity {
 	    MenuInflater inflater = getMenuInflater();
 	    inflater.inflate(R.menu.indeces_menu, menu);
 	    return true;
+	}
+
+	@Override
+	public void onStartDrag(Object data, View view, DragContainerView.IDragListener listener) {
 	}
 }

@@ -258,7 +258,7 @@ public class UpdateScheduler implements IMarketListener{
 			pendingIntent = dayUpdateIntent;
 		}
 		Log.d(Utils.LOG_TAG, "SCHEDULING " + (intraDay? "intra" : "day") + " ALARM TO " + FormattingUtils.formatStockDate(cal));
-		
+
 		// Get the AlarmManager service
 		final AlarmManager am = (AlarmManager) this.context.getSystemService(Context.ALARM_SERVICE);
 		am.set(AlarmManager.RTC, cal.getTimeInMillis(), pendingIntent);

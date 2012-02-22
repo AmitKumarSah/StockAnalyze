@@ -3,32 +3,30 @@ package cz.tomas.StockAnalyze.fragments;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
-import android.view.ContextMenu;
+import android.view.*;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.view.LayoutInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
-import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
+import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.StockList.StockListAdapter;
+import cz.tomas.StockAnalyze.activity.AbstractStocksActivity;
 import cz.tomas.StockAnalyze.fragments.StockFragmentHelper.IStockFragment;
+import cz.tomas.StockAnalyze.ui.widgets.DragContainerView;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 
-public final class StockGridFragment extends Fragment implements IStockFragment {
+public final class StockGridFragment extends Fragment implements IStockFragment, DragContainerView.IDragListener {
 	
-	public static final String ARG_INLCUDE_INDECES = "includeIndeces";
+	public static final String ARA_INSECURE_INDICES = "includeIndeces";
 	public static String ARG_MARKET = "market";
 
 	private StockFragmentHelper helper;
 	
 	private GridView grid;
 	private View progress;
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		//this.setRetainInstance(true);
@@ -47,10 +45,13 @@ public final class StockGridFragment extends Fragment implements IStockFragment 
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		
+		if (! (getActivity() instanceof AbstractStocksActivity.IDragSupportingActivity)) {
+			throw new IllegalStateException("fragment's activity must implement IDragSupportingActivity");
+		}
 		final StockListAdapter adapter = new StockListAdapter(getActivity(), R.layout.item_stock_grid);
 		this.helper = new StockFragmentHelper(this, getArguments(), adapter);
 		
-		this.registerForContextMenu(this.grid);
+		//this.registerForContextMenu(this.grid);
 		this.grid.setAdapter(adapter);
 		this.grid.setOnItemClickListener(new OnItemClickListener() {
 
@@ -58,6 +59,14 @@ public final class StockGridFragment extends Fragment implements IStockFragment 
 			public void onItemClick(AdapterView<?> adapterView, View arg1, int position, long arg3) {
 				StockItem stock = adapter.getItem(position);
 				NavUtils.goToStockDetail(stock, adapter.getDayData(stock), getActivity());
+			}
+		});
+		this.grid.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+			@Override
+			public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long l) {
+				StockItem item = adapter.getItem(position);
+				((AbstractStocksActivity.IDragSupportingActivity) getActivity()).onStartDrag(item, view, StockGridFragment.this);
+				return true;
 			}
 		});
 		LoaderManager.enableDebugLogging(Utils.DEBUG);
@@ -92,5 +101,10 @@ public final class StockGridFragment extends Fragment implements IStockFragment 
 		if (this.getActivity() != null) {
 			this.progress.setVisibility(View.GONE);
 		}
+	}
+
+	@Override
+	public void onDragComplete(Object data) {
+		NavUtils.goToAddToPortfolio(getActivity(), (StockItem) data, null);
 	}
 }

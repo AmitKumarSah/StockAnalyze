@@ -59,11 +59,6 @@ public final class StocksLoader extends AsyncTaskLoader<Map<StockItem, DayData>>
 			dataManager.acquireDb(this.getClass().getName());
 			try {
 				items = dataManager.getLastDataSet(market);
-				if (DEBUG) {
-					long diff = SystemClock.elapsedRealtime() - startTime;
-					Log.d(Utils.LOG_TAG, "stock loader - day data read time: " + diff);
-				}
-				Log.d(Utils.LOG_TAG, "StockList: loaded data from database: " + items.size());
 			} catch (Exception e) {
 				Log.e(Utils.LOG_TAG, "Failed to get stock day data. ", e);
 			}

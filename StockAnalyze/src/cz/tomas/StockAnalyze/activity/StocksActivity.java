@@ -4,15 +4,17 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import android.util.Log;
+import android.view.*;
 import com.viewpagerindicator.TitlePageIndicator;
 import cz.tomas.StockAnalyze.Data.Model.Market;
+import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.StockList.StocksPagerAdapter;
 import cz.tomas.StockAnalyze.fragments.ConfirmDialogFragment;
+import cz.tomas.StockAnalyze.ui.widgets.DragContainerView;
 import cz.tomas.StockAnalyze.utils.NavUtils;
+import cz.tomas.StockAnalyze.utils.Utils;
 
 import java.util.Collection;
 
@@ -22,13 +24,16 @@ import java.util.Collection;
  * @author tomas
  *
  */
-public final class StocksActivity extends AbstractStocksActivity implements OnPageChangeListener {
+public final class StocksActivity extends AbstractStocksActivity implements OnPageChangeListener,
+											AbstractStocksActivity.IDragSupportingActivity<StockItem> {
 
 	private static final String TAG_CONFIRM = "confirm";
 
 	private Market selectedMarket;
 	
 	private ViewPager pager;
+	private DragContainerView dragContainer;
+	private View container;
 
 	/* (non-Javadoc)
 		 * @see android.support.v4.app.FragmentActivity#onCreate(android.os.Bundle)
@@ -38,6 +43,8 @@ public final class StocksActivity extends AbstractStocksActivity implements OnPa
 		super.onCreate(arg0);
 		this.setContentView(R.layout.stocks);
 
+		this.container = this.findViewById(R.id.container);
+		this.dragContainer = (DragContainerView) this.findViewById(R.id.dragContainer);
 		this.pager = (ViewPager) this.findViewById(R.id.stocksViewPager);
 		Collection<Market> markets = dataManager.getMarkets();
 		this.pager.setAdapter(new StocksPagerAdapter(getSupportFragmentManager(), markets));
@@ -110,5 +117,29 @@ public final class StocksActivity extends AbstractStocksActivity implements OnPa
 			this.selectedMarket = markets[0];
 			this.pager.setCurrentItem(0);
 		}
+	}
+
+	@Override
+	public boolean dispatchTouchEvent(MotionEvent event) {
+		if (dragContainer.isDragging()) {
+			// modify event for the view
+			Log.d(Utils.LOG_TAG, "activity touch event " + event);
+			return dragContainer.dispatchTouchEvent(event);
+			//return false;
+			//return dragContainer.onTouchEvent(event);
+			//return super.dispatchTouchEvent(event);
+		} else {
+			return super.dispatchTouchEvent(event);
+		}
+	}
+
+	@Override
+	public void onStartDrag(StockItem data, View view, DragContainerView.IDragListener listener) {
+		View root = (View) this.container.getParent();
+		final int offsetX = this.pager.getLeft() + root.getLeft();
+		final int offsetY = this.pager.getTop() + root.getTop();
+
+		dragContainer.startDragging(view, view.getLeft(), view.getTop(), offsetX, offsetY, data);
+		dragContainer.setListener(listener);
 	}
 }
