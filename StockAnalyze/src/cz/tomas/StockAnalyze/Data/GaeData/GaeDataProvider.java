@@ -1,30 +1,22 @@
 package cz.tomas.StockAnalyze.Data.GaeData;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringWriter;
-import java.io.Writer;
+import android.content.Context;
+import android.text.TextUtils;
+import android.util.Log;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.reflect.TypeToken;
+import cz.tomas.StockAnalyze.Data.Model.DayData;
+import cz.tomas.StockAnalyze.Data.Model.StockItem;
+import cz.tomas.StockAnalyze.utils.DownloadService;
+import cz.tomas.StockAnalyze.utils.Utils;
+
+import java.io.*;
 import java.lang.reflect.Type;
 import java.net.URLEncoder;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import android.content.Context;
-import android.text.TextUtils;
-import android.util.Log;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.reflect.TypeToken;
-
-import cz.tomas.StockAnalyze.Data.Model.DayData;
-import cz.tomas.StockAnalyze.Data.Model.StockItem;
-import cz.tomas.StockAnalyze.utils.DownloadService;
-import cz.tomas.StockAnalyze.utils.Utils;
 
 public final class GaeDataProvider {
 
@@ -67,7 +59,7 @@ public final class GaeDataProvider {
 	 */
 	protected Map<String, DayData> getDataSet(String url) throws IOException,
 			JsonSyntaxException {
-		Log.d(Utils.LOG_TAG, "connecting to " + url);
+		if (Utils.DEBUG) Log.d(Utils.LOG_TAG, "connecting to " + url);
 		Map<String, DayData> data = new LinkedHashMap<String, DayData>();
 		InputStream stream = null;
 		try {

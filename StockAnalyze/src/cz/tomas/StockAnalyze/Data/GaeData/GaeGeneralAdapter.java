@@ -10,30 +10,41 @@ import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetDataException;
 import cz.tomas.StockAnalyze.utils.Utils;
 
+import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author tomas
+ */
+public class GaeGeneralAdapter extends GaeDataAdapter {
 
-public class GaePseDataAdapter extends GaeDataAdapter {
+	private static final String ID = "GAE general provider";
+	private final HashSet<String> marketCodes;
+	private final DataProviderAdviser adviser;
+	private final GaeDataProvider provider;
 
-	public static final String MARKET_CODE = "cz";
-
-	public GaePseDataAdapter(Context context) {
+	public GaeGeneralAdapter(Context context) {
 		super(context);
+		marketCodes = new HashSet<String>();
+		marketCodes.add("pl");
+		marketCodes.add("gb");
+		marketCodes.add("hu");
+		marketCodes.add("sw");
+		marketCodes.add("jp");
+		marketCodes.add("rus");
+		adviser = new DataProviderAdviser(true, true, true, marketCodes);
+		provider = new GaeDataProvider(context);
 	}
 
-	public static final String ID = "GAE PSE Provider";	
-	
 	@Override
-	public List<StockItem> getAvailableStockList(Market market)
-			throws FailedToGetDataException {
-		List<StockItem> stockList;
+	public List<StockItem> getAvailableStockList(Market market) throws FailedToGetDataException {
 		try {
-			stockList = this.provider.getStockList("cz");
-		} catch (Exception e) {
+			return this.provider.getStockList(market.getCountry());
+		} catch (IOException e) {
 			throw new FailedToGetDataException("failed to get stock list", e);
 		}
-		return stockList;
 	}
 
 	@Override
@@ -43,7 +54,7 @@ public class GaePseDataAdapter extends GaeDataAdapter {
 
 	@Override
 	public String getDescriptiveName() {
-		return "GAE data provider";
+		return "GAE general";
 	}
 
 	@Override
@@ -60,7 +71,7 @@ public class GaePseDataAdapter extends GaeDataAdapter {
 				// the market could be closed, so we don't necessarily get updated data
 				if (provider.refresh()) {
 					// if refresh proceeded and the market is open, fire the event
-					Map<String, DayData> data = this.provider.getDayDataSet(MARKET_CODE);
+					Map<String, DayData> data = this.provider.getDayDataSet(market.getCountry());
 					for (IStockDataListener listener : eventListeners) {
 						listener.OnStockDataUpdated(this, data);
 					}
@@ -79,7 +90,6 @@ public class GaePseDataAdapter extends GaeDataAdapter {
 
 	@Override
 	public DataProviderAdviser getAdviser() {
-		DataProviderAdviser adviser = new DataProviderAdviser(true, true, true, MARKET_CODE);
 		return adviser;
 	}
 }

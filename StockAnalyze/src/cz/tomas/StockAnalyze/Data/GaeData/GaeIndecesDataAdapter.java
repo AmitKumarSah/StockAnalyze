@@ -5,6 +5,7 @@ import android.util.Log;
 import cz.tomas.StockAnalyze.Data.DataProviderAdviser;
 import cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
+import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetDataException;
 import cz.tomas.StockAnalyze.utils.Utils;
@@ -24,7 +25,7 @@ public final class GaeIndecesDataAdapter extends GaeDataAdapter {
 	public static final String ID = "GAE Indeces Provider";
 
 	@Override
-	public List<StockItem> getAvailableStockList()
+	public List<StockItem> getAvailableStockList(Market market)
 			throws FailedToGetDataException {
 		List<StockItem> stockList;
 		try {
@@ -42,11 +43,11 @@ public final class GaeIndecesDataAdapter extends GaeDataAdapter {
 
 	@Override
 	public String getDescriptiveName() {
-		return "GAE indeces data provider";
+		return "GAE indices data provider";
 	}
 
 	@Override
-	public boolean refresh() {
+	public boolean refresh(Market market) {
 		if (enabled) {
 			try {
 				try {
@@ -56,7 +57,7 @@ public final class GaeIndecesDataAdapter extends GaeDataAdapter {
 				} catch (Exception e) {
 					Log.e(Utils.LOG_TAG, "OnStockDataUpdateBegin failed!", e);
 				}
-				// the market could be closed, so we don't neccessarly get updated data
+				// the market could be closed, so we don't necessarily get updated data
 				if (provider.refresh()) {
 					// if refresh proceeded and the market is open, fire the event
 					Map<String, DayData> data = this.provider.getIndecesDataSet();

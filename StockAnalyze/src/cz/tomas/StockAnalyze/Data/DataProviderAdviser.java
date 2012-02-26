@@ -20,6 +20,9 @@
  */
 package cz.tomas.StockAnalyze.Data;
 
+import java.util.Collection;
+import java.util.HashSet;
+
 /**
  * @author tomas
  * class advising about data provider, it is used in DataProviderFactory 
@@ -30,15 +33,25 @@ public class DataProviderAdviser {
 	private final boolean isRealTime;
 	private final boolean supportHistorical;
 	private final boolean supportStatistics;
-	private final String marketCode;
+	private final HashSet<String> marketCodes;
 	
 	public DataProviderAdviser(boolean isRealTime, boolean supportHistorical,
 			boolean supportStatistics, String marketCode) {
 		this.isRealTime = isRealTime;
 		this.supportHistorical = supportHistorical;
 		this.supportStatistics = supportStatistics;
-		this.marketCode = marketCode;
+		this.marketCodes = new HashSet<String>(1);
+		this.marketCodes.add(marketCode);
 	}
+
+	public DataProviderAdviser(boolean isRealTime, boolean supportHistorical,
+	                           boolean supportStatistics, HashSet<String> marketCodes) {
+		this.isRealTime = isRealTime;
+		this.supportHistorical = supportHistorical;
+		this.supportStatistics = supportStatistics;
+		this.marketCodes = marketCodes;
+	}
+
 
 	/**
 	 * true if provider supports real time data (including delayed)
@@ -73,11 +86,11 @@ public class DataProviderAdviser {
 		return "DataProviderAdviser [isRealTime=" + isRealTime
 				+ ", supportHistorical=" + supportHistorical
 				+ ", supportStatistics=" + supportStatistics + ", marketCode="
-				+ marketCode + "]";
+				+ marketCodes + "]";
 	}
 
-	public String getMarketCode() {
-		return this.marketCode;
+	public Collection<String> getMarketCode() {
+		return this.marketCodes;
 	}
 	
 	

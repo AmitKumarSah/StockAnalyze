@@ -1,21 +1,16 @@
 package cz.tomas.StockAnalyze.Data.GaeData;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
 import android.content.Context;
-
 import cz.tomas.StockAnalyze.Data.IStockDataProvider;
 import cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetDataException;
 
+import java.io.IOException;
+import java.util.*;
+
 /**
- * Base class for adpaters working with own backend providers.
+ * Base class for adapters working with own backend providers.
  * Subclasses should give concrete info about the concrete provider.
  * @author tomas
  *

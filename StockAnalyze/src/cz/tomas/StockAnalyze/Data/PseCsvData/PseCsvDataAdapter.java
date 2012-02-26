@@ -35,6 +35,7 @@ import cz.tomas.StockAnalyze.Data.DataProviderAdviser;
 import cz.tomas.StockAnalyze.Data.IStockDataProvider;
 import cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
+import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.Data.PseCsvData.PseCsvDataProvider.IDownloadListener;
 import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetDataException;
@@ -117,10 +118,10 @@ public class PseCsvDataAdapter implements IStockDataProvider {
 
 	/**
 	 * get all stocks that this provider supports
-	 * @see cz.tomas.StockAnalyze.Data.IStockDataProvider#getAvailableStockList()
+	 * @see cz.tomas.StockAnalyze.Data.IStockDataProvider#getAvailableStockList(Market)
 	 */
 	@Override
-	public List<StockItem> getAvailableStockList() {
+	public List<StockItem> getAvailableStockList(Market market) {
 		return this.provider.getAvailableStockList();
 	}
 
@@ -132,7 +133,6 @@ public class PseCsvDataAdapter implements IStockDataProvider {
 
 	/**
 	 * this provider doesn't support intraday data
-	 * @see cz.tomas.StockAnalyze.Data.IStockDataProvider#getIntraDayData(java.lang.String, java.util.Date, int)
 	 */
 	@Override
 	public Map<Long, Float> getIntraDayData(String ticker, Date date) {
@@ -149,7 +149,7 @@ public class PseCsvDataAdapter implements IStockDataProvider {
 	 * @see cz.tomas.StockAnalyze.Data.IStockDataProvider#refresh()
 	 */
 	@Override
-	public boolean refresh() {
+	public boolean refresh(Market market) {
 		return this.provider.refresh();
 	}
 

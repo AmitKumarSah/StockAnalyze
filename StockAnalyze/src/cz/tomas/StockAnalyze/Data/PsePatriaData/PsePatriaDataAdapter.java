@@ -27,6 +27,7 @@ import cz.tomas.StockAnalyze.Data.DataProviderAdviser;
 import cz.tomas.StockAnalyze.Data.IStockDataProvider;
 import cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
+import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetDataException;
 import cz.tomas.StockAnalyze.utils.Utils;
@@ -161,10 +162,10 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 
 	/** 
 	 * get list of available stocks from data provider
-	 * @see cz.tomas.StockAnalyze.Data.IStockDataProvider#getAvailableStockList()
+	 * @see cz.tomas.StockAnalyze.Data.IStockDataProvider#getAvailableStockList(cz.tomas.StockAnalyze.Data.Model.Market)
 	 */
 	@Override
-	public List<StockItem> getAvailableStockList() throws FailedToGetDataException {
+	public List<StockItem> getAvailableStockList(Market market) throws FailedToGetDataException {
 		List<StockItem> items = new ArrayList<StockItem>();
 		Map<String, PsePatriaDataItem> stocks = null;
 		try {
@@ -211,7 +212,7 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 	 * @see cz.tomas.StockAnalyze.Data.IStockDataProvider#refresh()
 	 */
 	@Override
-	public boolean refresh() {
+	public boolean refresh(Market market) {
 		boolean result = false;
 		try {
 			if (this.updateTask != null) {

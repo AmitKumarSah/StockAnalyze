@@ -25,6 +25,7 @@ import android.content.SharedPreferences;
 import android.os.Handler;
 import android.util.Log;
 import cz.tomas.StockAnalyze.Application;
+import cz.tomas.StockAnalyze.Data.GaeData.GaeGeneralAdapter;
 import cz.tomas.StockAnalyze.Data.GaeData.GaeIndecesDataAdapter;
 import cz.tomas.StockAnalyze.Data.GaeData.GaePseDataAdapter;
 import cz.tomas.StockAnalyze.Data.GaeData.GaeXetraAdapter;
@@ -94,10 +95,12 @@ public class DataManager implements IStockDataListener {
 		IStockDataProvider gaePse = new GaePseDataAdapter(context);
 		IStockDataProvider gaeIndices = new GaeIndecesDataAdapter(context);
 		IStockDataProvider gaeXetra = new GaeXetraAdapter(context);
+		IStockDataProvider gaeGeneral = new GaeGeneralAdapter(context);
 
 		DataProviderFactory.registerDataProvider(gaePse);
 		DataProviderFactory.registerDataProvider(gaeIndices);
 		DataProviderFactory.registerDataProvider(gaeXetra);
+		DataProviderFactory.registerDataProvider(gaeGeneral);
 		
 		this.updateDateChangedListeners = new ArrayList<IUpdateDateChangedListener>();
 		this.updateStockDataListeners = new ArrayList<IStockDataListener>();
@@ -110,6 +113,9 @@ public class DataManager implements IStockDataListener {
 		
 		gaeIndices.enable(true);
 		gaeIndices.addListener(this);
+
+		gaeGeneral.enable(true);
+		gaeGeneral.addListener(this);
 
 		// load markets, this is essential for whole application
 		Thread marketsThread = new Thread(new Runnable() {
@@ -239,7 +245,7 @@ public class DataManager implements IStockDataListener {
 			throw new NullPointerException("market can't be null to get stock list");
 		}
 		IStockDataProvider provider = DataProviderFactory.getDataProvider(market);
-		List<StockItem> stocks = provider.getAvailableStockList();
+		List<StockItem> stocks = provider.getAvailableStockList(market);
 		
 		Map<String, StockItem> items = null;
 		if (stocks != null && stocks.size() > 0) {
@@ -420,16 +426,16 @@ public class DataManager implements IStockDataListener {
 		this.sqlStore.acquireDb(sender.getId());
 		try {
 			if (dataMap == null || dataMap.size() == 0) {
-				Map<String, DayData> receivedData = new HashMap<String, DayData>();
-				for (StockItem item : sender.getAvailableStockList()) {
-					DayData data = sender.getLastData(item.getTicker());
-					if (data.getPrice() == 0) {
-						data = this.createDataWithPrice(item, data);
-					}
-					receivedData.put(item.getId(), data);
-				}
+//				Map<String, DayData> receivedData = new HashMap<String, DayData>();
+//				for (StockItem item : sender.getAvailableStockList()) {
+//					DayData data = sender.getLastData(item.getTicker());
+//					if (data.getPrice() == 0) {
+//						data = this.createDataWithPrice(item, data);
+//					}
+//					receivedData.put(item.getId(), data);
+//				}
 
-				this.sqlStore.insertDayDataSet(receivedData);
+//				this.sqlStore.insertDayDataSet(receivedData);
 			} else {
 				for (Entry<String, DayData> entry : dataMap.entrySet()) {
 					this.sqlStore.insertDayData(entry.getKey(), entry.getValue());

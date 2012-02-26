@@ -20,9 +20,6 @@
  */
 package cz.tomas.StockAnalyze.StockList;
 
-import java.text.NumberFormat;
-import java.util.Map;
-
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
@@ -31,13 +28,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
-import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
+import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.fragments.StockGridFragment;
 import cz.tomas.StockAnalyze.fragments.StockListFragment;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
+
+import java.text.NumberFormat;
+import java.util.Map;
 
 /**
  * Adapter for list of stocks - used in {@link StockListFragment} and {@link StockGridFragment}
@@ -145,10 +145,14 @@ public class StockListAdapter extends BaseAdapter {
 	 * @param stock stock to access data to write to view
 	 */
 	private void fillView(StockItemViewHolder holder, StockItem stock) {
-        if (holder.txtName != null) 
-        	holder.txtName.setText(stock.getName().toUpperCase());
-        if(holder.txtTicker != null)
-        	holder.txtTicker.setText(stock.getTicker());
+        if (holder.txtName != null) {
+        	holder.txtName.setText(stock.getName() != null ?
+			        stock.getName().toUpperCase() : "");
+        }
+        if(holder.txtTicker != null) {
+        	holder.txtTicker.setText(stock.getTicker() != null ?
+			        stock.getTicker() : "");
+        }
         if(holder.txtPrice != null && holder.txtChange != null) {
         	DayData data = null;
 			try {

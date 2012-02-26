@@ -221,7 +221,7 @@ public class UpdateScheduler implements IMarketListener{
 		}
 		IStockDataProvider provider = DataProviderFactory.getRealTimeDataProvider(market);
 
-		RefreshTask task = new RefreshTask();
+		RefreshTask task = new RefreshTask(market);
 		task.execute(provider);
 	}
 	
@@ -287,6 +287,12 @@ public class UpdateScheduler implements IMarketListener{
 	 */
 	class RefreshTask extends AsyncTask<IStockDataProvider, Integer, Boolean> {
 
+		private final Market market;
+
+		RefreshTask(Market market) {
+			this.market = market;
+		}
+
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
@@ -300,7 +306,7 @@ public class UpdateScheduler implements IMarketListener{
 					final IStockDataProvider provider = params[0];
 					if(provider != null) {
 						Log.d(Utils.LOG_TAG, provider.getDescriptiveName() + ": initiating provider refresh in UpdateScheduler");
-						return provider.refresh();
+						return provider.refresh(this.market);
 					}
 					else
 						throw new NullPointerException("IStockDataProvider is null");
