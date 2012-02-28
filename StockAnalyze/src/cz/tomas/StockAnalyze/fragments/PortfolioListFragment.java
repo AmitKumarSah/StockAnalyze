@@ -1,7 +1,5 @@
 package cz.tomas.StockAnalyze.fragments;
 
-import java.text.NumberFormat;
-
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -9,38 +7,29 @@ import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.util.Log;
-import android.view.ContextMenu;
+import android.view.*;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.view.LayoutInflater;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import com.flurry.android.FlurryAgent;
-
 import cz.tomas.StockAnalyze.Application;
-import cz.tomas.StockAnalyze.R;
-import cz.tomas.StockAnalyze.Data.Model.DayData;
-import cz.tomas.StockAnalyze.Data.Model.Market;
-import cz.tomas.StockAnalyze.Data.Model.PortfolioItem;
-import cz.tomas.StockAnalyze.Data.Model.PortfolioSum;
-import cz.tomas.StockAnalyze.Data.Model.StockItem;
+import cz.tomas.StockAnalyze.Data.Model.*;
 import cz.tomas.StockAnalyze.Portfolio.Portfolio;
 import cz.tomas.StockAnalyze.Portfolio.PortfolioListAdapter;
 import cz.tomas.StockAnalyze.Portfolio.PortfolioListData;
 import cz.tomas.StockAnalyze.Portfolio.PortfolioLoader;
+import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.activity.PortfolioDetailActivity;
 import cz.tomas.StockAnalyze.activity.PortfoliosActivity;
 import cz.tomas.StockAnalyze.utils.Consts;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
+
+import java.text.NumberFormat;
 
 /**
  * fragment holding list of portfolio items of one currency
@@ -81,33 +70,43 @@ public final class PortfolioListFragment extends ListFragment implements LoaderC
 		super.onActivityCreated(savedInstanceState);
 		
 		this.portfolio = (Portfolio) getActivity().getApplicationContext().getSystemService(Application.PORTFOLIO_SERVICE);
+		this.market = (Market) this.getArguments().get(StockListFragment.ARG_MARKET);
 		
 		this.getListView().setTextFilterEnabled(true);
 		this.registerForContextMenu(this.getListView());
 
 		this.setEmptyText(getText(R.string.loading));
-		this.getListView().addHeaderView(headerView, null, false);
-		this.getListView().addFooterView(footerView, null, false);
+		if (this.getListAdapter() == null) {
+			this.getListView().addHeaderView(headerView, null, false);
+			this.getListView().addFooterView(footerView, null, false);
+			this.adapter = new PortfolioListAdapter(this.getActivity());
+			this.setListAdapter(this.adapter);
+		}
+
 		this.getListView().setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
 			public void onItemClick(AdapterView<?> adapterView, View view, int position,
 					long id) {
-//				final PortfolioItem portfolioItem = (PortfolioItem) getListAdapter().getItem(position -1);
-//				goToPortfolioDetail(portfolioItem);
+				// this feature is not yet finished
+				if (Utils.DEBUG) {
+					final PortfolioItem portfolioItem = (PortfolioItem) getListAdapter().getItem(position - getListView().getHeaderViewsCount());
+					goToPortfolioDetail(portfolioItem);
+				}
 			}
 		});
-		
-		this.market = (Market) this.getArguments().get(StockListFragment.ARG_MARKET);
 
 		this.getListView().setTag(market.getCurrencyCode());
-		this.adapter = new PortfolioListAdapter(this.getActivity());
-		this.setListAdapter(this.adapter);
 		this.getLoaderManager().initLoader(0, null, this);
 	}
 
-	
-	/** 
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		setListAdapter(null);
+	}
+
+	/**
 	 * context menu for all stock items in list view
 	 * @see android.app.Activity#onCreateContextMenu(android.view.ContextMenu, android.view.View, android.view.ContextMenu.ContextMenuInfo)
 	 */
