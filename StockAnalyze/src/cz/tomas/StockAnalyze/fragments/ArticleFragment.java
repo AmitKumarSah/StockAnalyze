@@ -8,8 +8,6 @@ import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.FrameLayout.LayoutParams;
 import android.widget.TextView;
 import cz.tomas.StockAnalyze.News.ArticlePagerAdapter;
 import cz.tomas.StockAnalyze.R;
@@ -26,28 +24,26 @@ public final class ArticleFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.item_article_content, null);
+		View view = inflater.inflate(R.layout.item_article_text_content, null);
 		
-		Bundle arguments = getArguments();
-		if (arguments != null) {
-			final String title = arguments.getString(ArticlePagerAdapter.ARTICLE_TITLE);
-			final long date = arguments.getLong(ArticlePagerAdapter.ARTICLE_DATE);
+		Bundle args = getArguments();
+		if (args != null) {
+			final String title = args.getString(ArticlePagerAdapter.ARTICLE_TITLE);
+			final long date = args.getLong(ArticlePagerAdapter.ARTICLE_DATE);
 			final GregorianCalendar cal = new GregorianCalendar();
 
 			cal.setTimeInMillis(date);
 			String dateText = FormattingUtils.formatDate(cal);
 			dateText += " " + cal.getTimeZone().getDisplayName(true, TimeZone.SHORT);
-			final String content = arguments.getString(ArticlePagerAdapter.ARTICLE_CONTENT);
+			final String content = args.containsKey(ArticlePagerAdapter.ARTICLE_CONTENT) ?
+					args.getString(ArticlePagerAdapter.ARTICLE_CONTENT) :args.getString(ArticlePagerAdapter.ARTICLE_DESC) ;
 
-			final FrameLayout articleContainer = (FrameLayout) view.findViewById(R.id.newsArticleContentContainer);
 			final TextView txtDate = (TextView) view.findViewById(R.id.newsArticleDate);
 			final TextView txtTitle = (TextView) view.findViewById(R.id.newsArticleTitle);
 			
-			final TextView txtContent = new TextView(view.getContext());
-			txtContent.setLayoutParams(new FrameLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+			final TextView txtContent = (TextView) view.findViewById(R.id.newsArticleContent);
 			final int padding = (int) (getResources().getDisplayMetrics().density * 9);
 			txtContent.setPadding(padding, padding, padding, padding);
-			articleContainer.addView(txtContent);
 			
 			if (content != null) {
 				txtContent.setText(R.string.loading);
@@ -55,8 +51,7 @@ public final class ArticleFragment extends Fragment {
 
 					@Override
 					protected Spanned doInBackground(Void... params) {
-						Spanned spanned = Html.fromHtml(content);
-						return spanned;
+						return Html.fromHtml(content);
 					}
 
 					@Override

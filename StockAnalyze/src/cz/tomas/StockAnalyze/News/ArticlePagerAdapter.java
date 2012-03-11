@@ -15,14 +15,18 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * adapter creating {@link Fragment}s based on data from cursor, see {@link #setData(android.database.Cursor)},
+ * one article = one fragment
+ */
 public final class ArticlePagerAdapter extends FragmentPagerAdapter {
 
 	public static final String ARTICLE_TITLE = "article-title";
 	public static final String ARTICLE_DATE = "article-date";
 	public static final String ARTICLE_CONTENT = "article-content";
+	public static final String ARTICLE_DESC = "article-description";
 	public static final String ARTICLE_URL = "article-url";
-	
-	//private Context context;
+
 	private List<Article> articles;
 	
 	private final boolean useWebView;
@@ -30,8 +34,9 @@ public final class ArticlePagerAdapter extends FragmentPagerAdapter {
 	public ArticlePagerAdapter(Context context, FragmentManager fm) {
 		super(fm);
 		this.articles = new ArrayList<Article>();
-		useWebView = context.getSharedPreferences(Utils.PREF_NAME, 0)
-				.getBoolean(Utils.PREF_FULL_ARTICLE, Utils.PREF_DEF_FULL_ARTICLE);
+//		useWebView = context.getSharedPreferences(Utils.PREF_NAME, 0)
+//				.getBoolean(Utils.PREF_FULL_ARTICLE, Utils.PREF_DEF_FULL_ARTICLE);
+		useWebView = true;
 	}
 	
 	public void setData(Cursor c) {
@@ -73,8 +78,8 @@ public final class ArticlePagerAdapter extends FragmentPagerAdapter {
 
 			if (article.getContent() != null) {
 				bundle.putString(ARTICLE_CONTENT, article.getContent());
-			} else if (! useWebView) {
-				bundle.putString(ARTICLE_CONTENT, article.getDescription());
+			} else {
+				bundle.putString(ARTICLE_DESC, article.getDescription());
 			}
 			bundle.putString(ARTICLE_URL, article.getMobilizedUrl());
 			fragment.setArguments(bundle);

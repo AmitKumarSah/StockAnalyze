@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
@@ -49,7 +50,6 @@ import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 
-import java.io.IOException;
 import java.lang.ref.SoftReference;
 import java.util.*;
 import java.util.Map.Entry;
@@ -241,17 +241,18 @@ public abstract class ChartActivity extends BaseActivity {
 	public boolean onContextItemSelected(MenuItem item) {
 		int timePeriod = this.getDayCountById(item.getItemId());
 		if (timePeriod != 0) {
-			return updateTimePeriod(timePeriod, false);
+			updateTimePeriod(timePeriod, false);
+			return true;
 		} else
 			return super.onContextItemSelected(item);
 	}
 
 	/**
 	 * update time period and redraw the chart
-	 * @param timePeriod
-	 * @return
+	 * @param timePeriod see {@link DataManager} constants
+	 * @param updateUi true to manually select proper radio button
 	 */
-	protected boolean updateTimePeriod(int timePeriod, boolean updateUi) {
+	protected void updateTimePeriod(int timePeriod, boolean updateUi) {
 		this.timePeriod = timePeriod;
 		final Editor ed = this.prefs.edit();
 		ed.putInt(Utils.PREF_CHART_TIME_PERIOD, timePeriod);
@@ -270,17 +271,14 @@ public abstract class ChartActivity extends BaseActivity {
 		pars.put(Consts.FLURRY_KEY_CHART_TIME_PERIOD, String.valueOf(timePeriod));
 		pars.put(Consts.FLURRY_KEY_CHART_TIME_SOURCE, getClass().getName());
 		FlurryAgent.onEvent(Consts.FLURRY_EVENT_CHART_TIME_PERIOD, pars);
-		return true;
 	}
 
 	/**
 	 * read data from input intent
-	 * @param intent
-	 * @throws NullPointerException
-	 * @throws IOException
+	 * @param intent intent to read data from
+	 * @return true if data was read
 	 */
-	protected boolean readData(Intent intent) throws NullPointerException,
-			IOException {
+	protected boolean readData(Intent intent) {
 		if (intent.hasExtra(NavUtils.STOCK_ITEM_OBJECT)) {
 			this.stockItem = intent.getExtras().getParcelable(NavUtils.STOCK_ITEM_OBJECT);
 			this.dayData = intent.getExtras().getParcelable(NavUtils.DAY_DATA_OBJECT);			
@@ -292,7 +290,11 @@ public abstract class ChartActivity extends BaseActivity {
 
 	protected void updateChart() {
 		this.chartTask = new DrawChartTask();
-		chartTask.execute(this.stockItem);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+			chartTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, this.stockItem);
+		} else {
+			chartTask.execute(this.stockItem);
+		}
 	}
 	
 	protected boolean isChartUpdating() {
@@ -306,7 +308,7 @@ public abstract class ChartActivity extends BaseActivity {
 	 * by resource id get day count, this method is used to translate selected
 	 * menu item/radio button to day count
 	 * @param id of view in radio group of chart periods
-	 * @return
+	 * @return number of days
 	 */
 	protected int getDayCountById(int id) {
 		//int dayCount = 0;
@@ -444,6 +446,7 @@ public abstract class ChartActivity extends BaseActivity {
 					dataSet = dataManager.getDayDataSet(stockItem, timePeriod, true);
 
 					if (dataSet != null) {
+						Log.d(Utils.LOG_TAG, "downloaded chart dataset " + dataSet.size());
 						chartCache = new ChartDataCache(dataSet);
 						Map<String, SoftReference<ChartDataCache>> cacheMap = getCacheMap(timePeriod);
 						if (cacheMap.size() >= MAX_CACHE_SIZE) {

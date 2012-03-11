@@ -1,28 +1,32 @@
 package cz.tomas.StockAnalyze.fragments;
 
-import java.util.GregorianCalendar;
-import java.util.TimeZone;
-
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.FrameLayout;
-import android.widget.FrameLayout.LayoutParams;
 import android.widget.TextView;
-import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.News.Article;
 import cz.tomas.StockAnalyze.News.ArticlePagerAdapter;
+import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
+import cz.tomas.StockAnalyze.utils.Utils;
+
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 public final class WebArticleFragment extends Fragment {
 
+	private WebView webContent;
+
 	/* (non-Javadoc)
-	 * @see android.support.v4.app.Fragment#onCreateView(android.view.LayoutInflater, android.view.ViewGroup, android.os.Bundle)
-	 */
+			 * @see android.support.v4.app.Fragment#onCreateView(android.view.LayoutInflater, android.view.ViewGroup, android.os.Bundle)
+			 */
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -34,45 +38,69 @@ public final class WebArticleFragment extends Fragment {
 			final long date = arguments.getLong(ArticlePagerAdapter.ARTICLE_DATE);
 			final GregorianCalendar cal = new GregorianCalendar();
 			cal.setTimeInMillis(date);
-			String dateText = FormattingUtils.formatDate(cal);
-			dateText += " " + cal.getTimeZone().getDisplayName(true, TimeZone.SHORT);
-			final String content = arguments.getString(ArticlePagerAdapter.ARTICLE_CONTENT);
-			
-			final FrameLayout articleContainer = (FrameLayout) view.findViewById(R.id.newsArticleContentContainer);
+			String dateText = String.format("%s %s", FormattingUtils.formatDate(cal), cal.getTimeZone().getDisplayName(true, TimeZone.SHORT));
+
 			final TextView txtDate = (TextView) view.findViewById(R.id.newsArticleDate);
 			final TextView txtTitle = (TextView) view.findViewById(R.id.newsArticleTitle);
-			
-			final WebView webContent = new WebView(view.getContext());
+			final View progress = view.findViewById(R.id.newsProgress);
+
+			webContent = (WebView) view.findViewById(R.id.newsArticleContent);
 			webContent.getSettings().setLoadsImagesAutomatically(true);
 			webContent.setScrollContainer(false);
 			webContent.setFocusableInTouchMode(false);
-			webContent.setLayoutParams(new FrameLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
-			articleContainer.addView(webContent);
-			
-			if (content != null) {
-				webContent.loadDataWithBaseURL(Article.BASE_URL,content, "text/html", "utf-8", null);
-			} else {
-				final String articleUrl = arguments.getString(ArticlePagerAdapter.ARTICLE_URL);
-				webContent.loadUrl(articleUrl);
-				webContent.setWebViewClient(new WebViewClient() {
-			        @Override
-			        public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-			        }
+			webContent.setWebViewClient(new WebViewClient() {
+				@Override
+				public void onPageFinished(WebView view, String url) {
+					super.onPageFinished(view, url);
+					if (Utils.DEBUG) Log.d(Utils.LOG_TAG, "loaded url " + url);
+					progress.setVisibility(View.GONE);
+				}
 
-			        @Override
-			        public boolean shouldOverrideUrlLoading(WebView view, String url) {
-			            if (url.equals(articleUrl)) {
-							view.loadUrl(url);
-							return true;
-						}
-			            return false;
-			        }
-			    });
-			}
+				@Override
+				public void onPageStarted(WebView view, String url, Bitmap favicon) {
+					super.onPageStarted(view, url, favicon);
+					progress.setVisibility(View.VISIBLE);
+				}
+
+				@Override
+				public boolean shouldOverrideUrlLoading(WebView view, String url) {
+//			            if (url.equals(articleUrl)) {
+//							view.loadUrl(url);
+//							return true;
+//						}
+					return false;
+				}
+			});
+			webContent.setOnKeyListener(new View.OnKeyListener() {
+				@Override
+				public boolean onKey(View view, int i, KeyEvent keyEvent) {
+					if (i == KeyEvent.KEYCODE_BACK && webContent.canGoBack()) {
+						webContent.goBack();
+						return true;
+					}
+					return false;
+				}
+			});
 			txtDate.setText(dateText);
 			txtTitle.setText(title);
 			txtTitle.requestFocus();
 		}
 		return view;
-	}	
+	}
+
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+
+		final Bundle arguments = getArguments();
+		final String content = arguments.getString(ArticlePagerAdapter.ARTICLE_CONTENT);
+		if (content != null) {
+			webContent.loadDataWithBaseURL(Article.BASE_URL, content, "text/html", "utf-8", null);
+		} else {
+			final String articleUrl = arguments.getString(ArticlePagerAdapter.ARTICLE_URL);
+//				final String perex = arguments.getString(ArticlePagerAdapter.ARTICLE_DESC);
+//				webContent.loadDataWithBaseURL(Article.BASE_URL, perex, "text/html", "utf-8", null);
+			webContent.loadUrl(articleUrl);
+		}
+	}
 }

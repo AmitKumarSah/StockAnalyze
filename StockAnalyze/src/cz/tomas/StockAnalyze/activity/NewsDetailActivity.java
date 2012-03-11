@@ -54,7 +54,8 @@ public final class NewsDetailActivity extends BaseFragmentActivity
 		
 		final Bundle extras = getIntent().getExtras();
 		final int initialPosition = extras != null ? extras.getInt(NewsActivity.EXTRA_NEWS_POSITION) : 0;
-		final boolean restorePosition = savedInstanceState != null && savedInstanceState.containsKey(STATE_CURRENT_POSITION);
+		final boolean restorePosition = savedInstanceState != null &&
+				savedInstanceState.containsKey(STATE_CURRENT_POSITION);
 		this.initialPosition = (restorePosition ? savedInstanceState.getInt(STATE_CURRENT_POSITION) : initialPosition);
 
 		this.circlesView = (CirclesView) this.findViewById(R.id.newsCirclesView);

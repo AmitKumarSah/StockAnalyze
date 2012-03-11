@@ -5,11 +5,18 @@
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent">
 		
-	<cz.tomas.StockAnalyze.ui.widgets.CirclesView android:id="@+id/newsCirclesView" 
-		android:layout_height="wrap_content" 
+	<HorizontalScrollView
+		android:layout_height="wrap_content"
 		android:layout_width="fill_parent"
-		android:layout_marginTop="3dp"
-		android:gravity="center" />
+		android:scrollbars="none"
+		android:padding="8dp">
+		<cz.tomas.StockAnalyze.ui.widgets.CirclesView android:id="@+id/newsCirclesView"
+			android:layout_height="wrap_content"
+			android:layout_width="fill_parent"
+			android:layout_marginLeft="6dp"
+			android:layout_marginRight="6dp"
+			android:gravity="center" />
+	</HorizontalScrollView>
 	<ProgressBar
 	    android:layout_width="wrap_content" 
 	    android:layout_height="wrap_content" 
