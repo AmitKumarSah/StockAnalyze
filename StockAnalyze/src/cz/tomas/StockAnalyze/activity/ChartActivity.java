@@ -20,30 +20,7 @@
  */
 package cz.tomas.StockAnalyze.activity;
 
-import java.io.IOException;
-import java.lang.ref.SoftReference;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import com.flurry.android.FlurryAgent;
-
-import cz.tomas.StockAnalyze.Application;
-import cz.tomas.StockAnalyze.R;
-import cz.tomas.StockAnalyze.Data.DataManager;
-import cz.tomas.StockAnalyze.Data.Model.DayData;
-import cz.tomas.StockAnalyze.Data.Model.StockItem;
-import cz.tomas.StockAnalyze.activity.base.BaseActivity;
-import cz.tomas.StockAnalyze.charts.interfaces.IChartTextFormatter;
-import cz.tomas.StockAnalyze.charts.view.CompositeChartView;
-import cz.tomas.StockAnalyze.utils.Consts;
-import cz.tomas.StockAnalyze.utils.FormattingUtils;
-import cz.tomas.StockAnalyze.utils.NavUtils;
-import cz.tomas.StockAnalyze.utils.Utils;
-import android.content.Intent;	
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.AsyncTask;
@@ -51,17 +28,31 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.Checkable;
-import android.widget.RadioGroup;
+import android.widget.*;
 import android.widget.RadioGroup.OnCheckedChangeListener;
-import android.widget.TextView;
-import android.widget.Toast;
+import com.flurry.android.FlurryAgent;
+import cz.tomas.StockAnalyze.Application;
+import cz.tomas.StockAnalyze.Data.DataManager;
+import cz.tomas.StockAnalyze.Data.Model.DayData;
+import cz.tomas.StockAnalyze.Data.Model.StockItem;
+import cz.tomas.StockAnalyze.R;
+import cz.tomas.StockAnalyze.activity.base.BaseActivity;
+import cz.tomas.StockAnalyze.charts.interfaces.IChartTextFormatter;
+import cz.tomas.StockAnalyze.charts.view.CompositeChartView;
+import cz.tomas.StockAnalyze.utils.Consts;
+import cz.tomas.StockAnalyze.utils.FormattingUtils;
+import cz.tomas.StockAnalyze.utils.NavUtils;
+import cz.tomas.StockAnalyze.utils.Utils;
+
+import java.io.IOException;
+import java.lang.ref.SoftReference;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Base class for activities containing chart view,
@@ -93,7 +84,6 @@ public abstract class ChartActivity extends BaseActivity {
 	protected int timePeriod = DataManager.TIME_PERIOD_MONTH;
 	
 	protected CompositeChartView chartView;
-	private RadioGroup depthGroup;
 	private TextView txtDescription;
 	private Button btnRetry;
 	
@@ -143,9 +133,9 @@ public abstract class ChartActivity extends BaseActivity {
 	protected void onResume() {
 		super.onResume();
 
-		this.depthGroup = (RadioGroup) this.findViewById(R.id.chartDepthGroup);
+		RadioGroup depthGroup = (RadioGroup) this.findViewById(R.id.chartDepthGroup);
 		if (depthGroup != null) {
-			this.depthGroup.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			depthGroup.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
 				@Override
 				public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -205,10 +195,12 @@ public abstract class ChartActivity extends BaseActivity {
 	 */
 	public static void clearCache() {
 		Log.i(Utils.LOG_TAG, "freeing chart activity cache...");
-		if (chartCacheDataSet != null)
+		if (chartCacheDataSet != null) {
 			chartCacheDataSet.clear();
-		if (chartIntradayCacheDataSet != null) 
+		}
+		if (chartIntradayCacheDataSet != null) {
 			chartIntradayCacheDataSet.clear();
+		}
 	}
 
 	/* (non-Javadoc)
@@ -304,15 +296,16 @@ public abstract class ChartActivity extends BaseActivity {
 	}
 	
 	protected boolean isChartUpdating() {
-        return this.chartTask != null && this.chartTask.getStatus() == AsyncTask.Status.RUNNING ||
-                this.chartTask.getStatus() == AsyncTask.Status.PENDING;
+        return this.chartTask != null && (
+		        this.chartTask.getStatus() == AsyncTask.Status.RUNNING ||
+                this.chartTask.getStatus() == AsyncTask.Status.PENDING);
 	}
 
 
 	/**
 	 * by resource id get day count, this method is used to translate selected
 	 * menu item/radio button to day count
-	 * @param item
+	 * @param id of view in radio group of chart periods
 	 * @return
 	 */
 	protected int getDayCountById(int id) {
@@ -487,21 +480,18 @@ public abstract class ChartActivity extends BaseActivity {
 						time = entry.getKey();
 					} else {
 						Log.w(Utils.LOG_TAG, "day data with index " + index + " are not available");
-//						if (i > 0 && dataSet[i-1] != 0f) {
-//							// try to get previous one
-//							price = dataSet[i-1];
-//							time = timeSet[i];
-//						}
 					}
 					if (price >= 0 && time >= 0) {
 						dataPoints[index] = price;
 						xAxisPoints[index] = time;
 						//					chartData.put(time, price);
 
-						if (price > max)
+						if (price > max) {
 							max = price;
-						if (price < min)
+						}
+						if (price < min) {
 							min = price;
+						}
 					}
 					index++;
 				}

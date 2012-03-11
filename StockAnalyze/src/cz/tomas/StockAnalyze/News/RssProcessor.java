@@ -20,19 +20,17 @@
  */
 package cz.tomas.StockAnalyze.News;
 
+import cz.tomas.StockAnalyze.utils.DownloadService;
+import cz.tomas.StockAnalyze.utils.FormattingUtils;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserFactory;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserFactory;
-
-import android.content.Context;
-import cz.tomas.StockAnalyze.utils.DownloadService;
-import cz.tomas.StockAnalyze.utils.FormattingUtils;
 
 /**
  * rss xml pull parser 
@@ -46,16 +44,9 @@ public class RssProcessor {
 	private static final String TITLE = "title";
 	private static final String CHANNEL = "channel";
 	
-	RssProcessor(Context context) {
-		super();
-	}
-	public RssProcessor() {
-		super();
-	}
-	
 	/**
 	 * open connection to feed, download and parse an rss xml file and create Articles
-	 * @throws Exception 
+	 * @throws Exception from connection or parser
 	 */
 	 public Collection<Article> parse(Feed feed) throws Exception {
          	List<Article> messages = null;
@@ -67,14 +58,13 @@ public class RssProcessor {
 	        
 	        try {
 	        	stream = DownloadService.GetInstance().openHttpConnection(feed.getUrl().toString(), false);
-	        	
 	        	parser.setInput(stream, null);			// auto-detect the encoding from the stream
 	            int eventType = parser.getEventType();
 	            boolean done = false;
 	    
 	            Article currentMessage = null;
 	            while (eventType != XmlPullParser.END_DOCUMENT && !done){
-	                String name = null;
+	                String name;
 	                switch (eventType){
 	                    case XmlPullParser.START_DOCUMENT:
 	                    	messages = new ArrayList<Article>();

@@ -28,9 +28,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.util.ByteArrayBuffer;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 import java.util.zip.GZIPInputStream;
 
@@ -68,10 +66,8 @@ public class DownloadService {
 //		schReg.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
 //		schReg.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
 
-		httpClient = AndroidHttpClient.newInstance("android,gzip");
+		httpClient = AndroidHttpClient.newInstance("stockanalyze,gzip");
 	}
-
-
 
 	public byte[] DownloadFromUrl(String downloadUrl, boolean compress) throws IOException {
 		try {
@@ -145,5 +141,25 @@ public class DownloadService {
 
 		in = this.openHttpConnection(urlString);
 		return in;
+	}
+
+	public String readStream(InputStream is) throws IOException {
+		if (is != null) {
+			Writer writer = new StringWriter();
+
+			char[] buffer = new char[1024];
+			try {
+				Reader reader = new BufferedReader(new InputStreamReader(is));
+				int n;
+				while ((n = reader.read(buffer)) != -1) {
+					writer.write(buffer, 0, n);
+				}
+			} finally {
+				is.close();
+			}
+			return writer.toString();
+		} else {
+			return "";
+		}
 	}
 }

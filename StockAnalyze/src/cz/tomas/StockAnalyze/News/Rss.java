@@ -54,7 +54,7 @@ public class Rss {
 	 * constructor, Context is required to connect to database
 	 */
 	public Rss(Context context) {
-		this.handler = new RssProcessor(context);
+		this.handler = new RssProcessor();
 		this.sqlHelper = NewsSqlHelper.getInstance(context);
 		this.context = context;
 		this.builder = new StringBuilder();

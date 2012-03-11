@@ -172,7 +172,7 @@ public class NewsActivity extends BaseFragmentActivity implements LoaderCallback
 
 		@Override
 		protected void onPostExecute(Boolean result) {
-			if (result == null || result == false) {
+			if (result == null || ! result) {
 				// error
 				getActionBarHelper().setRefreshActionItemState(false);
 				listView.onRefreshComplete();

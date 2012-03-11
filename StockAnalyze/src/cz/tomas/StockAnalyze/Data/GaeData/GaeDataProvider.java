@@ -52,8 +52,8 @@ public final class GaeDataProvider {
 	/**
 	 * generic method to get {@link DayData} for list of equities
 	 * 
-	 * @param url
-	 * @return
+	 * @param url url to connect to
+	 * @return daydata mapped to stock ids
 	 * @throws IOException
 	 * @throws JsonSyntaxException
 	 */
@@ -64,14 +64,11 @@ public final class GaeDataProvider {
 		InputStream stream = null;
 		try {
 			stream = DownloadService.GetInstance().openHttpConnection(url, true);
-			String content = null;
-			//this.builder.setLength(0);
 			try {
-				content = readStream(stream);
 				Type listType = new TypeToken<Map<String, DayData>>() {}.getType();
-				data = gson.fromJson(content, listType);
+				data = gson.fromJson(new InputStreamReader(stream, "UTF-8"), listType);
 			} catch (IOException ex) {
-				Log.e(Utils.LOG_TAG, "failed to parse " + content, ex);
+				Log.e(Utils.LOG_TAG, "failed to parse data from " + url, ex);
 				throw ex;
 			}
 		} finally {
@@ -95,20 +92,17 @@ public final class GaeDataProvider {
 		String baseUrl = this.urls.getUrl(UrlProvider.TYPE_DDATA, UrlProvider.ARG_STOCK);
 		String url = String.format(baseUrl, ticker);
 		
-		Log.d(Utils.LOG_TAG, "connecting to " + url);
+		if (Utils.DEBUG) Log.d(Utils.LOG_TAG, "connecting to " + url);
 		DayData data;
 		
 		InputStream stream = null;
 		try {
 			stream = DownloadService.GetInstance().openHttpConnection(url, true);
-			String content = null;
-			//this.builder.setLength(0);
 			try {
-				content = readStream(stream);
 				Type listType = new TypeToken<DayData>() {}.getType();
-				data = gson.fromJson(content, listType);
+				data = gson.fromJson(new InputStreamReader(stream, "UTF-8"), listType);
 			} catch (IOException ex) {
-				Log.e(Utils.LOG_TAG, "failed to parse " + content, ex);
+				Log.e(Utils.LOG_TAG, "failed to parse data from " + url, ex);
 				throw ex;
 			}
 		} finally {
@@ -168,20 +162,17 @@ public final class GaeDataProvider {
 	 */
 	protected List<StockItem> getList(String url) throws IOException,
 			JsonSyntaxException {
-		Log.d(Utils.LOG_TAG, "connecting to " + url);
+		if (Utils.DEBUG) Log.d(Utils.LOG_TAG, "connecting to " + url);
 		List<StockItem> data;
 		
 		InputStream stream = null;
 		try {
 			stream = DownloadService.GetInstance().openHttpConnection(url, true);
-			String content = null;
-			//this.builder.setLength(0);
 			try {
-				content = readStream(stream);
 				Type listType = new TypeToken<List<StockItem>>() {}.getType();
-				data = gson.fromJson(content, listType);
+				data = gson.fromJson(new InputStreamReader(stream, "UTF-8"), listType);
 			} catch (IOException ex) {
-				Log.e(Utils.LOG_TAG, "failed to parse " + content, ex);
+				Log.e(Utils.LOG_TAG, "failed to parse data from " + url, ex);
 				throw ex;
 			}
 		} finally {
@@ -205,7 +196,7 @@ public final class GaeDataProvider {
 
 	Map<Long, Float> getIntraDayData(String ticker) throws IOException {
 		if (TextUtils.isEmpty(ticker)) {
-			throw new NullPointerException("stock can't be null!");
+			throw new NullPointerException("stock ticker can't be null!");
 		}
 		String baseUrl = this.urls.getUrl(UrlProvider.TYPE_IDATA, UrlProvider.ARG_STOCK);
 		String urlString = String.format(baseUrl, URLEncoder.encode(ticker));
@@ -220,21 +211,16 @@ public final class GaeDataProvider {
 	 */
 	private Map<Long, Float> getTextData(String url) throws IOException,
 			JsonSyntaxException {
-		Log.d(Utils.LOG_TAG, "connecting to " + url);
+		if (Utils.DEBUG) Log.d(Utils.LOG_TAG, "connecting to " + url);
 		Map<Long, Float> data = new LinkedHashMap<Long, Float>();
 		InputStream stream = null;
 		try {
 			stream = DownloadService.GetInstance().openHttpConnection(url, true);
-			String content = null;
-			//this.builder.setLength(0);
 			try {
-				content = readStream(stream);
-				//content = content.substring(content.indexOf("\n"));
-				//reader = new InputStreamReader(stream, "UTF-8");
 				Type listType = new TypeToken<Map<Long, Float>>() {}.getType();
-				data = gson.fromJson(content, listType);
+				data = gson.fromJson(new InputStreamReader(stream, "UTF-8"), listType);
 			} catch (IOException ex) {
-				Log.e(Utils.LOG_TAG, "failed to parse " + content, ex);
+				Log.e(Utils.LOG_TAG, "failed to parse from " + url, ex);
 				throw ex;
 			}
 		} finally {
@@ -243,26 +229,6 @@ public final class GaeDataProvider {
 			}
 		}
 		return data;
-	}
-	
-	private static String readStream(InputStream is) throws IOException {
-        if (is != null) {
-	        Writer writer = new StringWriter();
-	
-	        char[] buffer = new char[1024];
-	        try {
-	            Reader reader = new BufferedReader(new InputStreamReader(is));
-	            int n;
-	            while ((n = reader.read(buffer)) != -1) {
-	                writer.write(buffer, 0, n);
-	            }
-	        } finally {
-	            is.close();
-	        }
-	        return writer.toString();
-	    } else {        
-	        return "";
-	    }
 	}
 
 	public boolean refresh() {
