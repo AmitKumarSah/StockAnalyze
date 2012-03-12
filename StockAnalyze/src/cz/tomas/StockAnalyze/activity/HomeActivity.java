@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -55,6 +56,7 @@ public class HomeActivity extends ChartActivity implements OnClickListener {
 		super.onCreate(savedInstanceState);
 
 		Crittercism.init(getApplicationContext(), "4f017b27b0931504d400017c");
+		if (Utils.DEBUG) StrictMode.enableDefaults();
 		// this will set default values for first use
 		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 		this.setContentView(R.layout.home_layout);

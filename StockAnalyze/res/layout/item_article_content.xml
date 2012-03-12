@@ -9,7 +9,7 @@
     <RelativeLayout
         android:id="@+id/newsArticleContainer"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="fill_parent">
         <TextView android:id="@+id/newsArticleTitle"
         	style="@style/titleText"
         	android:focusable="true"
@@ -33,7 +33,6 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
 			android:layout_below="@+id/newsArticleDate"
-			android:layout_alignParentBottom="true"
             android:paddingBottom="7dp"/>
 		<ProgressBar android:id="@+id/newsProgress"
 			android:layout_width="wrap_content"
