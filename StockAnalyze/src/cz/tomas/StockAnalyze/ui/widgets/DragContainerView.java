@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.os.Handler;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -30,6 +31,9 @@ public class DragContainerView extends FrameLayout {
 	private boolean isDragging;
 	private int offsetX;
 	private int offsetY;
+
+	private int currentBottomBarHeight;
+	private final Handler animHandler;
 	
 	private Paint containerPaint;
 	private Paint bmpPaint;
@@ -45,6 +49,19 @@ public class DragContainerView extends FrameLayout {
 
 	private IDragListener listener;
 	private Object data;
+
+	private Runnable updateBottomBarHeightRunnable = new Runnable() {
+		@Override
+		public void run() {
+			currentBottomBarHeight += BOTTOM_HEIGHT / 4;
+			if (currentBottomBarHeight > BOTTOM_HEIGHT) {
+				currentBottomBarHeight = BOTTOM_HEIGHT;
+			} else {
+				animHandler.postDelayed(this, 50);
+			}
+			invalidate();
+		}
+	};
 
 	@SuppressWarnings(value = "unused")
 	public DragContainerView(Context context, AttributeSet attrs) {
@@ -69,6 +86,8 @@ public class DragContainerView extends FrameLayout {
 		
 		this.bottomText = context.getString(R.string.homeMyPortfolio);
 		this.textHalfWidth = this.textPaint.measureText(bottomText) / 2;
+
+		this.animHandler = new Handler();
 	}
 
 	public void setListener(IDragListener listener) {
@@ -93,6 +112,7 @@ public class DragContainerView extends FrameLayout {
 		bmp = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
 		Canvas canvas = new Canvas(bmp);
 		view.draw(canvas);
+		this.animHandler.post(this.updateBottomBarHeightRunnable);
 
 		if (Utils.DEBUG) Log.d(Utils.LOG_TAG, String.format("start drag from %d, %d; Offset: %d,%d", left, top, offsetX, offsetY));
 	}
@@ -100,7 +120,8 @@ public class DragContainerView extends FrameLayout {
 	private void endDragging() {
 		this.setVisibility(View.GONE);
 		this.isDragging = false;
-		Log.d(Utils.LOG_TAG, "end drag");
+		this.currentBottomBarHeight = 0;
+		if (Utils.DEBUG) Log.d(Utils.LOG_TAG, "end drag");
 	}
 	
 	public boolean isDragging() {
@@ -135,9 +156,9 @@ public class DragContainerView extends FrameLayout {
 			//canvas.drawRect(this.dragX, this.dragY, this.dragX + OBJECT_HEIGHT, this.dragY + OBJECT_HEIGHT, this.containerPaint);
 			canvas.drawBitmap(this.bmp, this.dragX - this.bmp.getWidth() / 2, this.dragY - this.bmp.getHeight(), this.bmpPaint);
 
-			canvas.drawRect(0, getBottom() - BOTTOM_HEIGHT, getWidth(), getHeight(), containerPaint);
+			canvas.drawRect(0, getBottom() - currentBottomBarHeight, getWidth(), getHeight(), containerPaint);
 			canvas.drawText(this.bottomText, getWidth() / 2 - this.textHalfWidth,
-					this.getHeight() - BOTTOM_HEIGHT / 2 + this.textPaint.getTextSize() / 2, this.textPaint);
+					this.getHeight() - currentBottomBarHeight / 2 + this.textPaint.getTextSize() / 2, this.textPaint);
 		}
 
 		super.onDraw(canvas);

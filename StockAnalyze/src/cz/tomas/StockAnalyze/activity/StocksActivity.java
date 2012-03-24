@@ -4,7 +4,6 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
-import android.util.Log;
 import android.view.*;
 import com.viewpagerindicator.TitlePageIndicator;
 import cz.tomas.StockAnalyze.Data.Model.Market;
@@ -14,7 +13,6 @@ import cz.tomas.StockAnalyze.StockList.StocksPagerAdapter;
 import cz.tomas.StockAnalyze.fragments.ConfirmDialogFragment;
 import cz.tomas.StockAnalyze.ui.widgets.DragContainerView;
 import cz.tomas.StockAnalyze.utils.NavUtils;
-import cz.tomas.StockAnalyze.utils.Utils;
 
 import java.util.Collection;
 
@@ -122,12 +120,7 @@ public final class StocksActivity extends AbstractStocksActivity implements OnPa
 	@Override
 	public boolean dispatchTouchEvent(MotionEvent event) {
 		if (dragContainer.isDragging()) {
-			// modify event for the view
-			Log.d(Utils.LOG_TAG, "activity touch event " + event);
 			return dragContainer.dispatchTouchEvent(event);
-			//return false;
-			//return dragContainer.onTouchEvent(event);
-			//return super.dispatchTouchEvent(event);
 		} else {
 			return super.dispatchTouchEvent(event);
 		}
@@ -139,7 +132,7 @@ public final class StocksActivity extends AbstractStocksActivity implements OnPa
 		final int offsetX = this.pager.getLeft() + root.getLeft();
 		final int offsetY = this.pager.getTop() + root.getTop();
 
-		dragContainer.startDragging(view, view.getLeft(), view.getTop(), offsetX, offsetY, data);
+		dragContainer.startDragging(view, view.getLeft() + view.getWidth() / 2, view.getTop() + view.getHeight() /2, offsetX, offsetY, data);
 		dragContainer.setListener(listener);
 	}
 }
