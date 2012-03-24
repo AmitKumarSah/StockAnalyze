@@ -17,6 +17,10 @@
       along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <resources>
+	<string name="app_name">StockGrid</string>
+	<string name="appAuthor">Tomáš Vondráček\ntomas.vondracek@gmail.com</string>
+	<string name="appWww">http://tomas-vondracek.net</string>
+
     <string name="portfolioContextMenuSubtract"/>
     <string name="portfolioContextMenuAddMore">Přidat další</string>
     <string name="portfolioContextMenuRemove">Odebrat</string>
@@ -28,9 +32,6 @@
     <string name="refresh">Aktualizovat</string>
     <string name="settings">Nastavení</string>
 	<string name="ok">OK</string>
-    <string name="app_name">StockAnalyze</string>
-    <string name="appAuthor">Tomáš Vondráček\ntomas.vondracek@gmail.com</string>
-    <string name="appWww">http://tomas-vondracek.net</string>
     <string name="SearchTextView">Napište ticker nebo jméno</string>
 	<string name="update_succes">Data byla úspěšně aktualizována!</string>
 	<string name="update_fail">nastala chyba při aktualizaci dat. Zkontrolujete své připojení.</string>

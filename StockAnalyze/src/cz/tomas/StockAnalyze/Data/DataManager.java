@@ -229,6 +229,7 @@ public class DataManager implements IStockDataListener {
 		long diff = System.currentTimeMillis() - lastUpdate;
 		long dayDiff = diff / DAY_IN_MILLISECONDS;
 		boolean isMarketListDirty = dayDiff > MARKET_LIST_EXPIRATION_DAYS;
+		if (Utils.DEBUG) Log.d(Utils.LOG_TAG, "market list age[h]: " + diff / 1000 / 60 / 60);
 
 		return isMarketListDirty;
 	}

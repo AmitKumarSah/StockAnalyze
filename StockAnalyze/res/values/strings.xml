@@ -17,6 +17,10 @@
       along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <resources>
+	<string name="app_name">StockGrid</string>
+	<string name="appAuthor">Tomáš Vondráček\ntomas.vondracek@gmail.com</string>
+	<string name="appWww">http://tomas-vondracek.net</string>
+
     <string name="portfolioContextMenuSubtract"/>
     <string name="portfolioContextMenuAddMore">Add More</string>
     <string name="portfolioContextMenuRemove">Remove</string>
@@ -28,9 +32,6 @@
     <string name="refresh">Refresh</string>
     <string name="settings">Settings</string>
 	<string name="ok">OK</string>
-    <string name="app_name">StockAnalyze</string>
-    <string name="appAuthor">Tomáš Vondráček\ntomas.vondracek@gmail.com</string>
-    <string name="appWww">http://tomas-vondracek.net</string>
     <string name="SearchTextView">Type a ticker or name</string>
 	<string name="update_succes">The data has been successfully updated!</string>
 	<string name="update_fail">
