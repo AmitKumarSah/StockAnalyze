@@ -51,6 +51,7 @@ public class Utils {
 	public static final String PREF_HOME_CHART_MARKET_ID = "prefHomeChartMarketId";
 	public static final String PREF_URLS_TIME = "prefGaeUrlUpdate";
 	public static final String PREF_FULL_ARTICLE = "prefNewsFullArticle";
+	public static final String PREF_STOCKS_POSITION = "prefStocksPosition";
 
 	public static final boolean PREF_DEF_PERMANENT_NOTIF = false;
 	public static final boolean PREF_DEF_UPDATE_NOTIF = true;

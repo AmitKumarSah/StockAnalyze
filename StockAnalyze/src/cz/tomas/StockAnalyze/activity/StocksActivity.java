@@ -1,6 +1,7 @@
 package cz.tomas.StockAnalyze.activity;
 
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
@@ -13,6 +14,7 @@ import cz.tomas.StockAnalyze.StockList.StocksPagerAdapter;
 import cz.tomas.StockAnalyze.fragments.ConfirmDialogFragment;
 import cz.tomas.StockAnalyze.ui.widgets.DragContainerView;
 import cz.tomas.StockAnalyze.utils.NavUtils;
+import cz.tomas.StockAnalyze.utils.Utils;
 
 import java.util.Collection;
 
@@ -32,20 +34,23 @@ public final class StocksActivity extends AbstractStocksActivity implements OnPa
 	private ViewPager pager;
 	private DragContainerView dragContainer;
 	private View container;
+	private SharedPreferences pref;
+	private TitlePageIndicator titleIndicator;
 
-	/* (non-Javadoc)
-		 * @see android.support.v4.app.FragmentActivity#onCreate(android.os.Bundle)
-		 */
 	@Override
 	protected void onCreate(Bundle arg0) {
 		super.onCreate(arg0);
 		this.setContentView(R.layout.stocks);
 
+		this.pref = this.getSharedPreferences(Utils.PREF_NAME, 0);
 		this.container = this.findViewById(R.id.container);
 		this.dragContainer = (DragContainerView) this.findViewById(R.id.dragContainer);
 		this.pager = (ViewPager) this.findViewById(R.id.stocksViewPager);
 		Collection<Market> markets = dataManager.getMarkets();
 		this.pager.setAdapter(new StocksPagerAdapter(getSupportFragmentManager(), markets));
+
+		titleIndicator = (TitlePageIndicator)findViewById(R.id.pagerTitles);
+		titleIndicator.setOnPageChangeListener(this);
 
 		if (markets != null) {
 			onPrepareData(markets.toArray(new Market[markets.size()]));
@@ -57,11 +62,12 @@ public final class StocksActivity extends AbstractStocksActivity implements OnPa
 				}
 			});
 		}
+	}
 
-		//Bind the title indicator to the adapter
-		TitlePageIndicator titleIndicator = (TitlePageIndicator)findViewById(R.id.pagerTitles);
-		titleIndicator.setViewPager(pager);
-		titleIndicator.setOnPageChangeListener(this);
+	@Override
+	public void onStop() {
+		super.onStop();
+		this.pref.edit().putInt(Utils.PREF_STOCKS_POSITION, this.pager.getCurrentItem()).commit();
 	}
 
 	@Override
@@ -112,8 +118,13 @@ public final class StocksActivity extends AbstractStocksActivity implements OnPa
 			dialog.show(getSupportFragmentManager(), TAG_CONFIRM);
 		} else {
 			((StocksPagerAdapter) this.pager.getAdapter()).setMarkets(markets);
-			this.selectedMarket = markets[0];
-			this.pager.setCurrentItem(0);
+			int index = this.pref.getInt(Utils.PREF_STOCKS_POSITION, 0);
+			if (index >= markets.length) {
+				index = 0;
+			}
+			this.selectedMarket = markets[index];
+			this.pager.setCurrentItem(index, false);
+			this.titleIndicator.setViewPager(this.pager, index);
 		}
 	}
 

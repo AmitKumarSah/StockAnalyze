@@ -72,6 +72,10 @@ public abstract class AbstractStocksActivity extends BaseFragmentActivity {
 		NavUtils.goUp(this, HomeActivity.class);
 	}
 
-	protected void onPrepareData(Market[] markets) {
-	}
+	/**
+	 * markets have been loaded and activity should prepare its data to display
+	 * @param markets
+	 */
+	protected void onPrepareData(Market[] markets) {}
+
 }
