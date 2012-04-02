@@ -10,15 +10,15 @@ import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
-import cz.tomas.StockAnalyze.R;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 import cz.tomas.StockAnalyze.News.Article;
 import cz.tomas.StockAnalyze.News.ArticlePagerAdapter;
 import cz.tomas.StockAnalyze.News.NewsContentProvider;
 import cz.tomas.StockAnalyze.News.NewsSqlHelper;
+import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.activity.base.BaseFragmentActivity;
 import cz.tomas.StockAnalyze.ui.widgets.CirclesView;
 import cz.tomas.StockAnalyze.utils.NavUtils;
@@ -76,7 +76,7 @@ public final class NewsDetailActivity extends BaseFragmentActivity
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-	    MenuInflater inflater = getMenuInflater();
+	    MenuInflater inflater = getSupportMenuInflater();
 	    inflater.inflate(R.menu.news_detail_menu, menu);
 		return super.onCreateOptionsMenu(menu);
 	}

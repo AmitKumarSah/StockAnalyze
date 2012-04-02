@@ -117,32 +117,7 @@
     	<item name="android:clickable">true</item>
     	<item name="android:enabled">true</item>
     </style>
-    <style name="actionBar">
-		<item name="android:layout_width">fill_parent</item>
-        <item name="android:layout_height">@dimen/actionbar_height</item>
-        <item name="android:background">@drawable/actionbar_shape</item>
-        <item name="android:textColor">#EEEEEE</item>
-        <item name="android:textSize">16sp</item>
-        <item name="android:textStyle">normal</item>
-    </style>
-    <style name="actionBar.title_text" parent="titleText">
-     	<item name="android:layout_width">wrap_content</item>
-     	<item name="android:layout_height">wrap_content</item>
-     	<item name="android:text">@string/app_name</item>
-		<item name="android:textColor">#FFFFFF</item>
-		<item name="android:gravity">center_vertical</item>
-		<item name="android:lines">1</item>
-<!-- 		<item name="android:focusable">true</item> -->
-		<item name="android:paddingLeft">8dp</item>
-<!-- 		<item name="android:background">@drawable/text_top_selector</item> -->
-<!--        <item name="android:textSize">14sip</item>-->
-    </style>
-     <style name="actionBar.subtitle_text" parent="actionBar.title_text">
-     	<item name="android:textSize">10sp</item>
-     	<item name="android:focusable">false</item>
-		<item name="android:text">@string/lastDataUpdated</item>
-     	<item name="android:gravity">bottom|left</item>
-    </style>
+
     <style name="tableItem">
      	<item name="android:layout_width">wrap_content</item>
      	<item name="android:layout_height">wrap_content</item>
@@ -156,51 +131,25 @@
     </style>
     
 	<style name="MyTitlePageIndicator" parent="Widget.TitlePageIndicator">
-        <item name="footerColor">@color/actionbar_title_color</item>
+        <item name="footerColor">@color/icon_main_color</item>
         <item name="footerPadding">4dp</item>
-        <item name="selectedColor">@android:color/black</item>
+        <item name="selectedColor">@android:color/white</item>
         <item name="selectedBold">false</item>
-        <item name="textColor">#707070</item>
+        <item name="textColor">#f7f7f7</item>
         <item name="textSize">12sp</item>
 		<item name="footerLineHeight">1dp</item>
         <item name="footerIndicatorStyle">@integer/indicatorStyle</item>
 		<item name="footerIndicatorUnderlinePadding">50dp</item>
     </style>
-    
-	
-	
-	<style name="ActionBarCompat">
-        <item name="android:background">#eee</item>
-    </style>
 
-    <style name="ActionBarCompatItemBase">
-        <!-- layout_width/height must be set in code -->
-        <item name="android:scaleType">center</item>
-        <item name="android:background">@drawable/actionbar_compat_item</item>
-    </style>
+	<style name="ActionBar" parent="android:style/Widget.Holo.Light.ActionBar">
+		<!--<item name="android:background">#eee</item>-->
+		<item name="android:titleTextStyle">@style/ActionBarTitle</item>
+		<item name="titleTextStyle">@style/ActionBarTitle</item>
+		<!--<item name="android:icon">@drawable/ic_app</item>-->
+	</style>
 
-    <style name="ActionBarCompatProgressIndicator" parent="android:style/Widget.ProgressBar.Large">
-        <item name="android:indeterminate">true</item>
-    </style>
-
-    <style name="ActionBarCompatTitleBase">
-        <item name="android:id">@id/actionbar_compat_title</item>
-        <!-- layout_width/height/weight must be set in code -->
-        <item name="android:gravity">center_vertical</item>
-        <item name="android:textSize">@dimen/text_size_medium</item>
-        <item name="android:paddingLeft">6dp</item>
-        <item name="android:paddingRight">6dp</item>
-        <item name="android:singleLine">true</item>
-        <item name="android:ellipsize">marquee</item>
-    </style>
-
-    <style name="ActionBarCompatTitle" parent="style/ActionBarCompatTitleBase">
-        <item name="android:textColor">@color/actionbar_title_color</item>
-    </style>
-
-    <style name="ActionBarCompatItem" parent="style/ActionBarCompatItemBase">
-    </style>
-
-    <style name="ActionBarCompatHomeItem" parent="style/ActionBarCompatItemBase">
-    </style>
+	<style name="ActionBarTitle">
+		<item name="android:textColor">@color/actionbar_title_color</item>
+	</style>
 </resources>

@@ -25,12 +25,12 @@ public abstract class AbstractStocksActivity extends BaseFragmentActivity {
 
 		@Override
 		public void onUpdateFinished(boolean success) {
-			getActionBarHelper().setRefreshActionItemState(false);
+//			getActionBar().setRefreshActionItemState(false);
 		}
 
 		@Override
 		public void onUpdateBegin(Market... markets) {
-			getActionBarHelper().setRefreshActionItemState(true);
+//			getActionBar().setRefreshActionItemState(true);
 		}
 	};
 	

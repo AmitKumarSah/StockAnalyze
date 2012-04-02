@@ -17,22 +17,30 @@
       along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <resources>
-	<style name="themeLight" parent="@android:style/Theme.Light" >
+	<style name="themeLight" parent="Theme.Sherlock" >
     	<item name="vpiTitlePageIndicatorStyle">@style/MyTitlePageIndicator</item>
     	<item name="android:radioButtonStyle">@style/radioStyle</item>
     	    
-        <item name="android:windowTitleSize">@dimen/actionbar_compat_height</item>
-        <item name="android:windowTitleBackgroundStyle">@style/ActionBarCompat</item>
-        <item name="android:windowContentOverlay">@drawable/actionbar_shadow</item>
+        <!--<item name="android:windowTitleSize">@dimen/actionbar_compat_height</item>-->
+        <!--<item name="android:windowTitleBackgroundStyle">@style/ActionBarCompat</item>-->
+        <!--<item name="android:windowContentOverlay">@drawable/actionbar_shadow</item>-->
 
-        <!-- for programmatic instantiation -->
-        <item name="actionbarCompatTitleStyle">@style/ActionBarCompatTitle</item>
-        <item name="actionbarCompatItemStyle">@style/ActionBarCompatItem</item>
-        <item name="actionbarCompatItemHomeStyle">@style/ActionBarCompatHomeItem</item>
-        <item name="actionbarCompatProgressIndicatorStyle">@style/ActionBarCompatProgressIndicator</item>
+        <!--&lt;!&ndash; for programmatic instantiation &ndash;&gt;-->
+        <!--<item name="actionbarCompatTitleStyle">@style/ActionBarCompatTitle</item>-->
+        <!--<item name="actionbarCompatItemStyle">@style/ActionBarCompatItem</item>-->
+        <!--<item name="actionbarCompatItemHomeStyle">@style/ActionBarCompatHomeItem</item>-->
+        <!--<item name="actionbarCompatProgressIndicatorStyle">@style/ActionBarCompatProgressIndicator</item>-->
+
+
+		<!--<item name="android:actionBarStyle">@style/ActionBar</item>-->
+		<!--<item name="actionBarStyle">@style/ActionBar</item>-->
+		<!--<item name="android:windowContentOverlay">@drawable/actionbar_shadow</item>-->
+		<!--<item name="windowContentOverlay">@drawable/actionbar_shadow</item>-->
+
+		<item name="android:radioButtonStyle">@style/radioStyle</item>
     </style>
     
-    <style name="themeLightTitle" parent="@android:style/Theme.Light">
+    <style name="themeLightTitle" parent="Theme.Sherlock">
     	<item name="android:radioButtonStyle">@style/radioStyle</item>
     </style>
 </resources>

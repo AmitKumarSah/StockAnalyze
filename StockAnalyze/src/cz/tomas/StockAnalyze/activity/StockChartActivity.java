@@ -22,11 +22,11 @@ package cz.tomas.StockAnalyze.activity;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.Toast;
-import cz.tomas.StockAnalyze.R;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 import cz.tomas.StockAnalyze.Data.DataManager;
+import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.charts.view.CompositeChartView;
 import cz.tomas.StockAnalyze.utils.Utils;
 
@@ -71,7 +71,7 @@ public class StockChartActivity extends ChartActivity {
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.stock_chart_menu, menu);
+		getSupportMenuInflater().inflate(R.menu.stock_chart_menu, menu);
 		return super.onCreateOptionsMenu(menu);
 	}
 

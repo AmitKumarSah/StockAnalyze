@@ -7,15 +7,13 @@ import android.preference.PreferenceActivity;
 
 public abstract class BasePreferenceActivity extends PreferenceActivity {
 
-	public void onStart()
-	{
+	public void onStart() {
 	   super.onStart();
 	   FlurryAgent.onStartSession(this, Utils.FLURRY_KEY);
 	   FlurryAgent.onPageView();
 	}
 	
-	public void onStop()
-	{
+	public void onStop() {
 	   super.onStop();
 	   FlurryAgent.onEndSession(this);
 	}
