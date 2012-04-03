@@ -56,6 +56,8 @@ public final class StocksActivity extends AbstractStocksActivity implements OnPa
 		titleIndicator = (TitlePageIndicator)findViewById(R.id.pagerTitles);
 		titleIndicator.setOnPageChangeListener(this);
 
+		setAsTopLevelActivity(NAVIGATION_STOCKS);
+
 		if (markets != null) {
 			onPrepareData(markets.toArray(new Market[markets.size()]));
 		} else {

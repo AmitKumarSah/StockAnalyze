@@ -32,6 +32,7 @@ public final class IndecesListActivity extends AbstractStocksActivity implements
 		FrameLayout container = new FrameLayout(this);
 		container.setId(CONTAINER_ID);
 		this.setContentView(container);
+		this.setAsTopLevelActivity(NAVIGATION_INDICES);
 		
 		FragmentManager manager = getSupportFragmentManager();
 		FragmentTransaction tran =  manager.beginTransaction();

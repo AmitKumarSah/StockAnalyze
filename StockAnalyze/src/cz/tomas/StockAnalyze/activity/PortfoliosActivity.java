@@ -44,7 +44,8 @@ public final class PortfoliosActivity extends AbstractStocksActivity implements 
 		super.onCreate(arg0);
 		
 		this.setContentView(R.layout.portfolios);
-		
+		this.setAsTopLevelActivity(NAVIGATION_PORTFOLIO);
+
 		this.pager = (ViewPager) this.findViewById(R.id.portfoliosViewPager);
 		Collection<Market> markets = dataManager.getMarkets();
 

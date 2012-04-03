@@ -18,8 +18,8 @@
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
 	package="cz.tomas.StockAnalyze" 
-	android:versionName="0.9.7"
-	android:versionCode="00907">
+	android:versionName="0.9.8"
+	android:versionCode="00908">
 	
 	<uses-sdk android:minSdkVersion="7" android:targetSdkVersion="14"/>
 	<uses-permission android:name="android.permission.INTERNET"/>
@@ -40,7 +40,7 @@
 		    android:name=".activity.HomeActivity"
 		    android:launchMode="singleTop">
 			<intent-filter>
-				<category android:name="android.intent.category.LAUNCHER" />
+				<!--<category android:name="android.intent.category.LAUNCHER" />-->
 				<action android:name="android.intent.action.MAIN" />
         	</intent-filter>
 		</activity>
@@ -54,7 +54,12 @@
 		    android:launchMode="singleTop" 
 		    android:label="@string/homeStockList"
 		    android:taskAffinity=""
-		    android:excludeFromRecents="true" />
+		    android:excludeFromRecents="true">
+			<intent-filter>
+				<category android:name="android.intent.category.LAUNCHER" />
+				<action android:name="android.intent.action.MAIN" />
+			</intent-filter>
+		</activity>
 		<activity android:name=".activity.StockDetailActivity"
 		    android:logo="@drawable/ic_up_list"
 		    android:label="@string/activityStockDetail"/>
@@ -62,7 +67,6 @@
 		    android:logo="@drawable/ic_app"
 			android:screenOrientation="landscape"
 			android:label="@string/activityPortfolio" />
-		<activity android:name=".activity.PortfolioActivity" android:launchMode="singleTop" />
 		<activity android:name=".activity.PortfoliosActivity"
 		    android:logo="@drawable/ic_up_portfolio"
 		    android:launchMode="singleTop" 
@@ -83,7 +87,7 @@
 		<activity android:name=".activity.AppPreferencesActivity"
 		    android:logo="@drawable/ic_app"
 			android:label="@string/AppPreferencesActivityTitle"
-			android:theme="@style/themeLightTitle"></activity>
+			android:theme="@style/themeLightTitle"/>
 		<activity android:name=".activity.AboutActivity"
 		    android:logo="@drawable/ic_app"
 			android:label="@string/appAbout"/>
