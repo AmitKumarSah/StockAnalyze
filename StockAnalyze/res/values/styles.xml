@@ -131,7 +131,7 @@
     </style>
     
 	<style name="MyTitlePageIndicator" parent="Widget.TitlePageIndicator">
-        <item name="footerColor">@color/icon_main_color</item>
+        <item name="footerColor">@color/dark_blue_color</item>
         <item name="footerPadding">4dp</item>
         <item name="selectedColor">@android:color/white</item>
         <item name="selectedBold">false</item>

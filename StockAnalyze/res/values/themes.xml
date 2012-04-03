@@ -17,7 +17,7 @@
       along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <resources>
-	<style name="themeLight" parent="Theme.Sherlock" >
+	<style name="themeLight" parent="Theme.Sherlock.ForceOverflow" >
     	<item name="vpiTitlePageIndicatorStyle">@style/MyTitlePageIndicator</item>
     	<item name="android:radioButtonStyle">@style/radioStyle</item>
     	    
