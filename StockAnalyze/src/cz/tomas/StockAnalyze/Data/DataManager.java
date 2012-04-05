@@ -162,29 +162,34 @@ public class DataManager implements IStockDataListener {
 	private void loadMarkets() {
 		isMarketUpdateRunning = true;
 		this.sqlStore.acquireDb(this);
-		this.markets = this.sqlStore.getMarkets();
-		boolean isDirty = isMarketListDirty();
-		if (this.markets == null || this.markets.size() == 0 || isDirty) {
-			Log.d(Utils.LOG_TAG, "downloading markets, current: " + this.markets);
- 			MarketProvider provider = new MarketProvider();
-			try {
-				this.markets = provider.getMarkets(this.context);
-				this.sqlStore.updateMarkets(this.markets);
+		try {
+			this.markets = this.sqlStore.getMarkets();
+			boolean isDirty = isMarketListDirty();
+			if (this.markets == null || this.markets.size() == 0 || isDirty) {
+				Log.d(Utils.LOG_TAG, "downloading markets, current: " + this.markets);
+				 MarketProvider provider = new MarketProvider();
+				try {
+					this.markets = provider.getMarkets(this.context);
+					this.sqlStore.updateMarkets(this.markets);
 
-				for (Market market : markets.values()) {
-					this.downloadStockItems(market);
+					for (Market market : markets.values()) {
+						this.downloadStockItems(market);
+					}
+					this.downloadStockItems(Markets.GLOBAL);
+					SharedPreferences preferences = this.context.getSharedPreferences(Utils.PREF_NAME, 0);
+					preferences.edit()
+							.putLong(Utils.PREF_LAST_STOCK_LIST_UPDATE_TIME, System.currentTimeMillis())
+							.putLong(Utils.PREF_LAST_MARKET_LIST_UPDATE_TIME, System.currentTimeMillis())
+							.commit();
+				} catch (Exception e) {
+					Log.e(Utils.LOG_TAG, "failed to download markets", e);
 				}
-				this.downloadStockItems(Markets.GLOBAL);
-				SharedPreferences preferences = this.context.getSharedPreferences(Utils.PREF_NAME, 0);
-				preferences.edit()
-						.putLong(Utils.PREF_LAST_STOCK_LIST_UPDATE_TIME, System.currentTimeMillis())
-						.putLong(Utils.PREF_LAST_MARKET_LIST_UPDATE_TIME, System.currentTimeMillis())
-						.commit();
-			} catch (Exception e) {
-				Log.e(Utils.LOG_TAG, "failed to read markets", e);
 			}
+		} catch (Exception e) {
+			Log.e(Utils.LOG_TAG, "failed to read markets", e);
+		} finally {
+			this.sqlStore.releaseDb(true, this);
 		}
-		this.sqlStore.releaseDb(true, this);
 
 		this.handler.post(new Runnable() {
 			@Override
