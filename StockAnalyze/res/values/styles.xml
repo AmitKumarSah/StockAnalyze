@@ -137,7 +137,8 @@
         <item name="selectedBold">false</item>
         <item name="textColor">#f7f7f7</item>
         <item name="textSize">12sp</item>
-		<item name="footerLineHeight">1dp</item>
+		<item name="footerLineHeight">0dp</item>
+		<item name="footerIndicatorHeight">2dp</item>
         <item name="footerIndicatorStyle">@integer/indicatorStyle</item>
 		<item name="footerIndicatorUnderlinePadding">50dp</item>
     </style>
