@@ -27,9 +27,9 @@
 	<uses-permission android:name="android.permission.READ_SYNC_SETTINGS"/>
 	<uses-permission android:name="android.permission.READ_LOGS"/>
 	
-	<application android:icon="@drawable/ic_launcher" android:label="@string/app_name"
+	<application android:icon="@drawable/ic_launcher"
+		android:label="@string/app_name"
 		android:name=".Application"
-		android:debuggable="true" 
 		android:theme="@style/themeLight" 
 		android:allowBackup="true" 
 		android:hardwareAccelerated="true"
