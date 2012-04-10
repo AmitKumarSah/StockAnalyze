@@ -117,32 +117,32 @@
     	<item name="android:clickable">true</item>
     	<item name="android:enabled">true</item>
     </style>
-    <style name="actionBar">
-		<item name="android:layout_width">fill_parent</item>
-        <item name="android:layout_height">@dimen/actionbar_height</item>
-        <item name="android:background">@drawable/actionbar_shape</item>
-        <item name="android:textColor">#EEEEEE</item>
-        <item name="android:textSize">16sp</item>
-        <item name="android:textStyle">normal</item>
-    </style>
-    <style name="actionBar.title_text" parent="titleText">
-     	<item name="android:layout_width">wrap_content</item>
-     	<item name="android:layout_height">wrap_content</item>
-     	<item name="android:text">@string/app_name</item>
-		<item name="android:textColor">#FFFFFF</item>
-		<item name="android:gravity">center_vertical</item>
-		<item name="android:lines">1</item>
-<!-- 		<item name="android:focusable">true</item> -->
-		<item name="android:paddingLeft">8dp</item>
-<!-- 		<item name="android:background">@drawable/text_top_selector</item> -->
-<!--        <item name="android:textSize">14sip</item>-->
-    </style>
-     <style name="actionBar.subtitle_text" parent="actionBar.title_text">
-     	<item name="android:textSize">10sp</item>
-     	<item name="android:focusable">false</item>
-		<item name="android:text">@string/lastDataUpdated</item>
-     	<item name="android:gravity">bottom|left</item>
-    </style>
+    <!--<style name="actionBar">-->
+		<!--<item name="android:layout_width">fill_parent</item>-->
+        <!--<item name="android:layout_height">@dimen/actionbar_height</item>-->
+        <!--<item name="android:background">@drawable/actionbar_shape</item>-->
+        <!--<item name="android:textColor">#EEEEEE</item>-->
+        <!--<item name="android:textSize">16sp</item>-->
+        <!--<item name="android:textStyle">normal</item>-->
+    <!--</style>-->
+    <!--<style name="actionBar.title_text" parent="titleText">-->
+     	<!--<item name="android:layout_width">wrap_content</item>-->
+     	<!--<item name="android:layout_height">wrap_content</item>-->
+     	<!--<item name="android:text">@string/app_name</item>-->
+		<!--<item name="android:textColor">#FFFFFF</item>-->
+		<!--<item name="android:gravity">center_vertical</item>-->
+		<!--<item name="android:lines">1</item>-->
+<!--&lt;!&ndash; 		<item name="android:focusable">true</item> &ndash;&gt;-->
+		<!--<item name="android:paddingLeft">8dp</item>-->
+<!--&lt;!&ndash; 		<item name="android:background">@drawable/text_top_selector</item> &ndash;&gt;-->
+<!--&lt;!&ndash;        <item name="android:textSize">14sip</item>&ndash;&gt;-->
+    <!--</style>-->
+     <!--<style name="actionBar.subtitle_text" parent="actionBar.title_text">-->
+     	<!--<item name="android:textSize">10sp</item>-->
+     	<!--<item name="android:focusable">false</item>-->
+		<!--<item name="android:text">@string/lastDataUpdated</item>-->
+     	<!--<item name="android:gravity">bottom|left</item>-->
+    <!--</style>-->
     <style name="tableItem">
      	<item name="android:layout_width">wrap_content</item>
      	<item name="android:layout_height">wrap_content</item>
@@ -162,6 +162,7 @@
         <item name="selectedBold">false</item>
         <item name="textColor">#707070</item>
         <item name="textSize">12sp</item>
+		<item name="titlePadding">22dp</item>
 		<item name="footerLineHeight">1dp</item>
         <item name="footerIndicatorStyle">@integer/indicatorStyle</item>
 		<item name="footerIndicatorUnderlinePadding">50dp</item>

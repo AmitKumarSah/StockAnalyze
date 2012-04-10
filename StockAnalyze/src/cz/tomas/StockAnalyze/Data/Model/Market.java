@@ -47,11 +47,15 @@ public class Market implements Serializable {
 	private final double feeMax;
 	private final double feePercent;
 
-	public Market(String name, String id, String currencyCode, String description, String country,
+	private Market() {  // for gson
+		this(null, null, null, null, null, 0, 0, 0, 0, 0);
+	}
+
+	public Market(String name, String id, String currency, String description, String country,
 	              double feePercent, double feeMax, double feeMin, long openTo, long openFrom) {
 		this.name = name;
 		this.id = id;
-		this.currency = currencyCode;
+		this.currency = currency;
 		this.description = description;
 		this.country = country;
 		this.feePercent = feePercent;

@@ -35,16 +35,21 @@ public final class PortfoliosActivity extends AbstractStocksActivity implements 
 	public static final String EXTRA_STOCK_ITEM = "portfolioStockItem";
 	
 	private ViewPager pager;
-	
+	private TitlePageIndicator titleIndicator;
+
 	/* (non-Javadoc)
-	 * @see android.support.v4.app.FragmentActivity#onCreate(android.os.Bundle)
-	 */
+		 * @see android.support.v4.app.FragmentActivity#onCreate(android.os.Bundle)
+		 */
 	@Override
 	protected void onCreate(Bundle arg0) {
 		super.onCreate(arg0);
 		
 		this.setContentView(R.layout.portfolios);
-		
+
+		//Bind the title indicator to the adapter
+		this.titleIndicator = (TitlePageIndicator) findViewById(R.id.portfoliosPagerTitles);
+		this.titleIndicator.setOnPageChangeListener(this);
+
 		this.pager = (ViewPager) this.findViewById(R.id.portfoliosViewPager);
 		Collection<Market> markets = dataManager.getMarkets();
 
@@ -58,11 +63,6 @@ public final class PortfoliosActivity extends AbstractStocksActivity implements 
 				}
 			});
 		}
-		
-		//Bind the title indicator to the adapter
-		TitlePageIndicator titleIndicator = (TitlePageIndicator)findViewById(R.id.portfoliosPagerTitles);
-		titleIndicator.setViewPager(pager);
-		titleIndicator.setOnPageChangeListener(this);
 	}
 	
 	@Override
@@ -158,6 +158,7 @@ public final class PortfoliosActivity extends AbstractStocksActivity implements 
 		} else {
 			this.pager.setAdapter(new PortfolioPagerAdapter(getSupportFragmentManager(), markets));
 			this.pager.setCurrentItem(0);
+			this.titleIndicator.setViewPager(this.pager);
 		}
 	}
 }

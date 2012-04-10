@@ -2,7 +2,6 @@ package cz.tomas.StockAnalyze.Data;
 
 import android.content.Context;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import cz.tomas.StockAnalyze.Data.GaeData.UrlProvider;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.utils.DownloadService;
@@ -10,9 +9,7 @@ import cz.tomas.StockAnalyze.utils.DownloadService;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Type;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,6 +18,11 @@ import java.util.Map;
 public class MarketProvider {
 	
 	private UrlProvider urlProvider;
+	private final Gson gson;
+
+	public MarketProvider() {
+		gson = new Gson();
+	}
 
 	Map<String, Market> getMarkets(Context context) throws IOException {
 		if (urlProvider == null) {
@@ -31,11 +33,10 @@ public class MarketProvider {
 		InputStream stream = null;
 		try {
 			stream = DownloadService.GetInstance().openHttpConnection(url, true);
-			Gson gson = new Gson();
-			Type listType = new TypeToken<List<Market>>() {}.getType();
-			List<Market> marketList = gson.fromJson(new InputStreamReader(stream), listType);
+//			Type listType = new TypeToken<Market[]>() {}.getType();
+			Market[] marketList = gson.fromJson(new InputStreamReader(stream), Market[].class);
 
-			markets = new LinkedHashMap<String, Market>(marketList.size());
+			markets = new LinkedHashMap<String, Market>(marketList.length);
 			for (Market market : marketList) {
 				markets.put(market.getId(), market);
 			}

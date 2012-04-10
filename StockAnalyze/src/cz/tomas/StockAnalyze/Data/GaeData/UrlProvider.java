@@ -51,8 +51,8 @@ public final class UrlProvider {
 	
 	private static final String FILE_CACHE = "gae-url.list";
 	
-	private static final String URL_CROSSROAD = "http://stockanalyzeserverenv-upk2bxu5a5.elasticbeanstalk.com/Crossroads";
-	private static final String URL_CROSSROAD_BACKUP = "http://backend-stockanalyze.appspot.com/Crossroads";
+	private static final String URL_CROSSROAD_BACKUP = "http://stockanalyzeserverenv-upk2bxu5a5.elasticbeanstalk.com/Crossroads";
+	private static final String URL_CROSSROAD = "http://backend-stockanalyze.appspot.com/Crossroads";
 	
 	private static final long MAX_URL_VALID_TIME = 24L * 60L * 60L * 1000L;	// a day in ms
 
@@ -172,6 +172,7 @@ public final class UrlProvider {
 		try {
 			String content = null;
 			try {
+				if (Utils.DEBUG) Log.d(Utils.LOG_TAG, "downloading URLs");
 				byte[] bytes = DownloadService.GetInstance().DownloadFromUrl(URL_CROSSROAD, false);
 				content = new String(bytes, "UTF-8");
 			} catch (Exception e) {

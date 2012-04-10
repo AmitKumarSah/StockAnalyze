@@ -65,6 +65,8 @@ public class StockItem implements Parcelable {
 		this.readParcel(in);
 	}
 
+	private StockItem() {}   // for gson
+
 	public String getTicker() {
 		return ticker;
 	}

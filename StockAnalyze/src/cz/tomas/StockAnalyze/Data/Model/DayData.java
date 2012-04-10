@@ -20,8 +20,6 @@
  */
 package cz.tomas.StockAnalyze.Data.Model;
 
-import java.util.Date;
-
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -36,7 +34,7 @@ public class DayData implements Parcelable {
 	private float price;
 	private float change;
 	private float absChange;
-	private Date date;
+	private long date;
 	private long lastUpdate;
 
 	private float volume;
@@ -55,11 +53,12 @@ public class DayData implements Parcelable {
 		}
 	};
 	
-	public DayData(float price, float change, Date date, float volume, float yearMax, float yearMin, long updateTime, long id) {
+	public DayData(float price, float change, long date, float volume, float yearMax, float yearMin, long updateTime, long id) {
 		this(price, change, date, volume, yearMax, yearMin, updateTime);
 		this.id = id;
-	}	
-	public DayData(float price, float change, Date date, float volume, float yearMax, float yearMin, long updateTime) {
+	}
+
+	public DayData(float price, float change, long date, float volume, float yearMax, float yearMin, long updateTime) {
 		this.price = price;
 		this.change = change;
 		this.date = date;
@@ -74,6 +73,8 @@ public class DayData implements Parcelable {
 	public DayData(Parcel in) {
 		this.readParcel(in);
 	}
+
+	private DayData() {}   // for gson
 
 	public long getId() {
 		return id;
@@ -97,7 +98,7 @@ public class DayData implements Parcelable {
 		return absChange;
 	}
 	
-	public Date getDate() {
+	public long getDate() {
 		return date;
 	}
 	
@@ -158,7 +159,7 @@ public class DayData implements Parcelable {
 		this.price = in.readFloat();
 		this.change = in.readFloat();
 		this.absChange = in.readFloat();
-		this.date = new Date(in.readLong());
+		this.date = in.readLong();
 		this.lastUpdate = in.readLong();
 		this.volume = in.readFloat();
 		this.tradedPieces = in.readInt();
@@ -172,7 +173,7 @@ public class DayData implements Parcelable {
 		dest.writeFloat(this.price);
 		dest.writeFloat(this.change);
 		dest.writeFloat(this.absChange);
-		dest.writeLong(this.date.getTime());
+		dest.writeLong(this.date);
 		dest.writeLong(this.lastUpdate);
 		dest.writeFloat(this.volume);
 		dest.writeInt(this.tradedPieces);
