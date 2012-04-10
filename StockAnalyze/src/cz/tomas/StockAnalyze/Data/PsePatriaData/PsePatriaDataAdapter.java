@@ -133,8 +133,7 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 		}
 		DayData data = null;
 		if (dataItem != null) {
-			Date date = new Date(this.provider.getLastUpdateTime());
-			data = new DayData(dataItem.getValue(), dataItem.getPercentableChange(), date, 0, 0, 0, date.getTime());
+			data = new DayData(dataItem.getValue(), dataItem.getPercentableChange(), this.provider.getLastUpdateTime(), 0, 0, 0, this.provider.getLastUpdateTime());
 		}
 		return data;
 	}
@@ -209,7 +208,7 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 
 	/** 
 	 * refresh data from provider 
-	 * @see cz.tomas.StockAnalyze.Data.IStockDataProvider#refresh()
+	 * @see cz.tomas.StockAnalyze.Data.IStockDataProvider#refresh(cz.tomas.StockAnalyze.Data.Model.Market)
 	 */
 	@Override
 	public boolean refresh(Market market) {

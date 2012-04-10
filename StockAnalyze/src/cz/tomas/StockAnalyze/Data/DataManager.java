@@ -147,7 +147,13 @@ public class DataManager implements IStockDataListener {
 		if (this.markets == null || this.markets.size() == 0) {
 			// if we aren't already loading markets, start so
 			if (! isMarketUpdateRunning) {
-				this.loadMarkets();
+				Thread marketsThread = new Thread(new Runnable() {
+					@Override
+					public void run() {
+						loadMarkets();
+					}
+				});
+				marketsThread.start();
 			}
 			return null;
 		}
@@ -431,21 +437,8 @@ public class DataManager implements IStockDataListener {
 		Log.i(Utils.LOG_TAG, "received stock data update event from " + sender.getId());
 		this.sqlStore.acquireDb(sender.getId());
 		try {
-			if (dataMap == null || dataMap.size() == 0) {
-//				Map<String, DayData> receivedData = new HashMap<String, DayData>();
-//				for (StockItem item : sender.getAvailableStockList()) {
-//					DayData data = sender.getLastData(item.getTicker());
-//					if (data.getPrice() == 0) {
-//						data = this.createDataWithPrice(item, data);
-//					}
-//					receivedData.put(item.getId(), data);
-//				}
-
-//				this.sqlStore.insertDayDataSet(receivedData);
-			} else {
-				for (Entry<String, DayData> entry : dataMap.entrySet()) {
-					this.sqlStore.insertDayData(entry.getKey(), entry.getValue());
-				}
+			for (Entry<String, DayData> entry : dataMap.entrySet()) {
+				this.sqlStore.insertDayData(entry.getKey(), entry.getValue());
 			}
 			this.fireUpdateDateChanged(Calendar.getInstance().getTimeInMillis());
 			this.fireUpdateStockDataListenerUpdate(sender, dataMap);

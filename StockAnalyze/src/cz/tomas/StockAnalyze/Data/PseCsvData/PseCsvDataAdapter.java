@@ -214,7 +214,7 @@ public class PseCsvDataAdapter implements IStockDataProvider {
 			yearMinimum = -1;
 			Log.e(Utils.LOG_TAG, "parse error", e);
 		}
-		return new DayData(price, change, date, volume, yearMaximum, yearMinimum, Utils.createDateOnlyCalendar(date).getTimeInMillis());
+		return new DayData(price, change, date.getTime(), volume, yearMaximum, yearMinimum, Utils.createDateOnlyCalendar(date).getTimeInMillis());
 	}
 
 	@Override

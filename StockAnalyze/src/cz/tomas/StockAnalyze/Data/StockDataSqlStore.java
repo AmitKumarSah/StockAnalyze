@@ -47,6 +47,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 
 	private static final int FLAG_REMOVED = 1;
 	private static final String FLAG_REMOVED_STRING = "1";
+	private final Calendar calendar;        // reused calendar object
 
 	public static StockDataSqlStore getInstance(Context context) {
 		if (instance == null) {
@@ -57,6 +58,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 	
 	private StockDataSqlStore(Context context) {
 		super(context);
+		calendar = new GregorianCalendar();
 	}
 	
 	/**	
@@ -147,8 +149,11 @@ public class StockDataSqlStore extends DataSqlHelper {
 				return;
 			}
 			ContentValues values = new ContentValues();
-	
-			values.put(DayDataColumns.DATE, Utils.createDateOnlyCalendar(newData.getDate()).getTimeInMillis());
+
+			synchronized (calendar) {
+				calendar.setTimeInMillis(newData.getDate());
+				values.put(DayDataColumns.DATE, Utils.createDateOnlyCalendar(calendar).getTimeInMillis());
+			}
 			values.put(DayDataColumns.LAST_UPDATE, newData.getLastUpdate());
 			values.put(DayDataColumns.PRICE, newData.getPrice());
 			values.put(DayDataColumns.CHANGE, newData.getChange());
@@ -165,25 +170,25 @@ public class StockDataSqlStore extends DataSqlHelper {
 		}
 	}
 
-	/**
-	 * insert or update set of data in one transaction
-	 *
-	 * @param receivedData set of data to insert or update
-	 */
-	public void insertDayDataSet(Map<String, DayData> receivedData) {
-		SQLiteDatabase db = this.getWritableDatabase();
-		db.beginTransaction();
-		try {
-			for (Entry<String, DayData> entry : receivedData.entrySet()) {
-				this.insertDayData(entry.getKey(), entry.getValue());
-			}
-			db.setTransactionSuccessful();
-		} catch (Exception e) {
-			Log.e(Utils.LOG_TAG, "failed to insert day data from dataset, transaction is going to roll back", e);
-		} finally {
-			db.endTransaction();
-		}
-	}
+//	/**
+//	 * insert or update set of data in one transaction
+//	 *
+//	 * @param receivedData set of data to insert or update
+//	 */
+//	public void insertDayDataSet(Map<String, DayData> receivedData) {
+//		SQLiteDatabase db = this.getWritableDatabase();
+//		db.beginTransaction();
+//		try {
+//			for (Entry<String, DayData> entry : receivedData.entrySet()) {
+//				this.insertDayData(entry.getKey(), entry.getValue());
+//			}
+//			db.setTransactionSuccessful();
+//		} catch (Exception e) {
+//			Log.e(Utils.LOG_TAG, "failed to insert day data from dataset, transaction is going to roll back", e);
+//		} finally {
+//			db.endTransaction();
+//		}
+//	}
 	
 	private int updateDayData(DayData newData, String stockId, SQLiteDatabase db) {
 		try {
@@ -191,7 +196,10 @@ public class StockDataSqlStore extends DataSqlHelper {
 
 			if (VERBOSE) Log.d(Utils.LOG_TAG, "updating day data to " + newData.toString());
 
-			values.put(DayDataColumns.DATE ,Utils.createDateOnlyCalendar(newData.getDate()).getTimeInMillis());
+			synchronized (calendar) {
+				calendar.setTimeInMillis(newData.getDate());
+				values.put(DayDataColumns.DATE, Utils.createDateOnlyCalendar(calendar).getTimeInMillis());
+			}
 			values.put(DayDataColumns.LAST_UPDATE, newData.getLastUpdate());
 			values.put(DayDataColumns.PRICE, newData.getPrice());
 			values.put(DayDataColumns.CHANGE, newData.getChange());
@@ -339,8 +347,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 		long id = c.getLong(idColumn);
 		long lastUpdate = c.getLong(c.getColumnIndex(DayDataColumns.LAST_UPDATE));
 
-		Date date = new Date(milliseconds);
-		return new DayData(price, change, date, volume, max, min, lastUpdate, id);
+		return new DayData(price, change, milliseconds, volume, max, min, lastUpdate, id);
 	}
 
 	private StockItem readStockItem(Market market, Cursor c, int idColumn) {
