@@ -169,26 +169,6 @@ public class StockDataSqlStore extends DataSqlHelper {
 			this.close();
 		}
 	}
-
-//	/**
-//	 * insert or update set of data in one transaction
-//	 *
-//	 * @param receivedData set of data to insert or update
-//	 */
-//	public void insertDayDataSet(Map<String, DayData> receivedData) {
-//		SQLiteDatabase db = this.getWritableDatabase();
-//		db.beginTransaction();
-//		try {
-//			for (Entry<String, DayData> entry : receivedData.entrySet()) {
-//				this.insertDayData(entry.getKey(), entry.getValue());
-//			}
-//			db.setTransactionSuccessful();
-//		} catch (Exception e) {
-//			Log.e(Utils.LOG_TAG, "failed to insert day data from dataset, transaction is going to roll back", e);
-//		} finally {
-//			db.endTransaction();
-//		}
-//	}
 	
 	private int updateDayData(DayData newData, String stockId, SQLiteDatabase db) {
 		try {
@@ -413,8 +393,11 @@ public class StockDataSqlStore extends DataSqlHelper {
 					double feeMax = cursor.getDouble(cursor.getColumnIndex(MarketColumns.FEE_MAX));
 					double feeMin = cursor.getDouble(cursor.getColumnIndex(MarketColumns.FEE_MIN));
 					double feePerc = cursor.getDouble(cursor.getColumnIndex(MarketColumns.FEE_PERC));
+					int type = cursor.getInt(cursor.getColumnIndex(MarketColumns.TYPE));
 
-					Market market = new Market(name, id,currency,desc, country, feePerc, feeMax, feeMin, openTo, openFrom);
+
+					Market market = new Market(name, id,currency, desc, country, feePerc,
+							feeMax, feeMin, openTo, openFrom, type);
 					markets.put(id, market);
 				} while (cursor.moveToNext());
 			}
@@ -449,8 +432,9 @@ public class StockDataSqlStore extends DataSqlHelper {
 				double feeMax = cursor.getDouble(cursor.getColumnIndex(MarketColumns.FEE_MAX));
 				double feeMin = cursor.getDouble(cursor.getColumnIndex(MarketColumns.FEE_MIN));
 				double feePerc = cursor.getDouble(cursor.getColumnIndex(MarketColumns.FEE_PERC));
+				int type = cursor.getInt(cursor.getColumnIndex(MarketColumns.TYPE));
 
-				return new Market(name, id,currency,desc, country, feePerc, feeMax, feeMin, openTo, openFrom);
+				return new Market(name, id,currency,desc, country, feePerc, feeMax, feeMin, openTo, openFrom, type);
 			}
 		} finally {
 			if (cursor != null) {

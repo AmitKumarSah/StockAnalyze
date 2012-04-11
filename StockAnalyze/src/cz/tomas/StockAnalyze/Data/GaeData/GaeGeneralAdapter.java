@@ -21,13 +21,12 @@ import java.util.Map;
 public class GaeGeneralAdapter extends GaeDataAdapter {
 
 	private static final String ID = "GAE general provider";
-	private final HashSet<String> marketCodes;
 	private final DataProviderAdviser adviser;
 	private final GaeDataProvider provider;
 
 	public GaeGeneralAdapter(Context context) {
 		super(context);
-		marketCodes = new HashSet<String>();
+		HashSet<String> marketCodes = new HashSet<String>();
 		marketCodes.add("pl");
 		marketCodes.add("gb");
 		marketCodes.add("hu");

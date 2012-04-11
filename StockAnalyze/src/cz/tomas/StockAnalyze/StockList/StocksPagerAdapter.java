@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import com.viewpagerindicator.TitleProvider;
 import cz.tomas.StockAnalyze.Data.Model.Market;
+import cz.tomas.StockAnalyze.fragments.CustomStockGridFragment;
 import cz.tomas.StockAnalyze.fragments.StockGridFragment;
 import cz.tomas.StockAnalyze.fragments.StockListFragment;
 
@@ -37,15 +38,19 @@ public final class StocksPagerAdapter extends FragmentPagerAdapter implements Ti
 		if (this.markets == null || position >= this.markets.length) {
 			return null;
 		}
-		Market market = this.markets[position];
-		return market;
+		return this.markets[position];
 	}
 	
 	@Override
 	public Fragment getItem(int position) {
 		//StockListFragment fragment = new StockListFragment();
-		StockGridFragment fragment = new StockGridFragment();
 		Market market = this.getMarketByPosition(position);
+		Fragment fragment;
+		if (market.getType() == Market.TYPE_SELECTIVE) {
+			fragment = new CustomStockGridFragment();
+		} else {
+			fragment = new StockGridFragment();
+		}
 		Bundle bundle = new Bundle();
 		bundle.putSerializable(StockListFragment.ARG_MARKET, market);
 		fragment.setArguments(bundle);

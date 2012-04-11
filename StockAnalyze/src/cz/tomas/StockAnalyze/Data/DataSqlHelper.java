@@ -32,7 +32,7 @@ public class DataSqlHelper extends AbstractSqlHelper {
 	protected static final boolean DEBUG = Utils.DEBUG;
 	protected static final boolean VERBOSE = DEBUG && false;
 
-	private final static int DATABASE_VERSION_NUMBER = 22;
+	private final static int DATABASE_VERSION_NUMBER = 23;
 
 	private final static String DATABASE_FILE_NAME = "stocks.db";
 
@@ -66,6 +66,7 @@ public class DataSqlHelper extends AbstractSqlHelper {
 		         MarketColumns.FEE_MIN + " real," +
 		         MarketColumns.FEE_MAX + " real," +
 		         MarketColumns.INDEX_ID + " text," +
+		         MarketColumns.TYPE + " integer," +
 		         MarketColumns.FEE_PERC + " real" +
 		         ");";
 
@@ -165,9 +166,10 @@ public class DataSqlHelper extends AbstractSqlHelper {
 		public static final String FEE_MAX = "fee_max";
 		public static final String FEE_PERC = "fee_perc";
 		public static final String INDEX_ID = "index_id";
+		public static final String TYPE = "type";
 
 		public static final String[] PROJECTION = new String[]{ _ID, NAME, CURRENCY, COUNTRY, UI_ORDER, DESCRIPTION,
-													OPEN_FROM, OPEN_TO, FEE_MAX, FEE_MIN, FEE_PERC };
+													OPEN_FROM, OPEN_TO, FEE_MAX, FEE_MIN, FEE_PERC, TYPE };
 	}
 
 	public static class DayDataColumns {

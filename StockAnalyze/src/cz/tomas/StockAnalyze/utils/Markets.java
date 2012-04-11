@@ -19,44 +19,5 @@ public class Markets {
 	/**
 	 * fake market used for global indeces
 	 */
-	public static final Market GLOBAL = new Market("Global", "GLOBAL", "", "Indices", "world", 0, 0, 0, 0, 0);
-	
-//	/**
-//	 * get market based on the id
-//	 * @param id
-//	 * @return
-//	 */
-//	public static Market getMarket(String id) {
-//		if (id == null) {
-//			throw new NullPointerException("market id can't be null");
-//		}
-//		id = id.toLowerCase();
-//		if (id.equals("pse")) {
-//			return CZ;
-//		} else if (id.equals("global")) {
-//			return GLOBAL;
-//		} else if (id.equals("eu")) {
-//			return EU;
-//		} else if (id.equals("bse")) {
-//			return HU;
-//		} else if (id.equals("nyse")) {
-//			return US_NYSE;
-//		} else if (id.equals("nasdaq")) {
-//			return US_NASDAQ;
-//		} else if (id.equals("wse")) {
-//			return PL;
-//		} else if (id.equals("rts")) {
-//			return RUS;
-//		} else if (id.equals("tse")) {
-//			return JP;
-//		} else if (id.equals("six")) {
-//			return SW;
-//		} else if (id.equals("lse")) {
-//			return GB;
-//		} else if (id.equals("xetra")) {
-//			return DE;
-//		} else {
-//			return null;
-//		}
-//	}
+	public static final Market GLOBAL = new Market("Global", "GLOBAL", "", "Indices", "world", 0, 0, 0, 0, 0, Market.TYPE_FULL);
 }

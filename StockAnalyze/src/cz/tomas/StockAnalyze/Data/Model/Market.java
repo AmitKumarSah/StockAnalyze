@@ -34,12 +34,16 @@ import java.util.Currency;
  * @author tomas
  */
 public class Market implements Serializable {
-	
+
+	public static final int TYPE_FULL = 1;
+	public static final int TYPE_SELECTIVE = 2;
+
 	private final String name;
 	private final String id;
 	private final String currency;
 	private final String description;
 	private final String country;
+	private final int type;
 
 	private final long openFrom;
 	private final long openTo;
@@ -48,11 +52,11 @@ public class Market implements Serializable {
 	private final double feePercent;
 
 	private Market() {  // for gson
-		this(null, null, null, null, null, 0, 0, 0, 0, 0);
+		this(null, null, null, null, null, 0, 0, 0, 0, 0, 0);
 	}
 
 	public Market(String name, String id, String currency, String description, String country,
-	              double feePercent, double feeMax, double feeMin, long openTo, long openFrom) {
+	              double feePercent, double feeMax, double feeMin, long openTo, long openFrom, int type) {
 		this.name = name;
 		this.id = id;
 		this.currency = currency;
@@ -63,6 +67,7 @@ public class Market implements Serializable {
 		this.feeMin = feeMin;
 		this.openTo = openTo;
 		this.openFrom = openFrom;
+		this.type = type;
 	}
 	
 	/**
@@ -126,16 +131,6 @@ public class Market implements Serializable {
 		return fee;
 	}
 
-	/*
-	 * string representation
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return "Market [name=" + name + ", id=" + id + ", currency=" + currency
-				+ ", description=" + description + "]";
-	}
-
 	public double getFeeMax() {
 		return feeMax;
 	}
@@ -146,5 +141,26 @@ public class Market implements Serializable {
 
 	public double getFeePerc() {
 		return feePercent;
+	}
+
+	public int getType() {
+		return type;
+	}
+
+	@Override
+	public String toString() {
+		return "Market{" +
+				"country='" + country + '\'' +
+				", name='" + name + '\'' +
+				", id='" + id + '\'' +
+				", currency='" + currency + '\'' +
+				", description='" + description + '\'' +
+				", type=" + type +
+				", openFrom=" + openFrom +
+				", openTo=" + openTo +
+				", feeMin=" + feeMin +
+				", feeMax=" + feeMax +
+				", feePercent=" + feePercent +
+				'}';
 	}
 }

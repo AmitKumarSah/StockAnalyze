@@ -167,8 +167,6 @@
         <item name="footerIndicatorStyle">@integer/indicatorStyle</item>
 		<item name="footerIndicatorUnderlinePadding">50dp</item>
     </style>
-    
-	
 	
 	<style name="ActionBarCompat">
         <item name="android:background">#eee</item>

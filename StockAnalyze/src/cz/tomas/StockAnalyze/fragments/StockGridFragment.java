@@ -17,15 +17,15 @@ import cz.tomas.StockAnalyze.ui.widgets.DragContainerView;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 
-public final class StockGridFragment extends Fragment implements IStockFragment, DragContainerView.IDragListener {
+public class StockGridFragment extends Fragment implements IStockFragment, DragContainerView.IDragListener {
 	
 	public static final String ARA_INSECURE_INDICES = "includeIndeces";
 	public static String ARG_MARKET = "market";
 
-	private StockFragmentHelper helper;
+	protected StockFragmentHelper helper;
 	
-	private GridView grid;
-	private View progress;
+	protected GridView grid;
+	protected View progress;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {

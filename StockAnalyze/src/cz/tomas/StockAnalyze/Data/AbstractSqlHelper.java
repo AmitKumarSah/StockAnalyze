@@ -31,26 +31,11 @@ public abstract class AbstractSqlHelper extends SQLiteOpenHelper {
 	 */
 	@Override
 	public synchronized void close() {
-//		acquireCounter--;
-//		if (acquireCounter == 0) {
-//			if (Utils.DEBUG) Log.d(Utils.LOG_TAG, "database released, counter: " + acquireCounter);
-//			keepDbOpen = false;
-//		}
 		if (! keepDbOpen) {
 			if (Utils.DEBUG) Log.d(Utils.LOG_TAG, "Closing database...");
 			super.close();
 		}
 	}
-
-//	@Override
-//	public void onOpen(SQLiteDatabase db) {
-//		super.onOpen(db);
-//
-//		if (Utils.DEBUG) Log.d(Utils.LOG_TAG, "db open request, counter: " + acquireCounter);
-//
-//		keepDbOpen = true;
-//		acquireCounter++;
-//	}
 
 	/**
 	 * calling this method will cause the database connection to be open until 
@@ -81,7 +66,7 @@ public abstract class AbstractSqlHelper extends SQLiteOpenHelper {
 		if (applicant == null)
 			applicant = "unknown";
 		if (acquireCounter == 0){
-			Log.d(Utils.LOG_TAG, "database released by " + applicant.toString());
+			if (Utils.DEBUG) Log.d(Utils.LOG_TAG, "database released by " + applicant.toString());
 			keepDbOpen = false;
 
 			if (close || closeDb) {
@@ -89,7 +74,7 @@ public abstract class AbstractSqlHelper extends SQLiteOpenHelper {
 				closeDb = false;
 			}
 		} else {
-			Log.d(Utils.LOG_TAG, String.format("request from %s: can NOT release db, still acquired... %d", applicant.toString(), acquireCounter));
+			if (Utils.DEBUG) Log.d(Utils.LOG_TAG, String.format("request from %s: can NOT release db, still acquired... %d", applicant.toString(), acquireCounter));
 			closeDb |= close;
 		}
 	}

@@ -170,6 +170,8 @@ Never let go to the trades, which nature you do not fully understand. Trading an
     <string name="chart">graf</string>
     <string name="save">Save</string>
 
-	<string name="loadingMarkets">Updating stock list...</string>
+	<string name="addStockItem">Add Stock</string>
+
+	<string name="loadingMarkets">Updating stock list…</string>
 	<string name="loadingMarketsFailed">Updating stock list failed. Try it again later.</string>
 </resources>

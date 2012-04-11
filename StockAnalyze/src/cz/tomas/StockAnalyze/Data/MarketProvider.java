@@ -33,7 +33,6 @@ public class MarketProvider {
 		InputStream stream = null;
 		try {
 			stream = DownloadService.GetInstance().openHttpConnection(url, true);
-//			Type listType = new TypeToken<Market[]>() {}.getType();
 			Market[] marketList = gson.fromJson(new InputStreamReader(stream), Market[].class);
 
 			markets = new LinkedHashMap<String, Market>(marketList.length);
