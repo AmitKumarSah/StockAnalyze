@@ -89,7 +89,6 @@
 
         <TextView
             style="@style/subText"
-            android:inputType="textMultiLine"
             android:padding="14dp"
             android:singleLine="false"
             android:text="@string/disclaimerShortText" />
