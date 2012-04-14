@@ -177,16 +177,24 @@ public class DataManager implements IStockDataListener {
 				try {
 					this.markets = provider.getMarkets(this.context);
 					this.sqlStore.updateMarkets(this.markets);
+					boolean success = true;
 
 					for (Market market : markets.values()) {
-						this.downloadStockItems(market);
+						try {
+							this.downloadStockItems(market);
+						} catch (Exception e) {
+							Log.e(Utils.LOG_TAG, "failed to download stocks for " + market, e);
+							success &= false;
+						}
 					}
 					this.downloadStockItems(Markets.GLOBAL);
-					SharedPreferences preferences = this.context.getSharedPreferences(Utils.PREF_NAME, 0);
-					preferences.edit()
-							.putLong(Utils.PREF_LAST_STOCK_LIST_UPDATE_TIME, System.currentTimeMillis())
-							.putLong(Utils.PREF_LAST_MARKET_LIST_UPDATE_TIME, System.currentTimeMillis())
-							.commit();
+					if (success) {
+						SharedPreferences preferences = this.context.getSharedPreferences(Utils.PREF_NAME, 0);
+						preferences.edit()
+								.putLong(Utils.PREF_LAST_STOCK_LIST_UPDATE_TIME, System.currentTimeMillis())
+								.putLong(Utils.PREF_LAST_MARKET_LIST_UPDATE_TIME, System.currentTimeMillis())
+								.commit();
+					}
 				} catch (Exception e) {
 					Log.e(Utils.LOG_TAG, "failed to download markets", e);
 				}

@@ -68,7 +68,7 @@ public final class StocksPagerAdapter extends FragmentPagerAdapter implements Ti
 	@Override
 	public String getTitle(int position) {
 		Market market = this.markets[position];
-		return market.getName();
+		return market.getName().toUpperCase();
 	}
 
 }
