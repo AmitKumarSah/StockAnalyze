@@ -24,6 +24,7 @@ import cz.tomas.StockAnalyze.utils.DownloadService;
 import cz.tomas.StockAnalyze.utils.Utils;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 
 /**
  * @author tomas
@@ -156,8 +157,9 @@ public class SearchStockDialogFragment extends DialogFragment {
 		@Override
 		public void run() {
 			try {
-				final String ticker = this.currentTicker;
+				final String ticker = URLEncoder.encode(this.currentTicker);
 				String url = String.format(URL_FIND, ticker);
+				if (Utils.DEBUG) Log.d(Utils.LOG_TAG, "searching for " + ticker);
 				byte[] data = DownloadService.GetInstance().DownloadFromUrl(url, false);
 				String text = new String(data, "UTF-8");
 				int start = String.format(RESPONSE_BEGINNING, ticker).length();

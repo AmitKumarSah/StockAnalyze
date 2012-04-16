@@ -30,7 +30,6 @@ import org.apache.http.util.ByteArrayBuffer;
 
 import java.io.*;
 import java.net.URL;
-import java.util.zip.GZIPInputStream;
 
 /**
  * Service for accessing remote resources
@@ -70,37 +69,23 @@ public class DownloadService {
 	}
 
 	public byte[] DownloadFromUrl(String downloadUrl, boolean compress) throws IOException {
+		InputStream is = null;
 		try {
 			URL url = new URL(downloadUrl);
 
 			long startTime = System.currentTimeMillis();
-			Log.d(Utils.LOG_TAG, "DownloadService; download begining");
-			Log.d(Utils.LOG_TAG, "DownloadService: download url:" + url);
+			if (Utils.DEBUG) Log.d(Utils.LOG_TAG, "DownloadService: download url:" + url);
 			/* Open a connection to the URL. */
-			InputStream is = openHttpConnection(downloadUrl);
-			BufferedInputStream bis = null;
-			if (compress) {
-				try {
-					InputStream gzipInput = new GZIPInputStream(is);
-					bis = new BufferedInputStream(gzipInput);
-				} catch (IOException e) {
-					Log.d(Utils.LOG_TAG, "DownloadService: Failed to create GZIP stream, using default one");
-					bis = new BufferedInputStream(is);
-				}
-			}
-			else
-				bis = new BufferedInputStream(is);
+			is = openHttpConnection(downloadUrl);
 
-			/*
-			 * Read bytes to the Buffer until there is nothing more to read(-1).
-			 */
+			// Read bytes to the Buffer until there is nothing more to read(-1).
 			ByteArrayBuffer baf = new ByteArrayBuffer(50);
 			int current = 0;
-			while ((current = bis.read()) != -1) {
+			while ((current = is.read()) != -1) {
 				baf.append((byte) current);
 			}
 
-			Log.d(Utils.LOG_TAG, "DownloadService: download finished in"
+			if (Utils.DEBUG) Log.d(Utils.LOG_TAG, "DownloadService: download finished in"
 					+ ((System.currentTimeMillis() - startTime) / 1000)
 					+ " sec");
 			
@@ -108,6 +93,10 @@ public class DownloadService {
 		} catch (IOException e) {
 			Log.d(Utils.LOG_TAG, "DownloadService: Error: " + e);
 			throw e;
+		} finally {
+			if (is != null) {
+				is.close();
+			}
 		}
 	}
 
