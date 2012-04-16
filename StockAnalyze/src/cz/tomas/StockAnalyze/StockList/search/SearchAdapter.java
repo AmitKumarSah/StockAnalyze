@@ -23,7 +23,7 @@ public final class SearchAdapter extends ArrayAdapter<String> {
 			return null;
 		}
 		final SearchResult result = results[position];
-		return String.format("%s(%s,%S)", result.getName(), result.getSymbol(), result.getExchDisp());
+		return String.format("%s(%s)", result.getName(), result.getSymbol());
 	}
 
 	public SearchResult getSearchItem(int position) {

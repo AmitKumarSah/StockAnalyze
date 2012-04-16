@@ -6,9 +6,13 @@ import android.util.Log;
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
+import cz.tomas.StockAnalyze.Data.StockDataSqlStore;
 import cz.tomas.StockAnalyze.utils.Utils;
 
 /**
+ * Task for getting concrete stock item from our server based on ticker.
+ * This task will also save the found stock item in database.
+ *
  * @author tomas
  */
 public abstract class SearchStockItemTask extends AsyncTask<String, Integer, StockItem> {
@@ -31,6 +35,10 @@ public abstract class SearchStockItemTask extends AsyncTask<String, Integer, Sto
 		StockItem item = null;
 		try {
 			item = DataManager.getInstance(context).search(ticker, market);
+			if (item != null) {
+				StockDataSqlStore sql = StockDataSqlStore.getInstance(context);
+				sql.insertStockItem(item);
+			}
 		} catch (Exception e) {
 			Log.e(Utils.LOG_TAG, "failed to search for stock item from market " + market, e);
 		}

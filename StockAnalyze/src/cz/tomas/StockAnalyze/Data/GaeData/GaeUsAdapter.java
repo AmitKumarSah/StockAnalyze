@@ -71,6 +71,9 @@ public class GaeUsAdapter extends GaeDataAdapter {
 					StockDataSqlStore sql = StockDataSqlStore.getInstance(this.context);
 					Map<String, StockItem> stocks = sql.getStockItems(market, null);
 
+					if (stocks == null || stocks.size() == 0) {
+						return false;
+					}
 					Map<String, DayData> data = this.provider.getYahooDayDataSet(stocks.values());
 					for (IStockDataListener listener : eventListeners) {
 						listener.OnStockDataUpdated(this, data);

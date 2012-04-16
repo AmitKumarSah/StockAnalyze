@@ -12,14 +12,11 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
 import com.google.gson.Gson;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.SearchResult;
-import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.StockList.search.SearchAdapter;
-import cz.tomas.StockAnalyze.StockList.search.SearchStockItemTask;
 import cz.tomas.StockAnalyze.utils.DownloadService;
 import cz.tomas.StockAnalyze.utils.Utils;
 
@@ -27,6 +24,8 @@ import java.io.IOException;
 import java.net.URLEncoder;
 
 /**
+ * Dialog showing list of stocks that were found for user input.
+ * This dialog is supposed to be connected with {@link CustomStockGridFragment}
  * @author tomas
  */
 public class SearchStockDialogFragment extends DialogFragment {
@@ -87,14 +86,8 @@ public class SearchStockDialogFragment extends DialogFragment {
 			@Override
 			public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
 				String ticker = ((SearchAdapter) list.getAdapter()).getSearchItem(position).getSymbol();
-				SearchStockItemTask task = new SearchStockItemTask(getActivity(), market) {
-					@Override
-					protected void onPostExecute(StockItem stockItem) {
-						final String text = stockItem != null ? stockItem.toString() : "null";
-						Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT).show();
-					}
-				};
-				task.execute(ticker);
+				((CustomStockGridFragment) getTargetFragment()).addStock(ticker);
+				dismiss();
 			}
 		});
 		this.progress = dialog.findViewById(R.id.findProgress);
@@ -160,6 +153,7 @@ public class SearchStockDialogFragment extends DialogFragment {
 				final String ticker = URLEncoder.encode(this.currentTicker);
 				String url = String.format(URL_FIND, ticker);
 				if (Utils.DEBUG) Log.d(Utils.LOG_TAG, "searching for " + ticker);
+
 				byte[] data = DownloadService.GetInstance().DownloadFromUrl(url, false);
 				String text = new String(data, "UTF-8");
 				int start = String.format(RESPONSE_BEGINNING, ticker).length();

@@ -158,6 +158,11 @@ Nikdy se nepouštějte do obchodů, jejichž podstatě plně nerozumíte. Obchod
     <string name="retry">Zkusit znovu</string>
     <string name="save">Uložit</string>
 
-	<string name="loadingMarkets">Aktualizuji seznam titulů...</string>
+	<string name="addStockItem">Přidat akciový titul</string>
+	<string name="addStockHint">Zadejte jméno či ticker</string>
+	<string name="addedStock">přidáno…</string>
+	<string name="addStockItemNotFound">Titul nebyl nalezen…</string>
+
+	<string name="loadingMarkets">Aktualizuji seznam titulů…</string>
 	<string name="loadingMarketsFailed">Selhala aktualizace, zkuste to znovu pozdeji.</string>
 </resources>
