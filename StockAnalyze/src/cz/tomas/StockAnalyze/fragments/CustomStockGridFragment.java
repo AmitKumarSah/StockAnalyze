@@ -24,7 +24,8 @@ public class CustomStockGridFragment extends StockGridFragment {
 		btnAdd.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				FindStockDialogFragment fragment = FindStockDialogFragment.newInstance(R.string.addStockItem);
+				SearchStockDialogFragment fragment = SearchStockDialogFragment.newInstance(R.string.addStockItem, helper.getMarket());
+				fragment.setTargetFragment(CustomStockGridFragment.this, 0);
 				fragment.show(getFragmentManager(), "addStock");
 			}
 		});

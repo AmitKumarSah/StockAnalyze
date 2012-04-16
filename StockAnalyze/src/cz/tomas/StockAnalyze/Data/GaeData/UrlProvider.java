@@ -26,6 +26,7 @@ public final class UrlProvider {
 	static final String ARG_IND_LIST = "indList";
 	static final String ARG_STOCK = "stockId";
 	static final String ARG_TIME = "timePeriod";
+	static final String ARG_TICKER = "ticker";
 	
 	/**
 	 * day data
@@ -43,6 +44,10 @@ public final class UrlProvider {
 	 * indeces data
 	 */
 	static final String TYPE_INDATA = "INDATA";
+	/**
+	 * yahoo data
+	 */
+	static final String TYPE_YDATA = "YDATA";
 
 	/**
 	 * market data
@@ -138,7 +143,7 @@ public final class UrlProvider {
 	public synchronized String getUrl(String type, String... args) {
 		final long diff = System.currentTimeMillis() - this.pref.getLong(Utils.PREF_URLS_TIME, 0);
 
-		if (this.urls == null || this.urls.size() == 0 || 
+		if (this.urls == null || this.urls.size() == 0 || ! this.urls.containsKey(type) ||
 				diff > MAX_URL_VALID_TIME) {
 			this.downloadUrls();
 		}

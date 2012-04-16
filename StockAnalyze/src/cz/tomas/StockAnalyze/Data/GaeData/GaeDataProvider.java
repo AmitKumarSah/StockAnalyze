@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
+import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.utils.DownloadService;
 import cz.tomas.StockAnalyze.utils.Utils;
@@ -14,6 +15,7 @@ import cz.tomas.StockAnalyze.utils.Utils;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.net.URLEncoder;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +47,22 @@ public final class GaeDataProvider {
 		String baseUrl = this.urls.getUrl(UrlProvider.TYPE_DDATA, UrlProvider.ARG_MARKET);
 		String url = String.format(baseUrl, countryCode);
 		
+		Map<String, DayData> data = getDataSet(url);
+		return data;
+	}
+
+	Map<String, DayData> getYahooDayDataSet(Collection<StockItem> stocks) throws IOException {
+		if (stocks == null || stocks.size() == 0) {
+			throw new NullPointerException("stocks can't be empty!");
+		}
+		String baseUrl = this.urls.getUrl(UrlProvider.TYPE_DDATA, UrlProvider.ARG_TICKER);
+		StringBuilder builder = new StringBuilder();
+		for (StockItem stock : stocks) {
+			builder.append(String.format("\"%s\"", stock.getTicker()));
+		}
+		builder.setLength(builder.length() -1);             // last comma
+		String url = String.format(baseUrl, URLEncoder.encode(builder.toString()));
+
 		Map<String, DayData> data = getDataSet(url);
 		return data;
 	}
@@ -101,6 +119,29 @@ public final class GaeDataProvider {
 			try {
 				Type listType = new TypeToken<DayData>() {}.getType();
 				data = gson.fromJson(new InputStreamReader(stream, "UTF-8"), listType);
+			} catch (IOException ex) {
+				Log.e(Utils.LOG_TAG, "failed to parse data from " + url, ex);
+				throw ex;
+			}
+		} finally {
+			if (stream != null) {
+				stream.close();
+			}
+		}
+		return data;
+	}
+
+	public StockItem search(String ticker, Market market) throws IOException {
+		String url = this.urls.getUrl(UrlProvider.TYPE_YDATA, UrlProvider.ARG_TICKER);
+		url = String.format(url, URLEncoder.encode(String.format("\"%s\"", ticker)));
+		if (Utils.DEBUG) Log.d(Utils.LOG_TAG, "connecting to " + url);
+		StockItem data;
+
+		InputStream stream = null;
+		try {
+			stream = DownloadService.GetInstance().openHttpConnection(url, true);
+			try {
+				data = gson.fromJson(new InputStreamReader(stream, "UTF-8"), StockItem.class);
 			} catch (IOException ex) {
 				Log.e(Utils.LOG_TAG, "failed to parse data from " + url, ex);
 				throw ex;
@@ -235,4 +276,5 @@ public final class GaeDataProvider {
 		
 		return true;
 	}
+
 }

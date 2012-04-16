@@ -74,7 +74,9 @@ public class DataProviderFactory {
 	 * @return stock provider
 	 */
 	public static IStockDataProvider getRealTimeDataProvider(Market market) {
-		
+		if (market == null) {
+			throw new IllegalArgumentException("market cannot be null");
+		}
 		for (Entry<String, IStockDataProvider> provider : providers.entrySet()) {
 			DataProviderAdviser providerAdviser =  provider.getValue().getAdviser();
 			
@@ -107,6 +109,21 @@ public class DataProviderFactory {
 			}
 		}
 		
+		return null;
+	}
+
+	public static IStockDataProvider getSearchDataProvider(Market market) {
+		if (market == null) {
+			throw new IllegalArgumentException("market cannot be null");
+		}
+		for (Entry<String, IStockDataProvider> provider : providers.entrySet()) {
+			DataProviderAdviser providerAdviser =  provider.getValue().getAdviser();
+
+			if (providerAdviser.isSupportSearch() && providerAdviser.getMarketCode().contains(market.getCountry())) {
+				return provider.getValue();
+			}
+		}
+
 		return null;
 	}
 }

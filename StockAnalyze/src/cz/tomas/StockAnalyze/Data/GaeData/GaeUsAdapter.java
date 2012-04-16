@@ -7,34 +7,43 @@ import cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
+import cz.tomas.StockAnalyze.Data.StockDataSqlStore;
 import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetDataException;
 import cz.tomas.StockAnalyze.utils.Utils;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-public class GaeXetraAdapter extends GaeDataAdapter {
+/**
+ * @author tomas
+ */
+public class GaeUsAdapter extends GaeDataAdapter {
 
-	public static final String MARKET_CODE = "de";
+//	public static final String MARKET_CODE_NYSE = "us_nyse";
+//	public static final String MARKET_CODE_NASDAQ = "us_nasdaq";
+	public static final String MARKET_CODE = "us";
+	public static final String ID = "GAE US Provider";
+
 	private final DataProviderAdviser adviser;
+	private final Context context;
 
-	public GaeXetraAdapter(Context context) {
+	public GaeUsAdapter(Context context) {
 		super(context);
-		adviser = new DataProviderAdviser(true, true, true, MARKET_CODE, false);
+		this.context = context;
+//		HashSet<String> markets = new HashSet<String>(2);
+//		markets.add(MARKET_CODE_NASDAQ);
+//		markets.add(MARKET_CODE_NYSE);
+		adviser = new DataProviderAdviser(true, true, true, MARKET_CODE, true);
 	}
 
-	public static final String ID = "GAE Xetra Provider";
-
 	@Override
-	public List<StockItem> getAvailableStockList(Market market)
-			throws FailedToGetDataException {
-		List<StockItem> stockList;
+	public List<StockItem> getAvailableStockList(Market market) throws FailedToGetDataException {
 		try {
-			stockList = this.provider.getStockList("de");
-		} catch (Exception e) {
+			return this.provider.getStockList(market.getCountry());
+		} catch (IOException e) {
 			throw new FailedToGetDataException("failed to get stock list", e);
 		}
-		return stockList;
 	}
 
 	@Override
@@ -44,7 +53,7 @@ public class GaeXetraAdapter extends GaeDataAdapter {
 
 	@Override
 	public String getDescriptiveName() {
-		return "GAE Xetra data provider";
+		return "GAE provider for nasdaq & nyse";
 	}
 
 	@Override
@@ -58,10 +67,11 @@ public class GaeXetraAdapter extends GaeDataAdapter {
 				} catch (Exception e) {
 					Log.e(Utils.LOG_TAG, "OnStockDataUpdateBegin failed!", e);
 				}
-				// the market could be closed, so we don't necessarily get updated data
 				if (provider.refresh()) {
-					// if refresh proceeded and the market is open, fire the event
-					Map<String, DayData> data = this.provider.getDayDataSet("de");
+					StockDataSqlStore sql = StockDataSqlStore.getInstance(this.context);
+					Map<String, StockItem> stocks = sql.getStockItems(market, null);
+
+					Map<String, DayData> data = this.provider.getYahooDayDataSet(stocks.values());
 					for (IStockDataListener listener : eventListeners) {
 						listener.OnStockDataUpdated(this, data);
 					}
@@ -72,10 +82,15 @@ public class GaeXetraAdapter extends GaeDataAdapter {
 				}
 				return true;
 			} catch (Exception e) {
-				Log.e(Utils.LOG_TAG, "Regular update failed!", e);
+				Log.e(Utils.LOG_TAG, "Regular update failed for " + market, e);
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public StockItem search(String ticker, Market market) throws IOException {
+		return provider.search(ticker, market);
 	}
 
 	@Override

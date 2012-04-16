@@ -33,7 +33,7 @@ public class GaeGeneralAdapter extends GaeDataAdapter {
 		marketCodes.add("sw");
 		marketCodes.add("jp");
 		marketCodes.add("rus");
-		adviser = new DataProviderAdviser(true, true, true, marketCodes);
+		adviser = new DataProviderAdviser(true, true, true, false, marketCodes);
 		provider = new GaeDataProvider(context);
 	}
 

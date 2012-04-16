@@ -17,12 +17,12 @@ import java.util.Map;
 public class GaePseDataAdapter extends GaeDataAdapter {
 
 	public static final String MARKET_CODE = "cz";
+	public static final String ID = "GAE PSE Provider";
 
 	public GaePseDataAdapter(Context context) {
 		super(context);
 	}
 
-	public static final String ID = "GAE PSE Provider";	
 	
 	@Override
 	public List<StockItem> getAvailableStockList(Market market)
@@ -79,7 +79,7 @@ public class GaePseDataAdapter extends GaeDataAdapter {
 
 	@Override
 	public DataProviderAdviser getAdviser() {
-		DataProviderAdviser adviser = new DataProviderAdviser(true, true, true, MARKET_CODE);
+		DataProviderAdviser adviser = new DataProviderAdviser(true, true, true, MARKET_CODE, false);
 		return adviser;
 	}
 }

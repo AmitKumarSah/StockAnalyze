@@ -23,6 +23,7 @@ package cz.tomas.StockAnalyze.Data;
 import cz.tomas.StockAnalyze.Data.Interfaces.IObservableDataProvider;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.Market;
+import cz.tomas.StockAnalyze.Data.Model.SearchResult;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetDataException;
 
@@ -69,4 +70,5 @@ public interface IStockDataProvider extends IObservableDataProvider {
 	boolean refresh(Market market);
 	DataProviderAdviser getAdviser();
 	void enable(boolean enabled);
+	StockItem search(String ticker, Market market) throws IOException;
 }

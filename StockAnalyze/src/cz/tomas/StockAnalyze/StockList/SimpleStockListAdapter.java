@@ -25,7 +25,6 @@ import java.util.Map;
 public final class SimpleStockListAdapter extends BaseAdapter {
 
 	private StockItem[] stocks;
-	//private Market market;
 	private final Context context;
 	
 	private final LayoutInflater inflater;
@@ -36,7 +35,6 @@ public final class SimpleStockListAdapter extends BaseAdapter {
 	 */
 	public SimpleStockListAdapter(Context context, Market market, IListAdapterListener<StockItem> listener) {
 		super();
-		//this.market = market;
 		this.context = context;
 		this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.listener = listener;

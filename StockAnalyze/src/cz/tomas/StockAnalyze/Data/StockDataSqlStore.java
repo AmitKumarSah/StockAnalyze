@@ -221,7 +221,6 @@ public class StockDataSqlStore extends DataSqlHelper {
 						String id = c.getString(c.getColumnIndex(StockColumns._ID));
 						String ticker = c.getString(c.getColumnIndex(StockColumns.TICKER));
 						String name = c.getString(c.getColumnIndex(StockColumns.NAME));
-						//String marketId = c.getString(c.getColumnIndex(StockColumns.MARKET_ID));
 						StockItem item = new StockItem(ticker, id, name, market);
 						items.put(id, item);
 					} while (c.moveToNext());

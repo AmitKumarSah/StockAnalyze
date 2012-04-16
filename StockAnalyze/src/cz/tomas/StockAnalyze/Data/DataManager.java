@@ -25,10 +25,7 @@ import android.content.SharedPreferences;
 import android.os.Handler;
 import android.util.Log;
 import cz.tomas.StockAnalyze.Application;
-import cz.tomas.StockAnalyze.Data.GaeData.GaeGeneralAdapter;
-import cz.tomas.StockAnalyze.Data.GaeData.GaeIndecesDataAdapter;
-import cz.tomas.StockAnalyze.Data.GaeData.GaePseDataAdapter;
-import cz.tomas.StockAnalyze.Data.GaeData.GaeXetraAdapter;
+import cz.tomas.StockAnalyze.Data.GaeData.*;
 import cz.tomas.StockAnalyze.Data.Interfaces.IMarketListener;
 import cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener;
 import cz.tomas.StockAnalyze.Data.Interfaces.IUpdateDateChangedListener;
@@ -96,11 +93,13 @@ public class DataManager implements IStockDataListener {
 		IStockDataProvider gaeIndices = new GaeIndecesDataAdapter(context);
 		IStockDataProvider gaeXetra = new GaeXetraAdapter(context);
 		IStockDataProvider gaeGeneral = new GaeGeneralAdapter(context);
+		IStockDataProvider gaeUs = new GaeUsAdapter(context);
 
 		DataProviderFactory.registerDataProvider(gaePse);
 		DataProviderFactory.registerDataProvider(gaeIndices);
 		DataProviderFactory.registerDataProvider(gaeXetra);
 		DataProviderFactory.registerDataProvider(gaeGeneral);
+		DataProviderFactory.registerDataProvider(gaeUs);
 		
 		this.updateDateChangedListeners = new ArrayList<IUpdateDateChangedListener>();
 		this.updateStockDataListeners = new ArrayList<IStockDataListener>();
@@ -116,6 +115,9 @@ public class DataManager implements IStockDataListener {
 
 		gaeGeneral.enable(true);
 		gaeGeneral.addListener(this);
+
+		gaeUs.enable(true);
+		gaeUs.addListener(this);
 
 		// load markets, this is essential for whole application
 		Thread marketsThread = new Thread(new Runnable() {
@@ -226,6 +228,16 @@ public class DataManager implements IStockDataListener {
 				listener.onMarketsAvailable(allMarkets);
 			}
 		}
+	}
+
+	/**
+	 * search providers for stock item
+	 * @param ticker stock ticker
+	 * @return found stock item or null
+	 */
+	public StockItem search(String ticker, Market market) throws IOException {
+		IStockDataProvider provider = DataProviderFactory.getSearchDataProvider(market);
+		return provider.search(ticker, market);
 	}
 
 	/**

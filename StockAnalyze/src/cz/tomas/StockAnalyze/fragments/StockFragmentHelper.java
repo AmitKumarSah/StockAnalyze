@@ -73,7 +73,11 @@ final class StockFragmentHelper implements LoaderCallbacks<Map<StockItem, DayDat
 				return false;
 		}
 	}
-	
+
+	public Market getMarket() {
+		return market;
+	}
+
 	void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		MenuInflater inflater = this.fragment.getActivity().getMenuInflater();
 		inflater.inflate(R.menu.stock_item_context_menu, menu);

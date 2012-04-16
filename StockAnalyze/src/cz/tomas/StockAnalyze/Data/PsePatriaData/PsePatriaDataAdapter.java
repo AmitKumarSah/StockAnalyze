@@ -229,7 +229,7 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 	 */
 	@Override
 	public DataProviderAdviser getAdviser() {
-		DataProviderAdviser adviser = new DataProviderAdviser(true, false, false, "cz");
+		DataProviderAdviser adviser = new DataProviderAdviser(true, false, false, "cz", false);
 		return adviser;
 	}
 
@@ -244,6 +244,11 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 		if (this.updateHandler != null) {
 			this.updateHandler.removeCallbacks(this.updateTask);
 		}
+	}
+
+	@Override
+	public StockItem search(String ticker, Market market) {
+		return null;
 	}
 
 	@Override

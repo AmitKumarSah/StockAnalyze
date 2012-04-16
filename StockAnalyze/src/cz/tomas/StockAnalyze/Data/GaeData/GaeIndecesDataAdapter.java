@@ -79,7 +79,7 @@ public final class GaeIndecesDataAdapter extends GaeDataAdapter {
 
 	@Override
 	public DataProviderAdviser getAdviser() {
-		DataProviderAdviser adviser = new DataProviderAdviser(true, true, true, MARKET_CODE);
+		DataProviderAdviser adviser = new DataProviderAdviser(true, true, true, MARKET_CODE, false);
 		return adviser;
 	}
 }

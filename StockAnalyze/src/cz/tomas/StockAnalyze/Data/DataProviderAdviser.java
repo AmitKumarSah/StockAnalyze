@@ -33,22 +33,26 @@ public class DataProviderAdviser {
 	private final boolean isRealTime;
 	private final boolean supportHistorical;
 	private final boolean supportStatistics;
+
+	private final boolean supportSearch;
 	private final HashSet<String> marketCodes;
 	
 	public DataProviderAdviser(boolean isRealTime, boolean supportHistorical,
-			boolean supportStatistics, String marketCode) {
+	                           boolean supportStatistics, String marketCode, boolean supportSearch) {
 		this.isRealTime = isRealTime;
 		this.supportHistorical = supportHistorical;
 		this.supportStatistics = supportStatistics;
+		this.supportSearch = supportSearch;
 		this.marketCodes = new HashSet<String>(1);
 		this.marketCodes.add(marketCode);
 	}
 
 	public DataProviderAdviser(boolean isRealTime, boolean supportHistorical,
-	                           boolean supportStatistics, HashSet<String> marketCodes) {
+	                           boolean supportStatistics, boolean supportSearch, HashSet<String> marketCodes) {
 		this.isRealTime = isRealTime;
 		this.supportHistorical = supportHistorical;
 		this.supportStatistics = supportStatistics;
+		this.supportSearch = supportSearch;
 		this.marketCodes = marketCodes;
 	}
 
@@ -75,7 +79,11 @@ public class DataProviderAdviser {
 	 */
 	public boolean supportStatistics() {
 		return supportStatistics;
-	}	
+	}
+
+	public boolean isSupportSearch() {
+		return supportSearch;
+	}
 
 	/* 
 	 * string representation

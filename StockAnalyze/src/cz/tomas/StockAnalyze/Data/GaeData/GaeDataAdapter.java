@@ -4,6 +4,8 @@ import android.content.Context;
 import cz.tomas.StockAnalyze.Data.IStockDataProvider;
 import cz.tomas.StockAnalyze.Data.Interfaces.IStockDataListener;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
+import cz.tomas.StockAnalyze.Data.Model.Market;
+import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetDataException;
 
 import java.io.IOException;
@@ -70,8 +72,13 @@ public abstract class GaeDataAdapter implements IStockDataProvider {
 	}
 
 	@Override
+	public StockItem search(String ticker, Market market) throws IOException {
+		return null;
+	}
+
+	@Override
 	public Map<Long, Float> getHistoricalPriceSet(String ticker, int timePeriod) throws FailedToGetDataException {
-		Map<Long, Float> data = null;
+		Map<Long, Float> data;
 		try {
 			data = this.provider.getHistoricalData(ticker, timePeriod);
 		} catch (Exception e) {

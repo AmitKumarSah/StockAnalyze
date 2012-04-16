@@ -28,12 +28,6 @@ public class StockGridFragment extends Fragment implements IStockFragment, DragC
 	protected View progress;
 
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		//this.setRetainInstance(true);
-		super.onCreate(savedInstanceState);
-	}
-
-	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.stock_grid, container, false);
 		this.grid = (GridView) v.findViewById(R.id.gridview);
@@ -41,6 +35,7 @@ public class StockGridFragment extends Fragment implements IStockFragment, DragC
 		return v;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
