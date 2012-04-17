@@ -24,6 +24,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteStatement;
+import android.text.TextUtils;
 import cz.tomas.StockAnalyze.Data.DataSqlHelper;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.PortfolioItem;
@@ -59,18 +61,27 @@ import java.util.Map;
  * @author tomas
  *
  */
-public class PortfolioSqlHelper extends DataSqlHelper {
+class PortfolioSqlHelper extends DataSqlHelper {
+
+	/**
+	 * reused builder
+	 */
+	private final StringBuilder builder;
 
 	PortfolioSqlHelper(Context context) {
 		super(context);
+		builder = new StringBuilder();
 	}
 
 	/**
 	 * add new portfolio item to database
-	 * @param item
+	 * @param item item to add
 	 * @throws SQLException
 	 */
 	void addPortfolioItem(PortfolioItem item) throws SQLException {
+		if (item == null) {
+			throw new IllegalArgumentException("portfolio item cannot be null!");
+		}
 		SQLiteDatabase db = null;
 		try {
 			db = this.getWritableDatabase();
@@ -104,6 +115,9 @@ public class PortfolioSqlHelper extends DataSqlHelper {
 	 * and group them to get total count and sum buy/sell prices
 	 */
 	public Map<String, PortfolioItem> getGroupedPortfolioItems(boolean bought, Market market) {
+		if (market == null || TextUtils.isEmpty(market.getCurrencyCode())) {
+			throw new IllegalArgumentException("market can't be null and must have set currency code");
+		}
 		Map<String, PortfolioItem> items = new HashMap<String, PortfolioItem>();
 		Cursor c = null;
 		SQLiteDatabase db = null;
@@ -130,16 +144,18 @@ public class PortfolioSqlHelper extends DataSqlHelper {
 			if (ids.length == 0) {
 				return null;
 			}
-			
-			StringBuilder builder = new StringBuilder(PortfolioColumns.MARKET_ID);
-			builder.append(" in (");
-			for (int i = 0; i < ids.length; i++) {
-				builder.append("?,");
-			}
-			builder.setLength(builder.length() - 1);
-			builder.append(")");
 
-			String portfolioSelection = bought ? "count > 0" : "count < 0";
+			final String selection;
+			synchronized (this.builder) {
+				this.builder.append(PortfolioColumns.MARKET_ID);
+				this.builder.append(" in (");
+				for (int i = 0; i < ids.length; i++) {
+					this.builder.append("?,");
+				}
+				this.builder.setLength(builder.length() - 1);
+				this.builder.append(")");
+
+				String portfolioSelection = bought ? "count > 0" : "count < 0";
 //			String sql = String.format("SELECT %s FROM %s p JOIN %s m on p.%s = m.%s WHERE m.%s=? AND %s" +
 //										" ORDER BY p.%s",
 //										PortfolioColumns.GROUPED_PROJECTION_STRING, PORTFOLIO_TABLE_NAME, MARKET_TABLE_NAME,
@@ -149,7 +165,9 @@ public class PortfolioSqlHelper extends DataSqlHelper {
 //					"buy_date", "sell_date", "name", "SUM(buy_fee)", "SUM(sell_fee)", "market_id", "_id" },
 //					selection, null, "stock_id", null, "buy_date");
 //			c = db.rawQuery(sql, new String[] { market.getCurrencyCode() });
-			final String selection = String.format("%s AND %s", portfolioSelection, builder.toString());
+				selection = String.format("%s AND %s", portfolioSelection, builder.toString());
+				this.builder.setLength(0);
+			}
 			c = db.query(PORTFOLIO_TABLE_NAME, PortfolioColumns.PROJECTION_AGG,
 					selection, ids, "stock_id", null, PortfolioColumns.DEFAULT_SORT);
 			if (c.moveToFirst())
@@ -176,8 +194,61 @@ public class PortfolioSqlHelper extends DataSqlHelper {
 		}
 		return items;
 	}
-	
-	
+
+	/**
+	 * get number of portfolio items in database that have given currency
+	 * @param currencyCode currency code to look for
+	 * @return number of found items
+	 */
+	public long getPortfolioItemsCount(String currencyCode) {
+		if (TextUtils.isEmpty(currencyCode)) {
+			throw new IllegalArgumentException("Currency code cannot be empty!");
+		}
+		SQLiteDatabase db = null;
+		try {
+			db = this.getWritableDatabase();
+			// get markets with currency of our market
+			final String marketSelection = MarketColumns.CURRENCY.concat("=?");
+			Cursor marketCursor = db.query(MARKET_TABLE_NAME, new String[] { MarketColumns._ID }, marketSelection,
+					new String[] { currencyCode }, null, null, null);
+
+			String[] ids = new String[marketCursor.getCount()];
+			try {
+				int index = 0;
+				if (marketCursor.moveToFirst()) {
+					do {
+						String id = marketCursor.getString(0);
+						ids[index] = id;
+						index++;
+					} while (marketCursor.moveToNext());
+				}
+			} finally {
+				marketCursor.close();
+			}
+			if (ids.length == 0) {
+				return 0;
+			}
+			final String sql;
+			synchronized (this.builder) {
+				this.builder.append(PortfolioColumns.MARKET_ID);
+				this.builder.append(" in (");
+				for (String id : ids) {
+					this.builder.append("'");
+					this.builder.append(id);
+					this.builder.append("',");
+				}
+				this.builder.setLength(builder.length() - 1);   // last comma
+				this.builder.append(")");
+				sql = String.format("SELECT COUNT(*) FROM %s WHERE %s", PORTFOLIO_TABLE_NAME, builder.toString());
+				this.builder.setLength(0);
+			}
+			SQLiteStatement statement = db.compileStatement(sql);
+			return statement.simpleQueryForLong();
+		} finally {
+			this.close();
+		}
+	}
+
 	/**
 	 * get all portfolio items in database
 	 */
@@ -265,5 +336,4 @@ public class PortfolioSqlHelper extends DataSqlHelper {
 			this.close();
 		}
 	}
-
 }

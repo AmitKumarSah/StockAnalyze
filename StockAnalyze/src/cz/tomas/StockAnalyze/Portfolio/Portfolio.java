@@ -33,7 +33,7 @@ import java.util.*;
 import java.util.Map.Entry;
 
 /**
- * class wrapping all portfolio functionality
+ * Class wrapping all portfolio functionality. To access instance use {@link cz.tomas.StockAnalyze.Application#getSystemService(String)}
  * @author tomas
  *
  */
@@ -84,8 +84,8 @@ public class Portfolio {
 	/**
 	 * get portfolio items grouped by stock id - sums up positions. So for each stock, that is in 
 	 * portfolio, it will find all portfolio items and group them to get total count and average buy/sell prices
-	 * @param market 
-	 * @return
+	 * @param market  market containing currency we use to group items by
+	 * @return list of loaded items
 	 */
 	public List<PortfolioItem> getGroupedPortfolioItems(Market market) {
 		this.sqlHelper.acquireDb(this);
@@ -123,10 +123,13 @@ public class Portfolio {
 		
 		return result;
 	}
-	
+
+	public long getPortfolioItemsCount(Market market) {
+		return this.sqlHelper.getPortfolioItemsCount(market.getCurrencyCode());
+	}
 	/**
 	 * get every single portfolio item in database for given stock
-	 * @return
+	 * @return list of loaded items
 	 */
 	public List<PortfolioItem> getPortfolioItems(String stockId) {
 		try {
@@ -175,7 +178,7 @@ public class Portfolio {
 				try {
 					this.sqlHelper.getWritableDatabase().endTransaction();
 				} catch (Exception e) {
-					Log.e(Utils.LOG_TAG, "faild to end transaction", e);
+					Log.e(Utils.LOG_TAG, "failed to end transaction", e);
 				}
 				this.sqlHelper.releaseDb(true, this);
 			}

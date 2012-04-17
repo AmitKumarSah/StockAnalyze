@@ -142,6 +142,14 @@ public class DataManager implements IStockDataListener {
 	}
 
 	/**
+	 * check if market collections is loaded in memory
+	 * @return true if we have market collection ready to use
+	 */
+	public boolean isMarketCollectionAvailable() {
+		return this.markets != null && this.markets.size() > 0;
+	}
+
+	/**
 	 * get supported markets
 	 * @return collection of markets or null if they are not yet available
 	 */

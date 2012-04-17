@@ -5,6 +5,8 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.Menu;
@@ -13,6 +15,7 @@ import android.view.MenuItem;
 import com.viewpagerindicator.TitlePageIndicator;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
+import cz.tomas.StockAnalyze.Portfolio.PortfolioMarketsLoader;
 import cz.tomas.StockAnalyze.Portfolio.PortfolioPagerAdapter;
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.fragments.ConfirmDialogFragment;
@@ -27,7 +30,7 @@ import java.util.Collection;
  * @author tomas
  *
  */
-public final class PortfoliosActivity extends AbstractStocksActivity implements OnPageChangeListener {
+public final class PortfoliosActivity extends AbstractStocksActivity implements LoaderManager.LoaderCallbacks<Collection<Market>>, OnPageChangeListener {
 
 	public static final int DIALOG_PROGRESS = 1000;
 	public static final int DIALOG_ADD_NEW = DIALOG_PROGRESS + 1;
@@ -37,9 +40,6 @@ public final class PortfoliosActivity extends AbstractStocksActivity implements 
 	private ViewPager pager;
 	private TitlePageIndicator titleIndicator;
 
-	/* (non-Javadoc)
-		 * @see android.support.v4.app.FragmentActivity#onCreate(android.os.Bundle)
-		 */
 	@Override
 	protected void onCreate(Bundle arg0) {
 		super.onCreate(arg0);
@@ -51,10 +51,9 @@ public final class PortfoliosActivity extends AbstractStocksActivity implements 
 		this.titleIndicator.setOnPageChangeListener(this);
 
 		this.pager = (ViewPager) this.findViewById(R.id.portfoliosViewPager);
-		Collection<Market> markets = dataManager.getMarkets();
 
-		if (markets != null) {
-			onPrepareData(markets);
+		if (dataManager.isMarketCollectionAvailable()) {
+			onPrepareData(dataManager.getMarkets());
 		} else {
 			this.showProgressDialog(R.string.loading, R.string.loadingMarkets, new DialogInterface.OnCancelListener() {
 				@Override
@@ -112,16 +111,15 @@ public final class PortfoliosActivity extends AbstractStocksActivity implements 
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-	    // Handle item selection
 	    switch (item.getItemId()) {
 	    case R.id.menu_refresh:
-	    	//this.adapter.refresh();
 	        return super.onOptionsItemSelected(item);
 	    case R.id.menu_portfolio_settings:
 	    	NavUtils.goToSettings(this);
 	        return true;
 	    case R.id.menu_portfolio_add:
 	    	this.showDialog(DIALOG_ADD_NEW);
+		    this.getSupportLoaderManager().restartLoader(0, null, this);
 	    	return true;
 	    default:
 	        return super.onOptionsItemSelected(item);
@@ -156,9 +154,24 @@ public final class PortfoliosActivity extends AbstractStocksActivity implements 
 			});
 			dialog.show(getSupportFragmentManager(), TAG_CONFIRM);
 		} else {
-			this.pager.setAdapter(new PortfolioPagerAdapter(getSupportFragmentManager(), markets));
-			this.pager.setCurrentItem(0);
-			this.titleIndicator.setViewPager(this.pager);
+			getSupportLoaderManager().initLoader(0, null, this);
 		}
+	}
+
+	@Override
+	public Loader<Collection<Market>> onCreateLoader(int id, Bundle args) {
+		return new PortfolioMarketsLoader(this);
+	}
+
+	@Override
+	public void onLoadFinished(Loader<Collection<Market>> loader, Collection<Market> data) {
+
+		this.pager.setAdapter(new PortfolioPagerAdapter(getSupportFragmentManager(), data));
+		this.pager.setCurrentItem(0);
+		this.titleIndicator.setViewPager(this.pager);
+	}
+
+	@Override
+	public void onLoaderReset(Loader<Collection<Market>> loader) {
 	}
 }

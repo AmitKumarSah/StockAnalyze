@@ -371,13 +371,27 @@ public class StockDataSqlStore extends DataSqlHelper {
 		}
 		return items;
 	}
-	
+
+	/**
+	 * get all markets currently present in database
+	 * @return map of market's id and market
+	 */
 	public Map<String, Market> getMarkets() {
+		return this.getMarkets(false);
+	}
+
+	/**
+	 * get all markets in database
+	 * @param groupByCurrency true to group markets by their currency
+	 * @return map of market's id and market
+	 */
+	public Map<String, Market> getMarkets(boolean groupByCurrency) {
 		Map<String, Market> markets = null;
 		SQLiteDatabase db = this.getWritableDatabase();
 		Cursor cursor = null;
 		try {
-			cursor = db.query(MARKET_TABLE_NAME, MarketColumns.PROJECTION, null, null, null, null, MarketColumns.UI_ORDER);
+			final String groupBy = groupByCurrency ? MarketColumns.CURRENCY : null;
+			cursor = db.query(MARKET_TABLE_NAME, MarketColumns.PROJECTION, null, null, groupBy, null, MarketColumns.UI_ORDER);
 			if (cursor.moveToFirst()) {
 				markets = new LinkedHashMap<String, Market>(cursor.getCount());
 				do {
