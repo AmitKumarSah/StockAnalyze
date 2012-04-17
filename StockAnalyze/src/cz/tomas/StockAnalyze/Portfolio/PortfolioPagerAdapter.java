@@ -27,6 +27,15 @@ public final class PortfolioPagerAdapter extends FragmentPagerAdapter implements
 			this.markets = markets.toArray(new Market[markets.size()]);
 		}
 	}
+
+	public void setMarkets(Collection<Market> markets) {
+		if (markets != null) {
+			this.markets = markets.toArray(new Market[markets.size()]);
+		} else {
+			this.markets = null;
+		}
+		this.notifyDataSetChanged();
+	}
 	
 	@Override
 	public Fragment getItem(int position) {

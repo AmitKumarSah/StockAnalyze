@@ -9,6 +9,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -22,6 +23,7 @@ import cz.tomas.StockAnalyze.fragments.ConfirmDialogFragment;
 import cz.tomas.StockAnalyze.ui.widgets.PickStockDialog;
 import cz.tomas.StockAnalyze.ui.widgets.PickStockDialog.IStockDialogListener;
 import cz.tomas.StockAnalyze.utils.NavUtils;
+import cz.tomas.StockAnalyze.utils.Utils;
 
 import java.util.Collection;
 
@@ -38,6 +40,7 @@ public final class PortfoliosActivity extends AbstractStocksActivity implements 
 	public static final String EXTRA_STOCK_ITEM = "portfolioStockItem";
 	
 	private ViewPager pager;
+	private PortfolioPagerAdapter pagerAdapter;
 	private TitlePageIndicator titleIndicator;
 
 	@Override
@@ -46,11 +49,14 @@ public final class PortfoliosActivity extends AbstractStocksActivity implements 
 		
 		this.setContentView(R.layout.portfolios);
 
-		//Bind the title indicator to the adapter
-		this.titleIndicator = (TitlePageIndicator) findViewById(R.id.portfoliosPagerTitles);
-		this.titleIndicator.setOnPageChangeListener(this);
-
 		this.pager = (ViewPager) this.findViewById(R.id.portfoliosViewPager);
+		this.pagerAdapter = new PortfolioPagerAdapter(getSupportFragmentManager(), null);
+		this.pager.setAdapter(pagerAdapter);
+
+		//Bind the title indicator to the pagerAdapter
+		titleIndicator = (TitlePageIndicator) findViewById(R.id.portfoliosPagerTitles);
+		titleIndicator.setOnPageChangeListener(this);
+		titleIndicator.setViewPager(this.pager, 0);
 
 		if (dataManager.isMarketCollectionAvailable()) {
 			onPrepareData(dataManager.getMarkets());
@@ -144,6 +150,7 @@ public final class PortfoliosActivity extends AbstractStocksActivity implements 
 	}
 
 	protected void onPrepareData(Collection<Market> markets) {
+		if (Utils.DEBUG) Log.d(Utils.LOG_TAG, "preparing data for portfolio from " + markets);
 		this.dismissProgress();
 		if (markets == null || markets.size() == 0) {
 			ConfirmDialogFragment dialog = ConfirmDialogFragment.newInstance(R.string.loadingMarketsFailed, new ConfirmDialogFragment.IConfirmListener() {
@@ -165,13 +172,12 @@ public final class PortfoliosActivity extends AbstractStocksActivity implements 
 
 	@Override
 	public void onLoadFinished(Loader<Collection<Market>> loader, Collection<Market> data) {
-
-		this.pager.setAdapter(new PortfolioPagerAdapter(getSupportFragmentManager(), data));
-		this.pager.setCurrentItem(0);
-		this.titleIndicator.setViewPager(this.pager);
+		this.pagerAdapter.setMarkets(data);
+		this.titleIndicator.invalidate();
 	}
 
 	@Override
 	public void onLoaderReset(Loader<Collection<Market>> loader) {
+		this.pagerAdapter.setMarkets(null);
 	}
 }
