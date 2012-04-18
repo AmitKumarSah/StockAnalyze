@@ -58,7 +58,8 @@ public final class GaeDataProvider {
 		String baseUrl = this.urls.getUrl(UrlProvider.TYPE_YDATA, UrlProvider.ARG_MARKET);
 		StringBuilder builder = new StringBuilder();
 		for (StockItem stock : stocks) {
-			builder.append(String.format("\"%s\",", stock.getTicker()));
+			builder.append(stock.getTicker());
+			builder.append(",");
 		}
 		builder.setLength(builder.length() -1);             // last comma
 		String url = String.format(baseUrl, URLEncoder.encode(builder.toString()));
@@ -133,7 +134,7 @@ public final class GaeDataProvider {
 
 	public StockItem search(String ticker, Market market) throws IOException {
 		String url = this.urls.getUrl(UrlProvider.TYPE_YDATA, UrlProvider.ARG_TICKER);
-		url = String.format(url, URLEncoder.encode(String.format("\"%s\"", ticker)));
+		url = String.format(url, URLEncoder.encode(ticker));
 		if (Utils.DEBUG) Log.d(Utils.LOG_TAG, "connecting to " + url);
 		StockItem data;
 
