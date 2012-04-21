@@ -32,6 +32,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.crittercism.app.Crittercism;
 import cz.tomas.StockAnalyze.Application;
@@ -49,7 +50,9 @@ import cz.tomas.StockAnalyze.utils.Utils;
 public class HomeActivity extends ChartActivity implements OnClickListener {
 	
 	private SharedPreferences pref;
-	
+
+	private TextView txtChartLabel;
+
 	private static boolean isDataUpdated;
 	
 	@Override
@@ -90,6 +93,17 @@ public class HomeActivity extends ChartActivity implements OnClickListener {
 			scheduler.updateImmediately();
 			isDataUpdated = true;
 		}
+
+		this.txtChartLabel = (TextView) this.findViewById(R.id.chartDescription);
+		if (this.txtChartLabel != null) {
+			this.txtChartLabel.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					showDialog(DIALOG_PICK_STOCK);
+				}
+			});
+		}
 	}
 	
 	private final Runnable chartRunnable = new Runnable() {
@@ -128,7 +142,6 @@ public class HomeActivity extends ChartActivity implements OnClickListener {
 		if (period != this.timePeriod && this.stockItem != null) {
 			this.updateTimePeriod(period, true);
 		}
-		this.setDescriptionVisibility(View.VISIBLE);
 	}
 
 	@Override
@@ -177,6 +190,23 @@ public class HomeActivity extends ChartActivity implements OnClickListener {
 	@Override
 	public void onClick(View v) {
 		startChildActivity(v);
+	}
+
+	@Override
+	protected void onChartUpdateFinish() {
+		super.onChartUpdateFinish();
+
+		if (stockItem != null) {
+			this.txtChartLabel.setText(stockItem.getName());
+		}
+	}
+
+	@Override
+	protected void onChartUpdateBegin() {
+		super.onChartUpdateBegin();
+		if (stockItem != null) {
+			this.txtChartLabel.setText(stockItem.getName());
+		}
 	}
 
 	private void startChildActivity(View v) {

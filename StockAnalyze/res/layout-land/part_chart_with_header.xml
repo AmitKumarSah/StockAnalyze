@@ -5,17 +5,6 @@
 	android:gravity="center"
 	android:orientation="vertical">
 
-	<TextView android:id="@+id/chartDescription"
-		style="@style/groupboxHeader"
-		android:textColor="@color/title_color_selector"
-		android:background="@drawable/bg_dropdown_dark"
-		android:visibility="visible"
-		android:text="@string/pickStock"
-		android:layout_alignParentTop="true"
-		android:layout_centerHorizontal="true"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"/>
-
 	<RadioGroup android:id="@+id/chartDepthGroup"
 		android:orientation="vertical"
 		android:padding="2dp"

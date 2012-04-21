@@ -79,6 +79,20 @@
             android:layout_marginRight="10dip"
             android:layout_marginTop="2dip"
             android:background="@drawable/bg_header" />
+		<TableRow
+			android:gravity="center">
+			<TextView android:id="@+id/chartDescription"
+				style="@style/groupboxHeader"
+				android:textColor="@color/title_color_selector"
+				android:background="@drawable/bg_dropdown_dark"
+				android:visibility="visible"
+				android:clickable="true"
+				android:focusable="true"
+				android:text="@string/pickStock"
+				android:layout_gravity="center"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"/>
+		</TableRow>
 
         <include
             style="@style/homeBlock"

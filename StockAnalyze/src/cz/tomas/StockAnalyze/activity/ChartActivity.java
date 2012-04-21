@@ -84,7 +84,6 @@ public abstract class ChartActivity extends BaseActivity {
 	protected int timePeriod = DataManager.TIME_PERIOD_MONTH;
 	
 	protected CompositeChartView chartView;
-	private TextView txtDescription;
 	private Button btnRetry;
 	
 	protected DrawChartTask chartTask;
@@ -141,16 +140,6 @@ public abstract class ChartActivity extends BaseActivity {
 				public void onCheckedChanged(RadioGroup group, int checkedId) {
 					int timePeriod = getDayCountById(checkedId);
 					updateTimePeriod(timePeriod, false);
-				}
-			});
-		}
-		this.txtDescription = (TextView) this.findViewById(R.id.chartDescription);
-		if (this.txtDescription != null) {
-			this.txtDescription.setOnClickListener(new OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-					showDialog(DIALOG_PICK_STOCK);
 				}
 			});
 		}
@@ -211,12 +200,6 @@ public abstract class ChartActivity extends BaseActivity {
 		super.onSaveInstanceState(outState);
 		
 		outState.putInt(EXTRA_CHART_DAY_COUNT, this.timePeriod);
-	}
-
-	public void setDescriptionVisibility(int visibility) {
-		if (this.txtDescription != null) {
-			this.txtDescription.setVisibility(visibility);
-		}
 	}
 
 	/** 
@@ -419,10 +402,8 @@ public abstract class ChartActivity extends BaseActivity {
 			super.onPreExecute();
 			onChartUpdateBegin();
 			
-			if (chartView != null)
+			if (chartView != null) {
 				chartView.setLoading(true);
-			if (txtDescription != null && stockItem != null) {
-				txtDescription.setText(stockItem.getName());
 			}
 		}
 
@@ -556,10 +537,7 @@ public abstract class ChartActivity extends BaseActivity {
 			} else {
 				Log.w(Utils.LOG_TAG, "ChartView is null! Can not set data to chart!");
 			}
-			if (txtDescription != null && stockItem != null) {
-				txtDescription.setText(stockItem.getName());
-			}
-			
+
 			onChartUpdateFinish();
 		}
 		
