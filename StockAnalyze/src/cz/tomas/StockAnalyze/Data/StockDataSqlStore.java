@@ -475,6 +475,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 				values.put(MarketColumns.FEE_PERC, market.getFeePerc());
 				values.put(MarketColumns.OPEN_FROM, market.getOpenFrom());
 				values.put(MarketColumns.OPEN_TO, market.getOpenTo());
+				values.put(MarketColumns.TYPE, market.getType());
 
 				int count = db.update(MARKET_TABLE_NAME, values, MarketColumns._ID+ "=?", new String[] { market.getId() });
 				if (count == 0) {

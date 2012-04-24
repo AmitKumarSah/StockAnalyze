@@ -4,13 +4,14 @@
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent"
 	android:orientation="vertical"
-	android:padding="12dp">
+	android:background="@android:color/white">
 
 	<EditText android:id="@+id/findEdit"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:layout_alignParentTop="true"
 		android:layout_alignParentLeft="true"
+		android:layout_margin="10dp"
 		android:layout_toLeftOf="@+id/findProgress"
 		android:hint="@string/addStockHint"
 		android:inputType="text" />
@@ -21,6 +22,7 @@
 		android:visibility="invisible"/>
 
 	<ListView android:id="@android:id/list"
+		android:cacheColorHint="@android:color/white"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:layout_below="@+id/findEdit"/>
