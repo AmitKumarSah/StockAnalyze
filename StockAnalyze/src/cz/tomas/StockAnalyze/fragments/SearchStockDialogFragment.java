@@ -20,7 +20,6 @@ import cz.tomas.StockAnalyze.StockList.search.SearchAdapter;
 import cz.tomas.StockAnalyze.utils.DownloadService;
 import cz.tomas.StockAnalyze.utils.Utils;
 
-import java.io.IOException;
 import java.net.URLEncoder;
 
 /**
@@ -30,17 +29,22 @@ import java.net.URLEncoder;
  */
 public class SearchStockDialogFragment extends DialogFragment {
 
+	public interface ISearchListener {
+		void onStockSelected(SearchResult stockTicker);
+	}
+
 	private static final String URL_FIND = "http://d.yimg.com/autoc.finance.yahoo.com/autoc?query=%s&callback=YAHOO.Finance.SymbolSuggest.ssCallback";
-	public static final String RESPONSE_BEGINNING = "YAHOO.Finance.SymbolSuggest.ssCallback({\"ResultSet\":{\"Query\":\"%s\",\"Result\":";
+	private static final String RESPONSE_BEGINNING = "YAHOO.Finance.SymbolSuggest.ssCallback({\"ResultSet\":{\"Query\":\"%s\",\"Result\":";
 
 	ListView list;
 	View progress;
 	Market market;
 
-	private Handler uiHandler;
+	private final Handler uiHandler;
 	Handler backHandler;
 	private SearchTickerThread searchThread;
 	private LoadRunnable loadRunnable;
+	private ISearchListener searchListener;
 
 	final Gson gson;
 
@@ -85,8 +89,11 @@ public class SearchStockDialogFragment extends DialogFragment {
 		this.list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-				String ticker = ((SearchAdapter) list.getAdapter()).getSearchItem(position).getSymbol();
-				((CustomStockGridFragment) getTargetFragment()).addStock(ticker);
+				SearchResult result = ((SearchAdapter) list.getAdapter()).getSearchItem(position);
+//				((CustomStockGridFragment) getTargetFragment()).addStock(ticker);
+				if (searchListener != null) {
+					searchListener.onStockSelected(result);
+				}
 				dismiss();
 			}
 		});
@@ -117,6 +124,10 @@ public class SearchStockDialogFragment extends DialogFragment {
 		});
 
 		return dialog;
+	}
+
+	public void setSearchListener(ISearchListener searchListener) {
+		this.searchListener = searchListener;
 	}
 
 	public final class SearchTickerThread extends Thread {
@@ -164,7 +175,7 @@ public class SearchStockDialogFragment extends DialogFragment {
 
 				for (SearchResult result : results) {
 					if (result != null && result.getExchDisp() != null &&
-							result.getExchDisp().equalsIgnoreCase(market.getName())) {
+							result.getExchDisp().equalsIgnoreCase(market.getId())) {
 						filteredResults[index] = result;
 						index++;
 					}
@@ -188,7 +199,7 @@ public class SearchStockDialogFragment extends DialogFragment {
 						}
 					});
 				}
-			} catch (IOException e) {
+			} catch (Exception e) {
 				Log.e(Utils.LOG_TAG, "failed to search for stocks", e);
 			}
 		}

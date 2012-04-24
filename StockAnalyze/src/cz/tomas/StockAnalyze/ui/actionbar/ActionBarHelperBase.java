@@ -16,30 +16,19 @@
 
 package cz.tomas.StockAnalyze.ui.actionbar;
 
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.XmlResourceParser;
 import android.os.Bundle;
-import android.view.InflateException;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import android.widget.TextView;
+import android.view.*;
+import android.widget.*;
 import cz.tomas.StockAnalyze.R;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A class that implements the action bar pattern for pre-Honeycomb devices.
@@ -201,7 +190,10 @@ public class ActionBarHelperBase extends ActionBarHelper {
                 ViewGroup.LayoutParams.FILL_PARENT));
         if (itemId == R.id.menu_refresh) {
             actionButton.setId(R.id.actionbar_compat_item_refresh);
+        } else {
+	        actionButton.setId(itemId);
         }
+	    actionButton.setVisibility(item.isVisible() ? View.VISIBLE : View.GONE);
         actionButton.setImageDrawable(item.getIcon());
         actionButton.setScaleType(ImageView.ScaleType.CENTER);
         actionButton.setContentDescription(item.getTitle());

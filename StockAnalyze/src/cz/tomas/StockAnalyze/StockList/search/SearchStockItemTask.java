@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.Data.Model.Market;
+import cz.tomas.StockAnalyze.Data.Model.SearchResult;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.Data.StockDataSqlStore;
 import cz.tomas.StockAnalyze.utils.Utils;
@@ -15,7 +16,7 @@ import cz.tomas.StockAnalyze.utils.Utils;
  *
  * @author tomas
  */
-public abstract class SearchStockItemTask extends AsyncTask<String, Integer, StockItem> {
+public abstract class SearchStockItemTask extends AsyncTask<SearchResult, Integer, StockItem> {
 
 	private final Context context;
 	private final Market market;
@@ -26,15 +27,15 @@ public abstract class SearchStockItemTask extends AsyncTask<String, Integer, Sto
 	}
 
 	@Override
-	protected StockItem doInBackground(String... params) {
+	protected StockItem doInBackground(SearchResult... params) {
 		if (params == null || params.length !=1) {
 			throw new IllegalArgumentException("one ticker expected");
 		}
-		String ticker = params[0];
+		SearchResult searchResult = params[0];
 
 		StockItem item = null;
 		try {
-			item = DataManager.getInstance(context).search(ticker, market);
+			item = DataManager.getInstance(context).search(searchResult.getSymbol(), market);
 			if (item != null) {
 				StockDataSqlStore sql = StockDataSqlStore.getInstance(context);
 				sql.insertStockItem(item);

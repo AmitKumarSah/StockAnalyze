@@ -41,6 +41,7 @@ public class SimpleMenuItem implements MenuItem {
     private Drawable mIconDrawable;
     private int mIconResId = 0;
     private boolean mEnabled = true;
+	private boolean mVisible = true;
 
     public SimpleMenuItem(SimpleMenu menu, int id, int order, CharSequence title) {
         mMenu = menu;
@@ -111,6 +112,15 @@ public class SimpleMenuItem implements MenuItem {
     public boolean isEnabled() {
         return mEnabled;
     }
+
+	public MenuItem setVisible(boolean b) {
+		this.mVisible = b;
+		return this;
+	}
+
+	public boolean isVisible() {
+		return this.mVisible;
+	}
 
     // No-op operations. We use no-ops to allow inflation from menu XML.
 
@@ -208,16 +218,6 @@ public class SimpleMenuItem implements MenuItem {
     public boolean isChecked() {
         // Noop
         return false;
-    }
-
-    public MenuItem setVisible(boolean b) {
-        // Noop
-        return this;
-    }
-
-    public boolean isVisible() {
-        // Noop
-        return true;
     }
 
     public boolean hasSubMenu() {

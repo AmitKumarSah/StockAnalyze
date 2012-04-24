@@ -2,16 +2,24 @@ package cz.tomas.StockAnalyze.activity;
 
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.*;
+import android.widget.Toast;
 import com.viewpagerindicator.TitlePageIndicator;
+import cz.tomas.StockAnalyze.Application;
 import cz.tomas.StockAnalyze.Data.Model.Market;
+import cz.tomas.StockAnalyze.Data.Model.SearchResult;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.StockList.StocksPagerAdapter;
+import cz.tomas.StockAnalyze.StockList.search.SearchStockItemTask;
+import cz.tomas.StockAnalyze.UpdateScheduler;
 import cz.tomas.StockAnalyze.fragments.ConfirmDialogFragment;
+import cz.tomas.StockAnalyze.fragments.ProgressDialogFragment;
+import cz.tomas.StockAnalyze.fragments.SearchStockDialogFragment;
 import cz.tomas.StockAnalyze.ui.widgets.DragContainerView;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
@@ -30,10 +38,12 @@ public final class StocksActivity extends AbstractStocksActivity implements OnPa
 	private static final String TAG_CONFIRM = "confirm";
 
 	private Market selectedMarket;
-	
+
 	private ViewPager pager;
 	private DragContainerView dragContainer;
 	private View container;
+	private View actionPlusView;
+
 	private SharedPreferences pref;
 	private TitlePageIndicator titleIndicator;
 
@@ -74,6 +84,8 @@ public final class StocksActivity extends AbstractStocksActivity implements OnPa
 	public boolean onCreateOptionsMenu(Menu menu) {
 	    MenuInflater inflater = getMenuInflater();
 	    inflater.inflate(R.menu.stock_list_menu, menu);
+		MenuItem menuItemAdd = menu.findItem(R.id.menu_stock_add);
+		menuItemAdd.setVisible(this.selectedMarket != null && this.selectedMarket.getType() == Market.TYPE_SELECTIVE);
 	    return super.onCreateOptionsMenu(menu);
 	}
 	
@@ -87,6 +99,9 @@ public final class StocksActivity extends AbstractStocksActivity implements OnPa
 	    case R.id.menu_stock_list_settings:
 	    	NavUtils.goToSettings(this);
 	        return true;
+	    case R.id.menu_stock_add:
+			searchForStock();
+		    return true;
 	    default:
 	        return super.onOptionsItemSelected(item);
 	    }
@@ -103,6 +118,15 @@ public final class StocksActivity extends AbstractStocksActivity implements OnPa
 	@Override
 	public void onPageSelected(int position) {
 		this.selectedMarket = ((StocksPagerAdapter) this.pager.getAdapter()).getMarketByPosition(position);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			this.invalidateOptionsMenu();
+		} else {
+			if (this.actionPlusView == null) {
+				this.actionPlusView = this.findViewById(R.id.menu_stock_add);
+			}
+			this.actionPlusView.setVisibility(this.selectedMarket.getType() == Market.TYPE_SELECTIVE ?
+												View.VISIBLE : View.GONE);
+		}
 	}
 
 	@Override
@@ -146,4 +170,38 @@ public final class StocksActivity extends AbstractStocksActivity implements OnPa
 		dragContainer.startDragging(view, view.getLeft() + view.getWidth() / 2, view.getTop() + view.getHeight() /2, offsetX, offsetY, data);
 		dragContainer.setListener(listener);
 	}
+
+	private void searchForStock() {
+		SearchStockDialogFragment fragment = SearchStockDialogFragment.newInstance(R.string.addStockItem, this.selectedMarket);
+		fragment.setSearchListener(this.searchListener);
+		fragment.show(getSupportFragmentManager(), "addStock");
+	}
+
+	private void addStock(SearchResult searchResult) {
+		final ProgressDialogFragment fragment = ProgressDialogFragment.newInstance(R.string.addStockItem, R.string.loading);
+		fragment.show(getSupportFragmentManager(), "add_progress");
+		SearchStockItemTask task = new SearchStockItemTask(this, this.selectedMarket) {
+			@Override
+			protected void onPostExecute(StockItem stockItem) {
+				fragment.dismiss();
+				if (stockItem != null) {
+					final String message = String.format("%s %s", stockItem.getName(), getText(R.string.addedStock).toString());
+					Toast.makeText(StocksActivity.this, message, Toast.LENGTH_SHORT).show();
+					// update data - this will cause fragment update too
+					UpdateScheduler scheduler = (UpdateScheduler) getApplicationContext().getSystemService(Application.UPDATE_SCHEDULER_SERVICE);
+					scheduler.updateImmediately(selectedMarket);
+				} else {
+					Toast.makeText(StocksActivity.this, R.string.addStockItemNotFound, Toast.LENGTH_SHORT).show();
+				}
+			}
+		};
+		task.execute(searchResult);
+	}
+
+	private final SearchStockDialogFragment.ISearchListener searchListener = new SearchStockDialogFragment.ISearchListener() {
+		@Override
+		public void onStockSelected(SearchResult searchResult) {
+			addStock(searchResult);
+		}
+	};
 }

@@ -1,12 +1,11 @@
 package cz.tomas.StockAnalyze.fragments;
 
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.GridView;
 import android.widget.Toast;
 import cz.tomas.StockAnalyze.Application;
+import cz.tomas.StockAnalyze.Data.Model.SearchResult;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.StockList.search.SearchStockItemTask;
@@ -29,15 +28,19 @@ public class CustomStockGridFragment extends StockGridFragment {
 		btnAdd.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				SearchStockDialogFragment fragment = SearchStockDialogFragment.newInstance(R.string.addStockItem, helper.getMarket());
-				fragment.setTargetFragment(CustomStockGridFragment.this, 0);
-				fragment.show(getFragmentManager(), "addStock");
+				searchForStock();
 			}
 		});
 		return v;
 	}
 
-	public void addStock(String ticker) {
+	private void searchForStock() {
+		SearchStockDialogFragment fragment = SearchStockDialogFragment.newInstance(R.string.addStockItem, helper.getMarket());
+//		fragment.setTargetFragment(this, 0);
+		fragment.show(getFragmentManager(), "addStock");
+	}
+
+	public void addStock(SearchResult searchResult) {
 		final ProgressDialogFragment fragment = ProgressDialogFragment.newInstance(R.string.addStockItem, R.string.loading);
 		fragment.show(getFragmentManager(), "add_progress");
 		SearchStockItemTask task = new SearchStockItemTask(getActivity(), helper.getMarket()) {
@@ -55,6 +58,21 @@ public class CustomStockGridFragment extends StockGridFragment {
 				}
 			}
 		};
-		task.execute(ticker);
+		task.execute(searchResult);
+	}
+
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		inflater.inflate(R.menu.custom_stock_list_menu, menu);
+		super.onCreateOptionsMenu(menu, inflater);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if (item.getItemId() == R.id.menuCustomStockAdd) {
+			searchForStock();
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
 	}
 }
