@@ -193,7 +193,6 @@ public class ActionBarHelperBase extends ActionBarHelper {
         } else {
 	        actionButton.setId(itemId);
         }
-	    actionButton.setVisibility(item.isVisible() ? View.VISIBLE : View.GONE);
         actionButton.setImageDrawable(item.getIcon());
         actionButton.setScaleType(ImageView.ScaleType.CENTER);
         actionButton.setContentDescription(item.getTitle());

@@ -75,6 +75,19 @@ public final class StocksActivity extends AbstractStocksActivity implements OnPa
 	}
 
 	@Override
+	protected void onPostCreate(Bundle savedInstanceState) {
+		super.onPostCreate(savedInstanceState);
+		// this is for pre-honeycomb actionbar implementation,
+		// where we need to access view from actionbar directly
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+			this.actionPlusView = this.findViewById(R.id.menu_stock_add);
+			this.actionPlusView.setVisibility(this.selectedMarket.getType() == Market.TYPE_SELECTIVE ?
+												View.VISIBLE : View.GONE);
+		}
+
+	}
+
+	@Override
 	public void onStop() {
 		super.onStop();
 		this.pref.edit().putInt(Utils.PREF_STOCKS_POSITION, this.pager.getCurrentItem()).commit();
@@ -121,9 +134,6 @@ public final class StocksActivity extends AbstractStocksActivity implements OnPa
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			this.invalidateOptionsMenu();
 		} else {
-			if (this.actionPlusView == null) {
-				this.actionPlusView = this.findViewById(R.id.menu_stock_add);
-			}
 			this.actionPlusView.setVisibility(this.selectedMarket.getType() == Market.TYPE_SELECTIVE ?
 												View.VISIBLE : View.GONE);
 		}

@@ -45,11 +45,6 @@ public final class StocksPagerAdapter extends FragmentPagerAdapter implements Ti
 		//StockListFragment fragment = new StockListFragment();
 		Market market = this.getMarketByPosition(position);
 		Fragment fragment = new StockGridFragment();
-//		if (market.getType() == Market.TYPE_SELECTIVE) {
-//			fragment = new CustomStockGridFragment();
-//		} else {
-//			fragment = new StockGridFragment();
-//		}
 		Bundle bundle = new Bundle();
 		bundle.putSerializable(StockListFragment.ARG_MARKET, market);
 		fragment.setArguments(bundle);

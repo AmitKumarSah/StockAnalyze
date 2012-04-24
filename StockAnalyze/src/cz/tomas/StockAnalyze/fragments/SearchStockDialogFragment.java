@@ -24,7 +24,6 @@ import java.net.URLEncoder;
 
 /**
  * Dialog showing list of stocks that were found for user input.
- * This dialog is supposed to be connected with {@link CustomStockGridFragment}
  * @author tomas
  */
 public class SearchStockDialogFragment extends DialogFragment {
@@ -90,7 +89,6 @@ public class SearchStockDialogFragment extends DialogFragment {
 			@Override
 			public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
 				SearchResult result = ((SearchAdapter) list.getAdapter()).getSearchItem(position);
-//				((CustomStockGridFragment) getTargetFragment()).addStock(ticker);
 				if (searchListener != null) {
 					searchListener.onStockSelected(result);
 				}
