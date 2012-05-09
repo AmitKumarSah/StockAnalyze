@@ -172,12 +172,12 @@ public final class StocksActivity extends AbstractStocksActivity implements OnPa
 	}
 
 	@Override
-	public void onStartDrag(StockItem data, View view, DragContainerView.IDragListener listener) {
+	public void onStartDrag(StockItem data, View view, DragContainerView.IDragListener listener, DragContainerView.DragTarget... targets) {
 		View root = (View) this.container.getParent();
 		final int offsetX = this.pager.getLeft() + root.getLeft();
 		final int offsetY = this.pager.getTop() + root.getTop();
 
-		dragContainer.startDragging(view, view.getLeft() + view.getWidth() / 2, view.getTop() + view.getHeight() /2, offsetX, offsetY, data);
+		dragContainer.startDragging(view, view.getLeft() + view.getWidth() / 2, view.getTop() + view.getHeight() /2, offsetX, offsetY, data, targets);
 		dragContainer.setListener(listener);
 	}
 

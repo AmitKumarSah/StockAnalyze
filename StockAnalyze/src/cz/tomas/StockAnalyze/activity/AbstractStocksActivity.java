@@ -15,7 +15,7 @@ import cz.tomas.StockAnalyze.utils.NavUtils;
 public abstract class AbstractStocksActivity extends BaseFragmentActivity {
 
 	public interface IDragSupportingActivity<T> {
-		void onStartDrag(T data, View view, DragContainerView.IDragListener listener);
+		void onStartDrag(T data, View view, DragContainerView.IDragListener listener, DragContainerView.DragTarget... targets);
 	}
 	
 	protected UpdateScheduler scheduler;

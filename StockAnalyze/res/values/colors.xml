@@ -60,11 +60,18 @@
 	<color name="money_item_dark_center">#444444</color>
 	<color name="money_item_dark_start">#333333</color>
 	<color name="money_item_dark_end">#555555</color>
-	<color name="money_item_dark">#222222</color>
+	<color name="money_item_dark">#333333</color>
 	
 	<color name="home_block_color">#FFFFFF</color>
 	<color name="shadow_dark">#222222</color>
 	
     <color name="actionbar_title_color">#224894</color>
     <color name="icon_main_color">#3570e7</color>
+
+	<color name="drag_container_border">#BB333333</color>
+	<color name="drag_container_action1">#aafff77c</color>
+	<color name="drag_container_action1_active">#eefff77c</color>
+
+	<color name="drag_container_action2">#aafa440a</color>
+	<color name="drag_container_action2_active">#eeFA440A</color>
 </resources>

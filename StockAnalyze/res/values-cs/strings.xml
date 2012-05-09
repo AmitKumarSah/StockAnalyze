@@ -26,6 +26,7 @@
     <string name="portfolioContextMenuRemove">Odebrat</string>
     <string name="portfolioContextMenuStockDetail">Zobzrazit detail akcie</string>
     <string name="PortfolioContextViewDetail">Detail portfolia</string>
+
     <string name="addStockItemToFavourite">Přidat do oblíbených</string>
     <string name="addStockItemToPortfolio">Přidat do portfolia</string>
     <string name="stockItemView">Zobrazit detaily</string>
@@ -151,7 +152,7 @@ Nikdy se nepouštějte do obchodů, jejichž podstatě plně nerozumíte. Obchod
     
     <string name="failedGetChart">Selhalo stažení dat pro graf…</string>
     
-    <string name="working">pracuji…</string>
+    <string name="working">Pracuji…</string>
     
     <string name="pickMarket">Vyberte trh</string>
     <string name="pickStock">Vyberte akcii</string>
@@ -162,6 +163,7 @@ Nikdy se nepouštějte do obchodů, jejichž podstatě plně nerozumíte. Obchod
 	<string name="addStockHint">Zadejte jméno či ticker</string>
 	<string name="addedStock">přidáno…</string>
 	<string name="addStockItemNotFound">Titul nebyl nalezen…</string>
+	<string name="stockHide">Odstranit akcii</string>
 
 	<string name="loadingMarkets">Aktualizuji seznam titulů…</string>
 	<string name="loadingMarketsFailed">Selhala aktualizace, zkuste to znovu pozdeji.</string>

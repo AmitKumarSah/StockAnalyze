@@ -72,6 +72,6 @@ public final class IndecesListActivity extends AbstractStocksActivity implements
 	}
 
 	@Override
-	public void onStartDrag(Object data, View view, DragContainerView.IDragListener listener) {
+	public void onStartDrag(Object data, View view, DragContainerView.IDragListener listener, DragContainerView.DragTarget... targets) {
 	}
 }
