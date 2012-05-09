@@ -26,6 +26,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.params.HttpClientParams;
 import org.apache.http.util.ByteArrayBuffer;
 
 import java.io.*;
@@ -66,6 +67,7 @@ public class DownloadService {
 //		schReg.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
 
 		httpClient = AndroidHttpClient.newInstance("stockanalyze,gzip");
+		HttpClientParams.setRedirecting(httpClient.getParams(), true);
 	}
 
 	public byte[] DownloadFromUrl(String downloadUrl, boolean compress) throws IOException {

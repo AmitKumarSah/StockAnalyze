@@ -39,11 +39,18 @@ public class GaeUsAdapter extends GaeDataAdapter {
 
 	@Override
 	public List<StockItem> getAvailableStockList(Market market) throws FailedToGetDataException {
-		try {
-			return this.provider.getStockList(market.getCountry());
-		} catch (IOException e) {
-			throw new FailedToGetDataException("failed to get stock list", e);
-		}
+		return null;
+//		try {
+//			StockDataSqlStore sql = StockDataSqlStore.getInstance(this.context);
+//			Map<String, StockItem> stocks = sql.getStockItems(market, null);
+//
+//			if (stocks == null || stocks.size() == 0) {
+//				return null;
+//			}
+//			return this.provider.getUsStockList(stocks.values());
+//		} catch (Exception e) {
+//			throw new FailedToGetDataException("failed to get stock list", e);
+//		}
 	}
 
 	@Override
@@ -74,7 +81,7 @@ public class GaeUsAdapter extends GaeDataAdapter {
 					if (stocks == null || stocks.size() == 0) {
 						return false;
 					}
-					Map<String, DayData> data = this.provider.getYahooDayDataSet(stocks.values());
+					Map<String, DayData> data = this.provider.getUsDayDataSet(stocks.values());
 					for (IStockDataListener listener : eventListeners) {
 						listener.OnStockDataUpdated(this, data);
 					}

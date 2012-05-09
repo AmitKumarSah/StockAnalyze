@@ -12,7 +12,9 @@ import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.utils.DownloadService;
 import cz.tomas.StockAnalyze.utils.Utils;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.net.URLEncoder;
 import java.util.Collection;
@@ -51,7 +53,7 @@ public final class GaeDataProvider {
 		return data;
 	}
 
-	Map<String, DayData> getYahooDayDataSet(Collection<StockItem> stocks) throws IOException {
+	Map<String, DayData> getUsDayDataSet(Collection<StockItem> stocks) throws IOException {
 		if (stocks == null || stocks.size() == 0) {
 			throw new NullPointerException("stocks can't be empty!");
 		}
@@ -196,6 +198,24 @@ public final class GaeDataProvider {
 	}
 
 	/**
+	 * get list of stocks from us markets by given stock items
+	 *
+	 * @param stocks current stock items
+	 * @return updated stock items from server
+	 */
+	public List<StockItem> getUsStockList(Collection<StockItem> stocks) throws IOException {
+		String baseUrl = this.urls.getUrl(UrlProvider.TYPE_YDATA, UrlProvider.ARG_TICKER);
+		StringBuilder builder = new StringBuilder();
+		for (StockItem stock : stocks) {
+			builder.append(stock.getTicker());
+			builder.append(",");
+		}
+		builder.setLength(builder.length() -1);             // last comma
+		String url = String.format(baseUrl, URLEncoder.encode(builder.toString()));
+		return getList(url);
+	}
+
+	/**
 	 * get equity list - stocks or indeces, depends on url
 	 * @param url
 	 * @return
@@ -277,5 +297,4 @@ public final class GaeDataProvider {
 		
 		return true;
 	}
-
 }
