@@ -8,7 +8,10 @@ import android.support.v4.app.DialogFragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -99,6 +102,7 @@ public class SearchStockDialogFragment extends DialogFragment {
 		this.progress = dialog.findViewById(R.id.findProgress);
 
 		EditText edit = (EditText) dialog.findViewById(R.id.findEdit);
+		edit.requestFocus();
 		edit.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -123,6 +127,12 @@ public class SearchStockDialogFragment extends DialogFragment {
 		});
 
 		return dialog;
+	}
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+		return super.onCreateView(inflater, container, savedInstanceState);
 	}
 
 	public void setSearchListener(ISearchListener searchListener) {
