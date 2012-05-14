@@ -74,7 +74,7 @@ public class DataManagerTest extends AndroidTestCase {
 		yesterday.roll(Calendar.DAY_OF_MONTH, false);
 		
 		for (StockItem stockItem : items) {
-			sqlStore.insertDayData(stockItem.getId(), new DayData(1, 1, yesterday.getTime(), 1000, 1, 0, yesterday.getTimeInMillis()));
+			sqlStore.insertDayData(stockItem.getId(), new DayData(1, 1, yesterday.getTimeInMillis(), 1000, 1, 0, yesterday.getTimeInMillis()));
 		}
 		
 		for (StockItem stockItem : items) {
@@ -88,7 +88,7 @@ public class DataManagerTest extends AndroidTestCase {
 		Calendar cal = Utils.createDateOnlyCalendar(Calendar.getInstance());
 		cal = Utils.getLastValidDate(cal);
 		for (StockItem stockItem : items.values()) {
-			sqlStore.insertDayData(stockItem.getId(), new DayData(1, 1, cal.getTime(), 1000, 1, 0, cal.getTimeInMillis()));
+			sqlStore.insertDayData(stockItem.getId(), new DayData(1, 1, cal.getTimeInMillis(), 1000, 1, 0, cal.getTimeInMillis()));
 		}
 		Map<StockItem, DayData> data = this.dataManager.getLastDataSet(Markets.GLOBAL);
 		
