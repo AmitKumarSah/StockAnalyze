@@ -50,12 +50,12 @@
 	<color name="money_item_red_center">#ED3333</color>
 	<color name="money_item_red_start">#CB3333</color>
 	<color name="money_item_red_end">#FE6262</color>
-	<color name="money_item_red">#CA2222</color>
+	<color name="money_item_red">#EDCA1111</color>
 	
 	<color name="money_item_green_center">#33ED33</color>
 	<color name="money_item_green_start">#33CB33</color>
 	<color name="money_item_green_end">#62FE62</color>
-	<color name="money_item_green">#22B122</color>
+	<color name="money_item_green">#ED11B111</color>
 	
 	<color name="money_item_dark_center">#444444</color>
 	<color name="money_item_dark_start">#333333</color>

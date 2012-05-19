@@ -122,7 +122,7 @@ public class StockGridFragment extends Fragment implements IStockFragment, DragC
 
 	@Override
 	public void onDragComplete(Object data, DragContainerView.DragTarget target) {
-		if (target.id == DRAG_ID_PORTFOLIO) {
+		if (target != null && target.id == DRAG_ID_PORTFOLIO) {
 			NavUtils.goToAddToPortfolio(getActivity(), (StockItem) data, null);
 		}
 	}

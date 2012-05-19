@@ -2,12 +2,12 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="@dimen/grid_padding" >
+    android:orientation="vertical" >
 
     <GridView
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@id/gridview"
+		android:padding="@dimen/grid_padding"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:gravity="center"

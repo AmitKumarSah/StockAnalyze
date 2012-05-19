@@ -27,7 +27,6 @@ import java.net.URLEncoder;
 
 /**
  * Dialog showing list of stocks that were found for user input.
- * This dialog is supposed to be connected with {@link CustomStockGridFragment}
  * @author tomas
  */
 public class SearchStockDialogFragment extends DialogFragment {
