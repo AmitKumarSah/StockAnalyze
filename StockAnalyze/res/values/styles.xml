@@ -129,14 +129,14 @@
     	<item name="android:layout_margin">6dp</item>
     </style>
     
-	<style name="MyTitlePageIndicator" parent="Widget.TitlePageIndicator">
+	<style name="MyTitlePageIndicator">
 		<item name="clipPadding">-38dp</item>
         <item name="footerColor">@color/actionbar_title_color</item>
         <item name="footerPadding">4dp</item>
         <item name="selectedColor">@android:color/black</item>
         <item name="selectedBold">true</item>
-        <item name="textColor">#505050</item>
-        <item name="textSize">12sp</item>
+        <item name="android:textColor">#505050</item>
+        <item name="android:textSize">12sp</item>
 		<item name="titlePadding">54dp</item>
 		<item name="footerLineHeight">1dp</item>
         <item name="footerIndicatorStyle">@integer/indicatorStyle</item>
