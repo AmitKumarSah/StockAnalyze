@@ -170,6 +170,7 @@ public class DataSqlHelper extends AbstractSqlHelper {
 
 		public static final String[] PROJECTION = new String[]{ _ID, NAME, CURRENCY, COUNTRY, UI_ORDER, DESCRIPTION,
 													OPEN_FROM, OPEN_TO, FEE_MAX, FEE_MIN, FEE_PERC, TYPE };
+		public static final String PROJECTION_JOIN_STRING = "market._id, market.name, market.currency, market.country, market.ui_order, market.description, market.open_from, market.open_top, market.fee_min, market.fee_max, market.fee_perc,type, market.index_id";
 	}
 
 	public static class DayDataColumns {

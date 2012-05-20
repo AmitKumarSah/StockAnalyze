@@ -295,7 +295,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 			Cursor c = null;
 			try {
 				c = db.query(DAY_DATA_TABLE_NAME, DayDataColumns.PROJECTION,
-						DayDataColumns.STOCK_ID + "=?", new String[] { stockId }, null, null, null);
+						DayDataColumns.STOCK_ID.concat("=?"), new String[] { stockId }, null, null, null);
 
 				if (c.moveToFirst()) {
 					data = readDayData(c, c.getColumnIndex(DayDataColumns._ID));

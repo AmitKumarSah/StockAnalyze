@@ -124,9 +124,26 @@ public class Portfolio {
 		return result;
 	}
 
-	public long getPortfolioItemsCount(Market market) {
-		return this.sqlHelper.getPortfolioItemsCount(market.getCurrencyCode());
+	public Collection<Market> getMarketsWithItems() {
+		return this.sqlHelper.getMarketsWithPortfolioItems();
+//		List<Market> marketsWithItems = new ArrayList<Market>(markets.size());
+//		try {
+//			SQLiteDatabase db = this.sqlHelper.getWritableDatabase();
+//			for (Market market : markets) {
+//				long count = this.sqlHelper.getPortfolioItemsCount(market.getCurrencyCode(), db);
+//				if (count > 0) {
+//					marketsWithItems.add(market);
+//				}
+//			}
+//		} finally {
+//			this.sqlHelper.close();
+//		}
+//		return marketsWithItems;
 	}
+
+//	public long getPortfolioItemsCount(Market market) {
+//		return this.sqlHelper.getPortfolioItemsCount(market.getCurrencyCode(), db);
+//	}
 	/**
 	 * get every single portfolio item in database for given stock
 	 * @return list of loaded items

@@ -31,10 +31,7 @@ import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.PortfolioItem;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /*
  * 
@@ -82,7 +79,7 @@ class PortfolioSqlHelper extends DataSqlHelper {
 		if (item == null) {
 			throw new IllegalArgumentException("portfolio item cannot be null!");
 		}
-		SQLiteDatabase db = null;
+		SQLiteDatabase db;
 		try {
 			db = this.getWritableDatabase();
 			ContentValues values = new ContentValues();
@@ -195,58 +192,95 @@ class PortfolioSqlHelper extends DataSqlHelper {
 		return items;
 	}
 
-	/**
-	 * get number of portfolio items in database that have given currency
-	 * @param currencyCode currency code to look for
-	 * @return number of found items
-	 */
-	public long getPortfolioItemsCount(String currencyCode) {
-		if (TextUtils.isEmpty(currencyCode)) {
-			throw new IllegalArgumentException("Currency code cannot be empty!");
-		}
-		SQLiteDatabase db = null;
+	public Collection<Market> getMarketsWithPortfolioItems() {
+		final SQLiteDatabase db;
+		Collection<Market> markets = null;
 		try {
-			db = this.getWritableDatabase();
-			// get markets with currency of our market
-			final String marketSelection = MarketColumns.CURRENCY.concat("=?");
-			Cursor marketCursor = db.query(MARKET_TABLE_NAME, new String[] { MarketColumns._ID }, marketSelection,
-					new String[] { currencyCode }, null, null, null);
-
-			String[] ids = new String[marketCursor.getCount()];
+			db = getReadableDatabase();
+			final String sql = String.format("SELECT %s FROM %s p INNER JOIN %s market on p.%s = market.%s GROUP BY p.%s ORDER BY market.%s",
+					MarketColumns.PROJECTION_JOIN_STRING, PORTFOLIO_TABLE_NAME, MARKET_TABLE_NAME,
+					PortfolioColumns.MARKET_ID, MarketColumns._ID, PortfolioColumns.MARKET_ID, MarketColumns.UI_ORDER);
+			Cursor cursor = db.rawQuery(sql, null);
 			try {
-				int index = 0;
-				if (marketCursor.moveToFirst()) {
+				if (cursor.moveToFirst()) {
+					markets = new ArrayList<Market>();
 					do {
-						String id = marketCursor.getString(0);
-						ids[index] = id;
-						index++;
-					} while (marketCursor.moveToNext());
+						String id = cursor.getString(cursor.getColumnIndex(MarketColumns._ID));
+						String name = cursor.getString(cursor.getColumnIndex(MarketColumns.NAME));
+						String desc = cursor.getString(cursor.getColumnIndex(MarketColumns.DESCRIPTION));
+						String country = cursor.getString(cursor.getColumnIndex(MarketColumns.COUNTRY));
+						String currency = cursor.getString(cursor.getColumnIndex(MarketColumns.CURRENCY));
+						//int order = cursor.getInt(cursor.getColumnIndex(MarketColumns.UI_ORDER));
+						long openFrom = cursor.getLong(cursor.getColumnIndex(MarketColumns.OPEN_FROM));
+						long openTo = cursor.getLong(cursor.getColumnIndex(MarketColumns.OPEN_TO));
+						double feeMax = cursor.getDouble(cursor.getColumnIndex(MarketColumns.FEE_MAX));
+						double feeMin = cursor.getDouble(cursor.getColumnIndex(MarketColumns.FEE_MIN));
+						double feePerc = cursor.getDouble(cursor.getColumnIndex(MarketColumns.FEE_PERC));
+						int type = cursor.getInt(cursor.getColumnIndex(MarketColumns.TYPE));
+
+						Market market = new Market(name, id,currency,desc, country, feePerc, feeMax, feeMin, openTo, openFrom, type);
+						markets.add(market);
+					} while (cursor.moveToNext());
 				}
 			} finally {
-				marketCursor.close();
-			}
-			if (ids.length == 0) {
-				return 0;
-			}
-			final String sql;
-			synchronized (this.builder) {
-				this.builder.append(PortfolioColumns.MARKET_ID);
-				this.builder.append(" in (");
-				for (String id : ids) {
-					this.builder.append("'");
-					this.builder.append(id);
-					this.builder.append("',");
+				if (cursor != null) {
+					cursor.close();
 				}
-				this.builder.setLength(builder.length() - 1);   // last comma
-				this.builder.append(")");
-				sql = String.format("SELECT COUNT(*) FROM %s WHERE %s", PORTFOLIO_TABLE_NAME, builder.toString());
-				this.builder.setLength(0);
 			}
-			SQLiteStatement statement = db.compileStatement(sql);
-			return statement.simpleQueryForLong();
 		} finally {
 			this.close();
 		}
+		return markets;
+	}
+
+	/**
+	 * get number of portfolio items in database that have given currency
+	 * @param currencyCode currency code to look for
+	 * @param db opened database
+	 * @return number of found items
+	 */
+	public long getPortfolioItemsCount(String currencyCode, SQLiteDatabase db) {
+		if (TextUtils.isEmpty(currencyCode)) {
+			throw new IllegalArgumentException("Currency code cannot be empty!");
+		}
+
+		// get markets with currency of our market
+		final String marketSelection = MarketColumns.CURRENCY.concat("=?");
+		Cursor marketCursor = db.query(MARKET_TABLE_NAME, new String[]{MarketColumns._ID}, marketSelection,
+				new String[]{currencyCode}, null, null, null);
+
+		String[] ids = new String[marketCursor.getCount()];
+		try {
+			int index = 0;
+			if (marketCursor.moveToFirst()) {
+				do {
+					String id = marketCursor.getString(0);
+					ids[index] = id;
+					index++;
+				} while (marketCursor.moveToNext());
+			}
+		} finally {
+			marketCursor.close();
+		}
+		if (ids.length == 0) {
+			return 0;
+		}
+		final String sql;
+		synchronized (this.builder) {
+			this.builder.append(PortfolioColumns.MARKET_ID);
+			this.builder.append(" in (");
+			for (String id : ids) {
+				this.builder.append("'");
+				this.builder.append(id);
+				this.builder.append("',");
+			}
+			this.builder.setLength(builder.length() - 1);   // last comma
+			this.builder.append(")");
+			sql = String.format("SELECT COUNT(*) FROM %s WHERE %s", PORTFOLIO_TABLE_NAME, builder.toString());
+			this.builder.setLength(0);
+		}
+		SQLiteStatement statement = db.compileStatement(sql);
+		return statement.simpleQueryForLong();
 	}
 
 	/**
@@ -328,7 +362,7 @@ class PortfolioSqlHelper extends DataSqlHelper {
 
 
 	public void removeItem(int id) {
-		SQLiteDatabase db = null;
+		SQLiteDatabase db;
 		try {
 			db = this.getWritableDatabase();
 			db.delete(PORTFOLIO_TABLE_NAME, "_id=?", new String[] { String.valueOf(id) });
