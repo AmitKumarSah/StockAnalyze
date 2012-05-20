@@ -30,7 +30,7 @@ public class GaeXetraAdapter extends GaeDataAdapter {
 			throws FailedToGetDataException {
 		List<StockItem> stockList;
 		try {
-			stockList = this.provider.getStockList("de");
+			stockList = this.provider.getStockList(market.getId());
 		} catch (Exception e) {
 			throw new FailedToGetDataException("failed to get stock list", e);
 		}
@@ -61,7 +61,7 @@ public class GaeXetraAdapter extends GaeDataAdapter {
 				// the market could be closed, so we don't necessarily get updated data
 				if (provider.refresh()) {
 					// if refresh proceeded and the market is open, fire the event
-					Map<String, DayData> data = this.provider.getDayDataSet(market.getCountry());
+					Map<String, DayData> data = this.provider.getDayDataSet(market.getId());
 					for (IStockDataListener listener : eventListeners) {
 						listener.OnStockDataUpdated(this, data);
 					}

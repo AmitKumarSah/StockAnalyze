@@ -37,7 +37,7 @@ public abstract class GaeDataAdapter implements IStockDataProvider {
 
 	@Override
 	public DayData getLastData(String ticker) throws FailedToGetDataException {
-		DayData lastData = null;
+		DayData lastData;
 		try {
 			lastData = this.provider.getLastData(ticker);
 		} catch (IOException e) {
@@ -57,7 +57,7 @@ public abstract class GaeDataAdapter implements IStockDataProvider {
 	 */
 	@Override
 	public Map<Long, Float> getIntraDayData(String ticker, Date date) {
-		Map<Long, Float> data = null;
+		Map<Long, Float> data;
 		try {
 			data = this.provider.getIntraDayData(ticker);
 		} catch (Exception e) {
