@@ -239,7 +239,7 @@ public class DataManager implements IStockDataListener {
 	}
 
 	/**
-	 * search providers for stock item
+	 * getStock providers for stock item
 	 * @param ticker stock ticker
 	 * @return found stock item or null
 	 */
@@ -285,7 +285,7 @@ public class DataManager implements IStockDataListener {
 			throw new NullPointerException("market can't be null to get stock list");
 		}
 		IStockDataProvider provider = DataProviderFactory.getDataProvider(market);
-		List<StockItem> stocks = provider.getAvailableStockList(market);
+		Collection<StockItem> stocks = provider.getAvailableStockList(market);
 		
 		Map<String, StockItem> items = null;
 		if (stocks != null && stocks.size() > 0) {
@@ -360,7 +360,7 @@ public class DataManager implements IStockDataListener {
 		
 		data = this.sqlStore.getDayData(item.getId());
 		// we still can be without data from db - so we need to download it
-		// of try to search for older from database
+		// of try to getStock for older from database
 		if (data == null && Utils.isOnline(this.context)) {
 			try {
 				IStockDataProvider provider = DataProviderFactory.getDataProvider(item.getMarket());

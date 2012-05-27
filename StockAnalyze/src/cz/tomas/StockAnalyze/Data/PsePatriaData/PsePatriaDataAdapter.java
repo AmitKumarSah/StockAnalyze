@@ -164,7 +164,7 @@ public class PsePatriaDataAdapter implements IStockDataProvider {
 	 * @see cz.tomas.StockAnalyze.Data.IStockDataProvider#getAvailableStockList(cz.tomas.StockAnalyze.Data.Model.Market)
 	 */
 	@Override
-	public List<StockItem> getAvailableStockList(Market market) throws FailedToGetDataException {
+	public Collection<StockItem> getAvailableStockList(Market market) throws FailedToGetDataException {
 		List<StockItem> items = new ArrayList<StockItem>();
 		Map<String, PsePatriaDataItem> stocks = null;
 		try {

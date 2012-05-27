@@ -12,7 +12,7 @@ import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetDataException;
 import cz.tomas.StockAnalyze.utils.Utils;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -38,7 +38,7 @@ public class GaeUsAdapter extends GaeDataAdapter {
 	}
 
 	@Override
-	public List<StockItem> getAvailableStockList(Market market) throws FailedToGetDataException {
+	public Collection<StockItem> getAvailableStockList(Market market) throws FailedToGetDataException {
 		return null;
 //		try {
 //			StockDataSqlStore sql = StockDataSqlStore.getInstance(this.context);
@@ -81,7 +81,7 @@ public class GaeUsAdapter extends GaeDataAdapter {
 					if (stocks == null || stocks.size() == 0) {
 						return false;
 					}
-					Map<String, DayData> data = this.provider.getUsDayDataSet(stocks.values());
+					Map<String, DayData> data = this.provider.getDayDataSet(stocks.values());
 					for (IStockDataListener listener : eventListeners) {
 						listener.OnStockDataUpdated(this, data);
 					}
@@ -100,7 +100,7 @@ public class GaeUsAdapter extends GaeDataAdapter {
 
 	@Override
 	public StockItem search(String ticker, Market market) throws IOException {
-		return provider.search(ticker, market);
+		return provider.getStock(ticker);
 	}
 
 	@Override

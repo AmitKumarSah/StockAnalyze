@@ -41,7 +41,7 @@ public abstract class SearchStockItemTask extends AsyncTask<SearchResult, Intege
 				sql.insertStockItem(item);
 			}
 		} catch (Exception e) {
-			Log.e(Utils.LOG_TAG, "failed to search for stock item from market " + market, e);
+			Log.e(Utils.LOG_TAG, "failed to getStock for stock item from market " + market, e);
 		}
 		return item;
 	}

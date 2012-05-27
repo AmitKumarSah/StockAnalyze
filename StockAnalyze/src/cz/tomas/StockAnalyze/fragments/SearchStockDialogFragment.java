@@ -208,7 +208,7 @@ public class SearchStockDialogFragment extends DialogFragment {
 					});
 				}
 			} catch (Exception e) {
-				Log.e(Utils.LOG_TAG, "failed to search for stocks", e);
+				Log.e(Utils.LOG_TAG, "failed to getStock for stocks", e);
 			}
 		}
 

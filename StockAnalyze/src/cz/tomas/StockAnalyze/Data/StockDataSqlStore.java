@@ -344,7 +344,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 	 * @param stocks list of stocks to update
 	 * @return updated map of stocks and datas
 	 */
-	public Map<String, StockItem>  updateStockList(List<StockItem> stocks, Market market) {
+	public Map<String, StockItem>  updateStockList(Collection<StockItem> stocks, Market market) {
 		Map<String, StockItem> items = new LinkedHashMap<String, StockItem>();
 		Log.i(Utils.LOG_TAG, "storing stock items to db ... " + items.size());
 		

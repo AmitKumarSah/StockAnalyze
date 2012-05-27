@@ -28,10 +28,7 @@ import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetDataException;
 
 import java.io.IOException;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author tomas
@@ -64,7 +61,7 @@ public interface IStockDataProvider extends IObservableDataProvider {
 	 */
 	Map<Long, Float> getHistoricalPriceSet(String ticker, int timePeriod);
 	Map<Long, Float> getIntraDayData(String ticker, Date date);
-	List<StockItem> getAvailableStockList(Market market) throws FailedToGetDataException;
+	Collection<StockItem> getAvailableStockList(Market market) throws FailedToGetDataException;
 	String getId();
 	String getDescriptiveName();
 	boolean refresh(Market market);

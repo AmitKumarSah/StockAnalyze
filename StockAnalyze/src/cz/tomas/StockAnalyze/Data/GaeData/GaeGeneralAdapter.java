@@ -11,8 +11,8 @@ import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetDataException;
 import cz.tomas.StockAnalyze.utils.Utils;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -38,9 +38,9 @@ public class GaeGeneralAdapter extends GaeDataAdapter {
 	}
 
 	@Override
-	public List<StockItem> getAvailableStockList(Market market) throws FailedToGetDataException {
+	public Collection<StockItem> getAvailableStockList(Market market) throws FailedToGetDataException {
 		try {
-			return this.provider.getStockList(market.getId());
+			return this.provider.getStockList(market);
 		} catch (IOException e) {
 			throw new FailedToGetDataException("failed to get stock list", e);
 		}
@@ -70,7 +70,7 @@ public class GaeGeneralAdapter extends GaeDataAdapter {
 				// the market could be closed, so we don't necessarily get updated data
 				if (provider.refresh()) {
 					// if refresh proceeded and the market is open, fire the event
-					Map<String, DayData> data = this.provider.getDayDataSet(market.getId());
+					Map<String, DayData> data = this.provider.getDayDataSet(market);
 					for (IStockDataListener listener : eventListeners) {
 						listener.OnStockDataUpdated(this, data);
 					}

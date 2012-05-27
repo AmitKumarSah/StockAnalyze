@@ -10,7 +10,7 @@ import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetDataException;
 import cz.tomas.StockAnalyze.utils.Utils;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 
 
@@ -19,17 +19,19 @@ public class GaePseDataAdapter extends GaeDataAdapter {
 	public static final String MARKET_CODE = "cz";
 	public static final String ID = "GAE PSE Provider";
 
+	private final DataProviderAdviser adviser = new DataProviderAdviser(true, true, true, MARKET_CODE, false);
+
 	public GaePseDataAdapter(Context context) {
 		super(context);
 	}
 
 	
 	@Override
-	public List<StockItem> getAvailableStockList(Market market)
+	public Collection<StockItem> getAvailableStockList(Market market)
 			throws FailedToGetDataException {
-		List<StockItem> stockList;
+		Collection<StockItem> stockList;
 		try {
-			stockList = this.provider.getStockList(market.getId());
+			stockList = this.provider.getStockList(market);
 		} catch (Exception e) {
 			throw new FailedToGetDataException("failed to get stock list", e);
 		}
@@ -43,7 +45,7 @@ public class GaePseDataAdapter extends GaeDataAdapter {
 
 	@Override
 	public String getDescriptiveName() {
-		return "GAE data provider";
+		return "GAE PSE data provider";
 	}
 
 	@Override
@@ -60,7 +62,7 @@ public class GaePseDataAdapter extends GaeDataAdapter {
 				// the market could be closed, so we don't necessarily get updated data
 				if (provider.refresh()) {
 					// if refresh proceeded and the market is open, fire the event
-					Map<String, DayData> data = this.provider.getDayDataSet(market.getId());
+					Map<String, DayData> data = this.provider.getDayDataSet(market);
 					for (IStockDataListener listener : eventListeners) {
 						listener.OnStockDataUpdated(this, data);
 					}
@@ -79,7 +81,6 @@ public class GaePseDataAdapter extends GaeDataAdapter {
 
 	@Override
 	public DataProviderAdviser getAdviser() {
-		DataProviderAdviser adviser = new DataProviderAdviser(true, true, true, MARKET_CODE, false);
 		return adviser;
 	}
 }
