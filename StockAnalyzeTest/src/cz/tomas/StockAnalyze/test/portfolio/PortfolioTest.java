@@ -39,17 +39,16 @@ import java.util.List;
 public class PortfolioTest extends AndroidTestCase {
 
 	private Portfolio portfolio;
-	private Context context;
-	
+
 	/* (non-Javadoc)
-	 * @see android.test.AndroidTestCase#setUp()
-	 */
+		 * @see android.test.AndroidTestCase#setUp()
+		 */
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		
-		this.context = new IsolatedContext(new MockContentResolver(), getContext());
-		this.portfolio = new Portfolio(this.context);
+
+		Context context = new IsolatedContext(new MockContentResolver(), getContext());
+		this.portfolio = new Portfolio(context);
 	}
 
 	/* 
@@ -155,7 +154,7 @@ public class PortfolioTest extends AndroidTestCase {
 		PortfolioItem actualItem = items.get(0);
 		
 		assertEquals(price + price/2, actualItem.getBuyPrice());
-		assertEquals(0.0f, actualItem.getSellPrice());
+		assertEquals(0.0, actualItem.getSellPrice());
 		assertEquals(count * 2, actualItem.getCurrentStockCount());
 	}
 }
