@@ -3,10 +3,13 @@ package cz.tomas.StockAnalyze.test.rest;
 import android.test.AndroidTestCase;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.Market;
+import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.rest.Infrastructure;
 import cz.tomas.StockAnalyze.test.Markets;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -18,6 +21,20 @@ public class DayDataInfrastructureTest extends AndroidTestCase {
 
 	public DayDataInfrastructureTest() {
 		this.infrastructure = new Infrastructure();
+	}
+
+	public void testDayDataByStocks() {
+		StockItem item1 = new StockItem("AAPL", "AAPL", "Apple Inc.", Markets.US_NASDAQ);
+		StockItem item2 = new StockItem("MSFT", "MSFT", "Microsoft Inc.", Markets.US_NASDAQ);
+		List<StockItem> stocks = new ArrayList<StockItem>(2);
+		stocks.add(item1);
+		stocks.add(item2);
+
+		Map<String, DayData> dataSet = this.infrastructure.getDataSet(stocks);
+		assertNotNull(dataSet);
+		assertEquals(dataSet.size(), 2);
+		assertNotNull(dataSet.values().toArray()[0]);
+		assertNotNull(dataSet.values().toArray()[1]);
 	}
 
 	public void testDayDataCZ() throws IOException {

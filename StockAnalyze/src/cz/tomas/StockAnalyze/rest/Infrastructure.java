@@ -17,8 +17,11 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
+ * infrastructure for executing REST requests
+ *
  * @author tomas
  */
+@SuppressWarnings("unchecked")
 public class Infrastructure {
 
 	private static final String ROOT_URL = "https://backend-stockanalyze.appspot.com/";
@@ -73,7 +76,6 @@ public class Infrastructure {
 		return entity.getBody();
 	}
 
-	@SuppressWarnings("unchecked")
 	public Map<Long, Float> getChartData(String ticker, String timePeriod) throws IOException {
 		final String url = ROOT_URL.concat("stocks/{ticker}/chart?timePeriod=").concat(timePeriod);
 		ResponseEntity<Map> data = chartTemplate.exchange(url, HttpMethod.GET, this.requestEntity, Map.class,
@@ -81,7 +83,6 @@ public class Infrastructure {
 		return (Map<Long, Float>) data.getBody();
 	}
 
-	@SuppressWarnings("unchecked")
 	public Map<String, DayData> getDataSet(Market market) throws IOException {
 		final String url = ROOT_URL.concat("dayData?marketId=").concat(market.getId());
 		ResponseEntity<Map> data = dayDataTemplate.exchange(url, HttpMethod.GET, this.requestEntity, Map.class);
@@ -89,7 +90,6 @@ public class Infrastructure {
 		return (Map<String, DayData>) data.getBody();
 	}
 
-	@SuppressWarnings("unchecked")
 	public Map<String, DayData> getDataSet(Collection<StockItem> stocks) {
 		final String params;
 		synchronized (builder) {
