@@ -27,4 +27,6 @@
     <dimen name="actionbar_compat_button_home_width">56dp</dimen>
     
     <dimen name="grid_padding">4dp</dimen>
+	<dimen name="tile_padding_lr">8dp</dimen>
+	<dimen name="tile_padding_tb">5dp</dimen>
 </resources>
