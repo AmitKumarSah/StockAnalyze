@@ -1,0 +1,8 @@
+<resources>
+	<string-array name="navigation_list">
+		<item>Akcie</item>
+		<item>Indexy</item>
+		<item>Portfolio</item>
+		<item>Zprávy</item>
+	</string-array>
+</resources>

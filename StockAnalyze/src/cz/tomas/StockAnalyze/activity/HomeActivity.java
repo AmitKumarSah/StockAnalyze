@@ -27,13 +27,13 @@ import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 import com.crittercism.app.Crittercism;
 import cz.tomas.StockAnalyze.Application;
 import cz.tomas.StockAnalyze.Data.DataManager;
@@ -86,7 +86,7 @@ public class HomeActivity extends ChartActivity implements OnClickListener {
 		Thread thread = new Thread(chartRunnable);
 		thread.start();
 
-		this.getActionBarHelper().setDisplayHomeAsUpEnabled(false);
+		this.getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 		if (! isDataUpdated) {
 			// user just launched the application, let's make an update
 			UpdateScheduler scheduler = (UpdateScheduler) getApplicationContext().getSystemService(Application.UPDATE_SCHEDULER_SERVICE);
@@ -129,7 +129,7 @@ public class HomeActivity extends ChartActivity implements OnClickListener {
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-	    MenuInflater inflater = getMenuInflater();
+	    MenuInflater inflater = getSupportMenuInflater();
 	    inflater.inflate(R.menu.app_menu, menu);
         return super.onCreateOptionsMenu(menu);
 	}

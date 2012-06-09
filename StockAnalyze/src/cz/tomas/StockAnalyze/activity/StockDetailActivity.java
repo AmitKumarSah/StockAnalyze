@@ -23,13 +23,13 @@ package cz.tomas.StockAnalyze.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 import cz.tomas.StockAnalyze.Application;
 import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.R;
@@ -80,7 +80,7 @@ public final class StockDetailActivity extends ChartActivity {
 				final int textId = index ? R.string.activityIndexDetail
 						: R.string.activityStockDetail;
 				this.setTitle(textId);
-				this.getActionBarHelper().setLogo(logo);
+				this.getSupportActionBar().setLogo(logo);
 				this.fill();
 			} else {
 				this.showWarning();
@@ -96,7 +96,7 @@ public final class StockDetailActivity extends ChartActivity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-	    MenuInflater inflater = getMenuInflater();
+	    MenuInflater inflater = getSupportMenuInflater();
 	    inflater.inflate(R.menu.stock_detail_menu, menu);
         return super.onCreateOptionsMenu(menu);
 	}

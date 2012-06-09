@@ -31,7 +31,15 @@
 	<color name="actionbar_color_start">#080808</color>
 	<!-- this is on top of bar -->
 	<color name="actionbar_color_end">#292929</color> 		
-
+	
+	
+	<!-- <color name="actionbar_color">#121212</color> -->
+	<!-- <color name="actionbar_color_start">#121212</color> -->
+	<!-- <color name="actionbar_color_end">#393939</color> -->
+	
+	<!-- <color name="actionbar_color">#101040</color> -->
+	<!-- <color name="actionbar_color_start">#101040</color> -->
+	<!-- <color name="actionbar_color_end">#203040</color>	this is on top of bar -->
 	
 	<color name="groubox_header_color_start">#101040</color>
 	<color name="groubox_header_color_end">#203040</color>
@@ -42,28 +50,21 @@
 	<color name="money_item_red_center">#ED3333</color>
 	<color name="money_item_red_start">#CB3333</color>
 	<color name="money_item_red_end">#FE6262</color>
-	<color name="money_item_red">#EDCA1111</color>
+	<color name="money_item_red">#CA2222</color>
 	
 	<color name="money_item_green_center">#33ED33</color>
 	<color name="money_item_green_start">#33CB33</color>
 	<color name="money_item_green_end">#62FE62</color>
-	<color name="money_item_green">#ED11B111</color>
+	<color name="money_item_green">#22B122</color>
 	
 	<color name="money_item_dark_center">#444444</color>
 	<color name="money_item_dark_start">#333333</color>
 	<color name="money_item_dark_end">#555555</color>
-	<color name="money_item_dark">#333333</color>
+	<color name="money_item_dark">#222222</color>
 	
 	<color name="home_block_color">#FFFFFF</color>
 	<color name="shadow_dark">#222222</color>
 	
     <color name="actionbar_title_color">#224894</color>
     <color name="icon_main_color">#3570e7</color>
-
-	<color name="drag_container_border">#BB333333</color>
-	<color name="drag_container_action1">#aa94afff</color>
-	<color name="drag_container_action1_active">#ee94afff</color>
-
-	<color name="drag_container_action2">#aafa440a</color>
-	<color name="drag_container_action2_active">#eeFA440A</color>
 </resources>

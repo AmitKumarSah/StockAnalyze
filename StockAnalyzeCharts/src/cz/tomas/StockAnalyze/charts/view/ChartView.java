@@ -139,6 +139,7 @@ public class ChartView extends View {
 		this.textPaint.setTypeface(Typeface.DEFAULT_BOLD);
 		this.textPaint.setTextAlign(Align.LEFT);
 		this.textPaint.setTextSize(SCALE * 8f);
+		this.textPaint.setColor(getResources().getColor(R.color.chartPainting));
 		
 		this.gridFillPaint = new Paint();
 		this.gridFillPaint.setStyle(Style.FILL_AND_STROKE);

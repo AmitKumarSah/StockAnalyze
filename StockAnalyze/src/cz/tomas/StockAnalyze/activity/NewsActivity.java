@@ -29,13 +29,13 @@ import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import cz.tomas.StockAnalyze.Application;
@@ -54,8 +54,7 @@ import cz.tomas.StockAnalyze.utils.Utils;
  *
  */
 public class NewsActivity extends BaseFragmentActivity implements LoaderCallbacks<Cursor> {
-	
-	public static final String EXTRA_NEWS_ARTICLE = "news-article";
+
 	public static final String EXTRA_NEWS_POSITION = "news-position";
 	private static final long UPDATE_INTERVAL = 60 * 1000;
 	
@@ -68,6 +67,8 @@ public class NewsActivity extends BaseFragmentActivity implements LoaderCallback
 		super.onCreate(savedInstanceState);
 		
 		this.setContentView(R.layout.news_layout);
+		this.setAsTopLevelActivity(NAVIGATION_NEWS);
+
 		this.listView = (PullToRefreshListView) this.findViewById(R.id.listView);
 		listView.setOnRefreshListener(new OnRefreshListener() {
 			
@@ -95,7 +96,7 @@ public class NewsActivity extends BaseFragmentActivity implements LoaderCallback
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-	    final MenuInflater inflater = getMenuInflater();
+	    final MenuInflater inflater = getSupportMenuInflater();
 	    inflater.inflate(R.menu.news_menu, menu);
 	    
 	    return super.onCreateOptionsMenu(menu);
@@ -135,7 +136,7 @@ public class NewsActivity extends BaseFragmentActivity implements LoaderCallback
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 		this.adapter.swapCursor(data);
 		
-		this.getActionBarHelper().setRefreshActionItemState(false);
+//		this.getActionBar().setRefreshActionItemState(false);
 		this.listView.onRefreshComplete();
 		final long current = SystemClock.elapsedRealtime();
 		if (current - lastUpdateTime > UPDATE_INTERVAL) {
@@ -155,7 +156,7 @@ public class NewsActivity extends BaseFragmentActivity implements LoaderCallback
 		protected void onPreExecute() {
 			super.onPreExecute();
 
-			getActionBarHelper().setRefreshActionItemState(true);
+//			getActionBarHelper().setRefreshActionItemState(true);
 		}
 
 		@Override
@@ -174,7 +175,7 @@ public class NewsActivity extends BaseFragmentActivity implements LoaderCallback
 		protected void onPostExecute(Boolean result) {
 			if (result == null || ! result) {
 				// error
-				getActionBarHelper().setRefreshActionItemState(false);
+//				getActionBarHelper().setRefreshActionItemState(false);
 				listView.onRefreshComplete();
 			}
 		}

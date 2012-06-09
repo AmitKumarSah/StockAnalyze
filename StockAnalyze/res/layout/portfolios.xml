@@ -25,8 +25,7 @@
         android:id="@+id/portfoliosPagerTitles"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="2dp"
-        android:background="#DDDDDD" />
+        android:layout_marginBottom="2dp" />
 
     <android.support.v4.view.ViewPager
         android:id="@+id/portfoliosViewPager"

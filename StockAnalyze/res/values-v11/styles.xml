@@ -27,15 +27,5 @@
     	<item name="android:clickable">true</item>
     	<item name="android:enabled">true</item>
     </style>
-    
-    <style name="ActionBar" parent="android:style/Widget.Holo.Light.ActionBar">
-        <item name="android:background">#eee</item>
-        <item name="android:titleTextStyle">@style/ActionBarTitle</item>
-        <item name="android:icon">@drawable/ic_app</item>
-    </style>
-
-    <style name="ActionBarTitle">
-        <item name="android:textColor">@color/actionbar_title_color</item>
-    </style>
 
 </resources>
