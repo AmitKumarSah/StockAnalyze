@@ -2,13 +2,13 @@ package cz.tomas.StockAnalyze.fragments;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import com.actionbarsherlock.app.SherlockFragment;
 import cz.tomas.StockAnalyze.News.ArticlePagerAdapter;
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
@@ -16,7 +16,7 @@ import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
-public final class ArticleFragment extends Fragment {
+public final class ArticleFragment extends SherlockFragment {
 
 	/* (non-Javadoc)
 	 * @see android.support.v4.app.Fragment#onCreateView(android.view.LayoutInflater, android.view.ViewGroup, android.os.Bundle)

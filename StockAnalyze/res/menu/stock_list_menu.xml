@@ -32,11 +32,6 @@
         android:icon="@drawable/ic_action_refresh"
         android:title="@string/refresh"
 	    android:orderInCategory="1"
-        android:showAsAction="ifRoom"/>
-
-	<item android:id="@+id/menu_stock_add"
-		android:title="@string/addStockItem"
-		android:icon="@drawable/ic_action_plus"
-		android:showAsAction="always"/>
+        android:showAsAction="always"/>
 
 </menu>

@@ -10,9 +10,9 @@ import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 import com.viewpagerindicator.TitlePageIndicator;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
@@ -38,8 +38,7 @@ public final class PortfoliosActivity extends AbstractStocksActivity implements 
 	public static final int DIALOG_ADD_NEW = DIALOG_PROGRESS + 1;
 	
 	public static final String EXTRA_STOCK_ITEM = "portfolioStockItem";
-	
-	private ViewPager pager;
+
 	private PortfolioPagerAdapter pagerAdapter;
 	private TitlePageIndicator titleIndicator;
 
@@ -49,14 +48,14 @@ public final class PortfoliosActivity extends AbstractStocksActivity implements 
 		
 		this.setContentView(R.layout.portfolios);
 
-		this.pager = (ViewPager) this.findViewById(R.id.portfoliosViewPager);
+		ViewPager pager = (ViewPager) this.findViewById(R.id.portfoliosViewPager);
 		this.pagerAdapter = new PortfolioPagerAdapter(getSupportFragmentManager(), null);
-		this.pager.setAdapter(pagerAdapter);
+		pager.setAdapter(pagerAdapter);
 
 		//Bind the title indicator to the pagerAdapter
 		titleIndicator = (TitlePageIndicator) findViewById(R.id.portfoliosPagerTitles);
 		titleIndicator.setOnPageChangeListener(this);
-		titleIndicator.setViewPager(this.pager, 0);
+		titleIndicator.setViewPager(pager, 0);
 
 		if (dataManager.isMarketCollectionAvailable()) {
 			onPrepareData(dataManager.getMarkets());
@@ -104,7 +103,7 @@ public final class PortfoliosActivity extends AbstractStocksActivity implements 
 	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-	    MenuInflater inflater = getMenuInflater();
+	    MenuInflater inflater = getSupportMenuInflater();
 	    inflater.inflate(R.menu.portfolio_menu, menu);
 	    return super.onCreateOptionsMenu(menu);
 	}

@@ -23,20 +23,17 @@
 	<item android:title="@string/settings" 
 		android:id="@+id/menu_portfolio_settings" 
 		android:icon="@drawable/ic_menu_settings"
-	    android:orderInCategory="0"
         android:showAsAction="never">
 	</item>
 	<item android:title="@string/refresh" 
 		android:id="@id/menu_refresh" 
 		android:visible="false"
 		android:icon="@drawable/ic_action_refresh"
-	    android:orderInCategory="1"
         android:showAsAction="always">
 	</item>
 	<item android:title="@string/addStockItemToPortfolio" 
 		android:id="@+id/menu_portfolio_add" 
 		android:icon="@drawable/ic_action_plus"
-	    android:orderInCategory="2"
-        android:showAsAction="always">
+        android:showAsAction="withText">
 	</item>
 </menu>

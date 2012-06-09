@@ -67,7 +67,6 @@ public class NewsActivity extends BaseFragmentActivity implements LoaderCallback
 		super.onCreate(savedInstanceState);
 		
 		this.setContentView(R.layout.news_layout);
-		this.setAsTopLevelActivity(NAVIGATION_NEWS);
 
 		this.listView = (PullToRefreshListView) this.findViewById(R.id.listView);
 		listView.setOnRefreshListener(new OnRefreshListener() {

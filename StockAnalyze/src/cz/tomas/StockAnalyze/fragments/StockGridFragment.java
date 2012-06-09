@@ -1,24 +1,33 @@
 package cz.tomas.StockAnalyze.fragments;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
-import android.view.*;
-import android.view.ContextMenu.ContextMenuInfo;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
+import android.widget.Toast;
+import com.actionbarsherlock.app.SherlockFragment;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
+import cz.tomas.StockAnalyze.Application;
 import cz.tomas.StockAnalyze.Data.Model.Market;
+import cz.tomas.StockAnalyze.Data.Model.SearchResult;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.StockList.StockListAdapter;
+import cz.tomas.StockAnalyze.StockList.search.SearchStockItemTask;
+import cz.tomas.StockAnalyze.UpdateScheduler;
 import cz.tomas.StockAnalyze.activity.AbstractStocksActivity;
 import cz.tomas.StockAnalyze.fragments.StockFragmentHelper.IStockFragment;
 import cz.tomas.StockAnalyze.ui.widgets.DragContainerView;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 
-public class StockGridFragment extends Fragment implements IStockFragment, DragContainerView.IDragListener {
+public class StockGridFragment extends SherlockFragment implements IStockFragment, DragContainerView.IDragListener {
 	
 	public static final String ARA_INSECURE_INDICES = "includeIndeces";
 	public static String ARG_MARKET = "market";
@@ -30,6 +39,14 @@ public class StockGridFragment extends Fragment implements IStockFragment, DragC
 	
 	protected GridView grid;
 	protected View progress;
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+		this.helper = new StockFragmentHelper(this, getArguments());
+		this.setHasOptionsMenu(true);
+	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -47,9 +64,8 @@ public class StockGridFragment extends Fragment implements IStockFragment, DragC
 			throw new IllegalStateException("fragment's activity must implement IDragSupportingActivity");
 		}
 		final StockListAdapter adapter = new StockListAdapter(getActivity(), R.layout.item_stock_grid);
-		this.helper = new StockFragmentHelper(this, getArguments(), adapter);
-		
-		//this.registerForContextMenu(this.grid);
+		this.helper.setAdapter(adapter);
+
 		this.grid.setAdapter(adapter);
 		this.grid.setOnItemClickListener(new OnItemClickListener() {
 
@@ -91,27 +107,26 @@ public class StockGridFragment extends Fragment implements IStockFragment, DragC
 
 	}
 
-
-	/** 
-	 * stock context menu for stock item
-	 * @see android.app.Activity#onContextItemSelected(android.view.MenuItem)
-	 */
 	@Override
-	public boolean onContextItemSelected(MenuItem item) {
-		return this.helper.onContextItemSelected(item);
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		if (this.helper.getMarket() != null && this.helper.getMarket().getType() == Market.TYPE_SELECTIVE) {
+			menu.add(0, R.id.menu_stock_add, Menu.NONE, R.string.addStockItem);
+			final MenuItem menuItem = menu.findItem(R.id.menu_stock_add);
+			menuItem.setIcon(R.drawable.ic_action_plus);
+			menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+		}
+		super.onCreateOptionsMenu(menu, inflater);
+
 	}
 
-	/** 
-	 * context menu for all stock items in list view
-	 * @see android.app.Activity#onCreateContextMenu(android.view.ContextMenu, android.view.View, android.view.ContextMenu.ContextMenuInfo)
-	 */
 	@Override
-	public void onCreateContextMenu(ContextMenu menu, View v,
-			ContextMenuInfo menuInfo) {
-		this.helper.onCreateContextMenu(menu, v, menuInfo);
-		super.onCreateContextMenu(menu, v, menuInfo);
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if (item.getItemId() == R.id.menu_stock_add) {
+			searchForStock();
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
 	}
-
 
 	@Override
 	public void onLoadFinished() {
@@ -126,4 +141,40 @@ public class StockGridFragment extends Fragment implements IStockFragment, DragC
 			NavUtils.goToAddToPortfolio(getActivity(), (StockItem) data, null);
 		}
 	}
+
+	private void searchForStock() {
+		SearchStockDialogFragment fragment = SearchStockDialogFragment.newInstance(R.string.addStockItem, this.helper.getMarket());
+		fragment.setSearchListener(this.searchListener);
+		fragment.show(getFragmentManager(), "addStock");
+	}
+
+	private void addStock(SearchResult searchResult) {
+		final ProgressDialogFragment fragment = ProgressDialogFragment.newInstance(R.string.addStockItem, R.string.loading);
+		fragment.show(getFragmentManager(), "add_progress");
+
+		final Market market = this.helper.getMarket();
+		SearchStockItemTask task = new SearchStockItemTask(getActivity(), market) {
+			@Override
+			protected void onPostExecute(StockItem stockItem) {
+				fragment.dismiss();
+				if (stockItem != null) {
+					final String message = String.format("%s %s", stockItem.getName(), getText(R.string.addedStock).toString());
+					Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+					// update data - this will cause fragment update too
+					UpdateScheduler scheduler = (UpdateScheduler) getActivity().getApplicationContext().getSystemService(Application.UPDATE_SCHEDULER_SERVICE);
+					scheduler.updateImmediately(market);
+				} else {
+					Toast.makeText(getActivity(), R.string.addStockItemNotFound, Toast.LENGTH_SHORT).show();
+				}
+			}
+		};
+		task.execute(searchResult);
+	}
+
+	private final SearchStockDialogFragment.ISearchListener searchListener = new SearchStockDialogFragment.ISearchListener() {
+		@Override
+		public void onStockSelected(SearchResult searchResult) {
+			addStock(searchResult);
+		}
+	};
 }
