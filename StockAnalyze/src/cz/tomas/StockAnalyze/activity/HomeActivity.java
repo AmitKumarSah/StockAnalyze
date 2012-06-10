@@ -34,6 +34,7 @@ import android.widget.Toast;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.crittercism.NewFeedbackSpringboardActivity;
 import com.crittercism.app.Crittercism;
 import cz.tomas.StockAnalyze.Application;
 import cz.tomas.StockAnalyze.Data.DataManager;
@@ -44,11 +45,12 @@ import cz.tomas.StockAnalyze.charts.view.CompositeChartView;
 import cz.tomas.StockAnalyze.ui.widgets.HomeBlockView;
 import cz.tomas.StockAnalyze.ui.widgets.PickStockDialog;
 import cz.tomas.StockAnalyze.ui.widgets.PickStockDialog.IStockDialogListener;
+import cz.tomas.StockAnalyze.utils.Consts;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
 
 public class HomeActivity extends ChartActivity implements OnClickListener {
-	
+
 	private SharedPreferences pref;
 
 	private TextView txtChartLabel;
@@ -59,7 +61,7 @@ public class HomeActivity extends ChartActivity implements OnClickListener {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		Crittercism.init(getApplicationContext(), "4f017b27b0931504d400017c");
+		Crittercism.init(getApplicationContext(), Consts.CRITTER_ID);
 		if (Utils.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
 			StrictMode.enableDefaults();
 		}
@@ -157,6 +159,10 @@ public class HomeActivity extends ChartActivity implements OnClickListener {
 	    case R.id.menu_app_pick_stock:
 			this.showDialog(DIALOG_PICK_STOCK);
 			return true;
+	    case R.id.menu_app_feedback:
+		    Intent i = new Intent(this, NewFeedbackSpringboardActivity.class);
+		    startActivity(i);
+		    return true;
 	    default:
 	        return super.onOptionsItemSelected(item);
 	    }

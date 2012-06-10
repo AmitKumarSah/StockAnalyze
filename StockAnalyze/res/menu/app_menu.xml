@@ -22,18 +22,23 @@
 	    android:id="@+id/menu_app_settings"
 	    android:icon="@drawable/ic_menu_settings"
 	    android:orderInCategory="0"
-        android:showAsAction="collapseActionView"/>
+        android:showAsAction="never"/>
     
     <item android:id="@+id/menu_app_about"
         android:orderInCategory="1"
-        android:showAsAction="collapseActionView"
+        android:showAsAction="never"
         android:title="@string/appAbout" 
         android:icon="@drawable/ic_menu_about"/>
     
     <item android:id="@+id/menu_app_pick_stock"
         android:orderInCategory="2"
         android:visible="false"
-        android:showAsAction="collapseActionView"
+        android:showAsAction="never"
         android:title="@string/pickStock" 
         android:icon="@drawable/ic_menu_chart"/>
+	<item android:id="@+id/menu_app_feedback"
+		android:orderInCategory="3"
+		android:showAsAction="never"
+		android:title="@string/feedback"/>
+
 </menu>

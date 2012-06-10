@@ -18,8 +18,8 @@
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
 	package="cz.tomas.StockAnalyze" 
-	android:versionName="0.9.9"
-	android:versionCode="00909">
+	android:versionName="0.9.10"
+	android:versionCode="00910">
 	
 	<uses-sdk android:minSdkVersion="7" android:targetSdkVersion="14"/>
 	<uses-permission android:name="android.permission.INTERNET"/>
@@ -86,22 +86,19 @@
 		<activity android:name=".activity.AboutActivity"
 		    android:logo="@drawable/ic_app"
 			android:label="@string/appAbout"/>
-<!-- 		<receiver android:enabled="true" android:permission="android.permission.ACCESS_NETWORK_STATE" android:name=".receivers.NetworkBroadcastReceiver"> -->
-<!-- 			<intent-filter> -->
-<!-- 				<action android:name="android.net.conn.BACKGROUND_DATA_SETTING_CHANGED"/> -->
-<!-- 				<action android:name="android.net.conn.CONNECTIVITY_CHANGE"/> -->
-<!-- 			</intent-filter> -->
-<!-- 		</receiver> -->
+
+		<!-- Start of Crittercism.com Code -->
 		<activity android:name="com.crittercism.NotificationActivity"/>
 
-		<service android:name="com.crittercism.service.CrittercismService" android:process="com.crittercism.service"
-				 android:exported="true">
-			<intent-filter>
-				<action android:name="com.crittercism.service.CrittercismService"/>
-			</intent-filter>
-		</service>
+		<!-- For Crittercism's support forum, also include the activities below: -->
+		<activity android:name="com.crittercism.NewFeedbackSpringboardActivity" android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"/>
+		<activity android:name="com.crittercism.NewFeedbackIssueListActivity" android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"/>
+		<activity android:name="com.crittercism.NewFeedbackQuestionListActivity" android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"/>
+		<activity android:name="com.crittercism.NewFeedbackItemDetailsActivity" android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"/>
+		<activity android:name="com.crittercism.NewFeedbackCreateActivity" android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"/>
+		<!-- End of Crittercism.com Code -->
 
-		<receiver android:name=".receivers.AlarmReceiver"></receiver>
+		<receiver android:name=".receivers.AlarmReceiver"/>
 		
 		<provider
 			android:name="cz.tomas.StockAnalyze.News.NewsContentProvider"

@@ -20,6 +20,7 @@
 	<string name="app_name">StockGrid</string>
 	<string name="appAuthor">Tomáš Vondráček\ntomas.vondracek@gmail.com</string>
 	<string name="appWww">http://tomas-vondracek.net</string>
+	<string name="feedback">Feedback</string>
 
     <string name="portfolioContextMenuSubtract"/>
     <string name="portfolioContextMenuAddMore">Přidat další</string>
