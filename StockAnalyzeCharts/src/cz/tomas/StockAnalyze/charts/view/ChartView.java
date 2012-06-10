@@ -359,15 +359,7 @@ public class ChartView extends View {
 //    		(b-a)(x - min)
 //    f(x) = --------------  + a
 //              max - min
-	
 
-	/**
-	 * @param canvas
-	 * @param offset
-	 * @param originX
-	 * @param originY
-	 * @param chartWidth
-	 */
 	private void drawAxis(Canvas canvas, float originX, float originY, float chartWidth) {
 		// the lines are crossing with overlap = offset/2
 		// draw x axis
@@ -528,5 +520,9 @@ public class ChartView extends View {
 		this.lastTrackingValue = -1;
 		this.trackingValueX = -1;
 		this.invalidate();
+	}
+
+	public boolean isDataLoaded() {
+		return this.data != null;
 	}
 }

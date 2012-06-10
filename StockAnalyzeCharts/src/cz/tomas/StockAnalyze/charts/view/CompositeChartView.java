@@ -107,4 +107,8 @@ public class CompositeChartView extends RelativeLayout {
 			this.chart.setDisableRedraw(loading);
 		}
 	}
+
+	public boolean isDataLoaded() {
+		return this.chart.isDataLoaded();
+	}
 }

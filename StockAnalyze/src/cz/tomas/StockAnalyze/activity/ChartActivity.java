@@ -165,6 +165,9 @@ public abstract class ChartActivity extends BaseActivity {
 		if (v != null) {
 			((Checkable) v).setChecked(true);
 		}
+		if (! this.chartView.isDataLoaded() && this.stockItem != null) {
+			this.updateChart();
+		}
 	}
 
 	/* (non-Javadoc)
@@ -210,8 +213,9 @@ public abstract class ChartActivity extends BaseActivity {
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
 		// in case the task is running, don't create context menu
-		if (this.isChartUpdating())
+		if (this.isChartUpdating()) {
 			return;
+		}
 		
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.chart_context_menu, menu);
