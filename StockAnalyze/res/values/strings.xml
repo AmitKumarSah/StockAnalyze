@@ -26,8 +26,8 @@
     <string name="portfolioContextMenuRemove">Remove</string>
     <string name="portfolioContextMenuStockDetail">View Stock Detail</string>
     <string name="PortfolioContextViewDetail">Portfolio Detail</string>
-    <string name="addStockItemToFavourite">Add to My Favourites</string>
-    <string name="addStockItemToPortfolio">Add to My Portfolio</string>
+    <string name="addStockItemToFavourite">Add to Favourites</string>
+    <string name="addStockItemToPortfolio">Add to Portfolio</string>
     <string name="stockItemView">View Detail</string>
     <string name="refresh">Refresh</string>
     <string name="settings">Settings</string>

@@ -21,26 +21,14 @@
     	<item name="vpiTitlePageIndicatorStyle">@style/MyTitlePageIndicator</item>
     	<item name="android:radioButtonStyle">@style/radioStyle</item>
     	    
-        <!--<item name="android:windowTitleSize">@dimen/actionbar_compat_height</item>-->
-        <!--<item name="android:windowTitleBackgroundStyle">@style/ActionBarCompat</item>-->
-        <!--<item name="android:windowContentOverlay">@drawable/actionbar_shadow</item>-->
-
-        <!--&lt;!&ndash; for programmatic instantiation &ndash;&gt;-->
-        <!--<item name="actionbarCompatTitleStyle">@style/ActionBarCompatTitle</item>-->
-        <!--<item name="actionbarCompatItemStyle">@style/ActionBarCompatItem</item>-->
-        <!--<item name="actionbarCompatItemHomeStyle">@style/ActionBarCompatHomeItem</item>-->
-        <!--<item name="actionbarCompatProgressIndicatorStyle">@style/ActionBarCompatProgressIndicator</item>-->
-
-
-		<!--<item name="android:actionBarStyle">@style/ActionBar</item>-->
-		<!--<item name="actionBarStyle">@style/ActionBar</item>-->
-		<!--<item name="android:windowContentOverlay">@drawable/actionbar_shadow</item>-->
-		<!--<item name="windowContentOverlay">@drawable/actionbar_shadow</item>-->
+    	<item name="android:windowBackground">@color/background_light</item>
+		<item name="android:windowContentOverlay">@drawable/abs__ab_solid_shadow_holo</item>
+		<item name="windowContentOverlay">@drawable/abs__ab_solid_shadow_holo</item>
 
 		<item name="android:radioButtonStyle">@style/radioStyle</item>
     </style>
     
-    <style name="themeLightTitle" parent="Theme.Sherlock">
+    <style name="themeLightTitle" parent="Theme.Sherlock.Light">
     	<item name="android:radioButtonStyle">@style/radioStyle</item>
     </style>
 </resources>

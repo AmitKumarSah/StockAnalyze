@@ -25,15 +25,15 @@
 		android:icon="@drawable/ic_menu_settings"
         android:showAsAction="never">
 	</item>
-	<item android:title="@string/refresh" 
-		android:id="@id/menu_refresh" 
-		android:visible="false"
-		android:icon="@drawable/ic_action_refresh"
-        android:showAsAction="always">
-	</item>
+	<!--<item android:title="@string/refresh" -->
+		<!--android:id="@id/menu_refresh" -->
+		<!--android:visible="false"-->
+		<!--android:icon="@drawable/ic_action_refresh"-->
+        <!--android:showAsAction="always">-->
+	<!--</item>-->
 	<item android:title="@string/addStockItemToPortfolio" 
 		android:id="@+id/menu_portfolio_add" 
 		android:icon="@drawable/ic_action_plus"
-        android:showAsAction="withText">
+        android:showAsAction="withText|always">
 	</item>
 </menu>
