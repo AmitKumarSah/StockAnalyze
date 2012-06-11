@@ -43,10 +43,12 @@ public final class FormattingUtils {
 	 * remember last successful format to use it as a primary format
 	 */
 	static DateFormat lastSuccessfulDateFormat;
-	
-	static NumberFormat percentFormat = null;
-	static NumberFormat volumeFormat = null;
-	
+
+	private static NumberFormat percentFormat = null;
+	private static NumberFormat volumeFormat = null;
+	private static NumberFormat priceFormat;
+	private static NumberFormat valueFormat;
+
 	private static DateFormat getCzechFormatter() {
 		if (frmCz == null)
 			frmCz = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH);
@@ -77,12 +79,22 @@ public final class FormattingUtils {
 	}
 	
 	public static NumberFormat getPriceFormat(Currency cur) {
-		NumberFormat priceFormat = DecimalFormat.getCurrencyInstance();
-		if (cur != null) {
-			priceFormat.setCurrency(cur);
+		if (percentFormat == null || ! (percentFormat.getCurrency().getCurrencyCode().equals(cur.getCurrencyCode())) ) {
+			priceFormat = DecimalFormat.getCurrencyInstance();
+			if (cur != null) {
+				priceFormat.setCurrency(cur);
+			}
 		}
 
 		return priceFormat;
+	}
+
+	public static NumberFormat getValueFormat() {
+		if (valueFormat == null) {
+			valueFormat = DecimalFormat.getNumberInstance();
+		}
+
+		return valueFormat;
 	}
 	
 	/**

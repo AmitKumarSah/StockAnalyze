@@ -38,7 +38,8 @@
 	</RadioGroup>
 
     <cz.tomas.StockAnalyze.charts.view.CompositeChartView android:id="@+id/stockChartView"
-    	style="@style/groupboxBody" 
+    	style="@style/groupboxBody"
+		android:background="@drawable/abs__item_background_holo_light"
     	android:layout_width="fill_parent" 
     	android:layout_height="fill_parent"
     	android:minHeight="150dp" 

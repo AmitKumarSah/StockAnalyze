@@ -70,16 +70,16 @@ public class ChartView extends View {
 	private final int GRID_VERTICAL_LINES = 5;
 	
 	private final float MOVE_TRESHOLD = 8 * SCALE;
-	
-	private byte STATE_IN_CLICK = 1;
-	private byte STATE_IN_MOVE = 4;
-	//private byte STATE_IN_PATH = 8;
+
+	private static final byte STATE_IN_CLICK = 1;
+	private static final byte STATE_IN_MOVE = 4;
 	
 	private float[] data;
 	private float[] preparedData;
 	
 	private Number[] axisX;
-	private IChartTextFormatter<Number> formatter;
+	private IChartTextFormatter<Number> axisFormatter;
+	private IChartTextFormatter<Float> dataFormatter;
 	
 	private Path currentPaintingPath;
 	
@@ -99,6 +99,7 @@ public class ChartView extends View {
 	private final Paint gridPaint;
 	private final Paint gridFillPaint;
 	private final TextPaint textPaint;
+	private final TextPaint textTrackingPaint;
 	
 	private Bitmap chartBitmap;
 	private boolean isChartBitmapDirty;
@@ -127,7 +128,7 @@ public class ChartView extends View {
 		this.paintingPaint = new Paint(paint);
 		this.paintingPaint.setColor(getResources().getColor(R.color.chartPainting));
 		this.paintingPaint.setStyle(Style.STROKE);
-		this.paintingPaint.setStrokeWidth(2*SCALE);
+		this.paintingPaint.setStrokeWidth(1*SCALE);
 		
 		this.chartPaint = new Paint(this.paint);
 		this.chartPaint.setColor(getResources().getColor(R.color.chartLine));
@@ -140,6 +141,9 @@ public class ChartView extends View {
 		this.textPaint.setTextAlign(Align.LEFT);
 		this.textPaint.setTextSize(SCALE * 8f);
 		this.textPaint.setColor(getResources().getColor(R.color.chartPainting));
+
+		this.textTrackingPaint = new TextPaint(this.textPaint);
+		this.textTrackingPaint.setTextSize(SCALE * 12f);
 		
 		this.gridFillPaint = new Paint();
 		this.gridFillPaint.setStyle(Style.FILL_AND_STROKE);
@@ -224,27 +228,25 @@ public class ChartView extends View {
 
 	private void drawTracking(Canvas canvas, float originX, float originY, float chartWidth, float chartHeight) {
 		if (this.trackingValueX > originX && this.trackingValueX - originX < chartWidth && this.preparedData != null) {
-			// vertical line
-			canvas.drawLine(this.trackingValueX, OFFSET, this.trackingValueX, originY, this.paintingPaint);
-			
 			final float step = chartWidth / (float) (this.data.length -1);
 			final int index = (int) ((this.trackingValueX - originX) / step);
 			final float yValue = chartHeight - preparedData[index] + OFFSET;
-			// horizontal line
-			canvas.drawLine(originX, yValue, this.getWidth() - OFFSET, yValue, this.paintingPaint);
+
+			final int padding = (int) (SCALE * 4);
+			// vertical lines
+			canvas.drawLine(this.trackingValueX, OFFSET, this.trackingValueX, yValue - padding, this.paintingPaint);
+			canvas.drawLine(this.trackingValueX, yValue + padding, this.trackingValueX, originY, this.paintingPaint);
+
+			// horizontal lines
+			canvas.drawLine(originX, yValue, this.trackingValueX - padding, yValue, this.paintingPaint);
+			canvas.drawLine(this.trackingValueX + padding, yValue, this.getWidth() - OFFSET, yValue, this.paintingPaint);
 			
-			final String value = String.valueOf(this.data[index]);
-			final String text = String.format("%s - %s", getFormattedValue(this.axisX[index]), value);
-			if (this.trackingValueX - originX < chartWidth / 2) {
-				// draw text on right to the line
-				canvas.drawText(text, this.trackingValueX + AXIS_TEXT_PADDING, 
-						yValue - AXIS_TEXT_PADDING, this.textPaint);
-			} else {
-				// draw text to left of the line
-				float textWidth = textPaint.measureText(text);
-				canvas.drawText(text, this.trackingValueX - AXIS_TEXT_PADDING - textWidth,
-						yValue - AXIS_TEXT_PADDING, this.textPaint);
-			}
+			final String value = getDataFormattedValue(this.data[index]);
+			final String text = String.format("%s - %s", getAxisFormattedValue(this.axisX[index]), value);
+
+			float textWidth = textTrackingPaint.measureText(text);
+			canvas.drawText(text, this.getWidth() - AXIS_TEXT_PADDING - textWidth,
+					AXIS_TEXT_PADDING + this.textTrackingPaint.getTextSize(), this.textTrackingPaint);
 		}
 	}
 
@@ -305,7 +307,7 @@ public class ChartView extends View {
 		points[3] = chartHeight - preparedData[0] + OFFSET;
 
 		final Path path = new Path();
-		path.moveTo(originX, originX);
+		path.moveTo(originX, originY);
 		path.lineTo(points[0], points[1]);
 		
 		for (int i = 1; i < data.length; i++) {
@@ -375,34 +377,43 @@ public class ChartView extends View {
 		final float textSize = this.textPaint.getTextSize();
 		if (this.data != null && this.data.length > 0) {
 			// bottom text is right above x=0 value to the left of y axis
-			canvas.drawText(String.valueOf(this.min), OFFSET, 
+			canvas.drawText(getDataFormattedValue(this.min), OFFSET,
 					originY - textSize, this.textPaint);
 			
-			final String lastTickText = String.valueOf(max);
+			final String lastTickText = getDataFormattedValue(max);
 			canvas.drawText(lastTickText, OFFSET, OFFSET + textSize,
 					this.textPaint);
 		}
 
 		// description under the x axis
 		if (this.axisX != null && this.axisX.length > 0) {
-			String text = this.getFormattedValue(this.axisX[0]);
+			String text = this.getAxisFormattedValue(this.axisX[0]);
 			canvas.drawText(text, originX + AXIS_TEXT_PADDING, 
 					originY + textSize + AXIS_TEXT_PADDING, this.textPaint);
 			
-			text = this.getFormattedValue(this.axisX[this.axisX.length - 1]);
+			text = this.getAxisFormattedValue(this.axisX[this.axisX.length - 1]);
 			float textWidth = this.textPaint.measureText(text);
 			canvas.drawText(text, originX + chartWidth - textWidth, 
 					originY + textSize + AXIS_TEXT_PADDING, this.textPaint);
 		}
 	}
 	
-	private <T extends Number> String getFormattedValue(T val) {
-		if (this.formatter != null)
-			return this.formatter.formatAxeText(val);
-		else
+	private <T extends Number> String getAxisFormattedValue(T val) {
+		if (this.axisFormatter != null) {
+			return this.axisFormatter.formatText(val);
+		} else {
 			return val.toString();
+		}
 	}
-	
+
+	private String getDataFormattedValue(float val) {
+		if (this.dataFormatter != null) {
+			return this.dataFormatter.formatText(val);
+		} else {
+			return String.valueOf(val);
+		}
+	}
+
 	void setEnableTracking(boolean enabled) {
 		this.drawTracking = enabled;
 	}
@@ -414,19 +425,20 @@ public class ChartView extends View {
 		}
 	}
 	
-	void setData(float[] data, float max, float min) {
+	void setData(float[] data, float max, float min, IChartTextFormatter<Float> formatter) {
 		this.max = max;
 		this.min = min;
 		this.data = data;
 		this.preparedData = null;
 		this.isChartBitmapDirty = true;
 		this.trackingValueX = 0;
+		this.dataFormatter = formatter;
 		
 		this.postInvalidate();
 		if (DEBUG) {
 			StringBuilder builder = new StringBuilder("Chart Data: ");
-			for (int i = 0; i < data.length; i++) {
-				builder.append(String.valueOf(data[i]) + "; ");
+			for (float point : data) {
+				builder.append(String.valueOf(point)).append("; ");
 			}
 			Log.d(Utils.LOG_TAG, builder.toString());
 		}
@@ -435,7 +447,7 @@ public class ChartView extends View {
 	@SuppressWarnings("unchecked")
 	<T extends Number>void setAxisX(T[] xAxisPoints, IChartTextFormatter<T> formatter) {
 		this.axisX = xAxisPoints;
-		this.formatter = (IChartTextFormatter<Number>) formatter;
+		this.axisFormatter = (IChartTextFormatter<Number>) formatter;
 	}
 
 	@Override

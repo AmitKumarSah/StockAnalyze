@@ -60,9 +60,9 @@ public class CompositeChartView extends RelativeLayout {
 	}
 	
 	
-	public void setData(float[] dataSet, float max, float min) {
+	public void setData(float[] dataSet, float max, float min, IChartTextFormatter<Float> formatter) {
 		if (this.chart != null)
-			this.chart.setData(dataSet, max, min);
+			this.chart.setData(dataSet, max, min, formatter);
 		else
 			Log.w(Utils.LOG_TAG, "chart in CompositeChartView is null! Can't set data.");
 	}

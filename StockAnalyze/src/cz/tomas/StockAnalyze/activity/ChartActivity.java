@@ -368,29 +368,37 @@ public abstract class ChartActivity extends BaseActivity {
 		}
 	}
 
-	private static final IChartTextFormatter<Long> FORMATTER_DATE = new IChartTextFormatter<Long>() {
-		
+	private final IChartTextFormatter<Long> FORMATTER_DATE = new IChartTextFormatter<Long>() {
+
 		@Override
-		public String formatAxeText(Long val) {
+		public String formatText(Long val) {
 			if (val != null) {
 				final Calendar cal = new GregorianCalendar(Utils.PRAGUE_TIME_ZONE);
 				cal.setTimeInMillis(val);
 				return FormattingUtils.formatStockShortDate(cal);
-			} 
+			}
 			return "";
 		}
 	};
-	
-	private static final IChartTextFormatter<Long> FORMATTER_TIME = new IChartTextFormatter<Long>() {
-		
+
+	private final IChartTextFormatter<Long> FORMATTER_TIME = new IChartTextFormatter<Long>() {
+
 		@Override
-		public String formatAxeText(Long val) {
+		public String formatText(Long val) {
 			if (val != null) {
 				final Calendar cal = new GregorianCalendar(Utils.PRAGUE_TIME_ZONE);
 				cal.setTimeInMillis(val);
 				return FormattingUtils.formatStockShortTime(cal);
-			} 
+			}
 			return "";
+		}
+	};
+
+	private final IChartTextFormatter<Float> FORMATTER_VALUE = new IChartTextFormatter<Float>() {
+
+		@Override
+		public String formatText(Float val) {
+			return FormattingUtils.getValueFormat().format(val);
 		}
 	};
 	
@@ -488,7 +496,7 @@ public abstract class ChartActivity extends BaseActivity {
 					IChartTextFormatter<Long> formatter = timePeriod == DataManager.TIME_PERIOD_DAY ? 
 							FORMATTER_TIME : FORMATTER_DATE;
 					chartView.setAxisX(xAxisPoints, formatter);
-					chartView.setData(dataPoints, max, min);
+					chartView.setData(dataPoints, max, min, FORMATTER_VALUE);
 				}
 			}
 			return null;
@@ -501,7 +509,7 @@ public abstract class ChartActivity extends BaseActivity {
 		private ChartDataCache getCacheData(String key) {
 			final long currentTime = SystemClock.elapsedRealtime();
 			
-			SoftReference<ChartDataCache> chartDataRef = null;
+			SoftReference<ChartDataCache> chartDataRef;
 			ChartDataCache chartData = null;
 
 			Map<String, SoftReference<ChartDataCache>> cacheMap = getCacheMap(timePeriod);
