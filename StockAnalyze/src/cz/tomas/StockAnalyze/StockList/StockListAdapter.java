@@ -158,11 +158,11 @@ public class StockListAdapter extends BaseAdapter {
 			try {
 				data = dataSet.get(stock);
 			} catch (Exception e) {
-				holder.txtPrice.setText("Fail");
+				holder.txtPrice.setText(" - ");
 				Log.e(Utils.LOG_TAG, "failed to get daydata for " + stock, e);
 			}
         	if (data != null) {
-        		holder.txtPrice.setText(String.valueOf(data.getPrice()));
+        		holder.txtPrice.setText(FormattingUtils.getValueFormat().format(data.getPrice()));
 				NumberFormat percentFormat = FormattingUtils.getPercentFormat();
 				String strChange = percentFormat.format(data.getChange());
 				String strAbsChange = percentFormat.format(data.getAbsChange());

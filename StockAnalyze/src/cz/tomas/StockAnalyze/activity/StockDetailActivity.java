@@ -150,7 +150,7 @@ public final class StockDetailActivity extends ChartActivity {
 
 		final Currency currency = stockItem.getMarket().getCurrency();
 		final NumberFormat priceFormat = currency != null ?
-				FormattingUtils.getPriceFormat(currency) : FormattingUtils.getVolumeFormat();
+				FormattingUtils.getPriceFormat(currency) : FormattingUtils.getValueFormat();
 		final NumberFormat percentFormat = FormattingUtils.getPercentFormat();
 
 		if (this.dayData == null) {
@@ -171,9 +171,9 @@ public final class StockDetailActivity extends ChartActivity {
 			txtVolume.setText(strVolume);
 		}
 		if (txtMax != null)
-			txtMax.setText(String.valueOf(this.dayData.getYearMaximum()));
+			txtMax.setText(priceFormat.format(this.dayData.getYearMaximum()));
 		if (txtMin != null)
-			txtMin.setText(String.valueOf(this.dayData.getYearMinimum()));
+			txtMin.setText(priceFormat.format(this.dayData.getYearMinimum()));
 		if (txtName != null)
 			txtName.setText(stockItem.getName());
 		if (txtPrice != null) {

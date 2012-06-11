@@ -20,8 +20,6 @@
  */
 package cz.tomas.StockAnalyze.Portfolio;
 
-import java.text.NumberFormat;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
@@ -31,13 +29,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
-import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.PortfolioItem;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
+import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.fragments.PortfolioListFragment;
 import cz.tomas.StockAnalyze.utils.FormattingUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
+
+import java.text.NumberFormat;
 
 /**
  * adapter for portfolio items list in ({@link PortfolioListFragment})
@@ -47,7 +47,7 @@ import cz.tomas.StockAnalyze.utils.Utils;
  */
 public class PortfolioListAdapter extends BaseAdapter {
 	
-	private final LayoutInflater vi;
+	private final LayoutInflater inflater;
 	private final SharedPreferences pref;
 	
 	private PortfolioListData listData;
@@ -72,7 +72,7 @@ public class PortfolioListAdapter extends BaseAdapter {
 		this.drawableRedPortfolio = context.getResources().getDrawable(R.drawable.bg_simple_red_shape);
 		this.drawableBlackPortfolio = context.getResources().getDrawable(R.drawable.bg_simple_dark_shape);
 		
-        this.vi = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.pref = context.getSharedPreferences(Utils.PREF_NAME, 0);
 	}
 
@@ -141,7 +141,7 @@ public class PortfolioListAdapter extends BaseAdapter {
 	public View getView(int position, View convertView, ViewGroup parent) {
 		PortfolioItemViewHolder holder;
 		if (convertView == null) {
-			convertView = vi.inflate(R.layout.item_portfolio_list, null);
+			convertView = inflater.inflate(R.layout.item_portfolio_list, null);
 			holder = new PortfolioItemViewHolder();
 			holder.txtTicker = (TextView) convertView.findViewById(R.id.portfolioStockTicker);
 			holder.txtName = (TextView) convertView.findViewById(R.id.portfolioStockName);
@@ -189,7 +189,7 @@ public class PortfolioListAdapter extends BaseAdapter {
         }
         if (holder.txtPrice != null && holder.txtChange != null) {
         	if (dayData != null) {
-        		holder.txtPrice.setText(String.valueOf(dayData.getPrice()));
+        		holder.txtPrice.setText(FormattingUtils.getValueFormat().format(dayData.getPrice()));
 				NumberFormat percentFormat = FormattingUtils.getPercentFormat();
 				String strChange = percentFormat.format(dayData.getChange());
 				String strAbsChange = percentFormat.format(dayData.getAbsChange());
