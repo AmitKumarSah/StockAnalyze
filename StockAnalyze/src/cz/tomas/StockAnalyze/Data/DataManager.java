@@ -48,6 +48,7 @@ import java.util.Map.Entry;
  * @author tomas
  *
  */
+@SuppressWarnings("UnnecessaryLocalVariable")
 public class DataManager implements IStockDataListener {
 
 	private static final int DAY_IN_MILLISECONDS = 1000 * 60 * 60 * 24;
@@ -65,14 +66,23 @@ public class DataManager implements IStockDataListener {
 		
 	private List<IUpdateDateChangedListener> updateDateChangedListeners;
 	private List<IStockDataListener> updateStockDataListeners;
+
+	/**
+	 * map of markets that is loaded from database immediately after initialization and is
+	 * kept in memory throughout the whole life of this instance
+	 */
 	private Map<String, Market> markets;
 	
 	private final Context context;
-	private static DataManager instance;
 	private final List<IMarketListener> marketListeners;
 	private boolean isMarketUpdateRunning;
 
-	private Handler handler;
+	/**
+	 * handler for posting message that markets have been loaded
+	 */
+	private final Handler handler;
+
+	private static DataManager instance;
 
 	public static DataManager getInstance(Context context) {
 		if (instance == null) {
@@ -145,7 +155,7 @@ public class DataManager implements IStockDataListener {
 	 * check if market collections is loaded in memory
 	 * @return true if we have market collection ready to use
 	 */
-	public boolean isMarketCollectionAvailable() {
+	public synchronized boolean isMarketCollectionAvailable() {
 		return this.markets != null && this.markets.size() > 0;
 	}
 
@@ -153,7 +163,7 @@ public class DataManager implements IStockDataListener {
 	 * get supported markets
 	 * @return collection of markets or null if they are not yet available
 	 */
-	public Collection<Market> getMarkets() {
+	public synchronized Collection<Market> getMarkets() {
 		if (this.markets == null || this.markets.size() == 0) {
 			// if we aren't already loading markets, start so
 			if (! isMarketUpdateRunning) {
@@ -175,7 +185,7 @@ public class DataManager implements IStockDataListener {
 	 * load or download markets, refresh them if necessary
 	 * and also check for stock items
 	 */
-	private void loadMarkets() {
+	private synchronized void loadMarkets() {
 		isMarketUpdateRunning = true;
 		this.sqlStore.acquireDb(this);
 		try {
@@ -186,7 +196,7 @@ public class DataManager implements IStockDataListener {
 				 MarketProvider provider = new MarketProvider();
 				try {
 					this.markets = provider.getMarkets(this.context);
-					this.sqlStore.updateMarkets(this.markets);
+					this.sqlStore.updateMarkets(this.markets.values());
 					boolean success = true;
 
 					for (Market market : markets.values()) {
@@ -238,8 +248,13 @@ public class DataManager implements IStockDataListener {
 		}
 	}
 
+	public synchronized void updateMarketsUiOrder(Collection<Market> markets) {
+		this.sqlStore.updateMarketsUiOrder(markets);
+		loadMarkets();
+	}
+
 	/**
-	 * getStock providers for stock item
+	 * search for stock
 	 * @param ticker stock ticker
 	 * @return found stock item or null
 	 */

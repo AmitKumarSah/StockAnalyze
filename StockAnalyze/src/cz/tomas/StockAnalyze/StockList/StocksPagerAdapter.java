@@ -8,8 +8,6 @@ import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.fragments.StockGridFragment;
 import cz.tomas.StockAnalyze.fragments.StockListFragment;
 
-import java.util.Collection;
-
 /**
  * adapter creating {@link StockListFragment} for selected Markets
  * @author tomas
@@ -19,16 +17,25 @@ public final class StocksPagerAdapter extends FragmentPagerAdapter {
 
 	private Market[] markets;
 	
-	public StocksPagerAdapter(FragmentManager fm, Collection<Market> markets) {
+	public StocksPagerAdapter(FragmentManager fm) {
 		super(fm);
-
-		if (markets != null) {
-			this.markets = markets.toArray(new Market[markets.size()]);
-		}
 	}
 	
 	public void setMarkets(Market[] markets) {
-		this.markets = markets;
+		if (markets == null) {
+			this.markets = null;
+		} else {
+			Market[] temp = new Market[markets.length];
+			int index = 0;
+			for (Market market : markets) {
+				if (market.getUiOrder() >= 0) {
+					temp[index] = market;
+					index++;
+				}
+			}
+			this.markets = new Market[index];
+			System.arraycopy(temp, 0, this.markets, 0, index);
+		}
 		this.notifyDataSetChanged();
 	}
 

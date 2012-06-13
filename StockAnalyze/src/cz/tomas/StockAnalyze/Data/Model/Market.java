@@ -38,6 +38,9 @@ public class Market implements Serializable {
 	public static final int TYPE_FULL = 1;
 	public static final int TYPE_SELECTIVE = 2;
 
+	public static final int REMOVED = -2;
+	public static final int HIDDEN = -1;
+
 	private final String name;
 	private final String id;
 	private final String currency;
@@ -51,12 +54,14 @@ public class Market implements Serializable {
 	private final double feeMax;
 	private final double feePercent;
 
+	private int uiOrder;
+
 	private Market() {  // for gson
-		this(null, null, null, null, null, 0, 0, 0, 0, 0, 0);
+		this(null, null, null, null, null, 0, 0, 0, 0, 0, 0, 0);
 	}
 
 	public Market(String name, String id, String currency, String description, String country,
-	              double feePercent, double feeMax, double feeMin, long openTo, long openFrom, int type) {
+	              double feePercent, double feeMax, double feeMin, long openTo, long openFrom, int type, int uiOrder) {
 		this.name = name;
 		this.id = id;
 		this.currency = currency;
@@ -68,6 +73,7 @@ public class Market implements Serializable {
 		this.openTo = openTo;
 		this.openFrom = openFrom;
 		this.type = type;
+		this.uiOrder = uiOrder;
 	}
 	
 	/**
@@ -145,6 +151,14 @@ public class Market implements Serializable {
 
 	public int getType() {
 		return type;
+	}
+
+	public int getUiOrder() {
+		return uiOrder;
+	}
+
+	public void setUiOrder(int uiOrder) {
+		this.uiOrder = uiOrder;
 	}
 
 	@Override

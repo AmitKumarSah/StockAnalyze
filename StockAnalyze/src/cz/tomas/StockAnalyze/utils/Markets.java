@@ -19,5 +19,5 @@ public class Markets {
 	/**
 	 * fake market used for global indeces
 	 */
-	public static final Market GLOBAL = new Market("Global", "GLOBAL", "", "Indices", "world", 0, 0, 0, 0, 0, Market.TYPE_FULL);
+	public static final Market GLOBAL = new Market("Global", "GLOBAL", "", "Indices", "world", 0, 0, 0, 0, 0, Market.TYPE_FULL, 0);
 }

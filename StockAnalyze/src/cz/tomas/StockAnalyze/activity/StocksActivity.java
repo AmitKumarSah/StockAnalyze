@@ -15,6 +15,7 @@ import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.R;
 import cz.tomas.StockAnalyze.StockList.StocksPagerAdapter;
 import cz.tomas.StockAnalyze.fragments.ConfirmDialogFragment;
+import cz.tomas.StockAnalyze.fragments.SetMarketsDialogFragment;
 import cz.tomas.StockAnalyze.ui.widgets.DragContainerView;
 import cz.tomas.StockAnalyze.utils.NavUtils;
 import cz.tomas.StockAnalyze.utils.Utils;
@@ -28,7 +29,8 @@ import java.util.Collection;
  *
  */
 public final class StocksActivity extends AbstractStocksActivity implements
-											AbstractStocksActivity.IDragSupportingActivity<StockItem> {
+											AbstractStocksActivity.IDragSupportingActivity<StockItem>,
+											SetMarketsDialogFragment.IMarketsActivity {
 
 	private static final String TAG_CONFIRM = "confirm";
 
@@ -50,10 +52,18 @@ public final class StocksActivity extends AbstractStocksActivity implements
 		this.container = this.findViewById(R.id.container);
 		this.dragContainer = (DragContainerView) this.findViewById(R.id.dragContainer);
 		this.pager = (ViewPager) this.findViewById(R.id.stocksViewPager);
-		Collection<Market> markets = dataManager.getMarkets();
-		this.pager.setAdapter(new StocksPagerAdapter(getSupportFragmentManager(), markets));
+		this.titleIndicator = (TitlePageIndicator)findViewById(R.id.pagerTitles);
 
-		titleIndicator = (TitlePageIndicator)findViewById(R.id.pagerTitles);
+		loadMarkets();
+	}
+
+	private void loadMarkets() {
+		Collection<Market> markets = dataManager.getMarkets();
+		if (this.pager.getAdapter() == null) {
+			this.pager.setAdapter(new StocksPagerAdapter(getSupportFragmentManager()));
+		} else {
+			((StocksPagerAdapter) this.pager.getAdapter()).setMarkets(markets.toArray(new Market[markets.size()]));
+		}
 
 		if (markets != null) {
 			onPrepareData(markets.toArray(new Market[markets.size()]));
@@ -82,7 +92,6 @@ public final class StocksActivity extends AbstractStocksActivity implements
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-	    // Handle item selection
 	    switch (item.getItemId()) {
 	    case R.id.menu_refresh:
 	    	updateImmediately(this.selectedMarket);
@@ -90,6 +99,10 @@ public final class StocksActivity extends AbstractStocksActivity implements
 	    case R.id.menu_stock_list_settings:
 	    	NavUtils.goToSettings(this);
 	        return true;
+	    case R.id.menu_pages:
+		    SetMarketsDialogFragment fragment = new SetMarketsDialogFragment();
+		    fragment.show(getSupportFragmentManager(), "setMarkets");
+			return true;
 	    default:
 	        return super.onOptionsItemSelected(item);
 	    }
@@ -135,5 +148,10 @@ public final class StocksActivity extends AbstractStocksActivity implements
 
 		dragContainer.startDragging(view, view.getLeft() + view.getWidth() / 2, view.getTop() + view.getHeight() /2, offsetX, offsetY, data, targets);
 		dragContainer.setListener(listener);
+	}
+
+	@Override
+	public void onUpdateMarkets() {
+		loadMarkets();
 	}
 }

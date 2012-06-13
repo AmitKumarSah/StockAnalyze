@@ -153,15 +153,6 @@ class PortfolioSqlHelper extends DataSqlHelper {
 				this.builder.append(")");
 
 				String portfolioSelection = bought ? "count > 0" : "count < 0";
-//			String sql = String.format("SELECT %s FROM %s p JOIN %s m on p.%s = m.%s WHERE m.%s=? AND %s" +
-//										" ORDER BY p.%s",
-//										PortfolioColumns.GROUPED_PROJECTION_STRING, PORTFOLIO_TABLE_NAME, MARKET_TABLE_NAME,
-//										PortfolioColumns.MARKET_ID, MarketColumns._ID, MarketColumns.CURRENCY, portfolioSelection,
-//										PortfolioColumns.STOCK_ID, PortfolioColumns.DEFAULT_SORT);
-//			c = db.query(PORTFOLIO_TABLE_NAME, new String [] {"stock_id", "SUM(count)", "AVG(buy_price)", "AVG(sell_price)",
-//					"buy_date", "sell_date", "name", "SUM(buy_fee)", "SUM(sell_fee)", "market_id", "_id" },
-//					selection, null, "stock_id", null, "buy_date");
-//			c = db.rawQuery(sql, new String[] { market.getCurrencyCode() });
 				selection = String.format("%s AND %s", portfolioSelection, builder.toString());
 				this.builder.setLength(0);
 			}
@@ -210,7 +201,7 @@ class PortfolioSqlHelper extends DataSqlHelper {
 						String desc = cursor.getString(cursor.getColumnIndex(MarketColumns.DESCRIPTION));
 						String country = cursor.getString(cursor.getColumnIndex(MarketColumns.COUNTRY));
 						String currency = cursor.getString(cursor.getColumnIndex(MarketColumns.CURRENCY));
-						//int order = cursor.getInt(cursor.getColumnIndex(MarketColumns.UI_ORDER));
+						int order = cursor.getInt(cursor.getColumnIndex(MarketColumns.UI_ORDER));
 						long openFrom = cursor.getLong(cursor.getColumnIndex(MarketColumns.OPEN_FROM));
 						long openTo = cursor.getLong(cursor.getColumnIndex(MarketColumns.OPEN_TO));
 						double feeMax = cursor.getDouble(cursor.getColumnIndex(MarketColumns.FEE_MAX));
@@ -218,7 +209,7 @@ class PortfolioSqlHelper extends DataSqlHelper {
 						double feePerc = cursor.getDouble(cursor.getColumnIndex(MarketColumns.FEE_PERC));
 						int type = cursor.getInt(cursor.getColumnIndex(MarketColumns.TYPE));
 
-						Market market = new Market(name, id,currency,desc, country, feePerc, feeMax, feeMin, openTo, openFrom, type);
+						Market market = new Market(name, id,currency,desc, country, feePerc, feeMax, feeMin, openTo, openFrom, type, order);
 						markets.add(market);
 					} while (cursor.moveToNext());
 				}

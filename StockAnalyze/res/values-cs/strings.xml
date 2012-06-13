@@ -34,6 +34,7 @@
     <string name="refresh">Aktualizovat</string>
     <string name="settings">Nastavení</string>
 	<string name="ok">OK</string>
+	<string name="cancel">Storno</string>
     <string name="SearchTextView">Napište ticker nebo jméno</string>
 	<string name="update_succes">Data byla úspěšně aktualizována!</string>
 	<string name="update_fail">nastala chyba při aktualizaci dat. Zkontrolujete své připojení.</string>
@@ -168,4 +169,6 @@ Nikdy se nepouštějte do obchodů, jejichž podstatě plně nerozumíte. Obchod
 
 	<string name="loadingMarkets">Aktualizuji seznam titulů…</string>
 	<string name="loadingMarketsFailed">Selhala aktualizace, zkuste to znovu pozdeji.</string>
+	<string name="selectMarkets">Vybrat trhy</string>
+	<string name="savingMarkets">Ukládám nastavení trhů</string>
 </resources>

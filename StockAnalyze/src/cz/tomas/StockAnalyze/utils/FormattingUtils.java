@@ -79,7 +79,7 @@ public final class FormattingUtils {
 	}
 	
 	public static NumberFormat getPriceFormat(Currency cur) {
-		if (priceFormat == null || ! (priceFormat.getCurrency().getCurrencyCode().equals(cur.getCurrencyCode())) ) {
+		if (priceFormat == null || ! (priceFormat .getCurrency().getCurrencyCode().equals(cur.getCurrencyCode())) ) {
 			priceFormat = DecimalFormat.getCurrencyInstance();
 			if (cur != null) {
 				priceFormat.setCurrency(cur);

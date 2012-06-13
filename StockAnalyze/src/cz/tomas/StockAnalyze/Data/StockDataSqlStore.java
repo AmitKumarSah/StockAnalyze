@@ -400,7 +400,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 					String desc = cursor.getString(cursor.getColumnIndex(MarketColumns.DESCRIPTION));
 					String country = cursor.getString(cursor.getColumnIndex(MarketColumns.COUNTRY));
 					String currency = cursor.getString(cursor.getColumnIndex(MarketColumns.CURRENCY));
-					//int order = cursor.getInt(cursor.getColumnIndex(MarketColumns.UI_ORDER));
+					int order = cursor.getInt(cursor.getColumnIndex(MarketColumns.UI_ORDER));
 					long openFrom = cursor.getLong(cursor.getColumnIndex(MarketColumns.OPEN_FROM));
 					long openTo = cursor.getLong(cursor.getColumnIndex(MarketColumns.OPEN_TO));
 					double feeMax = cursor.getDouble(cursor.getColumnIndex(MarketColumns.FEE_MAX));
@@ -408,14 +408,13 @@ public class StockDataSqlStore extends DataSqlHelper {
 					double feePerc = cursor.getDouble(cursor.getColumnIndex(MarketColumns.FEE_PERC));
 					int type = cursor.getInt(cursor.getColumnIndex(MarketColumns.TYPE));
 
-
 					Market market = new Market(name, id,currency, desc, country, feePerc,
-							feeMax, feeMin, openTo, openFrom, type);
+							feeMax, feeMin, openTo, openFrom, type, order);
 					markets.put(id, market);
 				} while (cursor.moveToNext());
 			}
 		} catch (Exception e) {
-			Log.e(Utils.LOG_TAG, "failed tp read markets", e);
+			Log.e(Utils.LOG_TAG, "failed to read markets", e);
 		} finally {
 			if (cursor != null) {
 				cursor.close();
@@ -439,7 +438,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 				String desc = cursor.getString(cursor.getColumnIndex(MarketColumns.DESCRIPTION));
 				String country = cursor.getString(cursor.getColumnIndex(MarketColumns.COUNTRY));
 				String currency = cursor.getString(cursor.getColumnIndex(MarketColumns.CURRENCY));
-				//int order = cursor.getInt(cursor.getColumnIndex(MarketColumns.UI_ORDER));
+				int order = cursor.getInt(cursor.getColumnIndex(MarketColumns.UI_ORDER));
 				long openFrom = cursor.getLong(cursor.getColumnIndex(MarketColumns.OPEN_FROM));
 				long openTo = cursor.getLong(cursor.getColumnIndex(MarketColumns.OPEN_TO));
 				double feeMax = cursor.getDouble(cursor.getColumnIndex(MarketColumns.FEE_MAX));
@@ -447,7 +446,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 				double feePerc = cursor.getDouble(cursor.getColumnIndex(MarketColumns.FEE_PERC));
 				int type = cursor.getInt(cursor.getColumnIndex(MarketColumns.TYPE));
 
-				return new Market(name, id,currency,desc, country, feePerc, feeMax, feeMin, openTo, openFrom, type);
+				return new Market(name, id,currency,desc, country, feePerc, feeMax, feeMin, openTo, openFrom, type, order);
 			}
 		} finally {
 			if (cursor != null) {
@@ -457,15 +456,37 @@ public class StockDataSqlStore extends DataSqlHelper {
 		return null;
 	}
 
-	public void updateMarkets(Map<String, Market> markets) {
+	public void updateMarketsUiOrder(Collection<Market> markets) {
 		SQLiteDatabase db = this.getWritableDatabase();
 
 		try{
 			db.beginTransaction();
-			db.delete(MARKET_TABLE_NAME, null, null);
 
-			for (Market market : markets.values()) {
-				ContentValues values = new ContentValues();
+			ContentValues values = new ContentValues();
+			for (Market market : markets) {
+				values.put(MarketColumns.UI_ORDER, market.getUiOrder());
+				int count = db.update(MARKET_TABLE_NAME, values, MarketColumns._ID+ "=?", new String[] { market.getId() });
+				if (count == 0) {
+					Log.w(Utils.LOG_TAG, "failed to update uiOrder for market " + market);
+				}
+			}
+			db.setTransactionSuccessful();
+		} finally {
+			db.endTransaction();
+			this.close();
+		}
+	}
+
+	public void updateMarkets(Collection<Market> markets) {
+		SQLiteDatabase db = this.getWritableDatabase();
+
+		try{
+			db.beginTransaction();
+//			db.delete(MARKET_TABLE_NAME, null, null);
+			Map<String, Market> currentMarkets = getMarkets();
+
+			final ContentValues values = new ContentValues();
+			for (Market market : markets) {
 				values.put(MarketColumns.NAME, market.getName());
 				values.put(MarketColumns.COUNTRY, market.getCountry());
 				values.put(MarketColumns.CURRENCY, market.getCurrencyCode());
@@ -482,7 +503,17 @@ public class StockDataSqlStore extends DataSqlHelper {
 					Log.d(Utils.LOG_TAG, "inserting market " + market);
 					values.put(MarketColumns._ID, market.getId());
 					db.insert(MARKET_TABLE_NAME, null, values);
+				} else if (currentMarkets != null) {
+					currentMarkets.remove(market.getId());
 				}
+				values.clear();
+			}
+
+			if (currentMarkets != null && currentMarkets.size() > 0) {
+				for (Market market : currentMarkets.values()) {
+					market.setUiOrder(Market.REMOVED);
+				}
+				this.updateMarketsUiOrder(currentMarkets.values());
 			}
 			db.setTransactionSuccessful();
 		} finally {
