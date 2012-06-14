@@ -234,6 +234,9 @@ public class DataManager implements IStockDataListener {
 		});
 	}
 
+	/**
+	 * fire event with ALL markets we work with
+	 */
 	private void fireMarketReady() {
 		for (IMarketListener listener : marketListeners) {
 			if (this.markets == null) {
@@ -248,6 +251,10 @@ public class DataManager implements IStockDataListener {
 		}
 	}
 
+	/**
+	 * update market ui order value in db and refresh loaded markets
+	 * @param markets markets to update
+	 */
 	public synchronized void updateMarketsUiOrder(Collection<Market> markets) {
 		if (markets == null) {
 			throw new IllegalArgumentException("markets cannot be null");

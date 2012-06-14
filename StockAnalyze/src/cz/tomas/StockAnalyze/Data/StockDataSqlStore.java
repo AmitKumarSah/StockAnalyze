@@ -423,7 +423,7 @@ public class StockDataSqlStore extends DataSqlHelper {
 		}
 		return markets;
 	}
-	
+
 	private Market getMarket(String marketId, SQLiteDatabase db) {
 		if (TextUtils.isEmpty(marketId)) {
 			throw new IllegalArgumentException("market id cannot be empty");
@@ -456,6 +456,10 @@ public class StockDataSqlStore extends DataSqlHelper {
 		return null;
 	}
 
+	/**
+	 * update {@link MarketColumns#UI_ORDER} column with values from given markets
+	 * @param markets markets to update their ui order
+	 */
 	public void updateMarketsUiOrder(Collection<Market> markets) {
 		SQLiteDatabase db = this.getWritableDatabase();
 
@@ -477,12 +481,16 @@ public class StockDataSqlStore extends DataSqlHelper {
 		}
 	}
 
+	/**
+	 * Update current markets or insert new one. Old markets not present in the given
+	 * collection will be marked as {@link Market#REMOVED}
+	 * @param markets collection of all current markets to update/insert to db
+	 */
 	public void updateMarkets(Collection<Market> markets) {
 		SQLiteDatabase db = this.getWritableDatabase();
 
 		try{
 			db.beginTransaction();
-//			db.delete(MARKET_TABLE_NAME, null, null);
 			Map<String, Market> currentMarkets = getMarkets();
 
 			final ContentValues values = new ContentValues();
