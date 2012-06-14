@@ -61,9 +61,10 @@ public final class StocksActivity extends AbstractStocksActivity implements
 		Collection<Market> markets = dataManager.getMarkets();
 		if (this.pager.getAdapter() == null) {
 			this.pager.setAdapter(new StocksPagerAdapter(getSupportFragmentManager()));
-		} else {
-			((StocksPagerAdapter) this.pager.getAdapter()).setMarkets(markets.toArray(new Market[markets.size()]));
 		}
+//		else {
+//			((StocksPagerAdapter) this.pager.getAdapter()).setMarkets(markets.toArray(new Market[markets.size()]));
+//		}
 
 		if (markets != null) {
 			onPrepareData(markets.toArray(new Market[markets.size()]));

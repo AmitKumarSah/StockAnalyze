@@ -249,8 +249,14 @@ public class DataManager implements IStockDataListener {
 	}
 
 	public synchronized void updateMarketsUiOrder(Collection<Market> markets) {
+		if (markets == null) {
+			throw new IllegalArgumentException("markets cannot be null");
+		}
+		if (this.markets == null) {
+			throw new IllegalStateException("can't update markets if DataManager hasn't loaded them yet");
+		}
 		this.sqlStore.updateMarketsUiOrder(markets);
-		loadMarkets();
+		this.markets = this.sqlStore.getMarkets();
 	}
 
 	/**
