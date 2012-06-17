@@ -24,6 +24,9 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -57,6 +60,8 @@ public class Utils {
 	public static final boolean PREF_DEF_UPDATE_NOTIF = true;
 	public static final boolean PREF_DEF_ENABLE_BACKGROUND_UPDATE = true;
 	public static final boolean PREF_DEF_FULL_ARTICLE = false;
+
+	public static final String PREF_COOKIE = "cookie";
 	
 	public static final TimeZone PRAGUE_TIME_ZONE = TimeZone.getTimeZone("Europe/Prague");
 	
@@ -156,5 +161,23 @@ public class Utils {
 		} catch (Exception e) {
 			return false;
 		}
+	}
+
+	public static StringBuilder certToString(X509Certificate c) {
+		final StringBuilder hexString = new StringBuilder();
+		try {
+			MessageDigest md = MessageDigest.getInstance("SHA1");
+			byte[] publicKey = md.digest(c.getPublicKey().getEncoded());
+
+			for (byte b : publicKey) {
+				String appendString = Integer.toHexString(0xFF & b);
+				if (appendString.length() == 1) {
+					hexString.append("0");
+				}
+				hexString.append(appendString);
+			}
+		} catch (NoSuchAlgorithmException ignored) {
+		}
+		return hexString;
 	}
 }

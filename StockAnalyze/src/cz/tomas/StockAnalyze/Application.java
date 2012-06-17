@@ -22,6 +22,7 @@ import cz.tomas.StockAnalyze.Data.DataManager;
 import cz.tomas.StockAnalyze.News.Rss;
 import cz.tomas.StockAnalyze.Portfolio.Portfolio;
 import cz.tomas.StockAnalyze.activity.ChartActivity;
+import cz.tomas.StockAnalyze.rest.Infrastructure;
 import cz.tomas.StockAnalyze.utils.Utils;
 import org.apache.http.HttpVersion;
 import org.apache.http.conn.params.ConnManagerParams;
@@ -44,11 +45,13 @@ public class Application extends android.app.Application {
 	public static final String PORTFOLIO_SERVICE = "cz.tomas.StockAnalyze.Data.Portfolio";
 	public static final String HTTP_CLIENT_SERVICE = "httpClient";
 	public static final String RSS_SERVICE = "rss";
+	public static final String REST_SERVICE = "rest";
 	
 	private UpdateScheduler scheduler;
 	private DataManager dataManager;
 	private Portfolio portfolio;
 	private Rss rss;
+	private Infrastructure restInfrastructure;
 	
 	private static DefaultHttpClient sDefaultHttpClient;
 	
@@ -115,6 +118,11 @@ public class Application extends android.app.Application {
 				this.rss = new Rss(this);
 			}
 			return this.rss;
+		} else if (REST_SERVICE.equals(name)) {
+			if (this.restInfrastructure == null) {
+				this.restInfrastructure = new Infrastructure(this);
+			}
+			return this.restInfrastructure;
 		}
 		return super.getSystemService(name);
 	}

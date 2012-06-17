@@ -3,6 +3,7 @@ package cz.tomas.StockAnalyze.Data.GaeData;
 import android.content.Context;
 import android.text.TextUtils;
 import com.google.gson.JsonSyntaxException;
+import cz.tomas.StockAnalyze.Application;
 import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
@@ -19,7 +20,7 @@ public final class GaeDataProvider {
 	private final Infrastructure infrastructure;
 	
 	GaeDataProvider(Context context) {
-		this.infrastructure = new Infrastructure();
+		this.infrastructure = (Infrastructure) context.getApplicationContext().getSystemService(Application.REST_SERVICE);
 	}
 
 	/**
