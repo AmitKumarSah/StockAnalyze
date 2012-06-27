@@ -20,7 +20,7 @@ public class DayDataInfrastructureTest extends AndroidTestCase {
 	private final Infrastructure infrastructure;
 
 	public DayDataInfrastructureTest() {
-		this.infrastructure = new Infrastructure();
+		this.infrastructure = new Infrastructure(getContext());
 	}
 
 	public void testDayDataByStocks() {

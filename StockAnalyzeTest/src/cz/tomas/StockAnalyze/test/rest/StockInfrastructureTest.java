@@ -1,6 +1,8 @@
 package cz.tomas.StockAnalyze.test.rest;
 
 import android.test.AndroidTestCase;
+import android.test.IsolatedContext;
+import android.test.mock.MockContentResolver;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.rest.Infrastructure;
@@ -14,10 +16,17 @@ import java.util.Collection;
  */
 public class StockInfrastructureTest extends AndroidTestCase {
 
-	private final Infrastructure infrastructure;
+	private Infrastructure infrastructure;
 
 	public StockInfrastructureTest() {
-		this.infrastructure = new Infrastructure();
+	}
+
+	@Override
+	protected void setUp() throws Exception {
+		super.setUp();
+		if (this.infrastructure == null) {
+			this.infrastructure = new Infrastructure(new IsolatedContext(new MockContentResolver(), getContext()));
+		}
 	}
 
 	public void testStock() throws IOException {
