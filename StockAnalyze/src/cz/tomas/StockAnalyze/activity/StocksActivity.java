@@ -9,7 +9,6 @@ import android.view.View;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-import com.viewpagerindicator.TitlePageIndicator;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.R;
@@ -41,7 +40,6 @@ public final class StocksActivity extends AbstractStocksActivity implements
 	private View container;
 
 	private SharedPreferences pref;
-	private TitlePageIndicator titleIndicator;
 
 	@Override
 	protected void onCreate(Bundle arg0) {
@@ -52,7 +50,7 @@ public final class StocksActivity extends AbstractStocksActivity implements
 		this.container = this.findViewById(R.id.container);
 		this.dragContainer = (DragContainerView) this.findViewById(R.id.dragContainer);
 		this.pager = (ViewPager) this.findViewById(R.id.stocksViewPager);
-		this.titleIndicator = (TitlePageIndicator)findViewById(R.id.pagerTitles);
+		this.pager.setPageMargin((int) getResources().getDimension(R.dimen.padding_quantum_half));
 
 		loadMarkets();
 	}
@@ -125,7 +123,6 @@ public final class StocksActivity extends AbstractStocksActivity implements
 			}
 			this.selectedMarket = markets[index];
 			this.pager.setCurrentItem(index, false);
-			this.titleIndicator.setViewPager(this.pager, index);
 		}
 	}
 

@@ -18,7 +18,6 @@
 -->
 <resources>
 	<style name="themeLight" parent="Theme.Sherlock.Light.ForceOverflow" >
-    	<item name="vpiTitlePageIndicatorStyle">@style/MyTitlePageIndicator</item>
     	<item name="android:radioButtonStyle">@style/radioStyle</item>
     	    
     	<item name="android:windowBackground">@color/background_light</item>

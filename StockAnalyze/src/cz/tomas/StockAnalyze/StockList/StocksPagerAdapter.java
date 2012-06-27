@@ -144,8 +144,8 @@ public final class StocksPagerAdapter extends PagerAdapter {
 
 	@Override
 	public CharSequence getPageTitle(int position) {
-		Market market = this.markets[position];
-		return market.getName().toUpperCase();
+		Market market = getMarketByPosition(position);
+		return market != null ? market.getName().toUpperCase() : null;
 	}
 
 	@Override

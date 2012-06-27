@@ -21,15 +21,16 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
-    <com.viewpagerindicator.TitlePageIndicator
-        android:id="@+id/portfoliosPagerTitles"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="2dp" />
-
     <android.support.v4.view.ViewPager
         android:id="@+id/portfoliosViewPager"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent" />
+        android:layout_height="fill_parent">
+
+		<android.support.v4.view.PagerTitleStrip android:id="@+id/stocksPagerTitle"
+			android:layout_gravity="top"
+			style="@style/titleStrip"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content" />
+	</android.support.v4.view.ViewPager>
 
 </LinearLayout>

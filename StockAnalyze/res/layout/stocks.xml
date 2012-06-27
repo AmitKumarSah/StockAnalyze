@@ -22,15 +22,16 @@
          android:layout_width="fill_parent"
          android:layout_height="fill_parent">
 
-	<com.viewpagerindicator.TitlePageIndicator
-	    android:id="@+id/pagerTitles"
-	    android:layout_height="wrap_content"
-	    android:layout_width="fill_parent"
-	    android:paddingBottom="2dp" />
 	<android.support.v4.view.ViewPager android:id="@+id/stocksViewPager"
-		android:layout_below="@+id/pagerTitles"
 		android:layout_width="fill_parent" 
-		android:layout_height="fill_parent" />
+		android:layout_height="fill_parent">
+
+		<android.support.v4.view.PagerTitleStrip
+			android:layout_gravity="top"
+			style="@style/titleStrip"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content" />
+	</android.support.v4.view.ViewPager>
 
 	<cz.tomas.StockAnalyze.ui.widgets.DragContainerView android:id="@+id/dragContainer"
 		android:layout_width="fill_parent"

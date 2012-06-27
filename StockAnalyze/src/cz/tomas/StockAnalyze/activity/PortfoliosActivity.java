@@ -13,7 +13,6 @@ import android.util.Log;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-import com.viewpagerindicator.TitlePageIndicator;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.Portfolio.PortfolioMarketsLoader;
@@ -40,7 +39,6 @@ public final class PortfoliosActivity extends AbstractStocksActivity implements 
 	public static final String EXTRA_STOCK_ITEM = "portfolioStockItem";
 
 	private PortfolioPagerAdapter pagerAdapter;
-	private TitlePageIndicator titleIndicator;
 
 	@Override
 	protected void onCreate(Bundle arg0) {
@@ -51,11 +49,6 @@ public final class PortfoliosActivity extends AbstractStocksActivity implements 
 		ViewPager pager = (ViewPager) this.findViewById(R.id.portfoliosViewPager);
 		this.pagerAdapter = new PortfolioPagerAdapter(getSupportFragmentManager(), null);
 		pager.setAdapter(pagerAdapter);
-
-		//Bind the title indicator to the pagerAdapter
-		titleIndicator = (TitlePageIndicator) findViewById(R.id.portfoliosPagerTitles);
-		titleIndicator.setOnPageChangeListener(this);
-		titleIndicator.setViewPager(pager, 0);
 
 		if (dataManager.isMarketCollectionAvailable()) {
 			onPrepareData(dataManager.getMarkets());
@@ -172,7 +165,6 @@ public final class PortfoliosActivity extends AbstractStocksActivity implements 
 	@Override
 	public void onLoadFinished(Loader<Collection<Market>> loader, Collection<Market> data) {
 		this.pagerAdapter.setMarkets(data);
-		this.titleIndicator.invalidate();
 	}
 
 	@Override

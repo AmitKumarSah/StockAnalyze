@@ -56,8 +56,11 @@ public final class PortfolioPagerAdapter extends FragmentPagerAdapter {
 
 	@Override
 	public CharSequence getPageTitle(int position) {
-		Market market = this.markets[position];
-		return market.getCurrencyCode();
+		if (this.markets != null && position < this.markets.length) {
+			Market market = this.markets[position];
+			return market.getCurrencyCode();
+		}
+		return null;
 	}
 
 }
