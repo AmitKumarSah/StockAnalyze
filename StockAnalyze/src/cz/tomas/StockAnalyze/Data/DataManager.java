@@ -33,6 +33,7 @@ import cz.tomas.StockAnalyze.Data.Model.DayData;
 import cz.tomas.StockAnalyze.Data.Model.Market;
 import cz.tomas.StockAnalyze.Data.Model.StockItem;
 import cz.tomas.StockAnalyze.Data.exceptions.FailedToGetDataException;
+import cz.tomas.StockAnalyze.Journal;
 import cz.tomas.StockAnalyze.utils.Markets;
 import cz.tomas.StockAnalyze.utils.Utils;
 
@@ -61,6 +62,8 @@ public class DataManager implements IStockDataListener {
 	public static final int TIME_PERIOD_QUARTER = 4;
 	public static final int TIME_PERIOD_HALF_YEAR = 5;
 	public static final int TIME_PERIOD_YEAR = 6;
+
+	private static final String JOURNAL_TAG = "DATA_MANAGER";
 	
 	private final StockDataSqlStore sqlStore;
 		
@@ -81,6 +84,7 @@ public class DataManager implements IStockDataListener {
 	 * handler for posting message that markets have been loaded
 	 */
 	private final Handler handler;
+	private final Journal journal;
 
 	private static DataManager instance;
 
@@ -98,6 +102,7 @@ public class DataManager implements IStockDataListener {
 		this.marketListeners = new ArrayList<IMarketListener>();
 		
 		this.sqlStore = StockDataSqlStore.getInstance(context);
+		this.journal = (Journal) context.getApplicationContext().getSystemService(Application.JOURNAL_SERVICE);
 
 		IStockDataProvider gaePse = new GaePseDataAdapter(context);
 		IStockDataProvider gaeIndices = new GaeIndecesDataAdapter(context);
@@ -192,22 +197,27 @@ public class DataManager implements IStockDataListener {
 			this.markets = this.sqlStore.getMarkets();
 			boolean isDirty = isMarketListDirty();
 			if (this.markets == null || this.markets.size() == 0 || isDirty) {
-				Log.d(Utils.LOG_TAG, "downloading markets, current: " + this.markets);
-				 MarketProvider provider = new MarketProvider();
+				final String msg = "downloading markets, current: ".concat(String.valueOf(this.markets));
+				Log.d(Utils.LOG_TAG, msg);
+				this.journal.addMessage(JOURNAL_TAG, msg);
+				MarketProvider provider = new MarketProvider();
 				try {
 					this.markets = provider.getMarkets(this.context);
 					this.sqlStore.updateMarkets(this.markets.values());
+					this.journal.addMessage(JOURNAL_TAG, "updated markets".concat(String.valueOf(this.markets)));
 					boolean success = true;
 
 					for (Market market : markets.values()) {
 						try {
 							this.downloadStockItems(market);
+							this.journal.addMessage(JOURNAL_TAG, "downloaded stock items for ".concat(market.getId()));
 						} catch (Exception e) {
 							Log.e(Utils.LOG_TAG, "failed to download stocks for " + market, e);
 							success &= false;
 						}
 					}
 					this.downloadStockItems(Markets.GLOBAL);
+					this.journal.addMessage(JOURNAL_TAG, "downloaded stock items for ".concat(Markets.GLOBAL.getId()));
 					if (success) {
 						SharedPreferences preferences = this.context.getSharedPreferences(Utils.PREF_NAME, 0);
 						preferences.edit()
@@ -216,13 +226,17 @@ public class DataManager implements IStockDataListener {
 								.commit();
 					}
 				} catch (Exception e) {
-					Log.e(Utils.LOG_TAG, "failed to download markets", e);
+					final String err = "failed to download markets";
+					Log.e(Utils.LOG_TAG, err, e);
+					this.journal.addException(JOURNAL_TAG, err, e);
+
 				}
 			}
 		} catch (Exception e) {
 			Log.e(Utils.LOG_TAG, "failed to read markets", e);
 		} finally {
 			this.sqlStore.releaseDb(true, this);
+			this.journal.flush();
 		}
 
 		this.handler.post(new Runnable() {
@@ -384,11 +398,10 @@ public class DataManager implements IStockDataListener {
 	public synchronized DayData getLastValue(StockItem item) throws IOException, NullPointerException {
 		float val;
 		DayData data = null;
-		//Calendar now = Calendar.getInstance();
 		
 		data = this.sqlStore.getDayData(item.getId());
 		// we still can be without data from db - so we need to download it
-		// of try to getStock for older from database
+		// or try to getStock for older from database
 		if (data == null && Utils.isOnline(this.context)) {
 			try {
 				IStockDataProvider provider = DataProviderFactory.getDataProvider(item.getMarket());
@@ -444,7 +457,6 @@ public class DataManager implements IStockDataListener {
 	}
 	
 	private void fireUpdateStockDataListenerUpdate(IStockDataProvider sender, Map<String, DayData> dataMap) {
-		//this.lastUpdateTime = SystemClock.elapsedRealtime();
 		for (IStockDataListener listener : this.updateStockDataListeners) {
 			listener.OnStockDataUpdated(sender, dataMap);
 		}

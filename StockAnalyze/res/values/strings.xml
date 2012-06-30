@@ -182,4 +182,6 @@ Never let go to the trades, which nature you do not fully understand. Trading an
 	<string name="loadingMarketsFailed">Updating stock list failed. Try it again later.</string>
 	<string name="selectMarkets">Select markets</string>
 	<string name="savingMarkets">Saving markets settings</string>
+
+	<string name="diag">Diagnostics</string>
 </resources>

@@ -46,12 +46,14 @@ public class Application extends android.app.Application {
 	public static final String HTTP_CLIENT_SERVICE = "httpClient";
 	public static final String RSS_SERVICE = "rss";
 	public static final String REST_SERVICE = "rest";
+	public static final String JOURNAL_SERVICE = "journal";
 	
 	private UpdateScheduler scheduler;
 	private DataManager dataManager;
 	private Portfolio portfolio;
 	private Rss rss;
 	private Infrastructure restInfrastructure;
+	private Journal journal;
 	
 	private static DefaultHttpClient sDefaultHttpClient;
 	
@@ -123,6 +125,11 @@ public class Application extends android.app.Application {
 				this.restInfrastructure = new Infrastructure(this);
 			}
 			return this.restInfrastructure;
+		} else if (JOURNAL_SERVICE.equals(name)) {
+			if (this.journal == null) {
+				this.journal = new Journal(this);
+			}
+			return this.journal;
 		}
 		return super.getSystemService(name);
 	}

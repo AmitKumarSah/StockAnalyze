@@ -163,6 +163,10 @@ public class HomeActivity extends ChartActivity implements OnClickListener {
 		    Intent i = new Intent(this, NewFeedbackSpringboardActivity.class);
 		    startActivity(i);
 		    return true;
+	    case R.id.menu_app_diag:
+		    Intent intent = new Intent(this, DiagActivity.class);
+		    startActivity(intent);
+		    return true;
 	    default:
 	        return super.onOptionsItemSelected(item);
 	    }

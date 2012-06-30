@@ -74,6 +74,7 @@ public class UpdateScheduler implements IMarketListener{
 	
 	private static final int DAY_UPDATE_HOUR = 18;
 	private static final int INTRADAY_START_UPDATE_HOUR = 9;
+	protected static final String JOURNAL_TAG = "SCHEDULER";
 
 	private final Context context;
 	private final SharedPreferences preferences;
@@ -86,11 +87,13 @@ public class UpdateScheduler implements IMarketListener{
 	private Semaphore semaphore;
 	
 	private boolean isUpdateAwaiting;
+	private final Journal journal;
 	
 	UpdateScheduler(Context context) {
 		this.context = context;
 		this.semaphore = new Semaphore(1);
 		this.listeners = new ArrayList<IUpdateSchedulerListener>();
+		this.journal = (Journal) context.getApplicationContext().getSystemService(Application.JOURNAL_SERVICE);
 		
 		Intent intent = new Intent(INTRA_UPDATE_ACTION, null, this.context, AlarmReceiver.class);
 		intent.putExtra(ARG_INTRA, true);
@@ -162,9 +165,13 @@ public class UpdateScheduler implements IMarketListener{
 			}
 
 			for (Market market : markets) {
+				this.journal.addMessage(JOURNAL_TAG, "scheduled update for ".concat(market.getId()));
 				this.performUpdateInternal(market);
 			}
+			this.journal.addMessage(JOURNAL_TAG, "scheduled update for ".concat(Markets.GLOBAL.getId()));
 			this.performUpdateInternal(Markets.GLOBAL);
+
+			this.journal.flush();
 		} else {
 			Log.i(Utils.LOG_TAG, "skipping scheduled update because one is already running");
 		}
@@ -186,8 +193,11 @@ public class UpdateScheduler implements IMarketListener{
 		}
 
 		for (Market market : markets) {
+			final String marketId = market != null ? market.getId() : "null";
+			this.journal.addMessage(JOURNAL_TAG, "immediate update for all: ".concat(marketId));
 			this.performUpdateInternal(market);
 		}
+		this.journal.flush();
 	}
 	
 	/**
@@ -201,6 +211,9 @@ public class UpdateScheduler implements IMarketListener{
 				listener.onUpdateBegin(market);
 			}
 		}
+		final String marketId = market != null ? market.getId() : "null";
+		this.journal.addMessage(JOURNAL_TAG, "immediate update for: ".concat(marketId));
+		this.journal.flush();
 		this.performUpdateInternal(market);
 	}
 
@@ -308,10 +321,13 @@ public class UpdateScheduler implements IMarketListener{
 						Log.d(Utils.LOG_TAG, provider.getDescriptiveName() + ": initiating provider refresh in UpdateScheduler");
 						return provider.refresh(this.market);
 					}
-					else
+					else {
 						throw new NullPointerException("IStockDataProvider is null");
+					}
 				} catch (Exception e) {
-					Log.e(Utils.LOG_TAG, "failed to refresh for provider", e);
+					final String msg = "failed to refresh for provider";
+					Log.e(Utils.LOG_TAG, msg, e);
+					journal.addException(JOURNAL_TAG, msg, e);
 				} finally {
 					semaphore.release();
 				}

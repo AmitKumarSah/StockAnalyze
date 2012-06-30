@@ -123,12 +123,13 @@ public final class StocksActivity extends AbstractStocksActivity implements
 			});
 			dialog.show(getSupportFragmentManager(), TAG_CONFIRM);
 		} else {
-			((StocksPagerAdapter) this.pager.getAdapter()).setMarkets(markets);
+			final StocksPagerAdapter adapter = (StocksPagerAdapter) this.pager.getAdapter();
+			adapter.setMarkets(markets);
 			int index = this.pref.getInt(Utils.PREF_STOCKS_POSITION, 0);
 			if (index >= markets.length) {
 				index = 0;
 			}
-//			this.selectedMarket = markets[index];
+			this.selectedMarket = adapter.getMarketByPosition(index);
 			this.pager.setCurrentItem(index, false);
 		}
 	}

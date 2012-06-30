@@ -96,6 +96,7 @@
 		<activity android:name="com.crittercism.NewFeedbackQuestionListActivity" android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"/>
 		<activity android:name="com.crittercism.NewFeedbackItemDetailsActivity" android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"/>
 		<activity android:name="com.crittercism.NewFeedbackCreateActivity" android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"/>
+		<activity android:name=".activity.DiagActivity"/>
 		<!-- End of Crittercism.com Code -->
 
 		<receiver android:name=".receivers.AlarmReceiver"/>
