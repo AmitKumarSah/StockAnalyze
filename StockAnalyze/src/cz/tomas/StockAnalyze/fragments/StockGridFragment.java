@@ -153,21 +153,7 @@ public class StockGridFragment extends SherlockFragment implements IStockFragmen
 		fragment.show(getFragmentManager(), "add_progress");
 
 		final Market market = this.helper.getMarket();
-		SearchStockItemTask task = new SearchStockItemTask(getActivity(), market) {
-			@Override
-			protected void onPostExecute(StockItem stockItem) {
-				fragment.dismiss();
-				if (stockItem != null) {
-					final String message = String.format("%s %s", stockItem.getName(), getText(R.string.addedStock).toString());
-					Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
-					// update data - this will cause fragment update too
-					UpdateScheduler scheduler = (UpdateScheduler) getActivity().getApplicationContext().getSystemService(Application.UPDATE_SCHEDULER_SERVICE);
-					scheduler.updateImmediately(market);
-				} else {
-					Toast.makeText(getActivity(), R.string.addStockItemNotFound, Toast.LENGTH_SHORT).show();
-				}
-			}
-		};
+		SearchStockItemTask task = new MySearchStockItemTask(market, fragment);
 		task.execute(searchResult);
 	}
 
@@ -177,4 +163,29 @@ public class StockGridFragment extends SherlockFragment implements IStockFragmen
 			addStock(searchResult);
 		}
 	};
+
+	private class MySearchStockItemTask extends SearchStockItemTask {
+		private final Market market;
+		private final ProgressDialogFragment fragment;
+
+		public MySearchStockItemTask(Market market, ProgressDialogFragment fragment) {
+			super(StockGridFragment.this.getActivity(), market);
+			this.market = market;
+			this.fragment = fragment;
+		}
+
+		@Override
+		protected void onPostExecute(StockItem stockItem) {
+			fragment.dismiss();
+			if (stockItem != null) {
+				final String message = String.format("%s %s", stockItem.getName(), getText(R.string.addedStock).toString());
+				Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+				// update data - this will cause fragment update too
+				UpdateScheduler scheduler = (UpdateScheduler) getActivity().getApplicationContext().getSystemService(Application.UPDATE_SCHEDULER_SERVICE);
+				scheduler.updateImmediately(market);
+			} else {
+				Toast.makeText(getActivity(), R.string.addStockItemNotFound, Toast.LENGTH_SHORT).show();
+			}
+		}
+	}
 }

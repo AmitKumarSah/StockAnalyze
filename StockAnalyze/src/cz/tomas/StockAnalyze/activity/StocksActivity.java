@@ -51,6 +51,13 @@ public final class StocksActivity extends AbstractStocksActivity implements
 		this.dragContainer = (DragContainerView) this.findViewById(R.id.dragContainer);
 		this.pager = (ViewPager) this.findViewById(R.id.stocksViewPager);
 		this.pager.setPageMargin((int) getResources().getDimension(R.dimen.padding_quantum_half));
+		this.pager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+			@Override
+			public void onPageSelected(int position) {
+				super.onPageSelected(position);
+				selectedMarket = ((StocksPagerAdapter) pager.getAdapter()).getMarketByPosition(position);
+			}
+		});
 
 		loadMarkets();
 	}
@@ -121,7 +128,7 @@ public final class StocksActivity extends AbstractStocksActivity implements
 			if (index >= markets.length) {
 				index = 0;
 			}
-			this.selectedMarket = markets[index];
+//			this.selectedMarket = markets[index];
 			this.pager.setCurrentItem(index, false);
 		}
 	}
